@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import 'signup.dart';
+import 'onboarding1.dart'; // <-- add this (your onboarding UI)
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -89,6 +91,16 @@ class _LoginPageState extends State<LoginPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Login successful.')),
         );
+
+        // go to onboarding (remove login from back stack)
+        Future.delayed(const Duration(milliseconds: 600), () {
+          if (!mounted) return;
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (_) => const OnboardingOnePage()),
+            (route) => false,
+          );
+        });
       }
     } on AuthException catch (e) {
       if (!mounted) return;
@@ -104,6 +116,7 @@ class _LoginPageState extends State<LoginPage> {
       if (mounted) setState(() => _isLoading = false);
     }
   }
+
   Future<void> _googleSignIn() async {
     try {
       await supabase.auth.signInWithOAuth(
@@ -182,7 +195,6 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
               ),
-
               const SizedBox(height: 10),
               _buildFooter(),
               const SizedBox(height: 20),
@@ -326,95 +338,85 @@ class _LoginPageState extends State<LoginPage> {
         ),
       );
 
-    Widget _buildFooter() => Column(
-      children: [
-        const Text(
-          'or sign up using',
-          style: TextStyle(
-            fontFamily: 'Poppins',
-            color: Colors.grey,
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
+  Widget _buildFooter() => Column(
+        children: [
+          const Text(
+            'or sign up using',
+            style: TextStyle(
+              fontFamily: 'Poppins',
+              color: Colors.grey,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
           ),
-        ),// 
-        const SizedBox(height: 20), 
-        GestureDetector(
-          onTap: _googleSignIn,
-          child: Image.asset(
-            'assets/google.jpg',
-            height: 50,
-            fit: BoxFit.contain,
+          const SizedBox(height: 20),
+          GestureDetector(
+            onTap: _googleSignIn,
+            child: Image.asset(
+              'assets/google.jpg',
+              height: 50,
+              fit: BoxFit.contain,
+            ),
           ),
-        ),
-
-        const SizedBox(height:20),
-
-        // TERMS
-        const Text(
-          'Terms and Conditions and Privacy Policy.',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontFamily: 'Poppins',
-            color: brandRed,
-            fontWeight: FontWeight.bold,
-            fontSize: 12,
+          const SizedBox(height: 20),
+          const Text(
+            'Terms and Conditions and Privacy Policy.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: 'Poppins',
+              color: brandRed,
+              fontWeight: FontWeight.bold,
+              fontSize: 12,
+            ),
           ),
-        ),
-
-        const SizedBox(height: 16),
-
-        // OR IN THE MIDDLE
-        Row(
-          children: const [
-            Expanded(child: Divider(thickness: 1)),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 12),
-              child: Text(
-                'OR',
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  color: Colors.grey,
-                  fontWeight: FontWeight.w600,
+          const SizedBox(height: 16),
+          Row(
+            children: const [
+              Expanded(child: Divider(thickness: 1)),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 12),
+                child: Text(
+                  'OR',
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    color: Colors.grey,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
-            ),
-            Expanded(child: Divider(thickness: 1)),
-          ],
-        ),
-
-        const SizedBox(height: 10),
-
-        // DON'T HAVE
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              "Don't have an account? ",
-              style: TextStyle(
-                fontFamily: 'Poppins',
-                fontSize: 13,
-                color: Colors.grey,
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const RegisterPage()),
-                );
-              },
-              child: const Text(
-                'Sign Up',
+              Expanded(child: Divider(thickness: 1)),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                "Don't have an account? ",
                 style: TextStyle(
                   fontFamily: 'Poppins',
-                  color: brandRed,
-                  fontWeight: FontWeight.bold,
                   fontSize: 13,
+                  color: Colors.grey,
                 ),
               ),
-            ),
-          ],
-        ),
-      ],
-    );
-
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const RegisterPage()),
+                  );
+                },
+                child: const Text(
+                  'Sign Up',
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    color: brandRed,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      );
 }

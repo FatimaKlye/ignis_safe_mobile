@@ -16,37 +16,29 @@ class _RegisterPageState extends State<RegisterPage> {
 
   final firstNameCtrl = TextEditingController();
   final lastNameCtrl = TextEditingController();
-  final emailCtrl = TextEditingController();
+  final emailUserCtrl = TextEditingController(); // only before @gmail.com
 
   @override
   void dispose() {
     firstNameCtrl.dispose();
     lastNameCtrl.dispose();
-    emailCtrl.dispose();
+    emailUserCtrl.dispose();
     super.dispose();
   }
 
-  bool _isValidEmail(String s) {
-    final v = s.trim();
-    return RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(v);
-  }
-
-  String? _validateFirstName(String? v) {
+  String? _validateRequired(String? v, String msg) {
     final value = (v ?? '').trim();
-    if (value.isEmpty) return 'First name is required';
+    if (value.isEmpty) return msg;
     return null;
   }
 
-  String? _validateLastName(String? v) {
-    final value = (v ?? '').trim();
-    if (value.isEmpty) return 'Last name is required';
-    return null;
-  }
-
-  String? _validateEmail(String? v) {
+  String? _validateEmailUser(String? v) {
     final value = (v ?? '').trim();
     if (value.isEmpty) return 'Email is required';
-    if (!_isValidEmail(value)) return 'Enter a valid email';
+
+    // Only allow a safe set of characters for the Gmail username part
+    final ok = RegExp(r'^[a-zA-Z0-9._%+\-]+$').hasMatch(value);
+    if (!ok) return 'Use letters/numbers only';
     return null;
   }
 
@@ -54,18 +46,20 @@ class _RegisterPageState extends State<RegisterPage> {
     final ok = _formKey.currentState?.validate() ?? false;
     if (!ok) return;
 
-    final email = emailCtrl.text.trim();
+    final fullEmail = '${emailUserCtrl.text.trim()}@gmail.com';
 
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => VerifyEmailPage(email: email),
+        builder: (_) => VerifyEmailPage(email: fullEmail),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final screenW = MediaQuery.of(context).size.width;
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -84,7 +78,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     Image.asset(
                       'assets/logo.png',
                       height: 250,
-                      width: MediaQuery.of(context).size.width * 0.9,
+                      width: screenW * 0.9,
                       fit: BoxFit.contain,
                     ),
 
@@ -131,7 +125,8 @@ class _RegisterPageState extends State<RegisterPage> {
                       child: TextFormField(
                         controller: firstNameCtrl,
                         keyboardType: TextInputType.name,
-                        validator: _validateFirstName,
+                        validator: (v) =>
+                            _validateRequired(v, 'First name is required'),
                         style: const TextStyle(
                           fontFamily: 'Poppins',
                           fontSize: 13,
@@ -149,7 +144,8 @@ class _RegisterPageState extends State<RegisterPage> {
                       child: TextFormField(
                         controller: lastNameCtrl,
                         keyboardType: TextInputType.name,
-                        validator: _validateLastName,
+                        validator: (v) =>
+                            _validateRequired(v, 'Last name is required'),
                         style: const TextStyle(
                           fontFamily: 'Poppins',
                           fontSize: 13,
@@ -165,15 +161,22 @@ class _RegisterPageState extends State<RegisterPage> {
                     const SizedBox(height: 8),
                     _ShadowField(
                       child: TextFormField(
-                        controller: emailCtrl,
+                        controller: emailUserCtrl,
                         keyboardType: TextInputType.emailAddress,
-                        validator: _validateEmail,
+                        validator: _validateEmailUser,
                         style: const TextStyle(
                           fontFamily: 'Poppins',
                           fontSize: 13,
                           color: Colors.black87,
                         ),
-                        decoration: _inputDecoration('Enter your email'),
+                        decoration: _inputDecoration('Enter your email').copyWith(
+                          suffixText: '@gmail.com',
+                          suffixStyle: const TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 13,
+                            color: Colors.black54,
+                          ),
+                        ),
                       ),
                     ),
 
@@ -238,8 +241,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
+                      children: const [
+                        Text(
                           'Already have an account? ',
                           style: TextStyle(
                             fontFamily: 'Poppins',
@@ -248,25 +251,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             color: Colors.black38,
                           ),
                         ),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const LoginPage(),
-                              ),
-                            );
-                          },
-                          child: const Text(
-                            'Log in',
-                            style: TextStyle(
-                              fontFamily: 'Poppins',
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700,
-                              color: brandRed,
-                            ),
-                          ),
-                        ),
+                        _HoverLogin(),
                       ],
                     ),
 
@@ -304,6 +289,51 @@ class _RegisterPageState extends State<RegisterPage> {
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
         borderSide: const BorderSide(color: Color(0xFFCCCCCC), width: 1),
+      ),
+    );
+  }
+}
+
+class _HoverLogin extends StatefulWidget {
+  const _HoverLogin();
+
+  @override
+  State<_HoverLogin> createState() => _HoverLoginState();
+}
+
+class _HoverLoginState extends State<_HoverLogin> {
+  bool _hover = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) => setState(() => _hover = true),
+      onExit: (_) => setState(() => _hover = false),
+      child: GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const LoginPage()),
+          );
+        },
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+          decoration: BoxDecoration(
+            color: _hover ? const Color(0xFFEAEAEA) : Colors.transparent,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: const Text(
+            'Log in',
+            style: TextStyle(
+              fontFamily: 'Poppins',
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+              color: Color(0xFFB71C1C),
+            ),
+          ),
+        ),
       ),
     );
   }

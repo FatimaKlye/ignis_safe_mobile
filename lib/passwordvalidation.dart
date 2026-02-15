@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'login.dart';
 
 class CreatePasswordPage extends StatefulWidget {
   final String email;
@@ -376,17 +377,25 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                   const SizedBox(height: 14),
 
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Text(
-                        'Already have an account? ',
-                        style: TextStyle(
-                          fontFamily: 'Poppins',
-                          fontSize: 12,
-                          color: Colors.black38,
-                        ),
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      'Already have an account? ',
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 12,
+                        color: Colors.black38,
                       ),
-                      Text(
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(builder: (_) => const LoginPage()),
+                          (route) => false,
+                        );
+                      },
+                      child: const Text(
                         'Log in',
                         style: TextStyle(
                           fontFamily: 'Poppins',
@@ -395,8 +404,10 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                           color: brandRed,
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
+                ),
+
 
                   const SizedBox(height: 10),
                 ],

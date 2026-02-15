@@ -26,6 +26,13 @@ flutter:
     - assets/login.png
     - assets/logo.png
     - assets/google.jpg
+    - assets/fire_onboard1.png
+    - assets/onboard2.png
+    - assets/onboard3.png
+    - assets/electrical.png
+    - assets/fire_ex.png
+    - assets/kitchen.png
+    - assets/bg.png
 
   fonts:
     - family: Poppins
