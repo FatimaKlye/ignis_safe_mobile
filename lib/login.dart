@@ -1,0 +1,420 @@
+import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'signup.dart';
+
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  static const Color brandRed = Color(0xFFB71C1C);
+  static const String _kSavedEmail = 'saved_login_email';
+
+  final supabase = Supabase.instance.client;
+
+  final _formKey = GlobalKey<FormState>();
+  final emailCtrl = TextEditingController();
+  final passCtrl = TextEditingController();
+
+  bool _isLoading = false;
+  bool _showPassword = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _restoreSavedEmail();
+  }
+
+  Future<void> _restoreSavedEmail() async {
+    final prefs = await SharedPreferences.getInstance();
+    final saved = prefs.getString(_kSavedEmail);
+    if (saved != null && saved.isNotEmpty) {
+      setState(() => emailCtrl.text = saved);
+    }
+  }
+
+  Future<void> _saveEmail(String email) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_kSavedEmail, email);
+  }
+
+  @override
+  void dispose() {
+    emailCtrl.dispose();
+    passCtrl.dispose();
+    super.dispose();
+  }
+
+  bool _isValidEmail(String s) {
+    final v = s.trim();
+    return RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(v);
+  }
+
+  String? _validateEmail(String? v) {
+    final value = (v ?? '').trim();
+    if (value.isEmpty) return 'Email is required';
+    if (!_isValidEmail(value)) return 'Enter a valid email';
+    return null;
+  }
+
+  String? _validatePassword(String? v) {
+    final value = v ?? '';
+    if (value.isEmpty) return 'Password is required';
+    if (value.length < 8) return 'Password must be at least 8 characters';
+    return null;
+  }
+
+  Future<void> _login() async {
+    final ok = _formKey.currentState?.validate() ?? false;
+    if (!ok) return;
+
+    final email = emailCtrl.text.trim();
+    final password = passCtrl.text;
+
+    setState(() => _isLoading = true);
+
+    try {
+      final res = await supabase.auth.signInWithPassword(
+        email: email,
+        password: password,
+      );
+
+      if (!mounted) return;
+
+      if (res.user != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Login successful.')),
+        );
+      }
+    } on AuthException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message)),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Unexpected error.')),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+  Future<void> _googleSignIn() async {
+    try {
+      await supabase.auth.signInWithOAuth(
+        OAuthProvider.google,
+        redirectTo: 'com.ignissafe://login-callback',
+      );
+    } on AuthException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message)),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Google sign-in failed.')),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final screenW = MediaQuery.of(context).size.width;
+
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 35.0),
+          child: Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 40),
+                        Image.asset(
+                          'assets/login.png',
+                          height: 250,
+                          width: screenW * 0.9,
+                          fit: BoxFit.contain,
+                        ),
+                        const SizedBox(height: 50),
+
+                        _inputLabel('EMAIL ADDRESS:'),
+                        _buildValidatedField(
+                          hint: 'Enter your email address',
+                          controller: emailCtrl,
+                          keyboardType: TextInputType.emailAddress,
+                          validator: _validateEmail,
+                          textInputAction: TextInputAction.next,
+                        ),
+
+                        const SizedBox(height: 25),
+
+                        _inputLabel('PASSWORD:'),
+                        _buildValidatedField(
+                          hint: 'Enter your password',
+                          controller: passCtrl,
+                          validator: _validatePassword,
+                          textInputAction: TextInputAction.done,
+                          isPassword: true,
+                          showPassword: _showPassword,
+                          suffixText: _showPassword ? 'HIDE' : 'SHOW',
+                          onSuffixTap: () =>
+                              setState(() => _showPassword = !_showPassword),
+                          onSubmitted: (_) => _isLoading ? null : _login(),
+                        ),
+
+                        const SizedBox(height: 40),
+                        _buildLoginButton(),
+                        const SizedBox(height: 20),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 10),
+              _buildFooter(),
+              const SizedBox(height: 20),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _inputLabel(String label) => Align(
+        alignment: Alignment.centerLeft,
+        child: Text(
+          label,
+          style: const TextStyle(
+            fontFamily: 'Poppins',
+            color: brandRed,
+            fontWeight: FontWeight.bold,
+            fontSize: 13,
+          ),
+        ),
+      );
+
+  Widget _buildValidatedField({
+    required String hint,
+    required TextEditingController controller,
+    required String? Function(String?) validator,
+    TextInputType? keyboardType,
+    TextInputAction? textInputAction,
+    ValueChanged<String>? onSubmitted,
+    bool isPassword = false,
+    bool showPassword = false,
+    String? suffixText,
+    VoidCallback? onSuffixTap,
+  }) {
+    final obscure = isPassword && !showPassword;
+
+    return FormField<String>(
+      validator: (_) => validator(controller.text),
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      builder: (state) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              margin: const EdgeInsets.only(top: 8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(15),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 8,
+                    offset: Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: TextField(
+                controller: controller,
+                keyboardType: keyboardType,
+                textInputAction: textInputAction,
+                onSubmitted: onSubmitted,
+                obscureText: obscure,
+                style: const TextStyle(fontFamily: 'Poppins'),
+                onChanged: (_) {
+                  state.didChange(controller.text);
+                  if (controller == emailCtrl) {
+                    _saveEmail(controller.text);
+                  }
+                },
+                decoration: InputDecoration(
+                  hintText: hint,
+                  hintStyle: const TextStyle(fontFamily: 'Poppins'),
+                  border: InputBorder.none,
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+                  suffixIcon: suffixText != null
+                      ? InkWell(
+                          onTap: onSuffixTap,
+                          child: Padding(
+                            padding: const EdgeInsets.all(15),
+                            child: Text(
+                              suffixText,
+                              style: const TextStyle(
+                                fontFamily: 'Poppins',
+                                color: brandRed,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        )
+                      : null,
+                ),
+              ),
+            ),
+            if (state.errorText != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 6, left: 10),
+                child: Text(
+                  state.errorText!,
+                  style: const TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 12,
+                    color: Colors.red,
+                    height: 1.2,
+                  ),
+                ),
+              ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildLoginButton() => SizedBox(
+        width: double.infinity,
+        height: 50,
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: brandRed,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+          onPressed: _isLoading ? null : _login,
+          child: _isLoading
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : const Text(
+                  'Login',
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+        ),
+      );
+
+    Widget _buildFooter() => Column(
+      children: [
+        const Text(
+          'or sign up using',
+          style: TextStyle(
+            fontFamily: 'Poppins',
+            color: Colors.grey,
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+          ),
+        ),// 
+        const SizedBox(height: 20), 
+        GestureDetector(
+          onTap: _googleSignIn,
+          child: Image.asset(
+            'assets/google.jpg',
+            height: 50,
+            fit: BoxFit.contain,
+          ),
+        ),
+
+        const SizedBox(height:20),
+
+        // TERMS
+        const Text(
+          'Terms and Conditions and Privacy Policy.',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontFamily: 'Poppins',
+            color: brandRed,
+            fontWeight: FontWeight.bold,
+            fontSize: 12,
+          ),
+        ),
+
+        const SizedBox(height: 16),
+
+        // OR IN THE MIDDLE
+        Row(
+          children: const [
+            Expanded(child: Divider(thickness: 1)),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 12),
+              child: Text(
+                'OR',
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  color: Colors.grey,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            Expanded(child: Divider(thickness: 1)),
+          ],
+        ),
+
+        const SizedBox(height: 10),
+
+        // DON'T HAVE
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              "Don't have an account? ",
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                fontSize: 13,
+                color: Colors.grey,
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const RegisterPage()),
+                );
+              },
+              child: const Text(
+                'Sign Up',
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  color: brandRed,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+
+}
