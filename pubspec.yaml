@@ -33,6 +33,10 @@ flutter:
     - assets/fire_ex.png
     - assets/kitchen.png
     - assets/bg.png
+    - assets/module1_fire.png
+    - assets/m1_fire.png
+    - assets/pass.png
+    
 
   fonts:
     - family: Poppins

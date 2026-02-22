@@ -1,9 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'signup.dart';
-import 'onboarding1.dart'; // <-- add this (your onboarding UI)
+import 'learning_materials.dart'; 
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -16,7 +18,7 @@ class _LoginPageState extends State<LoginPage> {
   static const Color brandRed = Color(0xFFB71C1C);
   static const String _kSavedEmail = 'saved_login_email';
 
-  final supabase = Supabase.instance.client;
+  final SupabaseClient supabase = Supabase.instance.client;
 
   final _formKey = GlobalKey<FormState>();
   final emailCtrl = TextEditingController();
@@ -25,15 +27,45 @@ class _LoginPageState extends State<LoginPage> {
   bool _isLoading = false;
   bool _showPassword = false;
 
+  StreamSubscription<AuthState>? _authSub;
+
   @override
   void initState() {
     super.initState();
     _restoreSavedEmail();
+    _listenAuthChanges();
+    _routeIfAlreadySignedIn();
+  }
+
+  void _listenAuthChanges() {
+    _authSub = supabase.auth.onAuthStateChange.listen((data) {
+      final event = data.event;
+      final session = data.session;
+
+      if (!mounted) return;
+
+      // Google OAuth completes asynchronously; this event is the reliable signal.
+      if (event == AuthChangeEvent.signedIn && session != null) {
+        _goNext();
+      }
+    });
+  }
+
+  void _routeIfAlreadySignedIn() {
+    final session = supabase.auth.currentSession;
+    if (session != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        _goNext();
+      });
+    }
   }
 
   Future<void> _restoreSavedEmail() async {
     final prefs = await SharedPreferences.getInstance();
     final saved = prefs.getString(_kSavedEmail);
+    if (!mounted) return;
+
     if (saved != null && saved.isNotEmpty) {
       setState(() => emailCtrl.text = saved);
     }
@@ -46,9 +78,19 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   void dispose() {
+    _authSub?.cancel();
     emailCtrl.dispose();
     passCtrl.dispose();
     super.dispose();
+  }
+
+  void _goNext() {
+
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (_) => const LearningMaterialsPage()),
+      (route) => false,
+    );
   }
 
   bool _isValidEmail(String s) {
@@ -91,16 +133,7 @@ class _LoginPageState extends State<LoginPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Login successful.')),
         );
-
-        // go to onboarding (remove login from back stack)
-        Future.delayed(const Duration(milliseconds: 600), () {
-          if (!mounted) return;
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (_) => const OnboardingOnePage()),
-            (route) => false,
-          );
-        });
+        _goNext();
       }
     } on AuthException catch (e) {
       if (!mounted) return;
@@ -119,6 +152,8 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> _googleSignIn() async {
     try {
+      // NOTE: This does NOT complete the login immediately.
+      // The app must receive the redirect/deeplink, then Supabase fires signedIn event.
       await supabase.auth.signInWithOAuth(
         OAuthProvider.google,
         redirectTo: 'com.ignissafe://login-callback',
