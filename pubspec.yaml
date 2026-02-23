@@ -36,6 +36,11 @@ flutter:
     - assets/module1_fire.png
     - assets/m1_fire.png
     - assets/pass.png
+    - assets/class_a.png
+    - assets/class_b.png
+    - assets/class_c.png
+    - assets/class_d.png
+    - assets/class_k.png
     
 
   fonts:

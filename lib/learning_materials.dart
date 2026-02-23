@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'module1.dart';
 import 'navbar.dart';
 
@@ -11,6 +12,7 @@ class LearningMaterialsPage extends StatefulWidget {
 
 class _LearningMaterialsPageState extends State<LearningMaterialsPage> {
   int _selectedIndex = 0;
+  static const String _kLastTab = 'last_tab_index';
 
   final List<Widget> _pages = const [
     _LearningMaterialsContent(),
@@ -26,8 +28,26 @@ class _LearningMaterialsPageState extends State<LearningMaterialsPage> {
     Icons.person_outline_rounded,
   ];
 
+  @override
+  void initState() {
+    super.initState();
+    _restoreLastTab();
+  }
+
+  Future<void> _restoreLastTab() async {
+    final prefs = await SharedPreferences.getInstance();
+    final saved = prefs.getInt(_kLastTab) ?? 0;
+    if (mounted) setState(() => _selectedIndex = saved);
+  }
+
+  Future<void> _saveLastTab(int index) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_kLastTab, index);
+  }
+
   void _onItemTapped(int index) {
     setState(() => _selectedIndex = index);
+    _saveLastTab(index);
   }
 
   @override
@@ -38,7 +58,6 @@ class _LearningMaterialsPageState extends State<LearningMaterialsPage> {
         index: _selectedIndex,
         children: _pages,
       ),
-
       bottomNavigationBar: FloatingNavBar(
         selectedIndex: _selectedIndex,
         onItemTapped: _onItemTapped,
@@ -85,36 +104,36 @@ class _LearningMaterialsContentState extends State<_LearningMaterialsContent> {
 
   @override
   Widget build(BuildContext context) {
+    final q = searchQuery.trim().toLowerCase();
     final filtered = modules.where((m) {
-      final q = searchQuery.trim().toLowerCase();
       if (q.isEmpty) return true;
       return m.title.toLowerCase().contains(q) ||
           m.moduleLabel.toLowerCase().contains(q);
     }).toList();
 
-   return Stack(
-  children: [
-    Positioned(
-      top: 0,
-      left: 0,
-      right: 0,
-      height: 900,
-      child: Image.asset(
-        'assets/bg.png',
-        fit: BoxFit.cover,
-      ),
-    ),
+    return Stack(
+      children: [
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          height: 900,
+          child: Image.asset(
+            'assets/bg.png',
+            fit: BoxFit.cover,
+          ),
+        ),
 
-
+        // ✅ FIXED header/search + scrollable cards only
         SafeArea(
-          child: SingleChildScrollView(
+          child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 14),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 20),
 
-                // Header: avatar + welcome + name
+                // Header: avatar + welcome + name (FIXED)
                 Row(
                   children: [
                     const CircleAvatar(
@@ -149,7 +168,7 @@ class _LearningMaterialsContentState extends State<_LearningMaterialsContent> {
 
                 const SizedBox(height: 30),
 
-                // Big title (centered)
+                // Big title (FIXED)
                 const Center(
                   child: Text(
                     "Learning Materials",
@@ -163,7 +182,7 @@ class _LearningMaterialsContentState extends State<_LearningMaterialsContent> {
 
                 const SizedBox(height: 30),
 
-                // Search bar
+                // Search bar (FIXED)
                 Container(
                   height: 50,
                   padding: const EdgeInsets.symmetric(horizontal: 14),
@@ -197,31 +216,37 @@ class _LearningMaterialsContentState extends State<_LearningMaterialsContent> {
                   ),
                 ),
 
-                const SizedBox(height: 45),
+                const SizedBox(height: 30),
+                
 
-                // Cards
-                for (final m in filtered) ...[
-                  _ModuleCard(
-                    moduleLabel: m.moduleLabel,
-                    title: m.title,
-                    description: m.description,
-                    asset: m.asset,
-                    onPressed: () {
-                      // Replace these routes with your real pages
-                      if (m.moduleLabel == "MODULE 1") {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const LearningMaterialPage(),
-                          ),
-                        );
-                      }
+                Expanded(
+                  child: ListView.separated(
+                    padding: EdgeInsets.only(
+                    bottom: 5 + MediaQuery.of(context).padding.bottom,
+                    ),
+                    itemCount: filtered.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 25),
+                    itemBuilder: (context, index) {
+                      final m = filtered[index];
+                      return _ModuleCard(
+                        moduleLabel: m.moduleLabel,
+                        title: m.title,
+                        description: m.description,
+                        asset: m.asset,
+                        onPressed: () {
+                          if (m.moduleLabel == "MODULE 1") {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const LearningMaterialPage(),
+                              ),
+                            );
+                          }
+                        },
+                      );
                     },
                   ),
-                  const SizedBox(height: 25),
-                ],
-
-                const SizedBox(height: 90), // spacing above nav bar
+                ),
               ],
             ),
           ),
@@ -283,7 +308,7 @@ class _ModuleCard extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Left image (square like screenshot)
+              // Left image
               Container(
                 width: 90,
                 height: 90,
@@ -330,7 +355,9 @@ class _ModuleCard extends StatelessWidget {
                             backgroundColor: const Color(0xFFB11217),
                             elevation: 6,
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 0),
+                              horizontal: 12,
+                              vertical: 0,
+                            ),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(6),
                             ),
@@ -354,7 +381,7 @@ class _ModuleCard extends StatelessWidget {
           ),
         ),
 
-        // Module pill (top-left, outside card)
+        // Module pill
         Positioned(
           top: -14,
           left: 10,
@@ -368,7 +395,7 @@ class _ModuleCard extends StatelessWidget {
                   color: Colors.black.withOpacity(0.28),
                   blurRadius: 8,
                   offset: const Offset(0, 4),
-                )
+                ),
               ],
             ),
             child: Text(
