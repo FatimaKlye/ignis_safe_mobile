@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'module1.dart';
+import 'module2.dart';
 import 'navbar.dart';
 
 class LearningMaterialsPage extends StatefulWidget {
@@ -239,6 +240,13 @@ class _LearningMaterialsContentState extends State<_LearningMaterialsContent> {
                               context,
                               MaterialPageRoute(
                                 builder: (_) => const LearningMaterialPage(),
+                              ),
+                            );
+                          } else if (m.moduleLabel == "MODULE 2") {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const LearningMaterialElectricalPage(),
                               ),
                             );
                           }
