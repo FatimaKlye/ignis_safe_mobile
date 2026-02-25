@@ -117,50 +117,6 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
     );
   }
 
-  // ---------- OPTION B: Modal bottom sheet with blur + soft shadow ----------
-  Future<void> _showBottomSheetPopup(_ModuleItem m, ModuleProgress progress) async {
-    if (!mounted) return;
-
-    await showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: false,
-      barrierColor: Colors.black.withOpacity(0.35),
-      builder: (_) {
-        return Stack(
-          children: [
-            // blur background behind sheet
-            BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-              child: Container(color: Colors.transparent),
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: _ModuleActionPopup(
-                moduleLabel: m.moduleLabel,
-                moduleTitle: m.title,
-                progress: progress,
-                onClose: () => Navigator.pop(context),
-                onPreTap: () {
-                  Navigator.pop(context);
-                  _goToPre(m);
-                },
-                onSimTap: () {
-                  Navigator.pop(context);
-                  _goToSim(m);
-                },
-                onPostTap: () {
-                  Navigator.pop(context);
-                  _goToPost(m);
-                },
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   void _goToPre(_ModuleItem m) {
     if (m.moduleId == "1") {
       Navigator.push(

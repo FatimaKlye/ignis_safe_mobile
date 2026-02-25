@@ -241,7 +241,7 @@ class _FloatingNavBarState extends State<FloatingNavBar>
   }
 
   String _getLabel(int index) {
-    const labels = ['Learn', 'Simulation', 'About', 'Profile'];
+    const labels = ['Learn', 'Simulation', 'Profile', 'About'];
     return index < labels.length ? labels[index] : '';
   }
 }

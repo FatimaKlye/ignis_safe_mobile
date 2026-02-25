@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'navbar.dart';
 import 'learning_materials.dart';
 import 'firemodules.dart';
+import 'profile.dart';
 
 class IgnisHomePage extends StatefulWidget {
   const IgnisHomePage({super.key, this.initialTabIndex = 0});
@@ -22,15 +23,16 @@ class _IgnisHomePageState extends State<IgnisHomePage> {
   final List<IconData> _icons = const [
     Icons.menu_book_rounded,
     Icons.view_in_ar_rounded,
-    Icons.info_outline_rounded,
     Icons.person_outline_rounded,
+    Icons.info_outline_rounded,
   ];
 
   late final List<Widget> _pages = const [
     LearningMaterialsTab(), // content-only
-    FireMaterialsTab(),     // content-only
+    FireMaterialsTab(),
+    ProfilePage(),     // content-only
     Center(child: Text("About Us Page")),
-    Center(child: Text("Profile Page")),
+    
   ];
 
   @override

@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'signup.dart';
-import 'learning_materials.dart'; 
+import 'home.dart';
 import 'terms.dart';
 
 class LoginPage extends StatefulWidget {
@@ -86,10 +86,9 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _goNext() {
-
     Navigator.pushAndRemoveUntil(
       context,
-      MaterialPageRoute(builder: (_) => const LearningMaterialsTab()),
+      MaterialPageRoute(builder: (_) => const IgnisHomePage()),
       (route) => false,
     );
   }

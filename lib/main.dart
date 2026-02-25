@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'login.dart';
-import 'signup.dart';
-import 'home.dart'; // <-- contains IgnisHomePage (navbar shell)
+import 'home.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,13 +27,14 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  Locale _locale = const Locale('en');
   StreamSubscription<AuthState>? _authSub;
 
   @override
   void initState() {
     super.initState();
 
-    // Rebuild app when auth changes (login/logout)
+    // 🔥 This makes logout automatically return to LoginPage
     _authSub = supabase.auth.onAuthStateChange.listen((_) {
       if (mounted) setState(() {});
     });
@@ -57,15 +58,21 @@ class _MyAppState extends State<MyApp> {
         useMaterial3: true,
       ),
 
-      // IMPORTANT: Let home decide what to show.
-      home: session == null ? const LoginPage() : const IgnisHomePage(),
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('en'),
+        Locale('tl'),
+      ],
+      locale: _locale,
 
-      // Keep routes for explicit navigation if you want them.
-      routes: {
-        '/login': (_) => const LoginPage(),
-        '/signup': (_) => const RegisterPage(),
-        '/home': (_) => const IgnisHomePage(),
-      },
+      // ✅ Automatically switches screen when user logs in/out
+      home: session == null
+          ? const LoginPage()
+          : const IgnisHomePage(),
     );
   }
 }

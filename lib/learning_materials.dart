@@ -48,156 +48,151 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
           m.moduleLabel.toLowerCase().contains(q);
     }).toList();
 
-    // ✅ NO Scaffold, NO navbar here (home.dart owns them)
-    return Stack(
-      children: [
-        Positioned(
-          top: 0,
-          left: 0,
-          right: 0,
-          height: 900,
-          child: Image.asset('assets/bg.png', fit: BoxFit.cover),
-        ),
-        SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 14),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 20),
-
-                Row(
-                  children: [
-                    const CircleAvatar(
-                      radius: 22,
-                      backgroundImage: AssetImage("assets/avatar.png"),
-                    ),
-                    const SizedBox(width: 10),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text(
-                          "Hi, Andrei Quias",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
+    return Material(
+      color: Colors.transparent,
+      child: Stack(
+        children: [
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 900,
+            child: Image.asset('assets/bg.png', fit: BoxFit.cover),
+          ),
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 14),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 20),
+                  Row(
+                    children: [
+                      const CircleAvatar(
+                        radius: 22,
+                        backgroundImage: AssetImage("assets/avatar.png"),
+                      ),
+                      const SizedBox(width: 10),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: const [
+                          Text(
+                            "Hi, Andrei Quias",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
+                          SizedBox(height: 2),
+                          Text(
+                            "Welcome to Ignis Safe",
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 30),
+                  const Center(
+                    child: Text(
+                      "Learning Materials",
+                      style: TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFF222222),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+                  Container(
+                    height: 50,
+                    padding: const EdgeInsets.symmetric(horizontal: 14),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(26),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.12),
+                          blurRadius: 12,
+                          offset: const Offset(0, 5),
                         ),
-                        SizedBox(height: 2),
-                        Text(
-                          "Welcome to Ignis Safe",
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.search, color: Colors.grey),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: TextField(
+                            onChanged: (v) => setState(() => searchQuery = v),
+                            decoration: const InputDecoration(
+                              hintText: "Search",
+                              hintStyle: TextStyle(color: Colors.grey),
+                              border: InputBorder.none,
+                              isDense: true,
+                            ),
                           ),
                         ),
                       ],
                     ),
-                  ],
-                ),
-
-                const SizedBox(height: 30),
-
-                const Center(
-                  child: Text(
-                    "Learning Materials",
-                    style: TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.w800,
-                      color: Color(0xFF222222),
+                  ),
+                  const SizedBox(height: 30),
+                  Expanded(
+                    child: ListView.separated(
+                      padding: EdgeInsets.only(
+                        bottom: 5 + MediaQuery.of(context).padding.bottom,
+                      ),
+                      itemCount: filtered.length,
+                      separatorBuilder: (_, __) => const SizedBox(height: 25),
+                      itemBuilder: (context, index) {
+                        final m = filtered[index];
+                        return _ModuleCard(
+                          moduleLabel: m.moduleLabel,
+                          title: m.title,
+                          description: m.description,
+                          asset: m.asset,
+                          onPressed: () {
+                            if (m.moduleLabel == "MODULE 1") {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      const LearningMaterialExtinguisherPage(),
+                                ),
+                              );
+                            } else if (m.moduleLabel == "MODULE 2") {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      const LearningMaterialElectricalPage(),
+                                ),
+                              );
+                            } else {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      const LearningMaterialKitchenPage(),
+                                ),
+                              );
+                            }
+                          },
+                        );
+                      },
                     ),
                   ),
-                ),
-
-                const SizedBox(height: 30),
-
-                Container(
-                  height: 50,
-                  padding: const EdgeInsets.symmetric(horizontal: 14),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(26),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.12),
-                        blurRadius: 12,
-                        offset: const Offset(0, 5),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.search, color: Colors.grey),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: TextField(
-                          onChanged: (v) => setState(() => searchQuery = v),
-                          decoration: const InputDecoration(
-                            hintText: "Search",
-                            hintStyle: TextStyle(color: Colors.grey),
-                            border: InputBorder.none,
-                            isDense: true,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 30),
-
-                Expanded(
-                  child: ListView.separated(
-                    padding: EdgeInsets.only(
-                      bottom: 5 + MediaQuery.of(context).padding.bottom,
-                    ),
-                    itemCount: filtered.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 25),
-                    itemBuilder: (context, index) {
-                      final m = filtered[index];
-                      return _ModuleCard(
-                        moduleLabel: m.moduleLabel,
-                        title: m.title,
-                        description: m.description,
-                        asset: m.asset,
-                        onPressed: () {
-                          if (m.moduleLabel == "MODULE 1") {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) =>
-                                    const LearningMaterialExtinguisherPage(),
-                              ),
-                            );
-                          } else if (m.moduleLabel == "MODULE 2") {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) =>
-                                    const LearningMaterialElectricalPage(),
-                              ),
-                            );
-                          } else {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) =>
-                                    const LearningMaterialKitchenPage(),
-                              ),
-                            );
-                          }
-                        },
-                      );
-                    },
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

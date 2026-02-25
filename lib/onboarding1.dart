@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'onboarding2.dart';
-import 'login.dart';
 import 'learning_materials.dart';
 
 class OnboardingOnePage extends StatelessWidget {
