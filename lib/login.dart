@@ -6,6 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'signup.dart';
 import 'learning_materials.dart'; 
+import 'terms.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -88,7 +89,7 @@ class _LoginPageState extends State<LoginPage> {
 
     Navigator.pushAndRemoveUntil(
       context,
-      MaterialPageRoute(builder: (_) => const LearningMaterialsPage()),
+      MaterialPageRoute(builder: (_) => const LearningMaterialsTab()),
       (route) => false,
     );
   }
@@ -188,14 +189,50 @@ class _LoginPageState extends State<LoginPage> {
                     key: _formKey,
                     child: Column(
                       children: [
-                        const SizedBox(height: 40),
+                        const SizedBox(height: 10),
                         Image.asset(
-                          'assets/login.png',
-                          height: 250,
-                          width: screenW * 0.9,
-                          fit: BoxFit.contain,
-                        ),
-                        const SizedBox(height: 50),
+                      'assets/logo.png',
+                      height: 235,
+                      width: screenW * 0.9,
+                      fit: BoxFit.contain,
+                    ),
+
+                    const SizedBox(height: 5),
+
+                    const Text(
+                      'Login',
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 28,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.black87,
+                      ),
+                    ),
+
+                    const SizedBox(height: 8),
+
+                    Container(
+                      height: 2,
+                      width: 150,
+                      decoration: BoxDecoration(
+                        color: brandRed,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+
+                    const SizedBox(height: 8),
+
+                    const Text(
+                      'Welcome to, IGNIS SAFE',
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black38,
+                      ),
+                    ),
+
+                    const SizedBox(height: 26),
 
                         _inputLabel('EMAIL ADDRESS:'),
                         _buildValidatedField(
@@ -394,14 +431,26 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
           const SizedBox(height: 20),
-          const Text(
-            'Terms and Conditions and Privacy Policy.',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontFamily: 'Poppins',
-              color: brandRed,
-              fontWeight: FontWeight.bold,
-              fontSize: 12,
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const TermsAndConditionsPage(),
+                ),
+              );
+            },
+            child: const Text(
+              'Terms and Conditions and Privacy Policy.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                color: brandRed,
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+                decoration: TextDecoration.none,
+                decorationColor: Color(0xFFB71C1C),
+              ),
             ),
           ),
           const SizedBox(height: 16),

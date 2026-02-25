@@ -92,8 +92,6 @@ class _LearningMaterialElectricalPageState
         curve: Curves.easeOutCubic,
       );
     } else {
-      // TODO: Route to Module 2 pre-test page
-      // Navigator.push(context, MaterialPageRoute(builder: (_) => const Module2PreTestPage()));
     }
   }
 
@@ -119,125 +117,132 @@ class _LearningMaterialElectricalPageState
               children: [
                 const SizedBox(height: 5),
 
+               
                 // ===== FIXED HEADER =====
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      IconButton(
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
-                        icon: const Icon(Icons.close, color: Colors.white),
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                      const SizedBox(height: 5),
-                      const Center(
-                        child: Text(
-                          "Learning Material",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold,
-                          ),
+              Padding(
+                padding: const EdgeInsets.only(left: 9, right: 25),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    IconButton(
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                      icon: const Icon(Icons.close, color: Colors.white),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+
+                    const SizedBox(height: 5),
+
+                    const Center(
+                      child: Text(
+                        "Learning Material",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(height: 15),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 18,
-                              vertical: 10,
-                            ),
-                            decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: [accent, accent2],
-                              ),
-                              borderRadius: BorderRadius.circular(10),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.18),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 6),
-                                ),
-                              ],
-                            ),
-                            child: const Row(
-                              mainAxisSize: MainAxisSize.min,
+                    ),
+
+                    const SizedBox(height: 15),
+
+                          Padding(
+                            padding: const EdgeInsets.only(left: 16), // adjust 12/16/20/24
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Icon(
-                                  Icons.bolt_rounded,
-                                  color: Colors.white,
-                                  size: 18,
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 18,
+                                    vertical: 10,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    gradient: const LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                      colors: [accent, accent2],
+                                    ),
+                                    borderRadius: BorderRadius.circular(10),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.18),
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 6),
+                                      ),
+                                    ],
+                                  ),
+                                  child: const Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(Icons.bolt_rounded, color: Colors.white, size: 18),
+                                      SizedBox(width: 8),
+                                      Text(
+                                        "MODULE 2",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                                SizedBox(width: 8),
-                                Text(
-                                  "MODULE 2",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
+
+                                const SizedBox(width: 15),
+
+                                const Expanded(
+                                  child: Text(
+                                    "Electrical Fire: Causes, Safe Actions, and Prevention",
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                          const SizedBox(width: 15),
-                          const Flexible(
-                            child: Text(
-                              "Electrical Fire: Causes, Safe Actions, and Prevention",
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.w600,
+
+                          const SizedBox(height: 14),
+
+                          // ===== PROGRESS BAR (small, fixed, on top) =====
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(999),
+                            child: SizedBox(
+                              height: 6,
+                              child: LinearProgressIndicator(
+                                value: _progress,
+                                backgroundColor: Colors.white.withOpacity(0.25),
+                                valueColor: const AlwaysStoppedAnimation(accent2),
                               ),
                             ),
                           ),
+
+                          const SizedBox(height: 10),
+
+                          // ===== PAGE DOTS =====
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: List.generate(3, (i) {
+                              final active = i == _pageIndex;
+                              return AnimatedContainer(
+                                duration: const Duration(milliseconds: 200),
+                                margin: const EdgeInsets.symmetric(horizontal: 4),
+                                width: active ? 18 : 8,
+                                height: 8,
+                                decoration: BoxDecoration(
+                                  color: active
+                                      ? Colors.white
+                                      : Colors.white.withOpacity(0.35),
+                                  borderRadius: BorderRadius.circular(999),
+                                ),
+                              );
+                            }),
+                          ),
+
+                          const SizedBox(height: 14),
                         ],
                       ),
-                      const SizedBox(height: 14),
-
-                      // ===== PROGRESS BAR (small, fixed, on top) =====
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(999),
-                        child: SizedBox(
-                          height: 6,
-                          child: LinearProgressIndicator(
-                            value: _progress,
-                            backgroundColor: Colors.white.withOpacity(0.25),
-                            valueColor: const AlwaysStoppedAnimation(accent2),
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 10),
-
-                      // ===== PAGE DOTS =====
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: List.generate(3, (i) {
-                          final active = i == _pageIndex;
-                          return AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
-                            margin: const EdgeInsets.symmetric(horizontal: 4),
-                            width: active ? 18 : 8,
-                            height: 8,
-                            decoration: BoxDecoration(
-                              color: active
-                                  ? Colors.white
-                                  : Colors.white.withOpacity(0.35),
-                              borderRadius: BorderRadius.circular(999),
-                            ),
-                          );
-                        }),
-                      ),
-
-                      const SizedBox(height: 14),
-                    ],
-                  ),
-                ),
+                    ),
 
                 // ===== PAGE VIEW (scroll per page, progress unlock) =====
                 Expanded(

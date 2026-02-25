@@ -86,7 +86,7 @@ class OnboardingOnePage extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const LearningMaterialsPage(),
+                            builder: (context) => const LearningMaterialsTab(),
                           ),
                         );
                       },

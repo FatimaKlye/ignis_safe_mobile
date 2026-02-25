@@ -1,82 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
 import 'module1.dart';
 import 'module2.dart';
+import 'module3.dart';
 import 'navbar.dart';
 
-class LearningMaterialsPage extends StatefulWidget {
-  const LearningMaterialsPage({super.key});
+class LearningMaterialsTab extends StatefulWidget {
+  const LearningMaterialsTab({super.key});
 
   @override
-  State<LearningMaterialsPage> createState() => _LearningMaterialsPageState();
+  State<LearningMaterialsTab> createState() => _LearningMaterialsTabState();
 }
 
-class _LearningMaterialsPageState extends State<LearningMaterialsPage> {
-  int _selectedIndex = 0;
-  static const String _kLastTab = 'last_tab_index';
-
-  final List<Widget> _pages = const [
-    _LearningMaterialsContent(),
-    Center(child: Text("3D Simulation Page")),
-    Center(child: Text("About Us Page")),
-    Center(child: Text("Profile Page")),
-  ];
-
-  final List<IconData> _icons = const [
-    Icons.menu_book_rounded,
-    Icons.view_in_ar_rounded,
-    Icons.info_outline_rounded,
-    Icons.person_outline_rounded,
-  ];
-
-  @override
-  void initState() {
-    super.initState();
-    _restoreLastTab();
-  }
-
-  Future<void> _restoreLastTab() async {
-    final prefs = await SharedPreferences.getInstance();
-    final saved = prefs.getInt(_kLastTab) ?? 0;
-    if (mounted) setState(() => _selectedIndex = saved);
-  }
-
-  Future<void> _saveLastTab(int index) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt(_kLastTab, index);
-  }
-
-  void _onItemTapped(int index) {
-    setState(() => _selectedIndex = index);
-    _saveLastTab(index);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: _pages,
-      ),
-      bottomNavigationBar: FloatingNavBar(
-        selectedIndex: _selectedIndex,
-        onItemTapped: _onItemTapped,
-        icons: _icons,
-      ),
-    );
-  }
-}
-
-class _LearningMaterialsContent extends StatefulWidget {
-  const _LearningMaterialsContent();
-
-  @override
-  State<_LearningMaterialsContent> createState() =>
-      _LearningMaterialsContentState();
-}
-
-class _LearningMaterialsContentState extends State<_LearningMaterialsContent> {
+class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
   String searchQuery = "";
 
   final List<_ModuleItem> modules = const [
@@ -112,6 +48,7 @@ class _LearningMaterialsContentState extends State<_LearningMaterialsContent> {
           m.moduleLabel.toLowerCase().contains(q);
     }).toList();
 
+    // ✅ NO Scaffold, NO navbar here (home.dart owns them)
     return Stack(
       children: [
         Positioned(
@@ -119,13 +56,8 @@ class _LearningMaterialsContentState extends State<_LearningMaterialsContent> {
           left: 0,
           right: 0,
           height: 900,
-          child: Image.asset(
-            'assets/bg.png',
-            fit: BoxFit.cover,
-          ),
+          child: Image.asset('assets/bg.png', fit: BoxFit.cover),
         ),
-
-        // ✅ FIXED header/search + scrollable cards only
         SafeArea(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 14),
@@ -134,7 +66,6 @@ class _LearningMaterialsContentState extends State<_LearningMaterialsContent> {
               children: [
                 const SizedBox(height: 20),
 
-                // Header: avatar + welcome + name (FIXED)
                 Row(
                   children: [
                     const CircleAvatar(
@@ -169,7 +100,6 @@ class _LearningMaterialsContentState extends State<_LearningMaterialsContent> {
 
                 const SizedBox(height: 30),
 
-                // Big title (FIXED)
                 const Center(
                   child: Text(
                     "Learning Materials",
@@ -183,7 +113,6 @@ class _LearningMaterialsContentState extends State<_LearningMaterialsContent> {
 
                 const SizedBox(height: 30),
 
-                // Search bar (FIXED)
                 Container(
                   height: 50,
                   padding: const EdgeInsets.symmetric(horizontal: 14),
@@ -218,12 +147,11 @@ class _LearningMaterialsContentState extends State<_LearningMaterialsContent> {
                 ),
 
                 const SizedBox(height: 30),
-                
 
                 Expanded(
                   child: ListView.separated(
                     padding: EdgeInsets.only(
-                    bottom: 5 + MediaQuery.of(context).padding.bottom,
+                      bottom: 5 + MediaQuery.of(context).padding.bottom,
                     ),
                     itemCount: filtered.length,
                     separatorBuilder: (_, __) => const SizedBox(height: 25),
@@ -239,14 +167,24 @@ class _LearningMaterialsContentState extends State<_LearningMaterialsContent> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => const LearningMaterialPage(),
+                                builder: (_) =>
+                                    const LearningMaterialExtinguisherPage(),
                               ),
                             );
                           } else if (m.moduleLabel == "MODULE 2") {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => const LearningMaterialElectricalPage(),
+                                builder: (_) =>
+                                    const LearningMaterialElectricalPage(),
+                              ),
+                            );
+                          } else {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    const LearningMaterialKitchenPage(),
                               ),
                             );
                           }
@@ -298,7 +236,6 @@ class _ModuleCard extends StatelessWidget {
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        // Card
         Container(
           padding: const EdgeInsets.fromLTRB(14, 18, 14, 14),
           decoration: BoxDecoration(
@@ -316,7 +253,6 @@ class _ModuleCard extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Left image
               Container(
                 width: 90,
                 height: 90,
@@ -326,10 +262,7 @@ class _ModuleCard extends StatelessWidget {
                 ),
                 child: Image.asset(asset, fit: BoxFit.contain),
               ),
-
               const SizedBox(width: 12),
-
-              // Text + button
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -388,8 +321,6 @@ class _ModuleCard extends StatelessWidget {
             ],
           ),
         ),
-
-        // Module pill
         Positioned(
           top: -14,
           left: 10,
