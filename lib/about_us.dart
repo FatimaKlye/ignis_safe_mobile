@@ -619,7 +619,7 @@ class _TeamCard extends StatelessWidget {
         email: "fatimaklyesierra081005@gmail.com",
         bio:
             "Manages mobile application & databases and supports project coordination. She also serves as an Assistant Project Manager, helping ensure timelines and deliverables are met efficiently.",
-        asset: "assets/dev_fatima.png",
+        asset: "assets/dev_fatima1.jpg",
       ),
       _TeamMember(
         fullName: "ANDREI C. QUIAS",
@@ -629,10 +629,10 @@ class _TeamCard extends StatelessWidget {
         email: "",
         bio:
             "Builds interactive and immersive applications. He also serves as a Project Manager, overseeing planning, coordination, and timely delivery of projects.",
-        asset: "assets/dev_andrei.png",
+        asset: "assets/dev_andrei.jpg",
       ),
       _TeamMember(
-        fullName: "RAVE PAULO SIERRA",
+        fullName: "RAVE PAULO PIOLO V. SIERRA",
         displayFirst: "RAVE",
         displayLast: "SIERRA",
         role: "WEBSITE DEVELOPER",
@@ -649,7 +649,7 @@ class _TeamCard extends StatelessWidget {
         email: "",
         bio:
             "Ensures that all project records, reports, and required materials are accurate, organized, and properly maintained to support compliance and operational efficiency.",
-        asset: "assets/dev_sarah.png",
+        asset: "assets/dev_sarah.jpg",
       ),
       _TeamMember(
         fullName: "MARICIS PUNZALAN",
@@ -688,6 +688,28 @@ class _TeamCard extends StatelessWidget {
                 fontWeight: FontWeight.w900,
                 color: Color(0xFFB11217),
                 letterSpacing: 0.4,
+              ),
+            ),
+              Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF9F9F9),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: const Color(0xFFEDEDED)),
+              ),
+              child: const Text(
+                "We are the Ignis Safe Team, fourth-year BSIT students from National University – Dasmariñas.\n\n"
+                "Our group is developing a technology-driven fire safety education platform as part of our capstone project.\n\n "
+                "We focus on building interactive, user-centered solutions that promote fire awareness, prevention, and proper emergency response. "
+                "Our goal is to create a practical system with real-world relevance and community impact.",
+                textAlign: TextAlign.justify,
+                style: TextStyle(
+                  fontSize: 12.8,
+                  height: 1.35,
+                  color: Color(0xFF2D2D2D),
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
             const SizedBox(height: 12),
@@ -734,12 +756,12 @@ class _PartnerCard extends StatelessWidget {
         ],
         border: Border.all(color: const Color(0xFFF0F0F0)),
       ),
-      child: const Padding(
-        padding: EdgeInsets.all(16),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               "BFP R4A Dasmariñas City Fire Station",
               style: TextStyle(
                 fontSize: 16,
@@ -747,9 +769,10 @@ class _PartnerCard extends StatelessWidget {
                 color: Color(0xFF1E1E1E),
               ),
             ),
-            SizedBox(height: 8),
-            Text(
+            const SizedBox(height: 8),
+            const Text(
               "An official fire service unit operating under the Bureau of Fire Protection (BFP) in the Philippines. The BFP is a national government agency tasked with preventing and suppressing destructive fires, enforcing the Fire Code, and conducting community fire safety education nationwide.",
+              textAlign: TextAlign.justify,
               style: TextStyle(
                 height: 1.35,
                 fontSize: 13.2,
@@ -757,9 +780,137 @@ class _PartnerCard extends StatelessWidget {
                 fontWeight: FontWeight.w500,
               ),
             ),
-          ],
-        ),
-      ),
+
+            const SizedBox(height: 14),
+
+            // ✅ NEW: Dasmariñas City Fire Station block
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Color(0xFFFFF5F5), Colors.white],
+                ),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: const Color(0xFFEDEDED)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "DASMARIÑAS CITY FIRE STATION",
+                    style: TextStyle(
+                      fontSize: 13.8,
+                      fontWeight: FontWeight.w900,
+                      color: Color(0xFFB11217),
+                      letterSpacing: 0.3,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+
+                  // contacts
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: const [
+                      Icon(Icons.phone_in_talk_rounded,
+                          size: 18, color: Color(0xFFB11217)),
+                      SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          "In case of Fire or other Emergencies, call:\n(046) 884-6131 / 416-0875 | 0995 336 9534",
+                          textAlign: TextAlign.justify,
+                          style: TextStyle(
+                            fontSize: 12.8,
+                            height: 1.3,
+                            color: Color(0xFF2D2D2D),
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  // Fire marshal
+                Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: const [
+                    Text(
+                      "FCINSP MICHAEL JOHN V ESCAÑO",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 12.8,
+                        fontWeight: FontWeight.w900,
+                        color: Color(0xFF1E1E1E),
+                      ),
+                    ),
+                    SizedBox(height: 2),
+                    Text(
+                      "City Fire Marshal",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 12.2,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF6B6B6B),
+                      ),
+                    ),
+                  ],
+                ),
+              )
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  const Text(
+                    "Vision",
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w900,
+                      color: Color(0xFF1E1E1E),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  const Text(
+                    "A modern fire service fully capable of ensuring a fire safe nation by 2034.",
+                    textAlign: TextAlign.justify,
+                    style: TextStyle(
+                      fontSize: 12.8,
+                      height: 1.35,
+                      color: Color(0xFF2D2D2D),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  const Text(
+                    "Mission",
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w900,
+                      color: Color(0xFF1E1E1E),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  const Text(
+                    "We commit to prevent and suppress destructive fires, investigate its causes; enforce Fire Code and other related laws; respond to man-made and natural disasters and other emergencies.",
+                    textAlign: TextAlign.justify,
+                    style: TextStyle(
+                      fontSize: 12.8,
+                      height: 1.35,
+                      color: Color(0xFF2D2D2D),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
     );
   }
 }

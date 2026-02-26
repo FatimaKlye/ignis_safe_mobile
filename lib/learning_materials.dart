@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'module1.dart';
 import 'module2.dart';
 import 'module3.dart';
 import 'navbar.dart';
+import 'login.dart';
+
+// ✅ If you have a Profile page/screen file, import it here.
+// If your app uses a bottom-nav “Profile tab” instead of a separate page,
+// keep this import anyway OR replace the navigation below with your tab logic.
+import 'profile.dart';
 
 class LearningMaterialsTab extends StatefulWidget {
   const LearningMaterialsTab({super.key});
@@ -14,6 +22,11 @@ class LearningMaterialsTab extends StatefulWidget {
 
 class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
   String searchQuery = "";
+
+  // ✅ If you want “Profile” to switch tabs (not push a page),
+  // set this to the index of your Profile tab in your main navbar screen.
+  // If you DON’T have a global tab index here, keep it and use push instead.
+  static const int _profileTabIndex = 3;
 
   final List<_ModuleItem> modules = const [
     _ModuleItem(
@@ -39,6 +52,37 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
     ),
   ];
 
+  Future<void> _logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('last_tab_index');
+    await Supabase.instance.client.auth.signOut();
+    if (!mounted) return;
+
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (_) => const LoginPage()),
+      (route) => false,
+    );
+  }
+
+  Future<void> _goToProfile() async {
+    // OPTION A (recommended for your current file): push Profile page
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const ProfilePage()),
+    );
+
+    // OPTION B (only if your app uses a main navbar screen and you want to jump tabs):
+    // final prefs = await SharedPreferences.getInstance();
+    // await prefs.setInt('last_tab_index', _profileTabIndex);
+    // if (!mounted) return;
+    // Navigator.pushAndRemoveUntil(
+    //   context,
+    //   MaterialPageRoute(builder: (_) => const MainNavShell()), // <-- replace with YOUR navbar screen
+    //   (route) => false,
+    // );
+  }
+
   @override
   Widget build(BuildContext context) {
     final q = searchQuery.trim().toLowerCase();
@@ -48,9 +92,9 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
           m.moduleLabel.toLowerCase().contains(q);
     }).toList();
 
-    return Material(
-      color: Colors.transparent,
-      child: Stack(
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: Stack(
         children: [
           Positioned(
             top: 0,
@@ -66,11 +110,52 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 20),
+
+                  // ✅ HEADER (avatar is a menu button: Profile / Logout)
                   Row(
                     children: [
-                      const CircleAvatar(
-                        radius: 22,
-                        backgroundImage: AssetImage("assets/avatar.png"),
+                      PopupMenuButton<String>(
+                        tooltip: "",
+                        offset: const Offset(0, 55),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        onSelected: (value) async {
+                          if (value == "profile") {
+                            await _goToProfile();
+                            return;
+                          }
+                          if (value == "logout") {
+                            await _logout();
+                            return;
+                          }
+                        },
+                        itemBuilder: (context) => const [
+                          PopupMenuItem(
+                            value: "profile",
+                            child: Row(
+                              children: [
+                                Icon(Icons.person_outline_rounded),
+                                SizedBox(width: 8),
+                                Text("Profile"),
+                              ],
+                            ),
+                          ),
+                          PopupMenuItem(
+                            value: "logout",
+                            child: Row(
+                              children: [
+                                Icon(Icons.logout_rounded),
+                                SizedBox(width: 8),
+                                Text("Log Out"),
+                              ],
+                            ),
+                          ),
+                        ],
+                        child: const CircleAvatar(
+                          radius: 22,
+                          backgroundImage: AssetImage("assets/avatar.png"),
+                        ),
                       ),
                       const SizedBox(width: 10),
                       Column(
@@ -97,6 +182,7 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
                       ),
                     ],
                   ),
+
                   const SizedBox(height: 30),
                   const Center(
                     child: Text(
@@ -109,6 +195,8 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
                     ),
                   ),
                   const SizedBox(height: 30),
+
+                  // ✅ SEARCH
                   Container(
                     height: 50,
                     padding: const EdgeInsets.symmetric(horizontal: 14),
@@ -141,7 +229,10 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
                       ],
                     ),
                   ),
+
                   const SizedBox(height: 30),
+
+                  // ✅ LIST
                   Expanded(
                     child: ListView.separated(
                       padding: EdgeInsets.only(

@@ -46,7 +46,10 @@ flutter:
     - assets/class_c.png
     - assets/class_d.png
     - assets/class_k.png
-    
+    - assets/dev_rave.png
+    - assets/dev_fatima1.jpg
+    - assets/dev_sarah.jpg
+    - assets/dev_andrei.jpg
 
   fonts:
     - family: Poppins

@@ -2,10 +2,13 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'module1.dart';
 import 'module2.dart';
 import 'module3.dart';
+import 'profile.dart';
+import 'login.dart';
 
 enum ModuleFilter { all, pending, inProgress, completed }
 
@@ -17,6 +20,8 @@ class FireMaterialsTab extends StatefulWidget {
 }
 
 class _FireMaterialsTabState extends State<FireMaterialsTab> {
+  static const Color brandRed = Color(0xFFB11217);
+
   String _searchQuery = "";
   ModuleFilter _filter = ModuleFilter.all;
 
@@ -49,19 +54,39 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
 
   void _onSearchChanged(String v) => setState(() => _searchQuery = v);
 
+  // ✅ Your logout (fixed + included here so it won't error)
+  Future<void> _logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('last_tab_index');
+    await Supabase.instance.client.auth.signOut();
+    if (!mounted) return;
+
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (_) => const LoginPage()),
+      (route) => false,
+    );
+  }
+
+  Future<void> _goToProfile() async {
+    if (!mounted) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const ProfilePage()),
+    );
+  }
+
   // ---------- POPUP TRIGGER FROM "VIEW" ----------
   Future<void> _openModuleActions(_ModuleItem m) async {
     final progress = await ModuleProgressStore.load(m.moduleId);
     if (!mounted) return;
 
-    // Choose ONE:
     await _showCenteredPopup(m, progress);
-    //await _showBottomSheetPopup(m, progress);
 
-    if (mounted) setState(() {}); // refresh progress bar after closing
+    if (mounted) setState(() {}); // refresh progress UI after closing
   }
 
-  // ---------- OPTION A: Centered popup with blur ----------
+  // ---------- Centered popup with blur ----------
   Future<void> _showCenteredPopup(_ModuleItem m, ModuleProgress progress) async {
     if (!mounted) return;
 
@@ -75,7 +100,6 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
         return SafeArea(
           child: Stack(
             children: [
-              // blur background
               BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
                 child: Container(color: Colors.transparent),
@@ -121,17 +145,23 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
     if (m.moduleId == "1") {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (_) => const LearningMaterialExtinguisherPage()),
+        MaterialPageRoute(
+          builder: (_) => const LearningMaterialExtinguisherPage(),
+        ),
       );
     } else if (m.moduleId == "2") {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (_) => const LearningMaterialElectricalPage()),
+        MaterialPageRoute(
+          builder: (_) => const LearningMaterialElectricalPage(),
+        ),
       );
     } else {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (_) => const LearningMaterialKitchenPage()),
+        MaterialPageRoute(
+          builder: (_) => const LearningMaterialKitchenPage(),
+        ),
       );
     }
   }
@@ -149,19 +179,23 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => _PlaceholderPage(title: "${m.moduleLabel} - Post Assessment"),
+        builder: (_) =>
+            _PlaceholderPage(title: "${m.moduleLabel} - Post Assessment"),
       ),
     );
   }
 
   // ---------- FILTER MENU (inside search bar) ----------
-  void _openFilterMenu(BuildContext context) async {
+  Future<void> _openFilterMenu(BuildContext context) async {
     final selected = await showMenu<ModuleFilter>(
       context: context,
-      position: const RelativeRect.fromLTRB(9999, 120, 16, 0), // right-side-ish
+      position: const RelativeRect.fromLTRB(9999, 120, 16, 0),
       items: const [
         PopupMenuItem(value: ModuleFilter.all, child: Text("All")),
-        PopupMenuItem(value: ModuleFilter.pending, child: Text("Pending / Not Started")),
+        PopupMenuItem(
+          value: ModuleFilter.pending,
+          child: Text("Pending / Not Started"),
+        ),
         PopupMenuItem(value: ModuleFilter.inProgress, child: Text("In Progress")),
         PopupMenuItem(value: ModuleFilter.completed, child: Text("Completed")),
       ],
@@ -189,161 +223,204 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
   Widget build(BuildContext context) {
     final q = _searchQuery.trim().toLowerCase();
 
-    return Stack(
-      children: [
-        Positioned(
-          top: 0,
-          left: 0,
-          right: 0,
-          height: 900,
-          child: Image.asset('assets/bg.png', fit: BoxFit.cover),
-        ),
-        SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 14),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 20),
+    // ✅ Search filter first so the list doesn't render empty separators
+    final searchedModules = _modules.where((m) {
+      if (q.isEmpty) return true;
+      return m.title.toLowerCase().contains(q) ||
+          m.moduleLabel.toLowerCase().contains(q);
+    }).toList();
 
-                // header
-                Row(
-                  children: [
-                    const CircleAvatar(
-                      radius: 22,
-                      backgroundImage: AssetImage("assets/avatar.png"),
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: Stack(
+        children: [
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 900,
+            child: Image.asset('assets/bg.png', fit: BoxFit.cover),
+          ),
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 14),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 20),
+
+                  // ✅ header (avatar menu)
+                  Row(
+                    children: [
+                      PopupMenuButton<String>(
+                        tooltip: "",
+                        offset: const Offset(0, 55),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        onSelected: (value) async {
+                          if (value == "profile") {
+                            await _goToProfile();
+                            return;
+                          }
+                          if (value == "logout") {
+                            await _logout();
+                            return;
+                          }
+                        },
+                        itemBuilder: (context) => const [
+                          PopupMenuItem(
+                            value: "profile",
+                            child: Row(
+                              children: [
+                                Icon(Icons.person_outline_rounded),
+                                SizedBox(width: 8),
+                                Text("Profile"),
+                              ],
+                            ),
+                          ),
+                          PopupMenuItem(
+                            value: "logout",
+                            child: Row(
+                              children: [
+                                Icon(Icons.logout_rounded),
+                                SizedBox(width: 8),
+                                Text("Log Out"),
+                              ],
+                            ),
+                          ),
+                        ],
+                        child: const CircleAvatar(
+                          radius: 22,
+                          backgroundImage: AssetImage("assets/avatar.png"),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: const [
+                          Text(
+                            "Hi, Andrei Quias",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          SizedBox(height: 2),
+                          Text(
+                            "Welcome to Ignis Safe",
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 30),
+                  const Center(
+                    child: Text(
+                      "Fire Scenario Module",
+                      style: TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFF222222),
+                      ),
                     ),
-                    const SizedBox(width: 10),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text(
-                          "Hi, Andrei Quias",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
+                  ),
+                  const SizedBox(height: 30),
+
+                  // search + filter
+                  Container(
+                    height: 50,
+                    padding: const EdgeInsets.symmetric(horizontal: 14),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(26),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.12),
+                          blurRadius: 12,
+                          offset: const Offset(0, 5),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.search, color: Colors.grey),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: TextField(
+                            onChanged: _onSearchChanged,
+                            decoration: const InputDecoration(
+                              hintText: "Search",
+                              hintStyle: TextStyle(color: Colors.grey),
+                              border: InputBorder.none,
+                              isDense: true,
+                            ),
                           ),
                         ),
-                        SizedBox(height: 2),
-                        Text(
-                          "Welcome to Ignis Safe",
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
+                        IconButton(
+                          tooltip: "Filter",
+                          onPressed: () => _openFilterMenu(context),
+                          icon: Icon(
+                            Icons.filter_list_rounded,
+                            color: _filter == ModuleFilter.all
+                                ? const Color(0xFF9E9E9E)
+                                : brandRed,
                           ),
                         ),
                       ],
                     ),
-                  ],
-                ),
-
-                const SizedBox(height: 30),
-                const Center(
-                  child: Text(
-                    "Fire Scenario Module",
-                    style: TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.w800,
-                      color: Color(0xFF222222),
-                    ),
                   ),
-                ),
-                const SizedBox(height: 30),
 
-                // Search with filter icon INSIDE right side
-                Container(
-                  height: 50,
-                  padding: const EdgeInsets.symmetric(horizontal: 14),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(26),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.12),
-                        blurRadius: 12,
-                        offset: const Offset(0, 5),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.search, color: Colors.grey),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: TextField(
-                          onChanged: _onSearchChanged,
-                          decoration: const InputDecoration(
-                            hintText: "Search",
-                            hintStyle: TextStyle(color: Colors.grey),
-                            border: InputBorder.none,
-                            isDense: true,
-                          ),
+                  const SizedBox(height: 30),
+
+              Expanded(
+              child: ListView.builder(
+                clipBehavior: Clip.none, // ✅ allow overflow (pill + shadow)
+                padding: EdgeInsets.only(
+                  top: 14, 
+                  bottom: 10 + MediaQuery.of(context).padding.bottom,
+                ),
+                itemCount: searchedModules.length,
+                itemBuilder: (context, index) {
+                  final m = searchedModules[index];
+
+                  return FutureBuilder<ModuleProgress>(
+                    future: ModuleProgressStore.load(m.moduleId),
+                    builder: (context, snap) {
+                      final progress = snap.data ??
+                          const ModuleProgress(preDone: false, simDone: false, postDone: false);
+
+                      if (!_matchesFilter(progress)) return const SizedBox.shrink();
+
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 25),
+                        child: _ModuleCard(
+                          moduleLabel: m.moduleLabel,
+                          title: m.title,
+                          description: m.description,
+                          asset: m.asset,
+                          progress: progress,
+                          onPressed: () => _openModuleActions(m),
                         ),
-                      ),
-                      IconButton(
-                        tooltip: "Filter",
-                        onPressed: () => _openFilterMenu(context),
-                        icon: Icon(
-                          Icons.filter_list_rounded,
-                          color: _filter == ModuleFilter.all
-                              ? const Color(0xFF9E9E9E)
-                              : const Color(0xFFB11217),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 30),
-
-                Expanded(
-                  child: ListView.separated(
-                    padding: EdgeInsets.only(
-                      bottom: 5 + MediaQuery.of(context).padding.bottom,
-                    ),
-                    itemCount: _modules.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 25),
-                    itemBuilder: (context, index) {
-                      final m = _modules[index];
-
-                      // Search filter first (cheap)
-                      if (q.isNotEmpty &&
-                          !(m.title.toLowerCase().contains(q) ||
-                              m.moduleLabel.toLowerCase().contains(q))) {
-                        return const SizedBox.shrink();
-                      }
-
-                      return FutureBuilder<ModuleProgress>(
-                        future: ModuleProgressStore.load(m.moduleId),
-                        builder: (context, snap) {
-                          final progress = snap.data ??
-                              const ModuleProgress(preDone: false, simDone: false, postDone: false);
-
-                          // Progress filter next
-                          if (!_matchesFilter(progress)) {
-                            return const SizedBox.shrink();
-                          }
-
-                          return _ModuleCard(
-                            moduleLabel: m.moduleLabel,
-                            title: m.title,
-                            description: m.description,
-                            asset: m.asset,
-                            progress: progress,
-                            onPressed: () => _openModuleActions(m),
-                          );
-                        },
                       );
                     },
-                  ),
-                ),
-              ],
+                  );
+                },
+              ),
+            ),
+                ],
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -528,7 +605,8 @@ class _ModuleCard extends StatelessWidget {
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFFB11217),
                               elevation: 6,
-                              padding: const EdgeInsets.symmetric(horizontal: 14),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 14),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(6),
                               ),
@@ -627,7 +705,6 @@ class _ModuleActionPopup extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // handle
             Container(
               width: 42,
               height: 4,
@@ -637,7 +714,6 @@ class _ModuleActionPopup extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 10),
-
             Row(
               children: [
                 Expanded(
@@ -670,9 +746,7 @@ class _ModuleActionPopup extends StatelessWidget {
                 ),
               ],
             ),
-
             const SizedBox(height: 12),
-
             Row(
               children: [
                 Expanded(
