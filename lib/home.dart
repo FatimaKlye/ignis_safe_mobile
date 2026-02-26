@@ -5,6 +5,7 @@ import 'navbar.dart';
 import 'learning_materials.dart';
 import 'firemodules.dart';
 import 'profile.dart';
+import 'about_us.dart';
 
 class IgnisHomePage extends StatefulWidget {
   const IgnisHomePage({super.key, this.initialTabIndex = 0});
@@ -31,7 +32,7 @@ class _IgnisHomePageState extends State<IgnisHomePage> {
     LearningMaterialsTab(), // content-only
     FireMaterialsTab(),
     ProfilePage(),     // content-only
-    Center(child: Text("About Us Page")),
+    AboutUsPage(),
     
   ];
 
