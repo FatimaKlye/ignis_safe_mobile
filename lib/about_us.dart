@@ -13,8 +13,6 @@ class _AboutUsPageState extends State<AboutUsPage> {
   static const Color brandRed = Color(0xFFB11217);
 
   // navbar
-  int _currentIndex = 2; // set to your About index in navbar
-
   // search + filter
   String _searchQuery = '';
   AboutFilter _filter = AboutFilter.all;

@@ -4,9 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'module1.dart';
-import 'module2.dart';
-import 'module3.dart';
+import 'module_1.dart/module1.dart';
+import 'module_2.dart/module2.dart';
+import 'module_3.dart/module3.dart';
+import 'module_1.dart/pre_test_module1.dart';
+import 'module_1.dart/simulation_scene.dart';
+import 'module_2.dart/simulation_scene.dart' as sim2;
+import 'module_3.dart/simulation_scene.dart' as sim3;
+import 'pre_test_module2.dart';
+import 'module_3.dart/pre_test_module3.dart';
 import 'profile.dart';
 import 'login.dart';
 
@@ -146,33 +152,49 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => const LearningMaterialExtinguisherPage(),
+          builder: (_) => const PreAssessmentIntroPage(),
         ),
       );
     } else if (m.moduleId == "2") {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => const LearningMaterialElectricalPage(),
+          builder: (_) => const PreAssessmentIntroPageModule2(),
         ),
       );
     } else {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => const LearningMaterialKitchenPage(),
+          builder: (_) => const PreAssessmentIntroPage2(),
         ),
       );
     }
   }
 
   void _goToSim(_ModuleItem m) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => _PlaceholderPage(title: "${m.moduleLabel} - Simulation"),
-      ),
-    );
+    if (m.moduleId == "1") {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const SimulationScene(),
+        ),
+      );
+    } else if (m.moduleId == "2") {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const sim2.SimulationScene2(),
+        ),
+      );
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const sim3.SimulationScene3(),
+        ),
+      );
+    }
   }
 
   void _goToPost(_ModuleItem m) {

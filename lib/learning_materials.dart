@@ -2,15 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'module1.dart';
-import 'module2.dart';
-import 'module3.dart';
-import 'navbar.dart';
+import 'module_1.dart/module1.dart';
+import 'module_2.dart/module2.dart';
+import 'module_3.dart/module3.dart';
 import 'login.dart';
-
-// ✅ If you have a Profile page/screen file, import it here.
-// If your app uses a bottom-nav “Profile tab” instead of a separate page,
-// keep this import anyway OR replace the navigation below with your tab logic.
 import 'profile.dart';
 
 class LearningMaterialsTab extends StatefulWidget {
@@ -22,11 +17,6 @@ class LearningMaterialsTab extends StatefulWidget {
 
 class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
   String searchQuery = "";
-
-  // ✅ If you want “Profile” to switch tabs (not push a page),
-  // set this to the index of your Profile tab in your main navbar screen.
-  // If you DON’T have a global tab index here, keep it and use push instead.
-  static const int _profileTabIndex = 3;
 
   final List<_ModuleItem> modules = const [
     _ModuleItem(
@@ -376,7 +366,7 @@ class _ModuleCard extends StatelessWidget {
                     Align(
                       alignment: Alignment.centerRight,
                       child: SizedBox(
-                        height: 26,
+                        height: 32,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFFB11217),

@@ -131,7 +131,7 @@ class _LearningMaterialElectricalPageState
                       onPressed: () => Navigator.pop(context),
                     ),
 
-                    const SizedBox(height: 5),
+                    const SizedBox(height: 10),
 
                     const Center(
                       child: Text(

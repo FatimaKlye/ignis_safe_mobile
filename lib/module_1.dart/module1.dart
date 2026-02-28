@@ -1,23 +1,24 @@
 import 'package:flutter/material.dart';
 
-class LearningMaterialKitchenPage extends StatefulWidget {
-  const LearningMaterialKitchenPage({super.key});
+class LearningMaterialExtinguisherPage extends StatefulWidget {
+  const LearningMaterialExtinguisherPage({super.key});
 
   @override
-  State<LearningMaterialKitchenPage> createState() =>
-      _LearningMaterialKitchenPageState();
+  State<LearningMaterialExtinguisherPage> createState() =>
+      _LearningMaterialExtinguisherPageState();
 }
 
-class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPage> {
+class _LearningMaterialExtinguisherPageState
+    extends State<LearningMaterialExtinguisherPage> {
   static const accent = Color(0xFFB11217); // red
-  static const accent2 = Color(0xFFF59E0B); // amber
+  static const accent2 = Color(0xFF2563EB); // blue
 
   final PageController _pageCtrl = PageController();
   final ScrollController _scrollCtrl = ScrollController();
 
   int _pageIndex = 0;
 
-  double _progress = 0.0;
+  double _progress = 0.0; // 0..1 per page scroll
   bool _canNext = false;
 
   @override
@@ -91,12 +92,12 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
         curve: Curves.easeOutCubic,
       );
     } else {
-      // Hook your pre-test navigation here
-      // Navigator.push(context, MaterialPageRoute(builder: (_) => const PreTestKitchenPage()));
+      // Hook your navigation to pre-test / next module here
+      // Navigator.push(context, MaterialPageRoute(builder: (_) => const PreTestExtinguisherPage()));
     }
   }
 
-  // ---------- POPUPS ----------
+  // ---------------- POPUPS ----------------
   void _showInfoPopup({
     required String title,
     required String message,
@@ -130,17 +131,31 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
     );
   }
 
-  void _showDoThisNowPopup() {
+  void _showPASSPopup() {
     _showInfoPopup(
-      title: "If a pan catches fire",
-      icon: Icons.local_fire_department_rounded,
+      title: "PASS Method (Simple)",
+      icon: Icons.checklist_rounded,
+      color: const Color(0xFF16A34A),
+      message:
+          "P — Pull the pin\n"
+          "A — Aim at the base of the fire\n"
+          "S — Squeeze the handle\n"
+          "S — Sweep side to side\n\n"
+          "Stop if the fire grows or you feel unsafe.",
+    );
+  }
+
+  void _showWhenNotToUsePopup() {
+    _showInfoPopup(
+      title: "Do NOT use an extinguisher if…",
+      icon: Icons.block_rounded,
       color: const Color(0xFFDC2626),
       message:
-          "1) Turn off the heat.\n"
-          "2) Cover the pan with a metal lid or baking tray.\n"
-          "3) Do NOT carry the pan.\n"
-          "4) Do NOT use water on burning oil.\n"
-          "5) If it grows, evacuate and call for help.",
+          "• The fire is too large or spreading fast\n"
+          "• Thick smoke is building up\n"
+          "• You don’t have a clear exit behind you\n"
+          "• You are unsure what is burning\n\n"
+          "Evacuate and call emergency services.",
     );
   }
 
@@ -151,6 +166,7 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
     return Scaffold(
       body: Stack(
         children: [
+          // ===== BACKGROUND =====
           Positioned(
             top: 0,
             left: 0,
@@ -163,8 +179,9 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 5),
+                const SizedBox(height: 10),
 
+                // ===== FIXED HEADER =====
                 Padding(
                   padding: const EdgeInsets.only(left: 9, right: 25),
                   child: Column(
@@ -176,7 +193,7 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
                         icon: const Icon(Icons.close, color: Colors.white),
                         onPressed: () => Navigator.pop(context),
                       ),
-                      const SizedBox(height: 5),
+                      const SizedBox(height: 10),
                       const Center(
                         child: Text(
                           "Learning Material",
@@ -220,7 +237,7 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
                                 Icon(Icons.bolt_rounded, color: Colors.white, size: 18),
                                 SizedBox(width: 8),
                                 Text(
-                                  "MODULE 3",
+                                  "MODULE 1",
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white,
@@ -234,7 +251,7 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
 
                           const Expanded(
                             child: Text(
-                              "Kitchen Fire: What It Is, Common Types, and What To Do",
+                              "Fire Extinguisher: Basics, Types, and How to Use",
                               style: TextStyle(
                                 color: Colors.black,
                                 fontWeight: FontWeight.w600,
@@ -244,8 +261,10 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
                         ],
                       ),
                     ),
+
                       const SizedBox(height: 14),
 
+                      // ===== PROGRESS BAR =====
                       ClipRRect(
                         borderRadius: BorderRadius.circular(999),
                         child: SizedBox(
@@ -253,13 +272,15 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
                           child: LinearProgressIndicator(
                             value: _progress,
                             backgroundColor: Colors.white.withOpacity(0.25),
-                            valueColor: const AlwaysStoppedAnimation(accent2),
+                            valueColor:
+                                const AlwaysStoppedAnimation(accent2),
                           ),
                         ),
                       ),
 
                       const SizedBox(height: 10),
 
+                      // ===== PAGE DOTS =====
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: List.generate(3, (i) {
@@ -284,6 +305,7 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
                   ),
                 ),
 
+                // ===== PAGE VIEW =====
                 Expanded(
                   child: PageView(
                     controller: _pageCtrl,
@@ -292,13 +314,14 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
                       _resetForNewPage();
                     },
                     children: [
-                      _pageWrap(_page1OverviewAndTypes()),
-                      _pageWrap(_page2CausesAndPrevention()),
-                      _pageWrap(_page3EmergencyResponse()),
+                      _pageWrap(_page1ExtinguisherBasics()),
+                      _pageWrap(_page2TypesAndUses()),
+                      _pageWrap(_page3HowToUseAndSafety()),
                     ],
                   ),
                 ),
 
+                // ===== BOTTOM NAV =====
                 Padding(
                   padding: const EdgeInsets.fromLTRB(25, 8, 25, 18),
                   child: Row(
@@ -344,7 +367,6 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
           ),
         ],
       ),
-      // ✅ Removed floatingActionButton
     );
   }
 
@@ -364,17 +386,17 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
   }
 
   // ===================== PAGE 1 =====================
-  Widget _page1OverviewAndTypes() {
+  Widget _page1ExtinguisherBasics() {
     return _ModernCard(
       accent1: accent,
       accent2: accent2,
-      pageTitle: "PAGE 1 – KITCHEN FIRE OVERVIEW",
+      pageTitle: "PAGE 1 – FIRE EXTINGUISHER BASICS",
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Center(
             child: Text(
-              "What is a Kitchen Fire?",
+              "What is a Fire Extinguisher?",
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -389,14 +411,14 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _ImageBox(
-                asset: "assets/kitchen_overview.png",
+                asset: "assets/extinguisher_overview.png", // placeholder
                 c1: accent,
                 c2: accent2,
               ),
               const SizedBox(width: 15),
               const Expanded(
                 child: Text(
-                  "A kitchen fire starts in the cooking area. It often happens when food, oil, or appliances overheat. Most kitchen fires spread fast because heat and grease build up quickly.",
+                  "A fire extinguisher is a portable safety device used to control small fires. It works by releasing an extinguishing agent that removes heat, oxygen, or interrupts the fire reaction.",
                   style: TextStyle(
                     fontSize: 14,
                     height: 1.5,
@@ -409,82 +431,48 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
 
           const SizedBox(height: 14),
 
-          _Callout(
+          const _Callout(
             icon: Icons.warning_rounded,
-            color: const Color(0xFFDC2626),
-            title: "Common danger",
-            lines: const [
-              "Grease can ignite suddenly.",
-              "Smoke can block vision fast.",
-              "Wrong action (like water on oil) can make it worse.",
+            color: Color(0xFFDC2626),
+            title: "Important",
+            lines: [
+              "Extinguishers are for small, early-stage fires.",
+              "You must choose the correct type for the fire.",
+              "If unsafe, evacuate first.",
             ],
-          ),
-
-          const SizedBox(height: 14),
-
-          _ChipLine(
-            icon: Icons.menu_book_rounded,
-            color: const Color(0xFFB11217),
-            text: "Tap the buttons below for quick pop-ups.",
           ),
 
           const SizedBox(height: 12),
 
-          Row(
-            children: [
-              Expanded(
-                child: _ActionPill(
-                  icon: Icons.help_rounded,
-                  label: "Why it happens",
-                  onTap: () => _showInfoPopup(
-                    title: "Why kitchen fires happen",
-                    message:
-                        "Usually from unattended cooking, overheated oil, grease buildup, or flammable items near heat.",
+
+          Builder(
+            builder: (_) => Row(
+              children: [
+                Expanded(
+                  child: _ActionPill(
+                    icon: Icons.checklist_rounded,
+                    label: "PASS method",
+                    onTap: _showPASSPopup,
                   ),
                 ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: _ActionPill(
-                  icon: Icons.local_fire_department_rounded,
-                  label: "If pan ignites",
-                  onTap: _showDoThisNowPopup,
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _ActionPill(
+                    icon: Icons.block_rounded,
+                    label: "When NOT to use",
+                    onTap: _showWhenNotToUsePopup,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: 18),
 
-          const _SectionTitle("Types of Kitchen Fires"),
-          const SizedBox(height: 12),
-
-          const _MiniTile(
-            color: Color(0xFFB11217),
-            icon: Icons.oil_barrel_rounded,
-            title: "Grease Fire",
-            desc: "Cooking oil or fat overheats and ignites (fast and intense).",
-          ),
-          const SizedBox(height: 10),
-          const _MiniTile(
-            color: Color(0xFFF59E0B),
-            icon: Icons.local_pizza_rounded,
-            title: "Oven Fire",
-            desc: "Food spills or grease buildup burns inside the oven.",
-          ),
-          const SizedBox(height: 10),
-          const _MiniTile(
-            color: Color(0xFF7C3AED),
-            icon: Icons.microwave_rounded,
-            title: "Microwave Fire",
-            desc: "Metal or overheated food ignites and causes flames/smoke.",
-          ),
-          const SizedBox(height: 10),
-          const _MiniTile(
-            color: Color(0xFF16A34A),
-            icon: Icons.local_gas_station_rounded,
-            title: "Gas Stove Fire",
-            desc: "Flame flare-ups or leaking gas ignites near the stove.",
+          const _ChipLine(
+            icon: Icons.fact_check_rounded,
+            color: Color(0xFF2563EB),
+            text: "Goal: Use the right extinguisher, quickly and safely.",
           ),
         ],
       ),
@@ -492,17 +480,17 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
   }
 
   // ===================== PAGE 2 =====================
-  Widget _page2CausesAndPrevention() {
+  Widget _page2TypesAndUses() {
     return _ModernCard(
       accent1: accent2,
       accent2: accent,
-      pageTitle: "PAGE 2 – CAUSES & PREVENTION",
+      pageTitle: "PAGE 2 – TYPES OF FIRE EXTINGUISHERS",
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Center(
             child: Text(
-              "Common Causes of Kitchen Fires",
+              "Common Extinguisher Types (Simple Guide)",
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -517,7 +505,7 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
             crossAxisAlignment: CrossAxisAlignment.start,
             children: const [
               _IconBox(
-                icon: Icons.kitchen_rounded,
+                icon: Icons.category_rounded, // placeholder icon box
                 c1: accent2,
                 c2: accent,
               ),
@@ -525,101 +513,81 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
               Expanded(
                 child: _Bullets(
                   items: [
-                    "Leaving cooking unattended",
-                    "Oil overheating while frying",
-                    "Grease buildup on stove/hood",
-                    "Towels or paper near flames",
-                    "Cooking while tired or distracted",
-                    "Wrong use of appliances (dirty toaster, etc.)",
+                    "Different fires need different extinguishers.",
+                    "Check the label (Class) on the cylinder.",
+                    "When unsure, evacuate and call for help.",
                   ],
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 14),
-
-          Row(
-            children: [
-              Expanded(
-                child: _ActionPill(
-                  icon: Icons.quiz_rounded,
-                  label: "Quick check",
-                  onTap: () => _showInfoPopup(
-                    title: "Quick Check",
-                    icon: Icons.check_circle_rounded,
-                    color: const Color(0xFF16A34A),
-                    message:
-                        "If you leave the kitchen for even 1 minute while frying, risk increases a lot. Stay nearby and keep heat controlled.",
-                  ),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: _ActionPill(
-                  icon: Icons.tips_and_updates_rounded,
-                  label: "Safety tips",
-                  onTap: () => _showInfoPopup(
-                    title: "Safety Tips",
-                    icon: Icons.tips_and_updates_rounded,
-                    color: const Color(0xFF2563EB),
-                    message:
-                        "• Keep a lid nearby when cooking.\n"
-                        "• Clean grease regularly.\n"
-                        "• Keep flammables away from heat.\n"
-                        "• Turn pot handles inward.\n"
-                        "• Don’t overheat oil.",
-                  ),
                 ),
               ),
             ],
           ),
 
           const SizedBox(height: 18),
-
-          const _ChipLine(
-            icon: Icons.fact_check_rounded,
-            color: Color(0xFF16A34A),
-            text: "Small habits prevent most kitchen fires.",
-          ),
-
-          const SizedBox(height: 24),
-
-          const _SectionTitle("Prevention (Simple Steps)"),
+          const _SectionTitle("Types you may see"),
           const SizedBox(height: 12),
 
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _ImageBox(
-                asset: "assets/prevent_kitchen.png",
-                c1: accent2,
-                c2: accent,
-              ),
-              const SizedBox(width: 15),
-              const Expanded(
-                child: _Bullets(
-                  items: [
-                    "Keep a lid near the pan when cooking.",
-                    "Clean grease from stove and hood.",
-                    "Keep flammables away from heat.",
-                    "Turn handles inward.",
-                    "Use the right heat level (don’t overheat oil).",
-                    "Know your extinguisher location.",
-                  ],
-                ),
-              ),
-            ],
+          _MiniTile(
+            color: const Color(0xFF2563EB),
+            icon: Icons.bolt_rounded,
+            title: "Class C (Electrical)",
+            desc: "For energized electrical equipment (wiring, panels, appliances).",
+          ),
+          const SizedBox(height: 10),
+          _MiniTile(
+            color: const Color(0xFFF59E0B),
+            icon: Icons.local_gas_station_rounded,
+            title: "Class B (Flammable liquids)",
+            desc: "For gasoline, oil, paint, solvents (do NOT use water).",
+          ),
+          const SizedBox(height: 10),
+          _MiniTile(
+            color: const Color(0xFF16A34A),
+            icon: Icons.park_rounded,
+            title: "Class A (Ordinary materials)",
+            desc: "For paper, wood, cloth, trash (common room fires).",
+          ),
+          const SizedBox(height: 10),
+          _MiniTile(
+            color: const Color(0xFFB11217),
+            icon: Icons.restaurant_rounded,
+            title: "Class K (Cooking oils/fats)",
+            desc: "For kitchen oil/grease fires (special wet-chemical type).",
           ),
 
           const SizedBox(height: 14),
 
-          const _Callout(
-            icon: Icons.shield_rounded,
-            color: Color(0xFF16A34A),
-            title: "Prevention goal",
-            lines: [
-              "Reduce heat, reduce grease buildup, and keep flammable items away.",
+          Row(
+            children: [
+              Expanded(
+                child: _ActionPill(
+                  icon: Icons.search_rounded,
+                  label: "How to choose",
+                  onTap: () => _showInfoPopup(
+                    title: "How to choose fast",
+                    icon: Icons.search_rounded,
+                    color: const Color(0xFF2563EB),
+                    message:
+                        "1) Identify what’s burning (paper? oil? electrical?).\n"
+                        "2) Match the extinguisher class label.\n"
+                        "3) Keep an exit behind you.\n"
+                        "4) If unsure, evacuate.",
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: _ActionPill(
+                  icon: Icons.label_important_rounded,
+                  label: "Read the label",
+                  onTap: () => _showInfoPopup(
+                    title: "Read the label",
+                    icon: Icons.label_important_rounded,
+                    color: const Color(0xFF16A34A),
+                    message:
+                        "Look for the fire class letters (A/B/C/K) and simple icons on the extinguisher body.",
+                  ),
+                ),
+              ),
             ],
           ),
         ],
@@ -628,17 +596,17 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
   }
 
   // ===================== PAGE 3 =====================
-  Widget _page3EmergencyResponse() {
+  Widget _page3HowToUseAndSafety() {
     return _ModernCard(
       accent1: const Color(0xFF16A34A),
       accent2: accent,
-      pageTitle: "PAGE 3 – WHAT TO DO DURING A KITCHEN FIRE",
+      pageTitle: "PAGE 3 – HOW TO USE & SAFETY",
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Center(
             child: Text(
-              "Emergency Response",
+              "How to Use a Fire Extinguisher",
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -655,18 +623,17 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
               _IconBox(
                 icon: Icons.fire_extinguisher_rounded,
                 c1: Color(0xFF16A34A),
-                c2: Color(0xFFB11217),
+                c2: Color(0xFF2563EB),
               ),
               SizedBox(width: 15),
               Expanded(
                 child: _Bullets(
                   items: [
-                    "Turn off heat source if safe.",
-                    "Cover small pan fire with a metal lid/tray.",
-                    "Do NOT use water on burning oil/grease.",
-                    "Use a fire extinguisher if trained and safe.",
-                    "If it spreads: evacuate and call emergency services.",
-                    "Close doors behind you to slow the fire.",
+                    "Stand a safe distance away (not too close).",
+                    "Aim at the base of the fire (not the flames).",
+                    "Use short controlled bursts.",
+                    "Sweep side to side until the fire is out.",
+                    "Watch for re-ignition and be ready to evacuate.",
                   ],
                 ),
               ),
@@ -679,28 +646,22 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
             children: [
               Expanded(
                 child: _ActionPill(
-                  icon: Icons.local_fire_department_rounded,
-                  label: "Grease fire rule",
-                  onTap: () => _showInfoPopup(
-                    title: "Grease Fire Rule",
-                    icon: Icons.block_rounded,
-                    color: const Color(0xFFDC2626),
-                    message:
-                        "Never pour water on burning oil. Water can spread burning grease and cause flare-ups.",
-                  ),
+                  icon: Icons.checklist_rounded,
+                  label: "Show PASS steps",
+                  onTap: _showPASSPopup,
                 ),
               ),
               const SizedBox(width: 10),
               Expanded(
                 child: _ActionPill(
-                  icon: Icons.help_center_rounded,
-                  label: "When to evacuate",
+                  icon: Icons.security_rounded,
+                  label: "Safety rule",
                   onTap: () => _showInfoPopup(
-                    title: "Evacuate when…",
-                    icon: Icons.directions_run_rounded,
-                    color: const Color(0xFFDC2626),
+                    title: "Safety rule",
+                    icon: Icons.security_rounded,
+                    color: const Color(0xFF16A34A),
                     message:
-                        "Evacuate immediately if flames grow, smoke fills the room, or you can’t control it quickly. Call for help.",
+                        "If you can’t control it within a few seconds, stop and evacuate. Close doors behind you and call for help.",
                   ),
                 ),
               ),
@@ -713,7 +674,7 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _ImageBox(
-                asset: "assets/response_kitchen.png",
+                asset: "assets/pass_steps.png", // placeholder
                 c1: const Color(0xFF16A34A),
                 c2: accent,
               ),
@@ -721,22 +682,15 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const _SectionTitle("One-minute plan"),
-                    const SizedBox(height: 10),
-                    const _Bullets(
+                  children: const [
+                    _SectionTitle("Before you use it"),
+                    SizedBox(height: 10),
+                    _Bullets(
                       items: [
-                        "Stop the heat.",
-                        "Smother small flames.",
-                        "Use extinguisher only if safe.",
-                        "Get out if unsure.",
+                        "Check the pressure gauge (if present).",
+                        "Keep your back to an exit.",
+                        "Make sure the correct class matches the fire.",
                       ],
-                    ),
-                    const SizedBox(height: 8),
-                    _ActionPill(
-                      icon: Icons.play_circle_rounded,
-                      label: "Show steps",
-                      onTap: _showDoThisNowPopup,
                     ),
                   ],
                 ),
@@ -751,7 +705,7 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
             color: Color(0xFFDC2626),
             title: "Remember",
             lines: [
-              "Your safety is the priority. If you feel unsafe, evacuate and call for help.",
+              "Never risk your life for property. If it feels unsafe, evacuate immediately.",
             ],
           ),
         ],
@@ -761,7 +715,6 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
 }
 
 // ===================== UI WIDGETS =====================
-// (unchanged below)
 
 class _ModernCard extends StatelessWidget {
   final Color accent1;

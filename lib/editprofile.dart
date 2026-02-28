@@ -1,4 +1,4 @@
-import 'dart:io';
+﻿import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -61,8 +61,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       _avatarChanged = true;
     });
   }
-
-  List<String> _computeChanges() {
+List<String> _computeChanges() {
     final changes = <String>[];
 
     final first = _firstNameCtrl.text.trim();
@@ -70,13 +69,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
     final user = _usernameCtrl.text.trim();
 
     if (first != widget.initialFirstName) {
-      changes.add("First Name: “${widget.initialFirstName}” → “$first”");
+      changes.add("First Name: \u201c${widget.initialFirstName}\u201d \u2192 \u201c$first\u201d");
     }
     if (last != widget.initialLastName) {
-      changes.add("Last Name: “${widget.initialLastName}” → “$last”");
+      changes.add("Last Name: \u201c${widget.initialLastName}\u201d \u2192 \u201c$last\u201d");
     }
     if (user != widget.initialUsername) {
-      changes.add("Username: “${widget.initialUsername}” → “$user”");
+      changes.add("Username: \u201c${widget.initialUsername}\u201d \u2192 \u201c$user\u201d");
     }
     if (_avatarChanged) {
       changes.add("Profile Photo: Updated");

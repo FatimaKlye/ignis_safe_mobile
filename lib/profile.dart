@@ -74,17 +74,9 @@ class _ProfilePageState extends State<ProfilePage> {
     });
   }
 
-  Future<void> _logout() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('last_tab_index');
-    await Supabase.instance.client.auth.signOut();
-    if (!mounted) return;
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (_) => const LoginPage()),
-      (route) => false,
-    );
-  }
+ Future<void> _logout() async {
+  await Supabase.instance.client.auth.signOut();
+}
 
   void _showFAQ() {
     final isEnglish = _language == "English";
