@@ -171,67 +171,79 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final screenW = MediaQuery.of(context).size.width;
-
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 35.0),
-          child: Column(
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    backgroundColor: Colors.white,
+    body: SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 35.0),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: Align(
+                  alignment: Alignment.topCenter,
                   child: Form(
                     key: _formKey,
                     child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        const SizedBox(height: 10),
-                        Image.asset(
-                      'assets/logo.png',
-                      height: 235,
-                      width: screenW * 0.9,
-                      fit: BoxFit.contain,
-                    ),
-
-                    const SizedBox(height: 5),
-
-                    const Text(
-                      'Login',
-                      style: TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: 28,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.black87,
+                     Padding(
+                      padding: const EdgeInsets.only(top: 70, bottom: 30),
+                      child: SizedBox(
+                        height: 120,
+                        child: FittedBox(
+                          fit: BoxFit.contain,
+                          child: Image.asset(
+                            'assets/logo.png',
+                          ),
+                        ),
                       ),
                     ),
 
-                    const SizedBox(height: 8),
 
-                    Container(
-                      height: 2,
-                      width: 150,
-                      decoration: BoxDecoration(
-                        color: brandRed,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
+                        // Title (tight)
+                        const Text(
+                          'Login',
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 28,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.black87,
+                            height: 1.0, 
+                          ),
+                        ),
 
-                    const SizedBox(height: 8),
+                        const SizedBox(height: 6),
 
-                    const Text(
-                      'Welcome to, IGNIS SAFE',
-                      style: TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black38,
-                      ),
-                    ),
+                        Container(
+                          height: 2,
+                          width: 150,
+                          decoration: BoxDecoration(
+                            color: brandRed,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
 
-                    const SizedBox(height: 26),
+                        const SizedBox(height: 8),
+
+                        const Text(
+                          'Welcome to, IGNIS SAFE',
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black38,
+                            height: 1.1,
+                          ),
+                        ),
+
+                        // continue your fields...
+                        const SizedBox(height: 80),
+
 
                         _inputLabel('EMAIL ADDRESS:'),
                         _buildValidatedField(
@@ -261,20 +273,21 @@ class _LoginPageState extends State<LoginPage> {
                         const SizedBox(height: 40),
                         _buildLoginButton(),
                         const SizedBox(height: 20),
+                        const SizedBox(height: 10),
+                        _buildFooter(),
+                        const SizedBox(height: 20),
                       ],
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: 10),
-              _buildFooter(),
-              const SizedBox(height: 20),
-            ],
-          ),
+            );
+          },
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _inputLabel(String label) => Align(
         alignment: Alignment.centerLeft,
@@ -408,6 +421,8 @@ class _LoginPageState extends State<LoginPage> {
                 ),
         ),
       );
+
+ 
 
   Widget _buildFooter() => Column(
         children: [

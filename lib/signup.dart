@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'login.dart';
 import 'verifyemail.dart';
 
@@ -13,374 +14,330 @@ class _RegisterPageState extends State<RegisterPage> {
   static const Color brandRed = Color(0xFFB71C1C);
 
   final _formKey = GlobalKey<FormState>();
-
   final firstNameCtrl = TextEditingController();
   final lastNameCtrl = TextEditingController();
-  final emailUserCtrl = TextEditingController(); // only before @gmail.com
+  final emailCtrl = TextEditingController();
 
   @override
   void dispose() {
     firstNameCtrl.dispose();
     lastNameCtrl.dispose();
-    emailUserCtrl.dispose();
+    emailCtrl.dispose();
     super.dispose();
   }
 
-  String? _validateRequired(String? v, String msg) {
+  bool _isValidEmail(String s) {
+    final v = s.trim();
+    return RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(v);
+  }
+
+  String? _validateFirstName(String? v) {
     final value = (v ?? '').trim();
-    if (value.isEmpty) return msg;
+    if (value.isEmpty) return 'First name is required';
     return null;
   }
 
-  String? _validateEmailUser(String? v) {
+  String? _validateLastName(String? v) {
+    final value = (v ?? '').trim();
+    if (value.isEmpty) return 'Last name is required';
+    return null;
+  }
+
+  String? _validateEmail(String? v) {
     final value = (v ?? '').trim();
     if (value.isEmpty) return 'Email is required';
-
-    // Only allow a safe set of characters for the Gmail username part
-    final ok = RegExp(r'^[a-zA-Z0-9._%+\-]+$').hasMatch(value);
-    if (!ok) return 'Use letters/numbers only';
+    if (!_isValidEmail(value)) return 'Enter a valid email';
     return null;
   }
 
-  void _goToVerifyEmail() {
+  void _register() {
     final ok = _formKey.currentState?.validate() ?? false;
     if (!ok) return;
 
-    final fullEmail = '${emailUserCtrl.text.trim()}@gmail.com';
+    final email = emailCtrl.text.trim();
 
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => VerifyEmailPage(email: fullEmail),
+        builder: (_) => VerifyEmailPage(email: email),
       ),
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final screenW = MediaQuery.of(context).size.width;
+  Widget _inputLabel(String label) => Align(
+        alignment: Alignment.centerLeft,
+        child: Text(
+          label,
+          style: const TextStyle(
+            fontFamily: 'Poppins',
+            color: brandRed,
+            fontWeight: FontWeight.bold,
+            fontSize: 13,
+          ),
+        ),
+      );
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 420),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const SizedBox(height: 10),
-
-                    Image.asset(
-                      'assets/logo.png',
-                      height: 250,
-                      width: screenW * 0.9,
-                      fit: BoxFit.contain,
-                    ),
-
-                    const SizedBox(height: 10),
-
-                    const Text(
-                      'Register',
-                      style: TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: 28,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.black87,
-                      ),
-                    ),
-
-                    const SizedBox(height: 8),
-
-                    Container(
-                      height: 2,
-                      width: 150,
-                      decoration: BoxDecoration(
-                        color: brandRed,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-
-                    const SizedBox(height: 8),
-
-                    const Text(
-                      'Welcome to, IGNIS SAFE',
-                      style: TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black38,
-                      ),
-                    ),
-
-                    const SizedBox(height: 26),
-
-                    const _Label(text: 'FIRST NAME:', color: brandRed),
-                    const SizedBox(height: 8),
-                    _ShadowField(
-                      child: TextFormField(
-                        controller: firstNameCtrl,
-                        keyboardType: TextInputType.name,
-                        validator: (v) =>
-                            _validateRequired(v, 'First name is required'),
-                        style: const TextStyle(
-                          fontFamily: 'Poppins',
-                          fontSize: 13,
-                          color: Colors.black87,
-                        ),
-                        decoration: _inputDecoration('Enter your first name'),
-                      ),
-                    ),
-
-                    const SizedBox(height: 18),
-
-                    const _Label(text: 'LAST NAME:', color: brandRed),
-                    const SizedBox(height: 8),
-                    _ShadowField(
-                      child: TextFormField(
-                        controller: lastNameCtrl,
-                        keyboardType: TextInputType.name,
-                        validator: (v) =>
-                            _validateRequired(v, 'Last name is required'),
-                        style: const TextStyle(
-                          fontFamily: 'Poppins',
-                          fontSize: 13,
-                          color: Colors.black87,
-                        ),
-                        decoration: _inputDecoration('Enter your last name'),
-                      ),
-                    ),
-
-                    const SizedBox(height: 18),
-
-                    const _Label(text: 'EMAIL ADDRESS:', color: brandRed),
-                    const SizedBox(height: 8),
-                    _ShadowField(
-                      child: TextFormField(
-                        controller: emailUserCtrl,
-                        keyboardType: TextInputType.emailAddress,
-                        validator: _validateEmailUser,
-                        style: const TextStyle(
-                          fontFamily: 'Poppins',
-                          fontSize: 13,
-                          color: Colors.black87,
-                        ),
-                        decoration: _inputDecoration('Enter your email').copyWith(
-                          suffixText: '@gmail.com',
-                          suffixStyle: const TextStyle(
-                            fontFamily: 'Poppins',
-                            fontSize: 13,
-                            color: Colors.black54,
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 26),
-
-                    SizedBox(
-                      width: double.infinity,
-                      height: 54,
-                      child: ElevatedButton(
-                        onPressed: _goToVerifyEmail,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: brandRed,
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: const Text(
-                          'Create account',
-                          style: TextStyle(
-                            fontFamily: 'Poppins',
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 22),
-
-                    Row(
-                      children: const [
-                        Expanded(
-                          child: Divider(
-                            thickness: 1,
-                            color: Color(0xFFE0E0E0),
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 12),
-                          child: Text(
-                            'OR',
-                            style: TextStyle(
-                              fontFamily: 'Poppins',
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.black38,
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Divider(
-                            thickness: 1,
-                            color: Color(0xFFE0E0E0),
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Text(
-                          'Already have an account? ',
-                          style: TextStyle(
-                            fontFamily: 'Poppins',
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black38,
-                          ),
-                        ),
-                        _HoverLogin(),
-                      ],
-                    ),
-
-                    const SizedBox(height: 6),
-                  ],
+  Widget _buildValidatedField({
+    required String hint,
+    required TextEditingController controller,
+    required String? Function(String?) validator,
+    TextInputType? keyboardType,
+    TextInputAction? textInputAction,
+    ValueChanged<String>? onSubmitted,
+  }) {
+    return FormField<String>(
+      validator: (_) => validator(controller.text),
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      builder: (state) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              margin: const EdgeInsets.only(top: 8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(15),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 8,
+                    offset: Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: TextField(
+                controller: controller,
+                keyboardType: keyboardType,
+                textInputAction: textInputAction,
+                onSubmitted: onSubmitted,
+                style: const TextStyle(fontFamily: 'Poppins'),
+                onChanged: (_) => state.didChange(controller.text),
+                decoration: InputDecoration(
+                  hintText: hint,
+                  hintStyle: const TextStyle(fontFamily: 'Poppins'),
+                  border: InputBorder.none,
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
                 ),
               ),
             ),
-          ),
-        ),
-      ),
+            if (state.errorText != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 6, left: 10),
+                child: Text(
+                  state.errorText!,
+                  style: const TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 12,
+                    color: Colors.red,
+                    height: 1.2,
+                  ),
+                ),
+              ),
+          ],
+        );
+      },
     );
   }
 
-  static InputDecoration _inputDecoration(String hint) {
-    return InputDecoration(
-      hintText: hint,
-      hintStyle: const TextStyle(
-        fontFamily: 'Poppins',
-        fontSize: 12,
-        fontWeight: FontWeight.w500,
-        color: Colors.black26,
-      ),
-      filled: true,
-      fillColor: Colors.white,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: const BorderSide(color: Color(0xFFDDDDDD), width: 1),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: const BorderSide(color: Color(0xFFDDDDDD), width: 1),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: const BorderSide(color: Color(0xFFCCCCCC), width: 1),
-      ),
-    );
-  }
-}
-
-class _HoverLogin extends StatefulWidget {
-  const _HoverLogin();
-
-  @override
-  State<_HoverLogin> createState() => _HoverLoginState();
-}
-
-class _HoverLoginState extends State<_HoverLogin> {
-  bool _hover = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      onEnter: (_) => setState(() => _hover = true),
-      onExit: (_) => setState(() => _hover = false),
-      child: GestureDetector(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const LoginPage()),
-          );
-        },
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 150),
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-          decoration: BoxDecoration(
-            color: _hover ? const Color(0xFFEAEAEA) : Colors.transparent,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: const Text(
-            'Log in',
-            style: TextStyle(
-              fontFamily: 'Poppins',
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-              color: Color(0xFFB71C1C),
+  Widget _buildRegisterButton() => SizedBox(
+        width: double.infinity,
+        height: 50,
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: brandRed,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
             ),
           ),
+          onPressed: _register,
+          child: const Text(
+                  'Verify Account',
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
         ),
-      ),
-    );
-  }
-}
+      );
 
-class _Label extends StatelessWidget {
-  final String text;
-  final Color color;
-
-  const _Label({required this.text, required this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: Text(
-        text,
-        style: TextStyle(
-          fontFamily: 'Poppins',
-          fontSize: 12,
-          fontWeight: FontWeight.w700,
-          color: color,
-        ),
-      ),
-    );
-  }
-}
-
-class _ShadowField extends StatelessWidget {
-  final Widget child;
-
-  const _ShadowField({required this.child});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x14000000),
-            blurRadius: 10,
-            offset: Offset(0, 4),
+  Widget _buildFooter() => Column(
+        children: [
+          const SizedBox(height: 55),
+          Row(
+            children: const [
+              Expanded(child: Divider(thickness: 1)),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 12),
+                child: Text(
+                  'OR',
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    color: Colors.grey,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              Expanded(child: Divider(thickness: 1)),
+            ],
           ),
+          const SizedBox(height: 10),
+          
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                "Already have an account? ",
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 13,
+                  color: Colors.grey,
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (_) => const LoginPage()),
+                  );
+                },
+                child: const Text(
+                  'Login',
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    color: brandRed,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
         ],
+      );
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 35.0),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          // NOTE: If you want the logo/title closer,
+                          // reduce this height (250 -> 170/150).
+                          Padding(
+                            padding: const EdgeInsets.only(top: 70, bottom: 30),
+                            child: SizedBox(
+                              height: 120,
+                              child: FittedBox(
+                                fit: BoxFit.contain,
+                                child: Image.asset('assets/logo.png'),
+                              ),
+                            ),
+                          ),
+
+                          const Text(
+                            'Sign Up',
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontSize: 28,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.black87,
+                              height: 1.0,
+                            ),
+                          ),
+
+                          const SizedBox(height: 6),
+
+                          Container(
+                            height: 2,
+                            width: 150,
+                            decoration: BoxDecoration(
+                              color: brandRed,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+
+                          const SizedBox(height: 8),
+
+                          const Text(
+                            'Welcome to, IGNIS SAFE',
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black38,
+                              height: 1.1,
+                            ),
+                          ),
+
+                          const SizedBox(height: 80),
+
+                          _inputLabel('FIRST NAME:'),
+                          _buildValidatedField(
+                            hint: 'Enter your first name',
+                            controller: firstNameCtrl,
+                            validator: _validateFirstName,
+                            textInputAction: TextInputAction.next,
+                          ),
+
+                          const SizedBox(height: 25),
+
+                          _inputLabel('LAST NAME:'),
+                          _buildValidatedField(
+                            hint: 'Enter your last name',
+                            controller: lastNameCtrl,
+                            validator: _validateLastName,
+                            textInputAction: TextInputAction.next,
+                          ),
+
+                          const SizedBox(height: 25),
+
+                          _inputLabel('EMAIL ADDRESS:'),
+                          _buildValidatedField(
+                            hint: 'Enter your email address',
+                            controller: emailCtrl,
+                            keyboardType: TextInputType.emailAddress,
+                            validator: _validateEmail,
+                            textInputAction: TextInputAction.done,
+                          ),
+
+                          const SizedBox(height: 40),
+
+                          _buildRegisterButton(),
+
+                          const SizedBox(height: 10),
+
+                          // NO GMAIL / NO GOOGLE SECTION
+                          _buildFooter(),
+
+                          const SizedBox(height: 20),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
       ),
-      child: child,
     );
   }
 }

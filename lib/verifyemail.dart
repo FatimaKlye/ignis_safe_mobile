@@ -21,16 +21,8 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       List.generate(6, (_) => TextEditingController());
   final List<FocusNode> _focus = List.generate(6, (_) => FocusNode());
 
-  bool _isSending = false;   // kept for later wiring
+  bool _isSending = false; // kept for later wiring
   bool _isVerifying = false; // kept for later wiring
-
-  @override
-  void initState() {
-    super.initState();
-
-    // CONNECT LATER (auto-send OTP)
-    // _sendOtp();
-  }
 
   @override
   void dispose() {
@@ -41,60 +33,35 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
 
   String get _code => _ctrl.map((c) => c.text.trim()).join();
 
-  // CONNECT LATER (OTP send)
-  /*
-  Future<void> _sendOtp() async {
-    setState(() => _isSending = true);
-    try {
-      await supabase.auth.signInWithOtp(
-        email: widget.email,
-        emailRedirectTo: null,
-      );
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('OTP sent to your email.')),
-      );
-    } catch (_) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to send OTP.')),
-      );
-    } finally {
-      if (mounted) setState(() => _isSending = false);
-    }
-  }
-  */
-
   void _verifyLocalOnly() {
-  final code = _code.trim();
+    final code = _code.trim();
 
-  if (!RegExp(r'^\d{6}$').hasMatch(code)) {
+    if (!RegExp(r'^\d{6}$').hasMatch(code)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Enter a valid 6-digit numeric code.')),
+      );
+      return;
+    }
+
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Enter a valid 6-digit numeric code.')),
+      const SnackBar(content: Text('Accepted (UI only).')),
     );
-    return;
+
+    Future.delayed(const Duration(milliseconds: 800), () {
+      if (!mounted) return;
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => CreatePasswordPage(email: widget.email),
+        ),
+      );
+    });
   }
-
-  ScaffoldMessenger.of(context).showSnackBar(
-    const SnackBar(content: Text('Accepted (UI only).')),
-  );
-
-  // Small delay so user can see the snackbar
-  Future.delayed(const Duration(milliseconds: 800), () {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (_) => CreatePasswordPage(email: widget.email),
-      ),
-    );
-  });
-}
 
   void _onDigitChanged(int i, String v) {
     var value = v.trim();
     if (value.isEmpty) return;
 
-    // Keep ONLY digits, and keep only last character typed
     value = value.replaceAll(RegExp(r'[^0-9]'), '');
     if (value.isEmpty) {
       _ctrl[i].clear();
@@ -123,7 +90,6 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Guard: this page must have an email
     if (widget.email.trim().isEmpty) {
       return Scaffold(
         backgroundColor: Colors.white,
@@ -170,270 +136,303 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       );
     }
 
+    final screenW = MediaQuery.of(context).size.width;
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 10),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 420),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const SizedBox(height: 10),
-
-                  Image.asset(
-                    'assets/logo.png',
-                    height: 95,
-                    fit: BoxFit.contain,
-                  ),
-
-                  const SizedBox(height: 14),
-
-                  const Text(
-                    'Register',
-                    style: TextStyle(
-                      fontFamily: 'Poppins',
-                      fontSize: 28,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.black87,
-                    ),
-                  ),
-
-                  const SizedBox(height: 6),
-
-                  Container(
-                    height: 2,
-                    width: 150,
-                    decoration: BoxDecoration(
-                      color: brandRed,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-
-                  const SizedBox(height: 6),
-
-                  const Text(
-                    'Welcome to, IGNIS SAFE',
-                    style: TextStyle(
-                      fontFamily: 'Poppins',
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black38,
-                    ),
-                  ),
-
-                  const SizedBox(height: 18),
-
-                  Row(
-                    children: [
-                      IconButton(
-                        onPressed: () => Navigator.pop(context),
-                        icon: const Icon(Icons.arrow_back_ios_new, size: 18),
-                      ),
-                      const SizedBox(width: 4),
-                      const Text(
-                        'Verify your email',
-                        style: TextStyle(
-                          fontFamily: 'Poppins',
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.black87,
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 8),
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        width: 18,
-                        height: 3,
-                        decoration: BoxDecoration(
-                          color: brandRed,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      const SizedBox(width: 18),
-                      Container(
-                        width: 18,
-                        height: 3,
-                        decoration: BoxDecoration(
-                          color: Colors.black26,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      const SizedBox(width: 18),
-                      Container(
-                        width: 18,
-                        height: 3,
-                        decoration: BoxDecoration(
-                          color: Colors.black26,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 18),
-
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
-                    child: Text(
-                      'We just sent 6-digit code to\n${widget.email}, enter it bellow:',
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black54,
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 18),
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(6, (i) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 6),
-                        child: _OtpBox(
-                          controller: _ctrl[i],
-                          focusNode: _focus[i],
-                          onChanged: (v) => _onDigitChanged(i, v),
-                          onBackspace: () => _onBackspace(i),
-                        ),
-                      );
-                    }),
-                  ),
-
-                  const SizedBox(height: 22),
-
-                  SizedBox(
-                    width: double.infinity,
-                    height: 54,
-                    child: ElevatedButton(
-                      onPressed: (_isVerifying || _isSending) ? null : _verifyLocalOnly,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: brandRed,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: _isVerifying
-                          ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : const Text(
-                              'Verify email',
-                              style: TextStyle(
-                                fontFamily: 'Poppins',
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                              ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 30.0),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        // Header
+                        Padding(
+                          padding: const EdgeInsets.only(top: 70, bottom: 30),
+                          child: SizedBox(
+                            height: 120,
+                            child: FittedBox(
+                              fit: BoxFit.contain,
+                              child: Image.asset('assets/logo.png'),
                             ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        'Wrong email? ',
-                        style: TextStyle(
-                          fontFamily: 'Poppins',
-                          fontSize: 12,
-                          color: Colors.black45,
+                          ),
                         ),
-                      ),
-                      GestureDetector(
-                        onTap: () => Navigator.pop(context),
-                        child: const Text(
-                          'Send to different email',
+
+                        const Text(
+                          'Verify Email Address',
                           style: TextStyle(
                             fontFamily: 'Poppins',
-                            fontSize: 12,
+                            fontSize: 28,
                             fontWeight: FontWeight.w700,
                             color: Colors.black87,
+                            height: 1.0,
                           ),
                         ),
-                      ),
-                    ],
-                  ),
 
-                  const SizedBox(height: 26),
+                        const SizedBox(height: 6),
 
-                  Row(
-                    children: const [
-                      Expanded(
-                        child: Divider(thickness: 1, color: Color(0xFFE0E0E0)),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 12),
-                        child: Text(
-                          'OR',
+                        Container(
+                          height: 2,
+                          width: 150,
+                          decoration: BoxDecoration(
+                            color: brandRed,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+
+                        const SizedBox(height: 8),
+
+                        const Text(
+                          'Welcome to, IGNIS SAFE',
                           style: TextStyle(
                             fontFamily: 'Poppins',
                             fontSize: 12,
+                            fontWeight: FontWeight.w500,
                             color: Colors.black38,
+                            height: 1.1,
                           ),
                         ),
-                      ),
-                      Expanded(
-                        child: Divider(thickness: 1, color: Color(0xFFE0E0E0)),
-                      ),
-                    ],
-                  ),
 
-                  const SizedBox(height: 14),
+                        const SizedBox(height: 80),
 
-                  Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      'Already have an account? ',
-                      style: TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: 12,
-                        color: Colors.black38,
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(builder: (_) => const LoginPage()),
-                          (route) => false,
-                        );
-                      },
-                      child: const Text(
-                        'Log in',
-                        style: TextStyle(
-                          fontFamily: 'Poppins',
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                          color: brandRed,
+                        Row(
+                          children: [
+                            IconButton(
+                              onPressed: () => Navigator.pop(context),
+                              icon: const Icon(Icons.arrow_back_ios_new, size: 18),
+                            ),
+                            const SizedBox(width: 4),
+                            const Text(
+                              'Verify your email',
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ),
-                  ],
-                ),
 
-                  const SizedBox(height: 10),
-                ],
-              ),
-            ),
+                        const SizedBox(height: 8),
+
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              width: 18,
+                              height: 3,
+                              decoration: BoxDecoration(
+                                color: brandRed,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            const SizedBox(width: 18),
+                            Container(
+                              width: 18,
+                              height: 3,
+                              decoration: BoxDecoration(
+                                color: Colors.black26,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            const SizedBox(width: 18),
+                            Container(
+                              width: 18,
+                              height: 3,
+                              decoration: BoxDecoration(
+                                color: Colors.black26,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 18),
+
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                          child: Text(
+                            'We just sent 6-digit code to\n${widget.email}, enter it bellow:',
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontFamily: 'Poppins',
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black54,
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        // ✅ OVERFLOW FIX: responsive OTP row
+                        LayoutBuilder(
+                          builder: (context, c) {
+                            const count = 6;
+                            const gap = 8.0;
+                            final maxW = c.maxWidth;
+
+                            final boxW = ((maxW - gap * (count - 1)) / count)
+                                .clamp(34.0, 48.0);
+
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: List.generate(count, (i) {
+                                return Padding(
+                                  padding: EdgeInsets.only(
+                                      right: i == count - 1 ? 0 : gap),
+                                  child: SizedBox(
+                                    width: boxW,
+                                    height: 56,
+                                    child: _OtpBox(
+                                      controller: _ctrl[i],
+                                      focusNode: _focus[i],
+                                      onChanged: (v) => _onDigitChanged(i, v),
+                                      onBackspace: () => _onBackspace(i),
+                                    ),
+                                  ),
+                                );
+                              }),
+                            );
+                          },
+                        ),
+
+                        const SizedBox(height: 22),
+
+                        SizedBox(
+                          width: double.infinity,
+                          height: 54,
+                          child: ElevatedButton(
+                            onPressed: (_isVerifying || _isSending)
+                                ? null
+                                : _verifyLocalOnly,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: brandRed,
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: _isVerifying
+                                ? const SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : const Text(
+                                    'Verify email',
+                                    style: TextStyle(
+                                      fontFamily: 'Poppins',
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              'Wrong email? ',
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontSize: 12,
+                                color: Colors.black45,
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () => Navigator.pop(context),
+                              child: const Text(
+                                'Send to different email',
+                                style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 190),
+
+                        Row(
+                          children: const [
+                            Expanded(child: Divider(thickness: 1)),
+                            Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 12),
+                              child: Text(
+                                'OR',
+                                style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                            Expanded(child: Divider(thickness: 1)),
+                          ],
+                        ),
+
+                        const SizedBox(height: 14),
+
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              'Already have an account? ',
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontSize: 12,
+                                color: Colors.black38,
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) => const LoginPage()),
+                                  (route) => false,
+                                );
+                              },
+                              child: const Text(
+                                'Log in',
+                                style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  color: brandRed,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 10),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
           ),
         ),
       ),
@@ -456,55 +455,53 @@ class _OtpBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 48,
-      height: 56,
-      child: RawKeyboardListener(
-        focusNode: FocusNode(),
-        onKey: (event) {
-          if (event.logicalKey.keyLabel == 'Backspace') {
-            onBackspace();
-          }
-        },
-        child: TextField(
-          controller: controller,
-          focusNode: focusNode,
-          keyboardType: TextInputType.number,
-          textAlign: TextAlign.center,
-          maxLength: 1,
-          style: const TextStyle(
-            fontFamily: 'Poppins',
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-          ),
-          decoration: InputDecoration(
-            counterText: '',
-            filled: true,
-            fillColor: const Color(0xFFF3F3F3),
-            contentPadding: const EdgeInsets.symmetric(vertical: 14),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(color: Color(0xFFCCCCCC)),
-            ),
-          ),
-          onChanged: (v) {
-            // Numbers only
-            final digits = v.replaceAll(RegExp(r'[^0-9]'), '');
-            if (digits != v) {
-              controller.text = digits.isEmpty ? '' : digits.substring(digits.length - 1);
-              controller.selection = TextSelection.collapsed(offset: controller.text.length);
-            }
-            onChanged(controller.text);
-          },
+    // ✅ No fixed SizedBox here; parent controls width/height (prevents overflow)
+    return RawKeyboardListener(
+      focusNode: FocusNode(),
+      onKey: (event) {
+        if (event.logicalKey.keyLabel == 'Backspace') {
+          onBackspace();
+        }
+      },
+      child: TextField(
+        controller: controller,
+        focusNode: focusNode,
+        keyboardType: TextInputType.number,
+        textAlign: TextAlign.center,
+        maxLength: 1,
+        style: const TextStyle(
+          fontFamily: 'Poppins',
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
         ),
+        decoration: InputDecoration(
+          counterText: '',
+          filled: true,
+          fillColor: const Color(0xFFF3F3F3),
+          contentPadding: const EdgeInsets.symmetric(vertical: 14),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: const BorderSide(color: Color(0xFFCCCCCC)),
+          ),
+        ),
+        onChanged: (v) {
+          final digits = v.replaceAll(RegExp(r'[^0-9]'), '');
+          if (digits != v) {
+            controller.text =
+                digits.isEmpty ? '' : digits.substring(digits.length - 1);
+            controller.selection =
+                TextSelection.collapsed(offset: controller.text.length);
+          }
+          onChanged(controller.text);
+        },
       ),
     );
   }

@@ -4,15 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'module_1.dart/module1.dart';
-import 'module_2.dart/module2.dart';
-import 'module_3.dart/module3.dart';
 import 'module_1.dart/pre_test_module1.dart';
 import 'module_1.dart/simulation_scene.dart';
+
 import 'module_2.dart/simulation_scene.dart' as sim2;
 import 'module_3.dart/simulation_scene.dart' as sim3;
-import 'pre_test_module2.dart';
-import 'module_3.dart/pre_test_module3.dart';
+import 'module_2.dart/pre_test_module2.dart' as pre2;
+import 'module_3.dart/pre_test_module3.dart' as pre3;
 import 'profile.dart';
 import 'login.dart';
 
@@ -159,14 +157,14 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => const PreAssessmentIntroPageModule2(),
+          builder: (_) => const pre2.PreAssessmentIntroPage2(),
         ),
       );
     } else {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => const PreAssessmentIntroPage2(),
+          builder: (_) => const pre3.PreAssessmentIntroPage2(),
         ),
       );
     }

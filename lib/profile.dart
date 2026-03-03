@@ -5,7 +5,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'editprofile.dart';
-import 'login.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({

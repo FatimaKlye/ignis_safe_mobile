@@ -28,8 +28,6 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/login.png
-    - assets/logoname.png
     - assets/logo.png
     - assets/google.jpg
     - assets/fire_onboard1.png

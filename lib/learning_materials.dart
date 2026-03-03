@@ -225,7 +225,9 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
                   // ✅ LIST
                   Expanded(
                     child: ListView.separated(
+                      clipBehavior: Clip.none,
                       padding: EdgeInsets.only(
+                        top: 14,
                         bottom: 5 + MediaQuery.of(context).padding.bottom,
                       ),
                       itemCount: filtered.length,

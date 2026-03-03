@@ -11,7 +11,6 @@ class SimulationScene extends StatefulWidget {
 
 class _SimulationSceneState extends State<SimulationScene> {
   // Brand + header gradient (matches your header style)
-  static const Color brandRed = Color(0xFFB11217);
   static const Color accent = Color(0xFFB11217); // red
   static const Color accent2 = Color(0xFF2563EB); // blue
 

@@ -10,7 +10,6 @@ class SimulationScene2 extends StatefulWidget {
 }
 
 class _SimulationScene2State extends State<SimulationScene2> {
-  static const Color brandRed = Color(0xFFB11217);
   static const accent = Color(0xFF1E3A8A); // deep blue
   static const accent2 = Color(0xFF7C3AED); // purple
 
