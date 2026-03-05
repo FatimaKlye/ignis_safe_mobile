@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
-// import 'package:supabase_flutter/supabase_flutter.dart'; // CONNECT LATER (OTP email)
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'passwordvalidation.dart';
 import 'login.dart';
 
 class VerifyEmailPage extends StatefulWidget {
   final String email;
+  final String firstName;
+  final String lastName;
 
-  const VerifyEmailPage({super.key, required this.email});
+  const VerifyEmailPage({
+    super.key,
+    required this.email,
+    required this.firstName,
+    required this.lastName,
+  });
 
   @override
   State<VerifyEmailPage> createState() => _VerifyEmailPageState();
@@ -15,14 +22,32 @@ class VerifyEmailPage extends StatefulWidget {
 class _VerifyEmailPageState extends State<VerifyEmailPage> {
   static const Color brandRed = Color(0xFFB71C1C);
 
-  // final supabase = Supabase.instance.client; // CONNECT LATER (OTP email)
+  final SupabaseClient supabase = Supabase.instance.client;
 
   final List<TextEditingController> _ctrl =
       List.generate(6, (_) => TextEditingController());
   final List<FocusNode> _focus = List.generate(6, (_) => FocusNode());
 
-  bool _isSending = false; // kept for later wiring
-  bool _isVerifying = false; // kept for later wiring
+  bool _isSending = false;
+  bool _isVerifying = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+
+      // focus first box
+      if (_focus.isNotEmpty) _focus[0].requestFocus();
+
+      // auto-send otp
+      final email = widget.email.trim();
+      if (email.isNotEmpty) {
+        await _sendOtp(showToast: false);
+      }
+    });
+  }
 
   @override
   void dispose() {
@@ -31,42 +56,112 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     super.dispose();
   }
 
-  String get _code => _ctrl.map((c) => c.text.trim()).join();
+  String get _code => _ctrl.map((c) => c.text).join();
+  bool get _codeComplete => RegExp(r'^\d{6}$').hasMatch(_code);
 
-  void _verifyLocalOnly() {
-    final code = _code.trim();
+  void _clearOtp() {
+    for (final c in _ctrl) {
+      c.clear();
+    }
+    if (_focus.isNotEmpty) _focus[0].requestFocus();
+    setState(() {});
+  }
 
-    if (!RegExp(r'^\d{6}$').hasMatch(code)) {
+  Future<void> _sendOtp({bool showToast = true}) async {
+    if (_isSending) return;
+
+    final email = widget.email.trim();
+    if (email.isEmpty) return;
+
+    setState(() => _isSending = true);
+
+    try {
+      await supabase.auth.signInWithOtp(
+        email: email,
+        shouldCreateUser: true,
+      );
+
+      if (!mounted) return;
+      if (showToast) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('OTP sent. Check your email inbox/spam.')),
+        );
+      }
+    } on AuthException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message)),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error sending OTP: $e')),
+      );
+    } finally {
+      if (mounted) setState(() => _isSending = false);
+    }
+  }
+
+  Future<void> _verifyOtp() async {
+    if (_isVerifying) return;
+
+    final email = widget.email.trim();
+    if (email.isEmpty) return;
+
+    if (!_codeComplete) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Enter a valid 6-digit numeric code.')),
       );
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Accepted (UI only).')),
-    );
+    setState(() => _isVerifying = true);
 
-    Future.delayed(const Duration(milliseconds: 800), () {
+    try {
+      await supabase.auth.verifyOTP(
+        type: OtpType.email,
+        email: email,
+        token: _code,
+      );
+
       if (!mounted) return;
+
+      // IMPORTANT: Always go to Create Password after OTP is correct.
+      // (To prevent jumping to Home, you must NOT auto-route based on session in main.dart.)
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (_) => CreatePasswordPage(email: widget.email),
+          builder: (_) => CreatePasswordPage(
+            email: widget.email,
+            firstName: widget.firstName,
+            lastName: widget.lastName,
+          ),
         ),
       );
-    });
+    } on AuthException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message)),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error verifying OTP: $e')),
+      );
+    } finally {
+      if (mounted) setState(() => _isVerifying = false);
+    }
   }
 
   void _onDigitChanged(int i, String v) {
-    var value = v.trim();
-    if (value.isEmpty) return;
+    var value = v.replaceAll(RegExp(r'[^0-9]'), '');
 
-    value = value.replaceAll(RegExp(r'[^0-9]'), '');
     if (value.isEmpty) {
       _ctrl[i].clear();
+      setState(() {});
       return;
     }
+
     if (value.length > 1) value = value.substring(value.length - 1);
 
     _ctrl[i].text = value;
@@ -86,11 +181,14 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       _ctrl[i - 1].selection =
           TextSelection.collapsed(offset: _ctrl[i - 1].text.length);
     }
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    if (widget.email.trim().isEmpty) {
+    final email = widget.email.trim();
+
+    if (email.isEmpty) {
       return Scaffold(
         backgroundColor: Colors.white,
         body: SafeArea(
@@ -136,8 +234,6 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       );
     }
 
-    final screenW = MediaQuery.of(context).size.width;
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -154,7 +250,6 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        // Header
                         Padding(
                           padding: const EdgeInsets.only(top: 70, bottom: 30),
                           child: SizedBox(
@@ -165,7 +260,6 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                             ),
                           ),
                         ),
-
                         const Text(
                           'Verify Email Address',
                           style: TextStyle(
@@ -176,9 +270,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                             height: 1.0,
                           ),
                         ),
-
                         const SizedBox(height: 6),
-
                         Container(
                           height: 2,
                           width: 150,
@@ -187,9 +279,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-
                         const SizedBox(height: 8),
-
                         const Text(
                           'Welcome to, IGNIS SAFE',
                           style: TextStyle(
@@ -200,14 +290,13 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                             height: 1.1,
                           ),
                         ),
-
                         const SizedBox(height: 80),
-
                         Row(
                           children: [
                             IconButton(
                               onPressed: () => Navigator.pop(context),
-                              icon: const Icon(Icons.arrow_back_ios_new, size: 18),
+                              icon:
+                                  const Icon(Icons.arrow_back_ios_new, size: 18),
                             ),
                             const SizedBox(width: 4),
                             const Text(
@@ -221,9 +310,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                             ),
                           ],
                         ),
-
                         const SizedBox(height: 8),
-
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -255,13 +342,11 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                             ),
                           ],
                         ),
-
                         const SizedBox(height: 18),
-
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 4),
                           child: Text(
-                            'We just sent 6-digit code to\n${widget.email}, enter it bellow:',
+                            'We just sent a 6-digit code to\n$email\nEnter it below:',
                             textAlign: TextAlign.center,
                             style: const TextStyle(
                               fontFamily: 'Poppins',
@@ -271,10 +356,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                             ),
                           ),
                         ),
-
                         const SizedBox(height: 20),
-
-                        // ✅ OVERFLOW FIX: responsive OTP row
                         LayoutBuilder(
                           builder: (context, c) {
                             const count = 6;
@@ -305,16 +387,49 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                             );
                           },
                         ),
-
-                        const SizedBox(height: 22),
-
+                        const SizedBox(height: 14),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            TextButton(
+                              onPressed: (_isVerifying || _isSending)
+                                  ? null
+                                  : _clearOtp,
+                              child: const Text(
+                                'Clear',
+                                style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.black54,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            TextButton(
+                              onPressed: (_isVerifying || _isSending)
+                                  ? null
+                                  : () => _sendOtp(showToast: true),
+                              child: const Text(
+                                'Resend code',
+                                style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  color: brandRed,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
                         SizedBox(
                           width: double.infinity,
                           height: 54,
                           child: ElevatedButton(
                             onPressed: (_isVerifying || _isSending)
                                 ? null
-                                : _verifyLocalOnly,
+                                : _verifyOtp,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: brandRed,
                               elevation: 0,
@@ -331,9 +446,9 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                                       color: Colors.white,
                                     ),
                                   )
-                                : const Text(
-                                    'Verify email',
-                                    style: TextStyle(
+                                : Text(
+                                    _codeComplete ? 'Verify email' : 'Enter code',
+                                    style: const TextStyle(
                                       fontFamily: 'Poppins',
                                       fontSize: 14,
                                       fontWeight: FontWeight.w600,
@@ -342,57 +457,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                                   ),
                           ),
                         ),
-
-                        const SizedBox(height: 16),
-
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Text(
-                              'Wrong email? ',
-                              style: TextStyle(
-                                fontFamily: 'Poppins',
-                                fontSize: 12,
-                                color: Colors.black45,
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: () => Navigator.pop(context),
-                              child: const Text(
-                                'Send to different email',
-                                style: TextStyle(
-                                  fontFamily: 'Poppins',
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.black87,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        const SizedBox(height: 190),
-
-                        Row(
-                          children: const [
-                            Expanded(child: Divider(thickness: 1)),
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 12),
-                              child: Text(
-                                'OR',
-                                style: TextStyle(
-                                  fontFamily: 'Poppins',
-                                  color: Colors.grey,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                            Expanded(child: Divider(thickness: 1)),
-                          ],
-                        ),
-
-                        const SizedBox(height: 14),
-
+                        const SizedBox(height: 18),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -425,8 +490,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                             ),
                           ],
                         ),
-
-                        const SizedBox(height: 10),
+                        const SizedBox(height: 20),
                       ],
                     ),
                   ),
@@ -455,13 +519,10 @@ class _OtpBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // ✅ No fixed SizedBox here; parent controls width/height (prevents overflow)
     return RawKeyboardListener(
       focusNode: FocusNode(),
       onKey: (event) {
-        if (event.logicalKey.keyLabel == 'Backspace') {
-          onBackspace();
-        }
+        if (event.logicalKey.keyLabel == 'Backspace') onBackspace();
       },
       child: TextField(
         controller: controller,

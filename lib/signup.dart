@@ -55,11 +55,21 @@ class _RegisterPageState extends State<RegisterPage> {
     if (!ok) return;
 
     final email = emailCtrl.text.trim();
+    final first = firstNameCtrl.text.trim();
+    final last = lastNameCtrl.text.trim();
+
+    // Prevent LoginPage's auth-state listener from redirecting to Home
+    // while the user is still in the registration flow.
+    LoginPage.skipAutoRoute = true;
 
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => VerifyEmailPage(email: email),
+        builder: (_) => VerifyEmailPage(
+          email: email,
+          firstName: first,
+          lastName: last,
+        ),
       ),
     );
   }
@@ -152,14 +162,14 @@ class _RegisterPageState extends State<RegisterPage> {
           ),
           onPressed: _register,
           child: const Text(
-                  'Verify Account',
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+            'Verify Account',
+            style: TextStyle(
+              fontFamily: 'Poppins',
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ),
       );
 
@@ -184,7 +194,6 @@ class _RegisterPageState extends State<RegisterPage> {
             ],
           ),
           const SizedBox(height: 10),
-          
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -239,8 +248,6 @@ class _RegisterPageState extends State<RegisterPage> {
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          // NOTE: If you want the logo/title closer,
-                          // reduce this height (250 -> 170/150).
                           Padding(
                             padding: const EdgeInsets.only(top: 70, bottom: 30),
                             child: SizedBox(
@@ -251,7 +258,6 @@ class _RegisterPageState extends State<RegisterPage> {
                               ),
                             ),
                           ),
-
                           const Text(
                             'Sign Up',
                             style: TextStyle(
@@ -262,9 +268,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               height: 1.0,
                             ),
                           ),
-
                           const SizedBox(height: 6),
-
                           Container(
                             height: 2,
                             width: 150,
@@ -273,9 +277,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               borderRadius: BorderRadius.circular(8),
                             ),
                           ),
-
                           const SizedBox(height: 8),
-
                           const Text(
                             'Welcome to, IGNIS SAFE',
                             style: TextStyle(
@@ -286,9 +288,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               height: 1.1,
                             ),
                           ),
-
                           const SizedBox(height: 80),
-
                           _inputLabel('FIRST NAME:'),
                           _buildValidatedField(
                             hint: 'Enter your first name',
@@ -296,9 +296,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             validator: _validateFirstName,
                             textInputAction: TextInputAction.next,
                           ),
-
                           const SizedBox(height: 25),
-
                           _inputLabel('LAST NAME:'),
                           _buildValidatedField(
                             hint: 'Enter your last name',
@@ -306,9 +304,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             validator: _validateLastName,
                             textInputAction: TextInputAction.next,
                           ),
-
                           const SizedBox(height: 25),
-
                           _inputLabel('EMAIL ADDRESS:'),
                           _buildValidatedField(
                             hint: 'Enter your email address',
@@ -317,16 +313,10 @@ class _RegisterPageState extends State<RegisterPage> {
                             validator: _validateEmail,
                             textInputAction: TextInputAction.done,
                           ),
-
                           const SizedBox(height: 40),
-
                           _buildRegisterButton(),
-
                           const SizedBox(height: 10),
-
-                          // NO GMAIL / NO GOOGLE SECTION
                           _buildFooter(),
-
                           const SizedBox(height: 20),
                         ],
                       ),

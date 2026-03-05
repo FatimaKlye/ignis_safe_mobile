@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'login.dart';
 
 class CreatePasswordPage extends StatefulWidget {
   final String email;
+  final String firstName;
+  final String lastName;
 
-  const CreatePasswordPage({super.key, required this.email});
+  const CreatePasswordPage({
+    super.key,
+    required this.email,
+    required this.firstName,
+    required this.lastName,
+  });
 
   @override
   State<CreatePasswordPage> createState() => _CreatePasswordPageState();
@@ -19,6 +27,8 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
   bool _min8 = false;
   bool _hasNumber = false;
   bool _hasSymbol = false;
+
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -87,7 +97,9 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
 
   bool get _allOk => _passedRules == 3;
 
-  void _continueLocalOnly() {
+  Future<void> _continueWithSupabase() async {
+    if (_isLoading) return;
+
     if (!_allOk) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Password does not meet requirements.')),
@@ -95,74 +107,125 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
       return;
     }
 
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        contentPadding: const EdgeInsets.fromLTRB(24, 28, 24, 20),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.check_circle_rounded, color: Color(0xFF2E7D32), size: 64),
-            const SizedBox(height: 16),
-            const Text(
-              'Account Created!',
-              style: TextStyle(
-                fontFamily: 'Poppins',
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-                color: Colors.black87,
+    setState(() => _isLoading = true);
+
+    final supabase = Supabase.instance.client;
+
+    try {
+      final password = passCtrl.text;
+
+      // After verifyOTP, user is authenticated but may not have a password yet.
+      // This sets the password for the current authenticated user.
+      final update = await supabase.auth.updateUser(
+        UserAttributes(password: password),
+      );
+
+      final user = update.user ?? supabase.auth.currentUser;
+      if (user == null) {
+        throw const AuthException('No active user session. Verify OTP again.');
+      }
+
+      // Create/Update profiles row (id = auth user id)
+      await supabase.from('profiles').upsert({
+        'id': user.id,
+        'first_name': widget.firstName.trim(),
+        'last_name': widget.lastName.trim(),
+        'email': widget.email.trim(),
+      });
+
+      if (!mounted) return;
+
+      // Success dialog (same UI behavior as your local-only version)
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+          contentPadding: const EdgeInsets.fromLTRB(24, 28, 24, 20),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.check_circle_rounded,
+                color: Color(0xFF2E7D32),
+                size: 64,
               ),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Your account has been successfully created.',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontFamily: 'Poppins',
-                fontSize: 12,
-                color: Colors.black54,
-              ),
-            ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              height: 48,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: brandRed,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                onPressed: () {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (_) => const LoginPage()),
-                    (route) => false,
-                  );
-                },
-                child: const Text(
-                  'Go to Login',
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
+              const SizedBox(height: 16),
+              const Text(
+                'Account Created!',
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.black87,
                 ),
               ),
-            ),
-          ],
+              const SizedBox(height: 8),
+              const Text(
+                'Your account has been successfully created.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 12,
+                  color: Colors.black54,
+                ),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: brandRed,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  onPressed: () async {
+                    // Ensure user ends the registration flow logged-out,
+                    // so they must login with email+password next.
+                    await supabase.auth.signOut();
+                    if (!context.mounted) return;
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (_) => const LoginPage()),
+                      (route) => false,
+                    );
+                  },
+                  child: const Text(
+                    'Go to Login',
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    } on AuthException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message)),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    // UI copied from your createpassword.dart (NO layout/styling changes)
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -342,8 +405,8 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                                     const BorderSide(color: Color(0xFFCCCCCC)),
                               ),
                               suffixIcon: IconButton(
-                                onPressed: () => setState(
-                                    () => _showPassword = !_showPassword),
+                                onPressed: () =>
+                                    setState(() => _showPassword = !_showPassword),
                                 icon: Icon(
                                   _showPassword
                                       ? Icons.visibility
@@ -366,8 +429,7 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                             child: LinearProgressIndicator(
                               value: _progress,
                               backgroundColor: const Color(0xFFE6E6E6),
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(_barColor),
+                              valueColor: AlwaysStoppedAnimation<Color>(_barColor),
                               minHeight: 6,
                             ),
                           ),
@@ -402,7 +464,7 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                           width: double.infinity,
                           height: 54,
                           child: ElevatedButton(
-                            onPressed: _continueLocalOnly,
+                            onPressed: _isLoading ? null : _continueWithSupabase,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: brandRed,
                               elevation: 0,
@@ -410,15 +472,24 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                                 borderRadius: BorderRadius.circular(12),
                               ),
                             ),
-                            child: const Text(
-                              'Continue',
-                              style: TextStyle(
-                                fontFamily: 'Poppins',
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                              ),
-                            ),
+                            child: _isLoading
+                                ? const SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : const Text(
+                                    'Continue',
+                                    style: TextStyle(
+                                      fontFamily: 'Poppins',
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.white,
+                                    ),
+                                  ),
                           ),
                         ),
 

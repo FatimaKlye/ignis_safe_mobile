@@ -1,10 +1,9 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'login.dart';
 import 'signup.dart';
-import 'home.dart'; // <-- contains IgnisHomePage (navbar shell)
+import 'home.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,38 +16,11 @@ Future<void> main() async {
   runApp(const MyApp());
 }
 
-final supabase = Supabase.instance.client;
-
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  StreamSubscription<AuthState>? _authSub;
-
-  @override
-  void initState() {
-    super.initState();
-
-    // Rebuild app when auth changes (login/logout)
-    _authSub = supabase.auth.onAuthStateChange.listen((_) {
-      if (mounted) setState(() {});
-    });
-  }
-
-  @override
-  void dispose() {
-    _authSub?.cancel();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final session = supabase.auth.currentSession;
-
     return MaterialApp(
       title: 'Ignis Safe',
       debugShowCheckedModeBanner: false,
@@ -57,10 +29,11 @@ class _MyAppState extends State<MyApp> {
         useMaterial3: true,
       ),
 
-      // IMPORTANT: Let home decide what to show.
-      home: session == null ? const LoginPage() : const IgnisHomePage(),
+      // IMPORTANT:
+      // Always start on Login. Do NOT auto-route to home just because session exists.
+      // This prevents OTP verification from jumping to Home.
+      home: const LoginPage(),
 
-      // Keep routes for explicit navigation if you want them.
       routes: {
         '/login': (_) => const LoginPage(),
         '/signup': (_) => const RegisterPage(),

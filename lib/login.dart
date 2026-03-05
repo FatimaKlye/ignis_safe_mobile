@@ -11,6 +11,10 @@ import 'terms.dart';
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
+  /// Set to true during the registration flow to prevent the auth-state
+  /// listener from auto-routing to Home when OTP is verified.
+  static bool skipAutoRoute = false;
+
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
@@ -45,6 +49,9 @@ class _LoginPageState extends State<LoginPage> {
 
       if (!mounted) return;
 
+      // Skip auto-routing during the registration flow (OTP verify → password creation).
+      if (LoginPage.skipAutoRoute) return;
+
       // Google OAuth completes asynchronously; this event is the reliable signal.
       if (event == AuthChangeEvent.signedIn && session != null) {
         _goNext();
@@ -53,6 +60,9 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _routeIfAlreadySignedIn() {
+    // Don't auto-route if we just returned from the registration flow.
+    if (LoginPage.skipAutoRoute) return;
+
     final session = supabase.auth.currentSession;
     if (session != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
