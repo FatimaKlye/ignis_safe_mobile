@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 enum AboutFilter { all, about, team, bfpDasmarinas , contacts }
 
@@ -12,10 +13,38 @@ class AboutUsPage extends StatefulWidget {
 class _AboutUsPageState extends State<AboutUsPage> {
   static const Color brandRed = Color(0xFFB11217);
 
+  String _firstName = '';
+  String _lastName = '';
+  String? _avatarUrl;
+
   // navbar
   // search + filter
   String _searchQuery = '';
   AboutFilter _filter = AboutFilter.all;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfile();
+  }
+
+  Future<void> _loadProfile() async {
+    try {
+      final user = Supabase.instance.client.auth.currentUser;
+      if (user == null) return;
+      final data = await Supabase.instance.client
+          .from('profiles')
+          .select('first_name, last_name, avatar_url')
+          .eq('id', user.id)
+          .maybeSingle();
+      if (!mounted || data == null) return;
+      setState(() {
+        _firstName = data['first_name'] ?? '';
+        _lastName = data['last_name'] ?? '';
+        _avatarUrl = data['avatar_url'] as String?;
+      });
+    } catch (_) {}
+  }
 
   void _onSearchChanged(String v) => setState(() => _searchQuery = v);
 
@@ -94,24 +123,32 @@ class _AboutUsPageState extends State<AboutUsPage> {
                       // header (kept from your code)
                       Row(
                         children: [
-                          const CircleAvatar(
+                          CircleAvatar(
                             radius: 22,
-                            backgroundImage: AssetImage("assets/avatar.png"),
+                            backgroundColor: Colors.grey.shade400,
+                            backgroundImage: _avatarUrl != null
+                                ? NetworkImage(_avatarUrl!) as ImageProvider
+                                : null,
+                            child: _avatarUrl == null
+                                ? const Icon(Icons.person, size: 22, color: Colors.white)
+                                : null,
                           ),
                           const SizedBox(width: 10),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
+                            children: [
                               Text(
-                                "Hi, Andrei Quias",
-                                style: TextStyle(
+                                _firstName.isEmpty && _lastName.isEmpty
+                                    ? 'Hi!'
+                                    : 'Hi, $_firstName $_lastName'.trim(),
+                                style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 12,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
-                              SizedBox(height: 2),
-                              Text(
+                              const SizedBox(height: 2),
+                              const Text(
                                 "Welcome to Ignis Safe",
                                 style: TextStyle(
                                   color: Colors.black,

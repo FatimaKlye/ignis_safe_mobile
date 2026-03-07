@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'preassessment_extinguisher.dart';
 
 
 class PreAssessmentIntroPage extends StatelessWidget {
@@ -223,7 +224,7 @@ class PreAssessmentIntroPage extends StatelessWidget {
                                         context,
                                         MaterialPageRoute(
                                           builder: (_) =>
-                                              const PreAssessmentQuestionsPage(),
+                                              const PreAssessmentExtinguisherPage(),
                                         ),
                                       );
                                     },

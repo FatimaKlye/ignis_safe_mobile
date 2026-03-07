@@ -29,6 +29,7 @@ flutter:
 
   assets:
     - assets/logo.png
+    - assets/avatar.png
     - assets/google.jpg
     - assets/fire_onboard1.png
     - assets/onboard2.png

@@ -17,6 +17,43 @@ class LearningMaterialsTab extends StatefulWidget {
 
 class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
   String searchQuery = "";
+  String _firstName = '';
+  String _lastName = '';
+  String? _avatarUrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfile();
+  }
+
+  Future<void> _loadProfile() async {
+    try {
+      final user = Supabase.instance.client.auth.currentUser;
+      if (user == null) return;
+      final data = await Supabase.instance.client
+          .from('profiles')
+          .select('first_name, last_name')
+          .eq('id', user.id)
+          .maybeSingle();
+      if (!mounted || data == null) return;
+      setState(() {
+        _firstName = data['first_name'] ?? '';
+        _lastName = data['last_name'] ?? '';
+      });
+      // avatar_url fetched separately — column may not exist yet
+      try {
+        final av = await Supabase.instance.client
+            .from('profiles')
+            .select('avatar_url')
+            .eq('id', user.id)
+            .maybeSingle();
+        if (mounted && av != null) {
+          setState(() => _avatarUrl = av['avatar_url'] as String?);
+        }
+      } catch (_) {}
+    } catch (_) {}
+  }
 
   final List<_ModuleItem> modules = const [
     _ModuleItem(
@@ -56,21 +93,16 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
   }
 
   Future<void> _goToProfile() async {
-    // OPTION A (recommended for your current file): push Profile page
-    Navigator.push(
+    await Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => const ProfilePage()),
+      MaterialPageRoute(
+        builder: (_) => ProfilePage(
+          name: '$_firstName $_lastName'.trim(),
+        ),
+      ),
     );
-
-    // OPTION B (only if your app uses a main navbar screen and you want to jump tabs):
-    // final prefs = await SharedPreferences.getInstance();
-    // await prefs.setInt('last_tab_index', _profileTabIndex);
-    // if (!mounted) return;
-    // Navigator.pushAndRemoveUntil(
-    //   context,
-    //   MaterialPageRoute(builder: (_) => const MainNavShell()), // <-- replace with YOUR navbar screen
-    //   (route) => false,
-    // );
+    // Refresh header name in case the user edited their profile
+    if (mounted) _loadProfile();
   }
 
   @override
@@ -142,25 +174,31 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
                             ),
                           ),
                         ],
-                        child: const CircleAvatar(
+                        child: CircleAvatar(
                           radius: 22,
-                          backgroundImage: AssetImage("assets/avatar.png"),
+                          backgroundColor: Colors.grey.shade400,
+                          backgroundImage: _avatarUrl != null
+                              ? NetworkImage(_avatarUrl!) as ImageProvider
+                              : null,
+                          child: _avatarUrl == null
+                              ? const Icon(Icons.person, size: 22, color: Colors.white)
+                              : null,
                         ),
                       ),
                       const SizedBox(width: 10),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
+                        children: [
                           Text(
-                            "Hi, Andrei Quias",
-                            style: TextStyle(
+                            'Hi, $_firstName $_lastName'.trim() == 'Hi,' ? 'Hi!' : 'Hi, $_firstName $_lastName'.trim(),
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
-                          SizedBox(height: 2),
-                          Text(
+                          const SizedBox(height: 2),
+                          const Text(
                             "Welcome to Ignis Safe",
                             style: TextStyle(
                               color: Colors.black,

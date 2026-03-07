@@ -28,6 +28,33 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
 
   String _searchQuery = "";
   ModuleFilter _filter = ModuleFilter.all;
+  String _firstName = '';
+  String _lastName = '';
+  String? _avatarUrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfile();
+  }
+
+  Future<void> _loadProfile() async {
+    try {
+      final user = Supabase.instance.client.auth.currentUser;
+      if (user == null) return;
+      final data = await Supabase.instance.client
+          .from('profiles')
+          .select('first_name, last_name, avatar_url')
+          .eq('id', user.id)
+          .maybeSingle();
+      if (!mounted || data == null) return;
+      setState(() {
+        _firstName = data['first_name'] ?? '';
+        _lastName = data['last_name'] ?? '';
+        _avatarUrl = data['avatar_url'] as String?;
+      });
+    } catch (_) {}
+  }
 
   final List<_ModuleItem> _modules = const [
     _ModuleItem(
@@ -310,25 +337,33 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
                             ),
                           ),
                         ],
-                        child: const CircleAvatar(
+                        child: CircleAvatar(
                           radius: 22,
-                          backgroundImage: AssetImage("assets/avatar.png"),
+                          backgroundColor: Colors.grey.shade400,
+                          backgroundImage: _avatarUrl != null
+                              ? NetworkImage(_avatarUrl!) as ImageProvider
+                              : null,
+                          child: _avatarUrl == null
+                              ? const Icon(Icons.person, size: 22, color: Colors.white)
+                              : null,
                         ),
                       ),
                       const SizedBox(width: 10),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
+                        children: [
                           Text(
-                            "Hi, Andrei Quias",
-                            style: TextStyle(
+                            _firstName.isEmpty && _lastName.isEmpty
+                                ? 'Hi!'
+                                : 'Hi, $_firstName $_lastName'.trim(),
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
-                          SizedBox(height: 2),
-                          Text(
+                          const SizedBox(height: 2),
+                          const Text(
                             "Welcome to Ignis Safe",
                             style: TextStyle(
                               color: Colors.black,
