@@ -1,18 +1,21 @@
 // fire_materials_tab.dart
 import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'module_1.dart/pre_test_module1.dart';
+import 'login.dart';
+import 'profile.dart';
+
+import 'module_1.dart/preassessment_extinguisher.dart';
 import 'module_1.dart/simulation_scene.dart';
 
+import 'module_2.dart/preassessment_electrical.dart';
 import 'module_2.dart/simulation_scene.dart' as sim2;
-import 'module_3.dart/simulation_scene.dart' as sim3;
-import 'module_2.dart/pre_test_module2.dart' as pre2;
+
 import 'module_3.dart/pre_test_module3.dart' as pre3;
-import 'profile.dart';
-import 'login.dart';
+import 'module_3.dart/simulation_scene.dart' as sim3;
 
 enum ModuleFilter { all, pending, inProgress, completed }
 
@@ -28,37 +31,23 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
 
   String _searchQuery = "";
   ModuleFilter _filter = ModuleFilter.all;
+
   String _firstName = '';
   String _lastName = '';
   String? _avatarUrl;
 
-  @override
-  void initState() {
-    super.initState();
-    _loadProfile();
-  }
+  bool _isProgressLoading = true;
 
-  Future<void> _loadProfile() async {
-    try {
-      final user = Supabase.instance.client.auth.currentUser;
-      if (user == null) return;
-      final data = await Supabase.instance.client
-          .from('profiles')
-          .select('first_name, last_name, avatar_url')
-          .eq('id', user.id)
-          .maybeSingle();
-      if (!mounted || data == null) return;
-      setState(() {
-        _firstName = data['first_name'] ?? '';
-        _lastName = data['last_name'] ?? '';
-        _avatarUrl = data['avatar_url'] as String?;
-      });
-    } catch (_) {}
-  }
+  final Map<int, String> _moduleDbIdByNo = {};
+  final Map<int, ModuleProgress> _progressByModuleNo = {
+    1: const ModuleProgress(preDone: false, simDone: false, postDone: false),
+    2: const ModuleProgress(preDone: false, simDone: false, postDone: false),
+    3: const ModuleProgress(preDone: false, simDone: false, postDone: false),
+  };
 
   final List<_ModuleItem> _modules = const [
     _ModuleItem(
-      moduleId: "1",
+      moduleNo: 1,
       moduleLabel: "MODULE 1",
       title: "FIRE EXTINGUISHER",
       description:
@@ -66,7 +55,7 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
       asset: "assets/fire_ex.png",
     ),
     _ModuleItem(
-      moduleId: "2",
+      moduleNo: 2,
       moduleLabel: "MODULE 2",
       title: "ELECTRICAL FIRE",
       description:
@@ -74,7 +63,7 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
       asset: "assets/electrical.png",
     ),
     _ModuleItem(
-      moduleId: "3",
+      moduleNo: 3,
       moduleLabel: "MODULE 3",
       title: "KITCHEN FIRE",
       description:
@@ -83,13 +72,115 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
     ),
   ];
 
+  @override
+  void initState() {
+    super.initState();
+    _loadProfile();
+    _loadModuleProgressFromDatabase();
+  }
+
   void _onSearchChanged(String v) => setState(() => _searchQuery = v);
 
-  // ✅ Your logout (fixed + included here so it won't error)
+  Future<void> _loadProfile() async {
+    try {
+      final user = Supabase.instance.client.auth.currentUser;
+      if (user == null) return;
+
+      final data = await Supabase.instance.client
+          .from('profiles')
+          .select('first_name, last_name, avatar_url')
+          .eq('id', user.id)
+          .maybeSingle();
+
+      if (!mounted || data == null) return;
+
+      setState(() {
+        _firstName = (data['first_name'] ?? '').toString();
+        _lastName = (data['last_name'] ?? '').toString();
+        _avatarUrl = data['avatar_url'] as String?;
+      });
+    } catch (e) {
+      debugPrint('Failed to load profile: $e');
+    }
+  }
+
+  Future<void> _loadModuleProgressFromDatabase() async {
+    try {
+      final user = Supabase.instance.client.auth.currentUser;
+      if (user == null) {
+        if (!mounted) return;
+        setState(() => _isProgressLoading = false);
+        return;
+      }
+
+      final moduleRows = await Supabase.instance.client
+          .from('modules')
+          .select('id, module_no')
+          .inFilter('module_no', [1, 2, 3]);
+
+      final moduleDbIdByNo = <int, String>{};
+      final moduleNoByDbId = <String, int>{};
+
+      for (final row in moduleRows) {
+        final moduleNo = row['module_no'] as int;
+        final moduleId = row['id'].toString();
+        moduleDbIdByNo[moduleNo] = moduleId;
+        moduleNoByDbId[moduleId] = moduleNo;
+      }
+
+      final progressMap = <int, ModuleProgress>{
+        1: const ModuleProgress(preDone: false, simDone: false, postDone: false),
+        2: const ModuleProgress(preDone: false, simDone: false, postDone: false),
+        3: const ModuleProgress(preDone: false, simDone: false, postDone: false),
+      };
+
+      if (moduleDbIdByNo.isNotEmpty) {
+        final progressRows = await Supabase.instance.client
+            .from('module_progress')
+            .select(
+              'module_id, pre_test_completed_at, simulation_completed_at, post_test_completed_at',
+            )
+            .eq('user_id', user.id)
+            .inFilter('module_id', moduleDbIdByNo.values.toList());
+
+        for (final row in progressRows) {
+          final moduleId = row['module_id'].toString();
+          final moduleNo = moduleNoByDbId[moduleId];
+          if (moduleNo == null) continue;
+
+          progressMap[moduleNo] = ModuleProgress(
+            preDone: row['pre_test_completed_at'] != null,
+            simDone: row['simulation_completed_at'] != null,
+            postDone: row['post_test_completed_at'] != null,
+          );
+        }
+      }
+
+      if (!mounted) return;
+
+      setState(() {
+        _moduleDbIdByNo
+          ..clear()
+          ..addAll(moduleDbIdByNo);
+
+        _progressByModuleNo
+          ..clear()
+          ..addAll(progressMap);
+
+        _isProgressLoading = false;
+      });
+    } catch (e) {
+      debugPrint('Failed to load module progress: $e');
+      if (!mounted) return;
+      setState(() => _isProgressLoading = false);
+    }
+  }
+
   Future<void> _logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('last_tab_index');
     await Supabase.instance.client.auth.signOut();
+
     if (!mounted) return;
 
     Navigator.pushAndRemoveUntil(
@@ -101,25 +192,36 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
 
   Future<void> _goToProfile() async {
     if (!mounted) return;
-    Navigator.push(
+
+    await Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => const ProfilePage()),
     );
+
+    await _loadProfile();
+    await _loadModuleProgressFromDatabase();
   }
 
-  // ---------- POPUP TRIGGER FROM "VIEW" ----------
   Future<void> _openModuleActions(_ModuleItem m) async {
-    final progress = await ModuleProgressStore.load(m.moduleId);
+    final progress = _progressByModuleNo[m.moduleNo] ??
+        const ModuleProgress(preDone: false, simDone: false, postDone: false);
+
     if (!mounted) return;
 
     await _showCenteredPopup(m, progress);
 
-    if (mounted) setState(() {}); // refresh progress UI after closing
+    if (mounted) {
+      setState(() {});
+    }
   }
 
-  // ---------- Centered popup with blur ----------
-  Future<void> _showCenteredPopup(_ModuleItem m, ModuleProgress progress) async {
+  Future<void> _showCenteredPopup(
+    _ModuleItem m,
+    ModuleProgress progress,
+  ) async {
     if (!mounted) return;
+
+    final postLocked = !progress.simDone;
 
     await showGeneralDialog(
       context: context,
@@ -140,6 +242,7 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
                   moduleLabel: m.moduleLabel,
                   moduleTitle: m.title,
                   progress: progress,
+                  postLocked: postLocked,
                   onClose: () => Navigator.pop(context),
                   onPreTap: () {
                     Navigator.pop(context);
@@ -160,7 +263,8 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
         );
       },
       transitionBuilder: (_, anim, __, child) {
-        final curved = CurvedAnimation(parent: anim, curve: Curves.easeOutCubic);
+        final curved =
+            CurvedAnimation(parent: anim, curve: Curves.easeOutCubic);
         return FadeTransition(
           opacity: curved,
           child: ScaleTransition(
@@ -172,67 +276,72 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
     );
   }
 
-  void _goToPre(_ModuleItem m) {
-    if (m.moduleId == "1") {
-      Navigator.push(
+  Future<void> _goToPre(_ModuleItem m) async {
+    if (m.moduleNo == 1) {
+      await Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => const PreAssessmentIntroPage(),
+          builder: (_) => const PreAssessmentExtinguisherPage(),
         ),
       );
-    } else if (m.moduleId == "2") {
-      Navigator.push(
+    } else if (m.moduleNo == 2) {
+      await Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => const pre2.PreAssessmentIntroPage2(),
+          builder: (_) => const PreAssessmentElectricalPage(),
         ),
       );
     } else {
-      Navigator.push(
+      await Navigator.push(
         context,
         MaterialPageRoute(
           builder: (_) => const pre3.PreAssessmentIntroPage2(),
         ),
       );
     }
+
+    await _loadModuleProgressFromDatabase();
   }
 
-  void _goToSim(_ModuleItem m) {
-    if (m.moduleId == "1") {
-      Navigator.push(
+  Future<void> _goToSim(_ModuleItem m) async {
+    if (m.moduleNo == 1) {
+      await Navigator.push(
         context,
         MaterialPageRoute(
           builder: (_) => const SimulationScene(),
         ),
       );
-    } else if (m.moduleId == "2") {
-      Navigator.push(
+    } else if (m.moduleNo == 2) {
+      await Navigator.push(
         context,
         MaterialPageRoute(
           builder: (_) => const sim2.SimulationScene2(),
         ),
       );
     } else {
-      Navigator.push(
+      await Navigator.push(
         context,
         MaterialPageRoute(
           builder: (_) => const sim3.SimulationScene3(),
         ),
       );
     }
+
+    await _loadModuleProgressFromDatabase();
   }
 
-  void _goToPost(_ModuleItem m) {
-    Navigator.push(
+  Future<void> _goToPost(_ModuleItem m) async {
+    await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) =>
             _PlaceholderPage(title: "${m.moduleLabel} - Post Assessment"),
       ),
     );
+
+    await _loadModuleProgressFromDatabase();
   }
 
-  // ---------- FILTER MENU (inside search bar) ----------
   Future<void> _openFilterMenu(BuildContext context) async {
     final selected = await showMenu<ModuleFilter>(
       context: context,
@@ -243,8 +352,14 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
           value: ModuleFilter.pending,
           child: Text("Pending / Not Started"),
         ),
-        PopupMenuItem(value: ModuleFilter.inProgress, child: Text("In Progress")),
-        PopupMenuItem(value: ModuleFilter.completed, child: Text("Completed")),
+        PopupMenuItem(
+          value: ModuleFilter.inProgress,
+          child: Text("In Progress"),
+        ),
+        PopupMenuItem(
+          value: ModuleFilter.completed,
+          child: Text("Completed"),
+        ),
       ],
     );
 
@@ -266,11 +381,20 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
     }
   }
 
+  ImageProvider? _buildAvatarProvider() {
+    if (_avatarUrl == null || _avatarUrl!.trim().isEmpty) return null;
+
+    if (_avatarUrl!.startsWith('http')) {
+      return NetworkImage(_avatarUrl!);
+    }
+
+    return AssetImage(_avatarUrl!);
+  }
+
   @override
   Widget build(BuildContext context) {
     final q = _searchQuery.trim().toLowerCase();
 
-    // ✅ Search filter first so the list doesn't render empty separators
     final searchedModules = _modules.where((m) {
       if (q.isEmpty) return true;
       return m.title.toLowerCase().contains(q) ||
@@ -295,8 +419,6 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 20),
-
-                  // ✅ header (avatar menu)
                   Row(
                     children: [
                       PopupMenuButton<String>(
@@ -340,11 +462,13 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
                         child: CircleAvatar(
                           radius: 22,
                           backgroundColor: Colors.grey.shade400,
-                          backgroundImage: _avatarUrl != null
-                              ? NetworkImage(_avatarUrl!) as ImageProvider
-                              : null,
-                          child: _avatarUrl == null
-                              ? const Icon(Icons.person, size: 22, color: Colors.white)
+                          backgroundImage: _buildAvatarProvider(),
+                          child: _buildAvatarProvider() == null
+                              ? const Icon(
+                                  Icons.person,
+                                  size: 22,
+                                  color: Colors.white,
+                                )
                               : null,
                         ),
                       ),
@@ -375,7 +499,6 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
                       ),
                     ],
                   ),
-
                   const SizedBox(height: 30),
                   const Center(
                     child: Text(
@@ -388,8 +511,6 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
                     ),
                   ),
                   const SizedBox(height: 30),
-
-                  // search + filter
                   Container(
                     height: 50,
                     padding: const EdgeInsets.symmetric(horizontal: 14),
@@ -432,44 +553,56 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
                       ],
                     ),
                   ),
-
                   const SizedBox(height: 30),
+                  Expanded(
+                    child: _isProgressLoading
+                        ? const Center(child: CircularProgressIndicator())
+                        : Builder(
+                            builder: (context) {
+                              final filteredModules = searchedModules.where((m) {
+                                final progress = _progressByModuleNo[m.moduleNo] ??
+                                    const ModuleProgress(
+                                      preDone: false,
+                                      simDone: false,
+                                      postDone: false,
+                                    );
+                                return _matchesFilter(progress);
+                              }).toList();
 
-              Expanded(
-              child: ListView.builder(
-                clipBehavior: Clip.none, // ✅ allow overflow (pill + shadow)
-                padding: EdgeInsets.only(
-                  top: 14, 
-                  bottom: 10 + MediaQuery.of(context).padding.bottom,
-                ),
-                itemCount: searchedModules.length,
-                itemBuilder: (context, index) {
-                  final m = searchedModules[index];
+                              return ListView.builder(
+                                clipBehavior: Clip.none,
+                                padding: EdgeInsets.only(
+                                  top: 14,
+                                  bottom: 10 +
+                                      MediaQuery.of(context).padding.bottom,
+                                ),
+                                itemCount: filteredModules.length,
+                                itemBuilder: (context, index) {
+                                  final m = filteredModules[index];
+                                  final progress =
+                                      _progressByModuleNo[m.moduleNo] ??
+                                          const ModuleProgress(
+                                            preDone: false,
+                                            simDone: false,
+                                            postDone: false,
+                                          );
 
-                  return FutureBuilder<ModuleProgress>(
-                    future: ModuleProgressStore.load(m.moduleId),
-                    builder: (context, snap) {
-                      final progress = snap.data ??
-                          const ModuleProgress(preDone: false, simDone: false, postDone: false);
-
-                      if (!_matchesFilter(progress)) return const SizedBox.shrink();
-
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 25),
-                        child: _ModuleCard(
-                          moduleLabel: m.moduleLabel,
-                          title: m.title,
-                          description: m.description,
-                          asset: m.asset,
-                          progress: progress,
-                          onPressed: () => _openModuleActions(m),
-                        ),
-                      );
-                    },
-                  );
-                },
-              ),
-            ),
+                                  return Padding(
+                                    padding: const EdgeInsets.only(bottom: 25),
+                                    child: _ModuleCard(
+                                      moduleLabel: m.moduleLabel,
+                                      title: m.title,
+                                      description: m.description,
+                                      asset: m.asset,
+                                      progress: progress,
+                                      onPressed: () => _openModuleActions(m),
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                  ),
                 ],
               ),
             ),
@@ -480,52 +613,20 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
   }
 }
 
-/* ---------------------- Data model ---------------------- */
-
 class _ModuleItem {
-  final String moduleId;
+  final int moduleNo;
   final String moduleLabel;
   final String title;
   final String description;
   final String asset;
 
   const _ModuleItem({
-    required this.moduleId,
+    required this.moduleNo,
     required this.moduleLabel,
     required this.title,
     required this.description,
     required this.asset,
   });
-}
-
-/* ---------------------- Progress storage ---------------------- */
-
-class ModuleProgressStore {
-  static String _k(String moduleId, String key) => 'module_${moduleId}_$key';
-
-  static Future<ModuleProgress> load(String moduleId) async {
-    final prefs = await SharedPreferences.getInstance();
-    return ModuleProgress(
-      preDone: prefs.getBool(_k(moduleId, 'pre')) ?? false,
-      simDone: prefs.getBool(_k(moduleId, 'sim')) ?? false,
-      postDone: prefs.getBool(_k(moduleId, 'post')) ?? false,
-    );
-  }
-
-  static Future<void> setPreDone(String moduleId, bool v) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_k(moduleId, 'pre'), v);
-  }
-
-  static Future<void> setSimDone(String moduleId, bool v) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_k(moduleId, 'sim'), v);
-  }
-
-  static Future<void> setPostDone(String moduleId, bool v) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_k(moduleId, 'post'), v);
-  }
 }
 
 class ModuleProgress {
@@ -551,11 +652,10 @@ class ModuleProgress {
   Color get color {
     if (postDone) return const Color(0xFF2EB872);
     if (simDone) return const Color(0xFFF2C94C);
+    if (preDone) return const Color(0xFF4F46E5);
     return const Color(0xFFB11217);
   }
 }
-
-/* ---------------------- Module card ---------------------- */
 
 class _ModuleCard extends StatelessWidget {
   final String moduleLabel;
@@ -648,8 +748,9 @@ class _ModuleCard extends StatelessWidget {
                               value: progress.value,
                               minHeight: 10,
                               backgroundColor: const Color(0xFFEFEFEF),
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(progress.color),
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                progress.color,
+                              ),
                             ),
                           ),
                         ),
@@ -716,12 +817,11 @@ class _ModuleCard extends StatelessWidget {
   }
 }
 
-/* ---------------------- Popup UI (Module Actions) ---------------------- */
-
 class _ModuleActionPopup extends StatelessWidget {
   final String moduleLabel;
   final String moduleTitle;
   final ModuleProgress progress;
+  final bool postLocked;
   final VoidCallback onClose;
   final VoidCallback onPreTap;
   final VoidCallback onSimTap;
@@ -731,6 +831,7 @@ class _ModuleActionPopup extends StatelessWidget {
     required this.moduleLabel,
     required this.moduleTitle,
     required this.progress,
+    required this.postLocked,
     required this.onClose,
     required this.onPreTap,
     required this.onSimTap,
@@ -739,8 +840,6 @@ class _ModuleActionPopup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final postLocked = !progress.simDone;
-
     return Material(
       color: Colors.transparent,
       child: Container(
@@ -874,7 +973,11 @@ class _OutlineActionButton extends StatelessWidget {
             if (locked)
               const Padding(
                 padding: EdgeInsets.only(bottom: 4),
-                child: Icon(Icons.lock, size: 16, color: Color(0xFF999999)),
+                child: Icon(
+                  Icons.lock,
+                  size: 16,
+                  color: Color(0xFF999999),
+                ),
               ),
             Text(
               label,
@@ -893,17 +996,18 @@ class _OutlineActionButton extends StatelessWidget {
   }
 }
 
-/* ---------------------- Placeholder page ---------------------- */
-
 class _PlaceholderPage extends StatelessWidget {
   final String title;
+
   const _PlaceholderPage({required this.title});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(title)),
-      body: const Center(child: Text("Replace this with your real page.")),
+      body: const Center(
+        child: Text("Replace this with your real page."),
+      ),
     );
   }
 }

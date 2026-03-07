@@ -299,7 +299,10 @@ class _ProfilePageState extends State<ProfilePage> {
                   child: Row(
                     children: [
                       IconButton(
-                        onPressed: () => Navigator.pop(context),
+                        onPressed: () => Navigator.pushReplacementNamed(
+                          context,
+                          '/home',
+                        ),
                         icon: const Icon(
                           Icons.arrow_back,
                           color: Colors.white,

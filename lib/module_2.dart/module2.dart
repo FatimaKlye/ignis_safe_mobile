@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'preassessment_electrical.dart';
 
 class LearningMaterialElectricalPage extends StatefulWidget {
   const LearningMaterialElectricalPage({super.key});
@@ -83,17 +84,23 @@ class _LearningMaterialElectricalPageState
     );
   }
 
-  void _goNext() {
-    if (!_canNext) return;
+ void _goNext() {
+  if (!_canNext) return;
 
-    if (_pageIndex < 2) {
-      _pageCtrl.nextPage(
-        duration: const Duration(milliseconds: 260),
-        curve: Curves.easeOutCubic,
-      );
-    } else {
-    }
+  if (_pageIndex < 2) {
+    _pageCtrl.nextPage(
+      duration: const Duration(milliseconds: 260),
+      curve: Curves.easeOutCubic,
+    );
+  } else {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const PreAssessmentElectricalPage(),
+      ),
+    );
   }
+}
 
   @override
   Widget build(BuildContext context) {
