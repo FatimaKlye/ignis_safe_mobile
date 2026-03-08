@@ -1,4 +1,5 @@
-import 'dart:io';
+import 'dart:typed_data';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -30,7 +31,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
   final ImagePicker _picker = ImagePicker();
 
-  File? _avatarFile;
+  Uint8List? _avatarBytes;
+  bool _isUploadingAvatar = false;
   String _language = "English";
   String _displayName = '';
   String _email = '';
@@ -144,24 +146,106 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _pickAvatar() async {
+    if (_isUploadingAvatar) return;
+
     try {
-      final pickedFile = await _picker.pickImage(
+      final image = await _picker.pickImage(
         source: ImageSource.gallery,
         imageQuality: 85,
       );
 
-      if (pickedFile == null) return;
+      if (image == null) return;
+
+      final supabase = Supabase.instance.client;
+      final user = supabase.auth.currentUser;
+
+      if (user == null) {
+        if (!mounted) return;
+        _showDialogBox(
+          title: "Error",
+          message: "No active user session.",
+        );
+        return;
+      }
+
+      final bytes = await image.readAsBytes();
+
+      const bucketName = 'profile_pic';
+      final ext = image.name.contains('.')
+          ? image.name.split('.').last.toLowerCase()
+          : 'jpg';
+      final filePath = '${user.id}/avatar.$ext';
+
       if (!mounted) return;
 
       setState(() {
-        _avatarFile = File(pickedFile.path);
+        _avatarBytes = bytes; // instant preview
+        _isUploadingAvatar = true;
       });
-    } catch (_) {
+
+      if (kIsWeb) {
+        await supabase.storage.from(bucketName).uploadBinary(
+          filePath,
+          bytes,
+          fileOptions: FileOptions(
+            upsert: true,
+            contentType: _getContentType(ext),
+          ),
+        );
+      } else {
+        await supabase.storage.from(bucketName).uploadBinary(
+          filePath,
+          bytes,
+          fileOptions: FileOptions(
+            upsert: true,
+            contentType: _getContentType(ext),
+          ),
+        );
+      }
+
+      final rawUrl = supabase.storage.from(bucketName).getPublicUrl(filePath);
+      final avatarUrl = '$rawUrl?v=${DateTime.now().millisecondsSinceEpoch}';
+
+      await supabase.from('profiles').update({
+        'avatar_url': avatarUrl,
+        'updated_at': DateTime.now().toIso8601String(),
+      }).eq('id', user.id);
+
       if (!mounted) return;
+
+      setState(() {
+        _avatarUrl = avatarUrl;
+        _avatarBytes = null;
+        _isUploadingAvatar = false;
+      });
+    } catch (e) {
+      debugPrint('PROFILE IMAGE ERROR: $e');
+
+      if (!mounted) return;
+
+      setState(() {
+        _isUploadingAvatar = false;
+      });
+
       _showDialogBox(
         title: "Error",
-        message: "Could not open gallery.",
+        message: "Could not upload profile image.\n$e",
       );
+    }
+  }
+
+  String _getContentType(String ext) {
+    switch (ext) {
+      case 'png':
+        return 'image/png';
+      case 'webp':
+        return 'image/webp';
+      case 'gif':
+        return 'image/gif';
+      case 'jpg':
+      case 'jpeg':
+      default:
+        return 'image/jpeg';
     }
   }
 
@@ -256,20 +340,20 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  ImageProvider? _getAvatarImage() {
-    if (_avatarFile != null) {
-      return FileImage(_avatarFile!);
-    }
-
-    if (_avatarUrl != null && _avatarUrl!.trim().isNotEmpty) {
-      if (_avatarUrl!.startsWith('http')) {
-        return NetworkImage(_avatarUrl!);
+    ImageProvider? _getAvatarImage() {
+      if (_avatarBytes != null) {
+        return MemoryImage(_avatarBytes!);
       }
-      return AssetImage(_avatarUrl!);
-    }
 
-    return null;
-  }
+      if (_avatarUrl != null && _avatarUrl!.trim().isNotEmpty) {
+        if (_avatarUrl!.startsWith('http')) {
+          return NetworkImage(_avatarUrl!);
+        }
+        return AssetImage(_avatarUrl!);
+      }
+
+      return null;
+    }
 
   @override
   Widget build(BuildContext context) {
@@ -277,14 +361,15 @@ class _ProfilePageState extends State<ProfilePage> {
     final avatarImage = _getAvatarImage();
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.transparent,
       body: Stack(
         children: [
-          Positioned.fill(
-            child: Image.asset(
-              'assets/bg.png',
-              fit: BoxFit.cover,
-            ),
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 900,
+            child: Image.asset('assets/bg.png', fit: BoxFit.cover),
           ),
           SafeArea(
             child: Column(

@@ -9,6 +9,7 @@ import 'login.dart';
 import 'profile.dart';
 
 import 'module_1.dart/preassessment_extinguisher.dart';
+import 'module_1.dart/postassessment_extinguisher.dart';
 import 'module_1.dart/simulation_scene.dart';
 
 import 'module_2.dart/preassessment_electrical.dart';
@@ -221,7 +222,9 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
   ) async {
     if (!mounted) return;
 
-    final postLocked = !progress.simDone;
+    // Temporary testing override: unlock post-assessment navigation.
+    // final postLocked = !progress.simDone;
+    final postLocked = false;
 
     await showGeneralDialog(
       context: context,
@@ -331,13 +334,22 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
   }
 
   Future<void> _goToPost(_ModuleItem m) async {
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) =>
-            _PlaceholderPage(title: "${m.moduleLabel} - Post Assessment"),
-      ),
-    );
+    if (m.moduleNo == 1) {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const PostAssessmentPassPage(),
+        ),
+      );
+    } else {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) =>
+              _PlaceholderPage(title: "${m.moduleLabel} - Post Assessment"),
+        ),
+      );
+    }
 
     await _loadModuleProgressFromDatabase();
   }
@@ -927,6 +939,62 @@ class _ModuleActionPopup extends StatelessWidget {
                     enabled: !postLocked,
                     locked: postLocked,
                     onTap: onPostTap,
+                    onLockedTap: postLocked
+                        ? () {
+                            showDialog(
+                              context: context,
+                              builder: (_) => AlertDialog(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                title: const Row(
+                                  children: [
+                                    Icon(Icons.lock_outline,
+                                        color: Color(0xFFB11217)),
+                                    SizedBox(width: 10),
+                                    Expanded(
+                                      child: Text(
+                                        "Simulation Required",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w900,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                content: const Text(
+                                  "You need to finish the simulation first before the post-assessment will open.\n\n"
+                                  "The questions on the post-assessment are connected to the simulation.",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    height: 1.4,
+                                  ),
+                                ),
+                                actions: [
+                                  ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor:
+                                          const Color(0xFFB11217),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(12),
+                                      ),
+                                    ),
+                                    onPressed: () =>
+                                        Navigator.pop(context),
+                                    child: const Text(
+                                      "OK",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w900,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+                        : null,
                   ),
                 ),
               ],
@@ -943,12 +1011,14 @@ class _OutlineActionButton extends StatelessWidget {
   final bool enabled;
   final bool locked;
   final VoidCallback onTap;
+  final VoidCallback? onLockedTap;
 
   const _OutlineActionButton({
     required this.label,
     required this.enabled,
     required this.locked,
     required this.onTap,
+    this.onLockedTap,
   });
 
   @override
@@ -957,7 +1027,7 @@ class _OutlineActionButton extends StatelessWidget {
         enabled ? const Color(0xFFB11217) : Colors.black.withOpacity(0.18);
 
     return InkWell(
-      onTap: enabled ? onTap : null,
+      onTap: enabled ? onTap : onLockedTap,
       borderRadius: BorderRadius.circular(10),
       child: Container(
         height: 72,

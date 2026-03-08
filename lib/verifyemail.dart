@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'passwordvalidation.dart';
 import 'login.dart';
@@ -38,12 +39,9 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
 
-      // focus first box
-      if (_focus.isNotEmpty) _focus[0].requestFocus();
+      _focus.first.requestFocus();
 
-      // auto-send otp
-      final email = widget.email.trim();
-      if (email.isNotEmpty) {
+      if (widget.email.trim().isNotEmpty) {
         await _sendOtp(showToast: false);
       }
     });
@@ -51,8 +49,12 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
 
   @override
   void dispose() {
-    for (final c in _ctrl) c.dispose();
-    for (final f in _focus) f.dispose();
+    for (final c in _ctrl) {
+      c.dispose();
+    }
+    for (final f in _focus) {
+      f.dispose();
+    }
     super.dispose();
   }
 
@@ -63,7 +65,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     for (final c in _ctrl) {
       c.clear();
     }
-    if (_focus.isNotEmpty) _focus[0].requestFocus();
+    _focus.first.requestFocus();
     setState(() {});
   }
 
@@ -79,12 +81,19 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       await supabase.auth.signInWithOtp(
         email: email,
         shouldCreateUser: true,
+        data: {
+          'first_name': widget.firstName,
+          'last_name': widget.lastName,
+        },
       );
 
       if (!mounted) return;
+
       if (showToast) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('OTP sent. Check your email inbox/spam.')),
+          const SnackBar(
+            content: Text('Verification code sent. Check your email inbox/spam.'),
+          ),
         );
       }
     } on AuthException catch (e) {
@@ -95,7 +104,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error sending OTP: $e')),
+        SnackBar(content: Text('Error sending code: $e')),
       );
     } finally {
       if (mounted) setState(() => _isSending = false);
@@ -110,7 +119,9 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
 
     if (!_codeComplete) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Enter a valid 6-digit numeric code.')),
+        const SnackBar(
+          content: Text('Enter a valid 6-digit numeric code.'),
+        ),
       );
       return;
     }
@@ -126,8 +137,6 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
 
       if (!mounted) return;
 
-      // IMPORTANT: Always go to Create Password after OTP is correct.
-      // (To prevent jumping to Home, you must NOT auto-route based on session in main.dart.)
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -146,41 +155,22 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error verifying OTP: $e')),
+        SnackBar(content: Text('Error verifying code: $e')),
       );
     } finally {
       if (mounted) setState(() => _isVerifying = false);
     }
   }
 
-  void _onDigitChanged(int i, String v) {
-    var value = v.replaceAll(RegExp(r'[^0-9]'), '');
-
-    if (value.isEmpty) {
-      _ctrl[i].clear();
-      setState(() {});
-      return;
+  void _onDigitChanged(int index, String value) {
+    if (value.isNotEmpty && index < 5) {
+      _focus[index + 1].requestFocus();
     }
 
-    if (value.length > 1) value = value.substring(value.length - 1);
-
-    _ctrl[i].text = value;
-    _ctrl[i].selection = const TextSelection.collapsed(offset: 1);
-
-    if (i < 5) {
-      _focus[i + 1].requestFocus();
-    } else {
-      FocusScope.of(context).unfocus();
+    if (value.isEmpty && index > 0) {
+      _focus[index - 1].requestFocus();
     }
-    setState(() {});
-  }
 
-  void _onBackspace(int i) {
-    if (_ctrl[i].text.isEmpty && i > 0) {
-      _focus[i - 1].requestFocus();
-      _ctrl[i - 1].selection =
-          TextSelection.collapsed(offset: _ctrl[i - 1].text.length);
-    }
     setState(() {});
   }
 
@@ -295,8 +285,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                           children: [
                             IconButton(
                               onPressed: () => Navigator.pop(context),
-                              icon:
-                                  const Icon(Icons.arrow_back_ios_new, size: 18),
+                              icon: const Icon(Icons.arrow_back_ios_new, size: 18),
                             ),
                             const SizedBox(width: 4),
                             const Text(
@@ -362,7 +351,6 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                             const count = 6;
                             const gap = 8.0;
                             final maxW = c.maxWidth;
-
                             final boxW = ((maxW - gap * (count - 1)) / count)
                                 .clamp(34.0, 48.0);
 
@@ -371,7 +359,8 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                               children: List.generate(count, (i) {
                                 return Padding(
                                   padding: EdgeInsets.only(
-                                      right: i == count - 1 ? 0 : gap),
+                                    right: i == count - 1 ? 0 : gap,
+                                  ),
                                   child: SizedBox(
                                     width: boxW,
                                     height: 56,
@@ -379,7 +368,6 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                                       controller: _ctrl[i],
                                       focusNode: _focus[i],
                                       onChanged: (v) => _onDigitChanged(i, v),
-                                      onBackspace: () => _onBackspace(i),
                                     ),
                                   ),
                                 );
@@ -474,7 +462,8 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                                 Navigator.pushAndRemoveUntil(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (_) => const LoginPage()),
+                                    builder: (_) => const LoginPage(),
+                                  ),
                                   (route) => false,
                                 );
                               },
@@ -508,62 +497,49 @@ class _OtpBox extends StatelessWidget {
   final TextEditingController controller;
   final FocusNode focusNode;
   final ValueChanged<String> onChanged;
-  final VoidCallback onBackspace;
 
   const _OtpBox({
     required this.controller,
     required this.focusNode,
     required this.onChanged,
-    required this.onBackspace,
   });
 
   @override
   Widget build(BuildContext context) {
-    return RawKeyboardListener(
-      focusNode: FocusNode(),
-      onKey: (event) {
-        if (event.logicalKey.keyLabel == 'Backspace') onBackspace();
-      },
-      child: TextField(
-        controller: controller,
-        focusNode: focusNode,
-        keyboardType: TextInputType.number,
-        textAlign: TextAlign.center,
-        maxLength: 1,
-        style: const TextStyle(
-          fontFamily: 'Poppins',
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
-        ),
-        decoration: InputDecoration(
-          counterText: '',
-          filled: true,
-          fillColor: const Color(0xFFF3F3F3),
-          contentPadding: const EdgeInsets.symmetric(vertical: 14),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(color: Color(0xFFCCCCCC)),
-          ),
-        ),
-        onChanged: (v) {
-          final digits = v.replaceAll(RegExp(r'[^0-9]'), '');
-          if (digits != v) {
-            controller.text =
-                digits.isEmpty ? '' : digits.substring(digits.length - 1);
-            controller.selection =
-                TextSelection.collapsed(offset: controller.text.length);
-          }
-          onChanged(controller.text);
-        },
+    return TextField(
+      controller: controller,
+      focusNode: focusNode,
+      keyboardType: TextInputType.number,
+      textAlign: TextAlign.center,
+      maxLength: 1,
+      inputFormatters: [
+        FilteringTextInputFormatter.digitsOnly,
+        LengthLimitingTextInputFormatter(1),
+      ],
+      style: const TextStyle(
+        fontFamily: 'Poppins',
+        fontSize: 18,
+        fontWeight: FontWeight.w600,
       ),
+      decoration: InputDecoration(
+        counterText: '',
+        filled: true,
+        fillColor: const Color(0xFFF3F3F3),
+        contentPadding: const EdgeInsets.symmetric(vertical: 14),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: Color(0xFFCCCCCC)),
+        ),
+      ),
+      onChanged: onChanged,
     );
   }
 }

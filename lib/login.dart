@@ -7,6 +7,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'signup.dart';
 import 'home.dart';
 import 'terms.dart';
+import 'forgotpass.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -140,21 +141,21 @@ class _LoginPageState extends State<LoginPage> {
       if (!mounted) return;
 
       if (res.user != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Login successful.')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Login successful.')));
         _goNext();
       }
     } on AuthException catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.message)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.message)));
     } catch (_) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Unexpected error.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Unexpected error.')));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -170,147 +171,165 @@ class _LoginPageState extends State<LoginPage> {
       );
     } on AuthException catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.message)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.message)));
     } catch (_) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Google sign-in failed.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Google sign-in failed.')));
     }
   }
 
-@override
-Widget build(BuildContext context) {
-  return Scaffold(
-    backgroundColor: Colors.white,
-    body: SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 35.0),
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return SingleChildScrollView(
-              child: ConstrainedBox(
-                constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                child: Align(
-                  alignment: Alignment.topCenter,
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                     Padding(
-                      padding: const EdgeInsets.only(top: 70, bottom: 30),
-                      child: SizedBox(
-                        height: 120,
-                        child: FittedBox(
-                          fit: BoxFit.contain,
-                          child: Image.asset(
-                            'assets/logo.png',
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 35.0),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(top: 70, bottom: 30),
+                            child: SizedBox(
+                              height: 120,
+                              child: FittedBox(
+                                fit: BoxFit.contain,
+                                child: Image.asset('assets/logo.png'),
+                              ),
+                            ),
                           ),
-                        ),
+
+                          // Title (tight)
+                          const Text(
+                            'Login',
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontSize: 28,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.black87,
+                              height: 1.0,
+                            ),
+                          ),
+
+                          const SizedBox(height: 6),
+
+                          Container(
+                            height: 2,
+                            width: 150,
+                            decoration: BoxDecoration(
+                              color: brandRed,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+
+                          const SizedBox(height: 8),
+
+                          const Text(
+                            'Welcome to, IGNIS SAFE',
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black38,
+                              height: 1.1,
+                            ),
+                          ),
+
+                          // continue your fields...
+                          const SizedBox(height: 80),
+
+                          _inputLabel('EMAIL ADDRESS:'),
+                          _buildValidatedField(
+                            hint: 'Enter your email address',
+                            controller: emailCtrl,
+                            keyboardType: TextInputType.emailAddress,
+                            validator: _validateEmail,
+                            textInputAction: TextInputAction.next,
+                          ),
+
+                          const SizedBox(height: 25),
+
+                          _inputLabel('PASSWORD:'),
+                          _buildValidatedField(
+                            hint: 'Enter your password',
+                            controller: passCtrl,
+                            validator: _validatePassword,
+                            textInputAction: TextInputAction.done,
+                            isPassword: true,
+                            showPassword: _showPassword,
+                            suffixText: _showPassword ? 'HIDE' : 'SHOW',
+                            onSuffixTap: () =>
+                                setState(() => _showPassword = !_showPassword),
+                            onSubmitted: (_) => _isLoading ? null : _login(),
+                          ),
+
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: TextButton(
+                              onPressed: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => const ForgotPassPage(),
+                                  ),
+                                );
+                              },
+                              child: const Text(
+                                'Forgot Password?',
+                                style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  color: brandRed,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 40),
+                          _buildLoginButton(),
+                          const SizedBox(height: 20),
+                          const SizedBox(height: 10),
+                          _buildFooter(),
+                          const SizedBox(height: 20),
+                        ],
                       ),
-                    ),
-
-
-                        // Title (tight)
-                        const Text(
-                          'Login',
-                          style: TextStyle(
-                            fontFamily: 'Poppins',
-                            fontSize: 28,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.black87,
-                            height: 1.0, 
-                          ),
-                        ),
-
-                        const SizedBox(height: 6),
-
-                        Container(
-                          height: 2,
-                          width: 150,
-                          decoration: BoxDecoration(
-                            color: brandRed,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-
-                        const SizedBox(height: 8),
-
-                        const Text(
-                          'Welcome to, IGNIS SAFE',
-                          style: TextStyle(
-                            fontFamily: 'Poppins',
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black38,
-                            height: 1.1,
-                          ),
-                        ),
-
-                        // continue your fields...
-                        const SizedBox(height: 80),
-
-
-                        _inputLabel('EMAIL ADDRESS:'),
-                        _buildValidatedField(
-                          hint: 'Enter your email address',
-                          controller: emailCtrl,
-                          keyboardType: TextInputType.emailAddress,
-                          validator: _validateEmail,
-                          textInputAction: TextInputAction.next,
-                        ),
-
-                        const SizedBox(height: 25),
-
-                        _inputLabel('PASSWORD:'),
-                        _buildValidatedField(
-                          hint: 'Enter your password',
-                          controller: passCtrl,
-                          validator: _validatePassword,
-                          textInputAction: TextInputAction.done,
-                          isPassword: true,
-                          showPassword: _showPassword,
-                          suffixText: _showPassword ? 'HIDE' : 'SHOW',
-                          onSuffixTap: () =>
-                              setState(() => _showPassword = !_showPassword),
-                          onSubmitted: (_) => _isLoading ? null : _login(),
-                        ),
-
-                        const SizedBox(height: 40),
-                        _buildLoginButton(),
-                        const SizedBox(height: 20),
-                        const SizedBox(height: 10),
-                        _buildFooter(),
-                        const SizedBox(height: 20),
-                      ],
                     ),
                   ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
+      ),
+    );
+  }
+
+  Widget _inputLabel(String label) => Align(
+    alignment: Alignment.centerLeft,
+    child: Text(
+      label,
+      style: const TextStyle(
+        fontFamily: 'Poppins',
+        color: brandRed,
+        fontWeight: FontWeight.bold,
+        fontSize: 13,
       ),
     ),
   );
-}
-
-  Widget _inputLabel(String label) => Align(
-        alignment: Alignment.centerLeft,
-        child: Text(
-          label,
-          style: const TextStyle(
-            fontFamily: 'Poppins',
-            color: brandRed,
-            fontWeight: FontWeight.bold,
-            fontSize: 13,
-          ),
-        ),
-      );
 
   Widget _buildValidatedField({
     required String hint,
@@ -363,8 +382,10 @@ Widget build(BuildContext context) {
                   hintText: hint,
                   hintStyle: const TextStyle(fontFamily: 'Poppins'),
                   border: InputBorder.none,
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 18,
+                  ),
                   suffixIcon: suffixText != null
                       ? InkWell(
                           onTap: onSuffixTap,
@@ -404,127 +425,121 @@ Widget build(BuildContext context) {
   }
 
   Widget _buildLoginButton() => SizedBox(
-        width: double.infinity,
-        height: 50,
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: brandRed,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
+    width: double.infinity,
+    height: 50,
+    child: ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: brandRed,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      ),
+      onPressed: _isLoading ? null : _login,
+      child: _isLoading
+          ? const SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            )
+          : const Text(
+              'Login',
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
             ),
-          ),
-          onPressed: _isLoading ? null : _login,
-          child: _isLoading
-              ? const SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              : const Text(
-                  'Login',
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-        ),
-      );
-
- 
+    ),
+  );
 
   Widget _buildFooter() => Column(
+    children: [
+      const Text(
+        'or sign up using',
+        style: TextStyle(
+          fontFamily: 'Poppins',
+          color: Colors.grey,
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      const SizedBox(height: 20),
+      GestureDetector(
+        onTap: _googleSignIn,
+        child: Image.asset(
+          'assets/google.jpg',
+          height: 50,
+          fit: BoxFit.contain,
+        ),
+      ),
+      const SizedBox(height: 20),
+      GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const TermsAndConditionsPage()),
+          );
+        },
+        child: const Text(
+          'Terms and Conditions and Privacy Policy.',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontFamily: 'Poppins',
+            color: brandRed,
+            fontWeight: FontWeight.bold,
+            fontSize: 12,
+            decoration: TextDecoration.none,
+            decorationColor: Color(0xFFB71C1C),
+          ),
+        ),
+      ),
+      const SizedBox(height: 16),
+      Row(
+        children: const [
+          Expanded(child: Divider(thickness: 1)),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 12),
+            child: Text(
+              'OR',
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                color: Colors.grey,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          Expanded(child: Divider(thickness: 1)),
+        ],
+      ),
+      const SizedBox(height: 10),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const Text(
-            'or sign up using',
+            "Don't have an account? ",
             style: TextStyle(
               fontFamily: 'Poppins',
+              fontSize: 13,
               color: Colors.grey,
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
             ),
           ),
-          const SizedBox(height: 20),
-          GestureDetector(
-            onTap: _googleSignIn,
-            child: Image.asset(
-              'assets/google.jpg',
-              height: 50,
-              fit: BoxFit.contain,
-            ),
-          ),
-          const SizedBox(height: 20),
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
+          TextButton(
+            onPressed: () {
+              Navigator.of(
                 context,
-                MaterialPageRoute(
-                  builder: (_) => const TermsAndConditionsPage(),
-                ),
-              );
+              ).push(MaterialPageRoute(builder: (_) => const RegisterPage()));
             },
             child: const Text(
-              'Terms and Conditions and Privacy Policy.',
-              textAlign: TextAlign.center,
+              'Sign Up',
               style: TextStyle(
                 fontFamily: 'Poppins',
                 color: brandRed,
                 fontWeight: FontWeight.bold,
-                fontSize: 12,
-                decoration: TextDecoration.none,
-                decorationColor: Color(0xFFB71C1C),
+                fontSize: 13,
               ),
             ),
           ),
-          const SizedBox(height: 16),
-          Row(
-            children: const [
-              Expanded(child: Divider(thickness: 1)),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 12),
-                child: Text(
-                  'OR',
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    color: Colors.grey,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-              Expanded(child: Divider(thickness: 1)),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                "Don't have an account? ",
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 13,
-                  color: Colors.grey,
-                ),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const RegisterPage()),
-                  );
-                },
-                child: const Text(
-                  'Sign Up',
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    color: brandRed,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 13,
-                  ),
-                ),
-              ),
-            ],
-          ),
         ],
-      );
+      ),
+    ],
+  );
 }
