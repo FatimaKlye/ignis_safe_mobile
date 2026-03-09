@@ -7,6 +7,8 @@ import 'firemodules.dart';
 import 'profile.dart';
 import 'about_us.dart';
 
+enum HomeTab { learn, simulation, profile, about }
+
 class IgnisHomePage extends StatefulWidget {
   const IgnisHomePage({super.key, this.initialTabIndex = 0});
   final int initialTabIndex;
@@ -18,8 +20,7 @@ class IgnisHomePage extends StatefulWidget {
 class _IgnisHomePageState extends State<IgnisHomePage> {
   static const String _kLastTab = 'last_tab_index';
 
-  int _selectedIndex = 0;
-  late final PageController _pageController;
+  HomeTab _currentTab = HomeTab.learn;
 
   final List<IconData> _icons = const [
     Icons.menu_book_rounded,
@@ -28,26 +29,23 @@ class _IgnisHomePageState extends State<IgnisHomePage> {
     Icons.info_outline_rounded,
   ];
 
-  late final List<Widget> _pages = const [
-    LearningMaterialsTab(), // content-only
+  late final List<Widget> _pages = [
+    LearningMaterialsTab(
+      onRequestTabChange: (index) => _onItemTapped(index),
+    ),
     FireMaterialsTab(),
     ProfilePage(),     // content-only
     AboutUsPage(),
-    
   ];
+
+  int get _selectedIndex => _currentTab.index;
 
   @override
   void initState() {
     super.initState();
-    _selectedIndex = widget.initialTabIndex;
-    _pageController = PageController(initialPage: _selectedIndex);
+    final safeInitial = widget.initialTabIndex.clamp(0, HomeTab.values.length - 1);
+    _currentTab = HomeTab.values[safeInitial];
     _restoreLastTab();
-  }
-
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
   }
 
   Future<void> _restoreLastTab() async {
@@ -55,8 +53,9 @@ class _IgnisHomePageState extends State<IgnisHomePage> {
     final saved = prefs.getInt(_kLastTab);
     if (!mounted || saved == null) return;
 
-    setState(() => _selectedIndex = saved);
-    _pageController.jumpToPage(saved); // no animation on app start
+    if (saved < 0 || saved >= HomeTab.values.length) return;
+
+    setState(() => _currentTab = HomeTab.values[saved]);
   }
 
   Future<void> _saveLastTab(int index) async {
@@ -65,15 +64,31 @@ class _IgnisHomePageState extends State<IgnisHomePage> {
   }
 
   void _onItemTapped(int index) {
+    if (index < 0 || index >= HomeTab.values.length) return;
     if (index == _selectedIndex) return;
 
-    setState(() => _selectedIndex = index);
+    setState(() => _currentTab = HomeTab.values[index]);
     _saveLastTab(index);
+  }
 
-    _pageController.animateToPage(
-      index,
-      duration: const Duration(milliseconds: 320),
-      curve: Curves.easeOutCubic,
+  Widget _buildBody() {
+    return Stack(
+      children: List.generate(_pages.length, (i) {
+        final isActive = i == _selectedIndex;
+
+        return IgnorePointer(
+          ignoring: !isActive,
+          child: AnimatedOpacity(
+            opacity: isActive ? 1 : 0,
+            duration: const Duration(milliseconds: 180),
+            curve: Curves.easeOut,
+            child: TickerMode(
+              enabled: isActive,
+              child: _pages[i],
+            ),
+          ),
+        );
+      }),
     );
   }
 
@@ -81,17 +96,7 @@ class _IgnisHomePageState extends State<IgnisHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-
-      // ✅ Smooth slide between tabs (no Navigator)
-      body: PageView(
-        controller: _pageController,
-        physics: const NeverScrollableScrollPhysics(), // keep taps-only
-        onPageChanged: (i) {
-          setState(() => _selectedIndex = i);
-          _saveLastTab(i);
-        },
-        children: _pages,
-      ),
+      body: _buildBody(),
 
       bottomNavigationBar: FloatingNavBar(
         selectedIndex: _selectedIndex,

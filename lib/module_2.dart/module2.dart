@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'preassessment_electrical.dart';
+import 'pre_test_module2.dart';
 
 class LearningMaterialElectricalPage extends StatefulWidget {
   const LearningMaterialElectricalPage({super.key});
@@ -85,7 +85,7 @@ class _LearningMaterialElectricalPageState
   }
 
  void _goNext() {
-  if (!_canNext) return;
+  if (!_canNext && _pageIndex < 2) return;
 
   if (_pageIndex < 2) {
     _pageCtrl.nextPage(
@@ -96,7 +96,7 @@ class _LearningMaterialElectricalPageState
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => const PreAssessmentElectricalPage(),
+        builder: (_) => const PreAssessmentIntroPage2(),
       ),
     );
   }
@@ -296,7 +296,7 @@ class _LearningMaterialElectricalPageState
                             borderRadius: BorderRadius.circular(22),
                           ),
                         ),
-                        onPressed: _canNext ? _goNext : null,
+                        onPressed: (_canNext || isLast) ? _goNext : null,
                         child: Text(
                           isLast ? "Start pre test" : "NEXT »",
                           style: const TextStyle(

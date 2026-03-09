@@ -1062,92 +1062,98 @@ class _PreAssessmentElectricalPageState
                 ? const Center(child: CircularProgressIndicator())
                 : Column(
                     children: [
+                      const SizedBox(height: 15),
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(14, 8, 14, 16),
+                        padding: const EdgeInsets.only(left: 9, right: 25),
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Row(
-                              children: [
-                                IconButton(
-                                  onPressed: _goBack,
-                                  icon: const Icon(
-                                    Icons.arrow_back_rounded,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                const Spacer(),
-                                Text(
-                                  _showReview
-                                      ? 'Assessment Review'
-                                      : 'Pre-Assessment',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 28,
-                                    fontWeight: FontWeight.w900,
-                                  ),
-                                ),
-                                const Spacer(),
-                                IconButton(
-                                  onPressed: _handleRefresh,
-                                  icon: const Icon(
-                                    Icons.refresh_rounded,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ],
+                            IconButton(
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
+                              icon: const Icon(Icons.close, color: Colors.white),
+                              onPressed: () => Navigator.pop(context),
                             ),
-                            const SizedBox(height: 8),
-                            Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 9,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    gradient: const LinearGradient(
-                                      colors: [kBrandBlue, Color(0xFF7C3AED)],
+                            const SizedBox(height: 15),
+                            const Center(
+                              child: Text(
+                                'Pre Assessment',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'Poppins',
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 15),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 25),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 18,
+                                      vertical: 10,
                                     ),
-                                    borderRadius: BorderRadius.circular(12),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.16),
-                                        blurRadius: 10,
-                                        offset: const Offset(0, 5),
+                                    decoration: BoxDecoration(
+                                      gradient: const LinearGradient(
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                        colors: [kBrandBlue, Color(0xFF7C3AED)],
                                       ),
-                                    ],
-                                  ),
-                                  child: const Text(
-                                    'MODULE 2',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w900,
+                                      borderRadius: BorderRadius.circular(10),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.18),
+                                          blurRadius: 10,
+                                          offset: const Offset(0, 6),
+                                        ),
+                                      ],
+                                    ),
+                                    child: const Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(
+                                          Icons.bolt_rounded,
+                                          color: Colors.white,
+                                          size: 18,
+                                        ),
+                                        SizedBox(width: 8),
+                                        Text(
+                                          'MODULE 2',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                            fontFamily: 'Poppins',
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Text(
-                                    _showReview
-                                        ? 'Your answers, correct answers, and explanations'
-                                        : (_assessmentTitle.isEmpty
-                                            ? 'Electrical Fire Pre-Assessment'
-                                            : _assessmentTitle),
-                                    style: const TextStyle(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.w700,
+                                  const SizedBox(width: 15),
+                                  const Expanded(
+                                    child: Text(
+                                      'House Fire: Safety and Evacuation',
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.w600,
+                                        fontFamily: 'Poppins',
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                             if (_instructions.trim().isNotEmpty &&
                                 !_showReview) ...[
-                              const SizedBox(height: 10),
+                              const SizedBox(height: 15),
                               Align(
-                                alignment: Alignment.centerLeft,
+                                alignment: Alignment.center,
                                 child: Text(
                                   _instructions,
+                                  textAlign: TextAlign.center,
                                   style: const TextStyle(
                                     color: Colors.black87,
                                     fontWeight: FontWeight.w600,
@@ -1156,24 +1162,10 @@ class _PreAssessmentElectricalPageState
                                 ),
                               ),
                             ],
-                            const SizedBox(height: 14),
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(999),
-                              child: SizedBox(
-                                height: 7,
-                                child: LinearProgressIndicator(
-                                  value: progress,
-                                  backgroundColor:
-                                      Colors.white.withOpacity(0.30),
-                                  valueColor: const AlwaysStoppedAnimation(
-                                    Color(0xFF7C3AED),
-                                  ),
-                                ),
-                              ),
-                            ),
                           ],
                         ),
                       ),
+                      const SizedBox(height: 30),
                       Expanded(
                         child: _showReview
                             ? _buildReviewView()

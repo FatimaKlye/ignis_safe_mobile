@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'pre_test_module3.dart';
 
 class LearningMaterialKitchenPage extends StatefulWidget {
   const LearningMaterialKitchenPage({super.key});
@@ -91,8 +92,12 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
         curve: Curves.easeOutCubic,
       );
     } else {
-      // Hook your pre-test navigation here
-      // Navigator.push(context, MaterialPageRoute(builder: (_) => const PreTestKitchenPage()));
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const PreAssessmentIntroPage2(),
+        ),
+      );
     }
   }
 

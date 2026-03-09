@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+import 'forgotpass.dart';
 import 'login.dart';
 
 class CreatePasswordPage extends StatefulWidget {
@@ -22,13 +24,15 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
   static const Color brandRed = Color(0xFFB71C1C);
 
   final passCtrl = TextEditingController();
-  bool _showPassword = false;
 
+  bool _showPassword = false;
   bool _min8 = false;
   bool _hasNumber = false;
   bool _hasSymbol = false;
-
+  bool _hasUpper = false;
   bool _isLoading = false;
+
+  final SupabaseClient supabase = Supabase.instance.client;
 
   @override
   void initState() {
@@ -50,12 +54,17 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
     final hasNum = RegExp(r'\d').hasMatch(p);
     final hasSym =
         RegExp(r'[!@#$%^&*(),.?":{}|<>_\-\[\]\\\/~`+=;]').hasMatch(p);
+    final hasUpper = RegExp(r'[A-Z]').hasMatch(p);
 
-    if (_min8 != min8 || _hasNumber != hasNum || _hasSymbol != hasSym) {
+    if (_min8 != min8 ||
+        _hasNumber != hasNum ||
+        _hasSymbol != hasSym ||
+        _hasUpper != hasUpper) {
       setState(() {
         _min8 = min8;
         _hasNumber = hasNum;
         _hasSymbol = hasSym;
+        _hasUpper = hasUpper;
       });
     }
   }
@@ -65,6 +74,7 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
     if (_min8) n++;
     if (_hasNumber) n++;
     if (_hasSymbol) n++;
+    if (_hasUpper) n++;
     return n;
   }
 
@@ -72,7 +82,7 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
 
   double get _progress {
     if (_isEmpty) return 0.0;
-    return _passedRules / 3.0;
+    return _passedRules / 4.0;
   }
 
   Color get _barColor {
@@ -84,38 +94,162 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
   String get _strengthText {
     if (_isEmpty) return 'Password is weak';
     if (_passedRules <= 1) return 'Password is weak';
-    if (_passedRules == 2) return 'Password is medium';
+    if (_passedRules <= 3) return 'Password is medium';
     return 'Password is strong';
   }
 
   Color get _strengthColor {
     if (_isEmpty) return const Color(0xFFD32F2F);
     if (_passedRules <= 1) return const Color(0xFFD32F2F);
-    if (_passedRules == 2) return const Color(0xFFF9A825);
+    if (_passedRules <= 3) return const Color(0xFFF9A825);
     return const Color(0xFF2E7D32);
   }
 
-  bool get _allOk => _passedRules == 3;
+  bool get _allOk => _passedRules == 4;
+
+  Future<bool> _emailAlreadyExists(String email) async {
+    final normalizedEmail = email.trim().toLowerCase();
+
+    final result = await supabase.rpc(
+      'check_email_exists',
+      params: {'p_email': normalizedEmail},
+    );
+
+    return result == true;
+  }
+
+  Future<void> _showPopup(String message, {String title = 'Notice'}) async {
+    if (!mounted) return;
+    await showDialog<void>(
+      context: context,
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(title),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _showExistingAccountDialog(String email) async {
+    final action = await showDialog<String>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: const Text(
+          'Email already has an account',
+          style: TextStyle(fontWeight: FontWeight.w900),
+        ),
+        content: Text(
+          '$email already has an account.\n\nWould you like to log in or reset your password?',
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
+            height: 1.4,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'cancel'),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'forgot'),
+            child: const Text('Forgot Password'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, 'login'),
+            child: const Text('Login'),
+          ),
+        ],
+      ),
+    );
+
+    if (!mounted) return;
+
+    if (action == 'forgot') {
+      LoginPage.skipAutoRoute = false;
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => const ForgotPassPage()),
+        (route) => false,
+      );
+    } else if (action == 'login') {
+      LoginPage.skipAutoRoute = false;
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => const LoginPage()),
+        (route) => false,
+      );
+    }
+  }
 
   Future<void> _continueWithSupabase() async {
     if (_isLoading) return;
 
     if (!_allOk) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Password does not meet requirements.')),
+      await _showPopup(
+        'Password does not meet requirements.',
+        title: 'Invalid Password',
       );
       return;
     }
 
-    setState(() => _isLoading = true);
+    final normalizedEmail = widget.email.trim().toLowerCase();
 
-    final supabase = Supabase.instance.client;
+    setState(() => _isLoading = true);
 
     try {
       final password = passCtrl.text;
+      final currentUser = supabase.auth.currentUser;
 
-      // After verifyOTP, user is authenticated but may not have a password yet.
-      // This sets the password for the current authenticated user.
+      if (currentUser != null) {
+        final currentEmail = (currentUser.email ?? '').trim().toLowerCase();
+        if (currentEmail != normalizedEmail) {
+          await supabase.auth.signOut();
+          throw const AuthException(
+            'Session mismatch. Please start the registration flow again.',
+          );
+        }
+      }
+
+      if (currentUser == null) {
+        final exists = await _emailAlreadyExists(normalizedEmail);
+
+        if (exists) {
+          await _showExistingAccountDialog(normalizedEmail);
+          return;
+        }
+
+        try {
+          await supabase.auth.signUp(
+            email: normalizedEmail,
+            password: password,
+            data: {
+              'first_name': widget.firstName.trim(),
+              'last_name': widget.lastName.trim(),
+            },
+          );
+        } on AuthException catch (e) {
+          final msg = e.message.toLowerCase();
+
+          if (msg.contains('already registered') ||
+              msg.contains('already exists')) {
+            await _showExistingAccountDialog(normalizedEmail);
+            return;
+          }
+
+          rethrow;
+        }
+      }
+
       final update = await supabase.auth.updateUser(
         UserAttributes(password: password),
       );
@@ -125,17 +259,15 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
         throw const AuthException('No active user session. Verify OTP again.');
       }
 
-      // Create/Update profiles row (id = auth user id)
       await supabase.from('profiles').upsert({
         'id': user.id,
         'first_name': widget.firstName.trim(),
         'last_name': widget.lastName.trim(),
-        'email': widget.email.trim(),
+        'email': normalizedEmail,
       });
 
       if (!mounted) return;
 
-      // Success dialog (same UI behavior as your local-only version)
       showDialog(
         context: context,
         barrierDismissible: false,
@@ -183,10 +315,11 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                     ),
                   ),
                   onPressed: () async {
-                    // Ensure user ends the registration flow logged-out,
-                    // so they must login with email+password next.
+                    LoginPage.skipAutoRoute = false;
                     await supabase.auth.signOut();
+
                     if (!context.mounted) return;
+
                     Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(builder: (_) => const LoginPage()),
@@ -209,15 +342,9 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
         ),
       );
     } on AuthException catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.message)),
-      );
+      await _showPopup(e.message, title: 'Authentication Error');
     } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
+      await _showPopup('Error: $e', title: 'Something Went Wrong');
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -225,12 +352,11 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
 
   @override
   Widget build(BuildContext context) {
-    // UI copied from your createpassword.dart (NO layout/styling changes)
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30.0), // same as verify email
+          padding: const EdgeInsets.symmetric(horizontal: 30.0),
           child: LayoutBuilder(
             builder: (context, constraints) {
               return SingleChildScrollView(
@@ -242,7 +368,6 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        // Header (same as verify email)
                         Padding(
                           padding: const EdgeInsets.only(top: 70, bottom: 30),
                           child: SizedBox(
@@ -253,7 +378,6 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                             ),
                           ),
                         ),
-
                         const Text(
                           'Create Password',
                           style: TextStyle(
@@ -264,9 +388,7 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                             height: 1.0,
                           ),
                         ),
-
                         const SizedBox(height: 6),
-
                         Container(
                           height: 2,
                           width: 150,
@@ -275,9 +397,7 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-
                         const SizedBox(height: 8),
-
                         const Text(
                           'Welcome to, IGNIS SAFE',
                           style: TextStyle(
@@ -288,10 +408,7 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                             height: 1.1,
                           ),
                         ),
-
                         const SizedBox(height: 80),
-
-                        // Section header row (same spacing pattern)
                         Row(
                           children: [
                             IconButton(
@@ -310,10 +427,7 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                             ),
                           ],
                         ),
-
                         const SizedBox(height: 8),
-
-                        // Steps
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -345,9 +459,7 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                             ),
                           ],
                         ),
-
                         const SizedBox(height: 22),
-
                         const Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
@@ -360,9 +472,7 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                             ),
                           ),
                         ),
-
                         const SizedBox(height: 8),
-
                         Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
@@ -418,9 +528,7 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                             ),
                           ),
                         ),
-
                         const SizedBox(height: 10),
-
                         ClipRRect(
                           borderRadius: BorderRadius.circular(10),
                           child: SizedBox(
@@ -434,9 +542,7 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                             ),
                           ),
                         ),
-
                         const SizedBox(height: 10),
-
                         Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
@@ -449,17 +555,15 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                             ),
                           ),
                         ),
-
                         const SizedBox(height: 14),
-
                         _RuleRow(text: '8 characters minimum', ok: _min8),
                         const SizedBox(height: 8),
                         _RuleRow(text: 'a number', ok: _hasNumber),
                         const SizedBox(height: 8),
                         _RuleRow(text: 'a symbol', ok: _hasSymbol),
-
+                        const SizedBox(height: 8),
+                        _RuleRow(text: 'a capital letter', ok: _hasUpper),
                         const SizedBox(height: 20),
-
                         SizedBox(
                           width: double.infinity,
                           height: 54,
@@ -492,9 +596,7 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                                   ),
                           ),
                         ),
-
                         const SizedBox(height: 120),
-
                         Row(
                           children: const [
                             Expanded(child: Divider(thickness: 1)),
@@ -512,9 +614,7 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                             Expanded(child: Divider(thickness: 1)),
                           ],
                         ),
-
                         const SizedBox(height: 14),
-
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -528,10 +628,12 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                             ),
                             GestureDetector(
                               onTap: () {
+                                LoginPage.skipAutoRoute = false;
                                 Navigator.pushAndRemoveUntil(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (_) => const LoginPage()),
+                                    builder: (_) => const LoginPage(),
+                                  ),
                                   (route) => false,
                                 );
                               },
@@ -547,7 +649,6 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                             ),
                           ],
                         ),
-
                         const SizedBox(height: 20),
                       ],
                     ),

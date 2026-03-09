@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'passwordvalidation.dart';
+
+import 'forgotpass.dart';
 import 'login.dart';
+import 'passwordvalidation.dart';
 
 class VerifyEmailPage extends StatefulWidget {
   final String email;
@@ -42,7 +44,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       _focus.first.requestFocus();
 
       if (widget.email.trim().isNotEmpty) {
-        await _sendOtp(showToast: false);
+        await _sendCode(showToast: false);
       }
     });
   }
@@ -61,6 +63,77 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   String get _code => _ctrl.map((c) => c.text).join();
   bool get _codeComplete => RegExp(r'^\d{6}$').hasMatch(_code);
 
+  Future<bool> _emailAlreadyExists(String email) async {
+    final normalizedEmail = email.trim().toLowerCase();
+
+    final result = await supabase.rpc(
+      'check_email_exists',
+      params: {'p_email': normalizedEmail},
+    );
+
+    return result == true;
+  }
+
+  Future<void> _showExistingAccountDialog(
+    String email, {
+    bool popCurrentPageOnCancel = false,
+  }) async {
+    final action = await showDialog<String>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: const Text(
+          'Email already has an account',
+          style: TextStyle(fontWeight: FontWeight.w900),
+        ),
+        content: Text(
+          '$email already has an account.\n\nWould you like to log in or reset your password?',
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
+            height: 1.4,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'cancel'),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'forgot'),
+            child: const Text('Forgot Password'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, 'login'),
+            child: const Text('Login'),
+          ),
+        ],
+      ),
+    );
+
+    if (!mounted) return;
+
+    if (action == 'forgot') {
+      LoginPage.skipAutoRoute = false;
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => const ForgotPassPage()),
+        (route) => false,
+      );
+    } else if (action == 'login') {
+      LoginPage.skipAutoRoute = false;
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => const LoginPage()),
+        (route) => false,
+      );
+    } else if (action == 'cancel' && popCurrentPageOnCancel) {
+      Navigator.pop(context);
+    }
+  }
+
   void _clearOtp() {
     for (final c in _ctrl) {
       c.clear();
@@ -69,21 +142,33 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     setState(() {});
   }
 
-  Future<void> _sendOtp({bool showToast = true}) async {
+  Future<void> _sendCode({bool showToast = true}) async {
     if (_isSending) return;
 
-    final email = widget.email.trim();
+    final email = widget.email.trim().toLowerCase();
     if (email.isEmpty) return;
 
     setState(() => _isSending = true);
 
     try {
+      final exists = await _emailAlreadyExists(email);
+
+      if (!mounted) return;
+
+      if (exists) {
+        await _showExistingAccountDialog(
+          email,
+          popCurrentPageOnCancel: true,
+        );
+        return;
+      }
+
       await supabase.auth.signInWithOtp(
         email: email,
         shouldCreateUser: true,
         data: {
-          'first_name': widget.firstName,
-          'last_name': widget.lastName,
+          'first_name': widget.firstName.trim(),
+          'last_name': widget.lastName.trim(),
         },
       );
 
@@ -92,7 +177,9 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       if (showToast) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Verification code sent. Check your email inbox/spam.'),
+            content: Text(
+              'Verification code sent. Check your email inbox or spam.',
+            ),
           ),
         );
       }
@@ -114,7 +201,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   Future<void> _verifyOtp() async {
     if (_isVerifying) return;
 
-    final email = widget.email.trim();
+    final email = widget.email.trim().toLowerCase();
     if (email.isEmpty) return;
 
     if (!_codeComplete) {
@@ -141,7 +228,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
         context,
         MaterialPageRoute(
           builder: (_) => CreatePasswordPage(
-            email: widget.email,
+            email: email,
             firstName: widget.firstName,
             lastName: widget.lastName,
           ),
@@ -176,7 +263,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
 
   @override
   Widget build(BuildContext context) {
-    final email = widget.email.trim();
+    final email = widget.email.trim().toLowerCase();
 
     if (email.isEmpty) {
       return Scaffold(
@@ -397,7 +484,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                             TextButton(
                               onPressed: (_isVerifying || _isSending)
                                   ? null
-                                  : () => _sendOtp(showToast: true),
+                                  : () => _sendCode(showToast: true),
                               child: const Text(
                                 'Resend code',
                                 style: TextStyle(
@@ -459,6 +546,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                             ),
                             GestureDetector(
                               onTap: () {
+                                LoginPage.skipAutoRoute = false;
                                 Navigator.pushAndRemoveUntil(
                                   context,
                                   MaterialPageRoute(

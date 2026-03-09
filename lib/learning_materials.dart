@@ -10,7 +10,9 @@ import 'profile.dart';
 
 
 class LearningMaterialsTab extends StatefulWidget {
-  const LearningMaterialsTab({super.key});
+  const LearningMaterialsTab({super.key, this.onRequestTabChange});
+
+  final ValueChanged<int>? onRequestTabChange;
 
   @override
   State<LearningMaterialsTab> createState() => _LearningMaterialsTabState();
@@ -224,7 +226,7 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
                     ),
                   ),
                   const SizedBox(height: 30),
-
+             
                   // ✅ SEARCH
                   Container(
                     height: 50,
@@ -263,50 +265,56 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
 
                   // ✅ LIST
                   Expanded(
-                    child: ListView.separated(
-                      clipBehavior: Clip.none,
+                    child: Padding(
                       padding: EdgeInsets.only(
                         top: 14,
-                        bottom: 5 + MediaQuery.of(context).padding.bottom,
+                        bottom: (MediaQuery.of(context).padding.bottom - 25)
+                            .clamp(0.0, 999.0),
                       ),
-                      itemCount: filtered.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 25),
-                      itemBuilder: (context, index) {
-                        final m = filtered[index];
-                        return _ModuleCard(
-                          moduleLabel: m.moduleLabel,
-                          title: m.title,
-                          description: m.description,
-                          asset: m.asset,
-                          onPressed: () {
-                            if (m.moduleLabel == "MODULE 1") {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) =>
-                                      const LearningMaterialExtinguisherPage(),
-                                ),
-                              );
-                            } else if (m.moduleLabel == "MODULE 2") {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) =>
-                                      const LearningMaterialElectricalPage(),
-                                ),
-                              );
-                            } else {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) =>
-                                      const LearningMaterialKitchenPage(),
-                                ),
-                              );
-                            }
-                          },
-                        );
-                      },
+                      child: Column(
+                        children: filtered.asMap().entries.map((entry) {
+                          final index = entry.key;
+                          final m = entry.value;
+                          final isLast = index == filtered.length - 1;
+
+                          return Padding(
+                            padding: EdgeInsets.only(bottom: isLast ? 0 : 15),
+                            child: _ModuleCard(
+                              moduleLabel: m.moduleLabel,
+                              title: m.title,
+                              description: m.description,
+                              asset: m.asset,
+                              onPressed: () {
+                                if (m.moduleLabel == "MODULE 1") {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                          const LearningMaterialExtinguisherPage(),
+                                    ),
+                                  );
+                                } else if (m.moduleLabel == "MODULE 2") {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                          const LearningMaterialElectricalPage(),
+                                    ),
+                                  );
+                                } else {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                          const LearningMaterialKitchenPage(),
+                                    ),
+                                  );
+                                }
+                              },
+                            ),
+                          );
+                        }).toList(),
+                      ),
                     ),
                   ),
                 ],
@@ -404,33 +412,32 @@ class _ModuleCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: SizedBox(
-                        height: 32,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFB11217),
-                            elevation: 6,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 0,
+                    Row(
+                      children: [
+                        const Spacer(),
+                        SizedBox(
+                          height: 26,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFB11217),
+                              elevation: 6,
+                              padding: const EdgeInsets.symmetric(horizontal: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(6),
+                              ),
                             ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                          ),
-                          onPressed: onPressed,
-                          child: const Text(
-                            "Learn Materials",
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white,
+                            onPressed: onPressed,
+                            child: const Text(
+                              "View",
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ),
-                      ),
+                      ],
                     ),
                   ],
                 ),
