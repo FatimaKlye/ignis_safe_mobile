@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'forgotpass.dart';
 import 'login.dart';
 
 class CreatePasswordPage extends StatefulWidget {
@@ -27,6 +28,7 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
   bool _min8 = false;
   bool _hasNumber = false;
   bool _hasSymbol = false;
+  bool _hasUpper = false;
 
   bool _isLoading = false;
 
@@ -50,12 +52,17 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
     final hasNum = RegExp(r'\d').hasMatch(p);
     final hasSym =
         RegExp(r'[!@#$%^&*(),.?":{}|<>_\-\[\]\\\/~`+=;]').hasMatch(p);
+    final hasUpper = RegExp(r'[A-Z]').hasMatch(p);
 
-    if (_min8 != min8 || _hasNumber != hasNum || _hasSymbol != hasSym) {
+    if (_min8 != min8 ||
+        _hasNumber != hasNum ||
+        _hasSymbol != hasSym ||
+        _hasUpper != hasUpper) {
       setState(() {
         _min8 = min8;
         _hasNumber = hasNum;
         _hasSymbol = hasSym;
+        _hasUpper = hasUpper;
       });
     }
   }
@@ -65,6 +72,7 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
     if (_min8) n++;
     if (_hasNumber) n++;
     if (_hasSymbol) n++;
+    if (_hasUpper) n++;
     return n;
   }
 
@@ -72,7 +80,7 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
 
   double get _progress {
     if (_isEmpty) return 0.0;
-    return _passedRules / 3.0;
+    return _passedRules / 4.0;
   }
 
   Color get _barColor {
@@ -84,25 +92,93 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
   String get _strengthText {
     if (_isEmpty) return 'Password is weak';
     if (_passedRules <= 1) return 'Password is weak';
-    if (_passedRules == 2) return 'Password is medium';
+    if (_passedRules <= 3) return 'Password is medium';
     return 'Password is strong';
   }
 
   Color get _strengthColor {
     if (_isEmpty) return const Color(0xFFD32F2F);
     if (_passedRules <= 1) return const Color(0xFFD32F2F);
-    if (_passedRules == 2) return const Color(0xFFF9A825);
+    if (_passedRules <= 3) return const Color(0xFFF9A825);
     return const Color(0xFF2E7D32);
   }
 
-  bool get _allOk => _passedRules == 3;
+  bool get _allOk => _passedRules == 4;
+
+  Future<void> _showPopup(String message, {String title = 'Notice'}) async {
+    if (!mounted) return;
+    await showDialog<void>(
+      context: context,
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(title),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showExistingAccountDialog(String email) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: const Text(
+          'Email already has an account',
+          style: TextStyle(fontWeight: FontWeight.w900),
+        ),
+        content: Text(
+          '$email already has an account.\n\nWould you like to log in or reset your password?',
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
+            height: 1.4,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ForgotPassPage()),
+              );
+            },
+            child: const Text('Forgot Password'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (_) => const LoginPage()),
+                (route) => false,
+              );
+            },
+            child: const Text('Login'),
+          ),
+        ],
+      ),
+    );
+  }
 
   Future<void> _continueWithSupabase() async {
     if (_isLoading) return;
 
     if (!_allOk) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Password does not meet requirements.')),
+      await _showPopup(
+        'Password does not meet requirements.',
+        title: 'Invalid Password',
       );
       return;
     }
@@ -113,6 +189,30 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
 
     try {
       final password = passCtrl.text;
+
+      // If there is no authenticated session yet, create an auth user first.
+      if (supabase.auth.currentUser == null) {
+        try {
+          await Supabase.instance.client.auth.signUp(
+            email: widget.email.trim().toLowerCase(),
+            password: passCtrl.text,
+            data: {
+              'first_name': widget.firstName.trim(),
+              'last_name': widget.lastName.trim(),
+            },
+          );
+        } on AuthException catch (e) {
+          final msg = e.message.toLowerCase();
+
+          if (msg.contains('already registered') ||
+              msg.contains('already exists')) {
+            _showExistingAccountDialog(widget.email.trim().toLowerCase());
+            return;
+          }
+
+          rethrow;
+        }
+      }
 
       // After verifyOTP, user is authenticated but may not have a password yet.
       // This sets the password for the current authenticated user.
@@ -209,15 +309,9 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
         ),
       );
     } on AuthException catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.message)),
-      );
+      await _showPopup(e.message, title: 'Authentication Error');
     } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
+      await _showPopup('Error: $e', title: 'Something Went Wrong');
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -457,6 +551,8 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                         _RuleRow(text: 'a number', ok: _hasNumber),
                         const SizedBox(height: 8),
                         _RuleRow(text: 'a symbol', ok: _hasSymbol),
+                        const SizedBox(height: 8),
+                        _RuleRow(text: 'a capital letter', ok: _hasUpper),
 
                         const SizedBox(height: 20),
 
@@ -591,3 +687,4 @@ class _RuleRow extends StatelessWidget {
     );
   }
 }
+

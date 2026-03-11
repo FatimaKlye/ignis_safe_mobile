@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'forgotpass.dart';
 import 'login.dart';
 import 'verifyemail.dart';
 
@@ -12,11 +14,13 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   static const Color brandRed = Color(0xFFB71C1C);
+  final supabase = Supabase.instance.client;
 
   final _formKey = GlobalKey<FormState>();
   final firstNameCtrl = TextEditingController();
   final lastNameCtrl = TextEditingController();
   final emailCtrl = TextEditingController();
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -50,28 +54,118 @@ class _RegisterPageState extends State<RegisterPage> {
     return null;
   }
 
-  void _register() {
+  Future<bool> _emailAlreadyExists(String email) async {
+    final normalizedEmail = email.trim().toLowerCase();
+
+    final existing = await Supabase.instance.client
+        .from('profiles')
+        .select('id')
+        .eq('email', normalizedEmail)
+        .limit(1)
+        .maybeSingle();
+
+    return existing != null;
+  }
+
+  void _showExistingAccountDialog(String email) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: const Text(
+          'Email already has an account',
+          style: TextStyle(fontWeight: FontWeight.w900),
+        ),
+        content: Text(
+          '$email already has an account.\n\nWould you like to log in or reset your password?',
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
+            height: 1.4,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ForgotPassPage()),
+              );
+            },
+            child: const Text('Forgot Password'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => const LoginPage()),
+              );
+            },
+            child: const Text('Login'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _continueToVerifyEmail() async {
+    final firstName = firstNameCtrl.text.trim();
+    final lastName = lastNameCtrl.text.trim();
+    final email = emailCtrl.text.trim().toLowerCase();
+
+    if (firstName.isEmpty || lastName.isEmpty || email.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please complete all fields.')),
+      );
+      return;
+    }
+
     final ok = _formKey.currentState?.validate() ?? false;
     if (!ok) return;
 
-    final email = emailCtrl.text.trim();
-    final first = firstNameCtrl.text.trim();
-    final last = lastNameCtrl.text.trim();
+    setState(() => _isLoading = true);
 
-    // Prevent LoginPage's auth-state listener from redirecting to Home
-    // while the user is still in the registration flow.
-    LoginPage.skipAutoRoute = true;
+    try {
+      final exists = await _emailAlreadyExists(email);
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => VerifyEmailPage(
-          email: email,
-          firstName: first,
-          lastName: last,
+      if (!mounted) return;
+
+      if (exists) {
+        _showExistingAccountDialog(email);
+        return;
+      }
+
+      // Prevent LoginPage's auth-state listener from redirecting to Home
+      // while the user is still in the registration flow.
+      LoginPage.skipAutoRoute = true;
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => VerifyEmailPage(
+            email: email,
+            firstName: firstName,
+            lastName: lastName,
+          ),
         ),
-      ),
-    );
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Could not check email: $e')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
 
   Widget _inputLabel(String label) => Align(
@@ -160,16 +254,25 @@ class _RegisterPageState extends State<RegisterPage> {
               borderRadius: BorderRadius.circular(10),
             ),
           ),
-          onPressed: _register,
-          child: const Text(
-            'Verify Account',
-            style: TextStyle(
-              fontFamily: 'Poppins',
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
+            onPressed: _isLoading ? null : _continueToVerifyEmail,
+            child: _isLoading
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white,
+                  ),
+                )
+              : const Text(
+                  'Verify Account',
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
         ),
       );
 

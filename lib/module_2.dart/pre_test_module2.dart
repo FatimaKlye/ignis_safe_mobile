@@ -185,7 +185,7 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                                       ),
                                       TextSpan(
                                         text:
-                                            "Module 1: Fire Extinguisher: Safe Use and Emergency Response",
+                                            "Module 2: Electrical Fire: Causes, Safe Actions, and Prevention",
                                         style: TextStyle(fontWeight: FontWeight.w700),
                                       ),
                                       TextSpan(
@@ -220,7 +220,7 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                                   height: 52,
                                   child: ElevatedButton(
                                     onPressed: () {
-                                      Navigator.push(
+                                      Navigator.pushReplacement(
                                         context,
                                         MaterialPageRoute(
                                           builder: (_) =>

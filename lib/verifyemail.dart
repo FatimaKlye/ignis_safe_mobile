@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'forgotpass.dart';
 import 'passwordvalidation.dart';
 import 'login.dart';
 
@@ -42,7 +43,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       _focus.first.requestFocus();
 
       if (widget.email.trim().isNotEmpty) {
-        await _sendOtp(showToast: false);
+        await _sendCode(showToast: false);
       }
     });
   }
@@ -67,6 +68,82 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     }
     _focus.first.requestFocus();
     setState(() {});
+  }
+
+  Future<bool> _emailAlreadyExists(String email) async {
+    final normalizedEmail = email.trim().toLowerCase();
+
+    final existing = await Supabase.instance.client
+        .from('profiles')
+        .select('id')
+        .eq('email', normalizedEmail)
+        .limit(1)
+        .maybeSingle();
+
+    return existing != null;
+  }
+
+  void _showExistingAccountDialog(String email) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: const Text(
+          'Email already has an account',
+          style: TextStyle(fontWeight: FontWeight.w900),
+        ),
+        content: Text(
+          '$email already has an account.\n\nWould you like to log in or reset your password?',
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
+            height: 1.4,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ForgotPassPage()),
+              );
+            },
+            child: const Text('Forgot Password'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => const LoginPage()),
+              );
+            },
+            child: const Text('Login'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _sendCode({bool showToast = true}) async {
+    final email = widget.email.trim().toLowerCase();
+
+    final exists = await _emailAlreadyExists(email);
+
+    if (!mounted) return;
+
+    if (exists) {
+      _showExistingAccountDialog(email);
+      return;
+    }
+
+    await _sendOtp(showToast: showToast);
   }
 
   Future<void> _sendOtp({bool showToast = true}) async {
@@ -397,7 +474,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                             TextButton(
                               onPressed: (_isVerifying || _isSending)
                                   ? null
-                                  : () => _sendOtp(showToast: true),
+                                  : () => _sendCode(showToast: true),
                               child: const Text(
                                 'Resend code',
                                 style: TextStyle(

@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,8 +11,8 @@ class ProfilePage extends StatefulWidget {
   const ProfilePage({
     super.key,
     this.name,
-    this.completedSimulations = "2 / 3",
-    this.lastSimulation = "Kitchen Fire Safety",
+    this.completedSimulations = "0 / 3",
+    this.lastSimulation = "No simulation yet",
   });
 
   final String? name;
@@ -28,21 +27,29 @@ class _ProfilePageState extends State<ProfilePage> {
   static const Color brandRed = Color(0xFFB11217);
   static const Color darkText = Color(0xFF222222);
   static const String _kLangKey = "ignis_lang";
+  static const int _totalSimulations = 3;
 
   final ImagePicker _picker = ImagePicker();
+  final SupabaseClient _supabase = Supabase.instance.client;
 
   Uint8List? _avatarBytes;
   bool _isUploadingAvatar = false;
+  bool _isLoadingProfile = true;
+  bool _isLoggingOut = false;
+
   String _language = "English";
   String _displayName = '';
   String _email = '';
   String? _avatarUrl;
-  bool _isLoadingProfile = true;
-  bool _isLoggingOut = false;
+
+  late String _completedSimulations;
+  late String _lastSimulation;
 
   @override
   void initState() {
     super.initState();
+    _completedSimulations = widget.completedSimulations;
+    _lastSimulation = widget.lastSimulation;
     _initializePage();
   }
 
@@ -55,7 +62,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Future<void> _loadProfile() async {
     try {
-      final user = Supabase.instance.client.auth.currentUser;
+      final user = _supabase.auth.currentUser;
 
       if (user == null) {
         if (!mounted) return;
@@ -63,14 +70,23 @@ class _ProfilePageState extends State<ProfilePage> {
           _displayName = widget.name?.trim() ?? '';
           _email = '';
           _avatarUrl = null;
+          _completedSimulations = widget.completedSimulations;
+          _lastSimulation = widget.lastSimulation;
           _isLoadingProfile = false;
         });
         return;
       }
 
-      final profileData = await Supabase.instance.client
+      final profileData = await _supabase
           .from('profiles')
-          .select('first_name, last_name, email, avatar_url')
+          .select('''
+            first_name,
+            last_name,
+            email,
+            avatar_url,
+            completed_simulations,
+            last_simulation
+          ''')
           .eq('id', user.id)
           .maybeSingle();
 
@@ -79,6 +95,8 @@ class _ProfilePageState extends State<ProfilePage> {
       String displayName = widget.name?.trim() ?? '';
       String email = user.email ?? '';
       String? avatarUrl;
+      String completedSimulations = widget.completedSimulations;
+      String lastSimulation = widget.lastSimulation;
 
       if (profileData != null) {
         final firstName = (profileData['first_name'] ?? '').toString().trim();
@@ -94,23 +112,55 @@ class _ProfilePageState extends State<ProfilePage> {
           email = dbEmail;
         }
 
-        avatarUrl = profileData['avatar_url']?.toString();
+        final dbAvatarUrl = profileData['avatar_url']?.toString().trim();
+        if (dbAvatarUrl != null && dbAvatarUrl.isNotEmpty) {
+          avatarUrl = dbAvatarUrl;
+        }
+
+        final rawCompleted = profileData['completed_simulations'];
+        if (rawCompleted != null) {
+          if (rawCompleted is num) {
+            completedSimulations = '${rawCompleted.toInt()} / $_totalSimulations';
+          } else {
+            final rawText = rawCompleted.toString().trim();
+            if (rawText.isNotEmpty) {
+              if (rawText.contains('/')) {
+                completedSimulations = rawText;
+              } else {
+                final parsed = int.tryParse(rawText);
+                if (parsed != null) {
+                  completedSimulations = '$parsed / $_totalSimulations';
+                }
+              }
+            }
+          }
+        }
+
+        final dbLastSimulation =
+            (profileData['last_simulation'] ?? '').toString().trim();
+        if (dbLastSimulation.isNotEmpty) {
+          lastSimulation = dbLastSimulation;
+        }
       }
 
       setState(() {
         _displayName = displayName;
         _email = email;
         _avatarUrl = avatarUrl;
+        _completedSimulations = completedSimulations;
+        _lastSimulation = lastSimulation;
         _isLoadingProfile = false;
       });
     } catch (e) {
-      final user = Supabase.instance.client.auth.currentUser;
+      final user = _supabase.auth.currentUser;
 
       if (!mounted) return;
       setState(() {
         _displayName = widget.name?.trim() ?? '';
         _email = user?.email ?? '';
         _avatarUrl = null;
+        _completedSimulations = widget.completedSimulations;
+        _lastSimulation = widget.lastSimulation;
         _isLoadingProfile = false;
       });
     }
@@ -156,8 +206,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
       if (image == null) return;
 
-      final supabase = Supabase.instance.client;
-      final user = supabase.auth.currentUser;
+      final user = _supabase.auth.currentUser;
 
       if (user == null) {
         if (!mounted) return;
@@ -179,34 +228,23 @@ class _ProfilePageState extends State<ProfilePage> {
       if (!mounted) return;
 
       setState(() {
-        _avatarBytes = bytes; // instant preview
+        _avatarBytes = bytes;
         _isUploadingAvatar = true;
       });
 
-      if (kIsWeb) {
-        await supabase.storage.from(bucketName).uploadBinary(
-          filePath,
-          bytes,
-          fileOptions: FileOptions(
-            upsert: true,
-            contentType: _getContentType(ext),
-          ),
-        );
-      } else {
-        await supabase.storage.from(bucketName).uploadBinary(
-          filePath,
-          bytes,
-          fileOptions: FileOptions(
-            upsert: true,
-            contentType: _getContentType(ext),
-          ),
-        );
-      }
+      await _supabase.storage.from(bucketName).uploadBinary(
+        filePath,
+        bytes,
+        fileOptions: FileOptions(
+          upsert: true,
+          contentType: _getContentType(ext),
+        ),
+      );
 
-      final rawUrl = supabase.storage.from(bucketName).getPublicUrl(filePath);
+      final rawUrl = _supabase.storage.from(bucketName).getPublicUrl(filePath);
       final avatarUrl = '$rawUrl?v=${DateTime.now().millisecondsSinceEpoch}';
 
-      await supabase.from('profiles').update({
+      await _supabase.from('profiles').update({
         'avatar_url': avatarUrl,
         'updated_at': DateTime.now().toIso8601String(),
       }).eq('id', user.id);
@@ -257,7 +295,7 @@ class _ProfilePageState extends State<ProfilePage> {
     });
 
     try {
-      await Supabase.instance.client.auth.signOut();
+      await _supabase.auth.signOut();
 
       if (!mounted) return;
 
@@ -340,20 +378,20 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-    ImageProvider? _getAvatarImage() {
-      if (_avatarBytes != null) {
-        return MemoryImage(_avatarBytes!);
-      }
-
-      if (_avatarUrl != null && _avatarUrl!.trim().isNotEmpty) {
-        if (_avatarUrl!.startsWith('http')) {
-          return NetworkImage(_avatarUrl!);
-        }
-        return AssetImage(_avatarUrl!);
-      }
-
-      return null;
+  ImageProvider? _getAvatarImage() {
+    if (_avatarBytes != null) {
+      return MemoryImage(_avatarBytes!);
     }
+
+    if (_avatarUrl != null && _avatarUrl!.trim().isNotEmpty) {
+      if (_avatarUrl!.startsWith('http')) {
+        return NetworkImage(_avatarUrl!);
+      }
+      return AssetImage(_avatarUrl!);
+    }
+
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -375,7 +413,6 @@ class _ProfilePageState extends State<ProfilePage> {
             child: Column(
               children: [
                 const SizedBox(height: 20),
-
                 Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 16,
@@ -407,14 +444,12 @@ class _ProfilePageState extends State<ProfilePage> {
                     ],
                   ),
                 ),
-
                 Expanded(
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.symmetric(horizontal: 25),
                     child: Column(
                       children: [
                         const SizedBox(height: 10),
-
                         GestureDetector(
                           onTap: _pickAvatar,
                           child: Container(
@@ -446,9 +481,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 : null,
                           ),
                         ),
-
                         const SizedBox(height: 18),
-
                         _isLoadingProfile
                             ? const CircularProgressIndicator()
                             : Column(
@@ -474,25 +507,19 @@ class _ProfilePageState extends State<ProfilePage> {
                                   ),
                                 ],
                               ),
-
                         const SizedBox(height: 22),
-
                         _InfoTile(
                           icon: Icons.check_box_outlined,
                           text:
-                              "${isEnglish ? "Completed Simulations" : "Natapos na Simulation"}: ${widget.completedSimulations}",
+                              "${isEnglish ? "Completed Simulations" : "Natapos na Simulation"}: $_completedSimulations",
                         ),
-
                         const SizedBox(height: 12),
-
                         _InfoTile(
                           icon: Icons.local_fire_department_outlined,
                           text:
-                              "${isEnglish ? "Last Simulation" : "Huling Simulation"}: ${widget.lastSimulation}",
+                              "${isEnglish ? "Last Simulation" : "Huling Simulation"}: $_lastSimulation",
                         ),
-
                         const SizedBox(height: 26),
-
                         _BigButton(
                           icon: Icons.edit,
                           label: isEnglish ? "Edit Profile" : "I-edit ang Profile",
@@ -508,28 +535,22 @@ class _ProfilePageState extends State<ProfilePage> {
                               setState(() {
                                 _isLoadingProfile = true;
                               });
-                              _loadProfile();
+                              await _loadProfile();
                             }
                           },
                         ),
-
                         const SizedBox(height: 14),
-
-                        _LanguageSelector(
-                          selected: _language,
-                          onChanged: _changeLanguage,
-                        ),
-
-                        const SizedBox(height: 14),
-
+                        // _LanguageSelector(
+                        //   selected: _language,
+                        //   onChanged: _changeLanguage,
+                        // ),
+                        // const SizedBox(height: 14),
                         _BigButton(
                           icon: Icons.help_outline,
                           label: "FAQ",
                           onTap: _showFAQ,
                         ),
-
                         const SizedBox(height: 14),
-
                         _BigButton(
                           icon: Icons.logout_rounded,
                           label: _isLoggingOut
@@ -538,7 +559,6 @@ class _ProfilePageState extends State<ProfilePage> {
                           onTap: _isLoggingOut ? null : _logout,
                           color: brandRed,
                         ),
-
                         const SizedBox(height: 30),
                       ],
                     ),

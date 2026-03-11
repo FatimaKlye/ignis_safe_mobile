@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+import 'login.dart';
+import 'profile.dart';
 
 enum AboutFilter { all, about, team, bfpDasmarinas , contacts }
 
@@ -44,6 +48,31 @@ class _AboutUsPageState extends State<AboutUsPage> {
         _avatarUrl = data['avatar_url'] as String?;
       });
     } catch (_) {}
+  }
+
+  Future<void> _logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('last_tab_index');
+    await Supabase.instance.client.auth.signOut();
+    if (!mounted) return;
+
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (_) => const LoginPage()),
+      (route) => false,
+    );
+  }
+
+  Future<void> _goToProfile() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ProfilePage(
+          name: '$_firstName $_lastName'.trim(),
+        ),
+      ),
+    );
+    if (mounted) _loadProfile();
   }
 
   void _onSearchChanged(String v) => setState(() => _searchQuery = v);
@@ -123,15 +152,54 @@ class _AboutUsPageState extends State<AboutUsPage> {
                       // header (kept from your code)
                       Row(
                         children: [
-                          CircleAvatar(
-                            radius: 22,
-                            backgroundColor: Colors.grey.shade400,
-                            backgroundImage: _avatarUrl != null
-                                ? NetworkImage(_avatarUrl!) as ImageProvider
-                                : null,
-                            child: _avatarUrl == null
-                                ? const Icon(Icons.person, size: 22, color: Colors.white)
-                                : null,
+                          PopupMenuButton<String>(
+                            tooltip: "",
+                            offset: const Offset(0, 55),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            onSelected: (value) async {
+                              if (value == "profile") {
+                                await _goToProfile();
+                                return;
+                              }
+                              if (value == "logout") {
+                                await _logout();
+                                return;
+                              }
+                            },
+                            itemBuilder: (context) => const [
+                              PopupMenuItem(
+                                value: "profile",
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.person_outline_rounded),
+                                    SizedBox(width: 8),
+                                    Text("Profile"),
+                                  ],
+                                ),
+                              ),
+                              PopupMenuItem(
+                                value: "logout",
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.logout_rounded),
+                                    SizedBox(width: 8),
+                                    Text("Log Out"),
+                                  ],
+                                ),
+                              ),
+                            ],
+                            child: CircleAvatar(
+                              radius: 22,
+                              backgroundColor: Colors.grey.shade400,
+                              backgroundImage: _avatarUrl != null
+                                  ? NetworkImage(_avatarUrl!) as ImageProvider
+                                  : null,
+                              child: _avatarUrl == null
+                                  ? const Icon(Icons.person, size: 22, color: Colors.white)
+                                  : null,
+                            ),
                           ),
                           const SizedBox(width: 10),
                           Column(
@@ -465,8 +533,8 @@ class _LogoMeaningCard extends StatelessWidget {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(18),
                     child: Image.asset(
-                      "assets/ignis_logo.png", // ✅ change this
-                      fit: BoxFit.cover,
+                      "assets/logo.png", // ✅ change this
+                      fit: BoxFit.fitHeight,
                       errorBuilder: (_, __, ___) => const Icon(
                         Icons.shield_rounded,
                         size: 46,

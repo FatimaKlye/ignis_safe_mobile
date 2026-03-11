@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'pre_test_module1.dart';
 
 class LearningMaterialExtinguisherPage extends StatefulWidget {
   const LearningMaterialExtinguisherPage({super.key});
@@ -92,8 +93,12 @@ class _LearningMaterialExtinguisherPageState
         curve: Curves.easeOutCubic,
       );
     } else {
-      // Hook your navigation to pre-test / next module here
-      // Navigator.push(context, MaterialPageRoute(builder: (_) => const PreTestExtinguisherPage()));
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const PreAssessmentIntroPage(),
+        ),
+      );
     }
   }
 
@@ -411,7 +416,7 @@ class _LearningMaterialExtinguisherPageState
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _ImageBox(
-                asset: "assets/extinguisher_overview.png", // placeholder
+                asset: "assets/fire_ex.png", // placeholder
                 c1: accent,
                 c2: accent2,
               ),

@@ -8,11 +8,11 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'login.dart';
 import 'profile.dart';
 
-import 'module_1.dart/preassessment_extinguisher.dart';
+import 'module_1.dart/pre_test_module1.dart' as pre1;
 import 'module_1.dart/postassessment_extinguisher.dart';
 import 'module_1.dart/simulation_scene.dart';
 
-import 'module_2.dart/preassessment_electrical.dart';
+import 'module_2.dart/pre_test_module2.dart' as pre2;
 import 'module_2.dart/simulation_scene.dart' as sim2;
 
 import 'module_3.dart/pre_test_module3.dart' as pre3;
@@ -284,14 +284,14 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
       await Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => const PreAssessmentExtinguisherPage(),
+          builder: (_) => const pre1.PreAssessmentIntroPage(),
         ),
       );
     } else if (m.moduleNo == 2) {
       await Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => const PreAssessmentElectricalPage(),
+          builder: (_) => const pre2.PreAssessmentIntroPage2(),
         ),
       );
     } else {
@@ -581,36 +581,39 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
                                 return _matchesFilter(progress);
                               }).toList();
 
-                              return ListView.builder(
-                                clipBehavior: Clip.none,
+                              return Padding(
                                 padding: EdgeInsets.only(
                                   top: 14,
-                                  bottom: 10 +
-                                      MediaQuery.of(context).padding.bottom,
+                                  bottom:
+                                      (MediaQuery.of(context).padding.bottom - 20)
+                                          .clamp(0.0, 999.0),
                                 ),
-                                itemCount: filteredModules.length,
-                                itemBuilder: (context, index) {
-                                  final m = filteredModules[index];
-                                  final progress =
-                                      _progressByModuleNo[m.moduleNo] ??
-                                          const ModuleProgress(
-                                            preDone: false,
-                                            simDone: false,
-                                            postDone: false,
-                                          );
+                                child: Column(
+                                  children: filteredModules.asMap().entries.map((entry) {
+                                    final index = entry.key;
+                                    final m = entry.value;
+                                    final isLast = index == filteredModules.length - 1;
+                                    final progress =
+                                        _progressByModuleNo[m.moduleNo] ??
+                                            const ModuleProgress(
+                                              preDone: false,
+                                              simDone: false,
+                                              postDone: false,
+                                            );
 
-                                  return Padding(
-                                    padding: const EdgeInsets.only(bottom: 25),
-                                    child: _ModuleCard(
-                                      moduleLabel: m.moduleLabel,
-                                      title: m.title,
-                                      description: m.description,
-                                      asset: m.asset,
-                                      progress: progress,
-                                      onPressed: () => _openModuleActions(m),
-                                    ),
-                                  );
-                                },
+                                    return Padding(
+                                      padding: EdgeInsets.only(bottom: isLast ? 0 : 15),
+                                      child: _ModuleCard(
+                                        moduleLabel: m.moduleLabel,
+                                        title: m.title,
+                                        description: m.description,
+                                        asset: m.asset,
+                                        progress: progress,
+                                        onPressed: () => _openModuleActions(m),
+                                      ),
+                                    );
+                                  }).toList(),
+                                ),
                               );
                             },
                           ),

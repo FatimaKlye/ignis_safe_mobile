@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'login.dart'; 
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TermsAndConditionsPage extends StatefulWidget {
   const TermsAndConditionsPage({super.key});
@@ -14,8 +14,8 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
   final ScrollController _scrollController = ScrollController();
 
   double _progress = 0.0;
-  bool _done = false;
-  Timer? _timer;
+  bool _scrolledToBottom = false;
+  bool _checked = false;
 
   static const Color brandRed = Color(0xFFB71C1C);
   static const Color background = Colors.white;
@@ -29,7 +29,6 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
 
   @override
   void dispose() {
-    _timer?.cancel();
     _scrollController.removeListener(_handleScroll);
     _scrollController.dispose();
     super.dispose();
@@ -47,23 +46,16 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
       setState(() => _progress = value);
     }
 
-    if (!_done && value >= 0.99) {
-      _complete();
+    if (!_scrolledToBottom && value >= 0.99) {
+      setState(() => _scrolledToBottom = true);
     }
   }
 
-  void _complete() {
-    setState(() => _done = true);
-
-    _timer?.cancel();
-    _timer = Timer(const Duration(milliseconds: 900), () {
-      if (!mounted) return;
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (_) => const LoginPage()),
-        (_) => false,
-      );
-    });
+  Future<void> _onAgree() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('agreed_to_terms', true);
+    if (!mounted) return;
+    Navigator.pop(context, true);
   }
 
   @override
@@ -76,6 +68,10 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
         backgroundColor: background,
         elevation: 0,
         centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context, false),
+        ),
         title: const Text(
           'Terms & Conditions',
           style: TextStyle(
@@ -104,7 +100,7 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
                 ),
                 const SizedBox(width: 12),
                 Text(
-                  _done ? '100%' : '$percent%',
+                  _scrolledToBottom ? '100%' : '$percent%',
                   style: const TextStyle(
                     fontFamily: 'Poppins',
                     color: brandRed,
@@ -236,23 +232,76 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
             ),
           ),
 
-          // Bottom status
+          // Bottom agreement section
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 14),
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
             decoration: const BoxDecoration(
               border: Border(
                 top: BorderSide(color: Color(0xFFB71C1C), width: 1),
               ),
             ),
-            child: Text(
-              'Scroll to the bottom to continue',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontFamily: 'Poppins',
-                color: brandRed,
-                fontWeight: FontWeight.w500,
-              ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (!_scrolledToBottom)
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 4),
+                    child: Text(
+                      'Scroll to the bottom to continue',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        color: brandRed,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                if (_scrolledToBottom) ...[
+                  Row(
+                    children: [
+                      Checkbox(
+                        value: _checked,
+                        activeColor: brandRed,
+                        onChanged: (v) => setState(() => _checked = v ?? false),
+                      ),
+                      const Expanded(
+                        child: Text(
+                          'I have read and agree to the Terms and Conditions.',
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 12,
+                            color: Colors.black87,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 44,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _checked ? brandRed : Colors.grey,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      onPressed: _checked ? _onAgree : null,
+                      child: const Text(
+                        'I Agree',
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ],
             ),
           ),
         ],
