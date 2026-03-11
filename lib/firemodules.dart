@@ -646,20 +646,51 @@ class ModuleProgress {
     required this.postDone,
   });
 
-  double get value {
-    if (postDone) return 1.0;
-    if (simDone) return 0.66;
-    if (preDone) return 0.33;
-    return 0.0;
+  int get completedCount {
+    int count = 0;
+    if (preDone) count++;
+    if (simDone) count++;
+    if (postDone) count++;
+    return count;
   }
 
-  int get percent => (value * 100).round();
+  double get value {
+    switch (completedCount) {
+      case 1:
+        return 1 / 3;
+      case 2:
+        return 2 / 3;
+      case 3:
+        return 1.0;
+      default:
+        return 0.0;
+    }
+  }
+
+  String get percentLabel {
+    switch (completedCount) {
+      case 1:
+        return "33.3%";
+      case 2:
+        return "66.6%";
+      case 3:
+        return "100%";
+      default:
+        return "0%";
+    }
+  }
 
   Color get color {
-    if (postDone) return const Color(0xFF2EB872);
-    if (simDone) return const Color(0xFFF2C94C);
-    if (preDone) return const Color(0xFF4F46E5);
-    return const Color(0xFFB11217);
+    switch (completedCount) {
+      case 1:
+        return const Color(0xFF4F46E5);
+      case 2:
+        return const Color(0xFFF2C94C);
+      case 3:
+        return const Color(0xFF2EB872);
+      default:
+        return const Color(0xFFB11217);
+    }
   }
 }
 
@@ -739,7 +770,7 @@ class _ModuleCard extends StatelessWidget {
                     Row(
                       children: [
                         Text(
-                          "${progress.percent}%",
+                          progress.percentLabel,
                           style: TextStyle(
                             color: progress.color,
                             fontSize: 12,

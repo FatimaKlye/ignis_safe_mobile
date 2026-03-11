@@ -3,6 +3,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../unity_launcher.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../module_progress_db.dart';
 
 class SimulationScene extends StatefulWidget {
   const SimulationScene({super.key});
@@ -25,34 +27,57 @@ class _SimulationSceneState extends State<SimulationScene> {
   }
 
   Future<void> _openSceneFlow() async {
-    final picked = await _showScenePickerPopup();
-    if (!mounted || picked == null) return;
+  final picked = await _showScenePickerPopup();
+  if (!mounted || picked == null) return;
 
-    final confirmed = await _showSceneConfirmPopup(picked);
-    if (!mounted || confirmed != true) return;
+  final confirmed = await _showSceneConfirmPopup(picked);
+  if (!mounted || confirmed != true) return;
 
-    final unitySceneName = _unitySceneNameFor(picked);
+  final unitySceneName = _unitySceneNameFor(picked);
 
-    if (unitySceneName == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Scene $picked is not yet available in Unity.'),
-        ),
-      );
-      return;
-    }
-
-    try {
-      await UnityLauncher.openScene(unitySceneName);
-    } on PlatformException catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to open Unity: ${e.message ?? e.code}'),
-        ),
-      );
-    }
+  if (unitySceneName == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Scene $picked is not yet available in Unity.'),
+      ),
+    );
+    return;
   }
+
+  try {
+    final unityResult = await UnityLauncher.openScene(unitySceneName);
+
+    if (!mounted) return;
+
+    if (unityResult.completed) {
+      await ModuleProgressDb.markSimulationCompleted(1);
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Module 1 simulation completed. Progress updated.'),
+        ),
+      );
+
+      Navigator.pop(context, true);
+    }
+  } on PlatformException catch (e) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Failed to open Unity: ${e.message ?? e.code}'),
+      ),
+    );
+  } catch (e) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Failed to save simulation progress: $e'),
+      ),
+    );
+  }
+}
 
   Future<int?> _showScenePickerPopup() {
     return showGeneralDialog<int>(
