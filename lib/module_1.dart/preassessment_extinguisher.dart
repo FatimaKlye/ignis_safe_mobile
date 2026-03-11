@@ -115,22 +115,36 @@ class _PreAssessmentExtinguisherPageState
 
       final optionRows = await _supabase
           .from('assessment_options')
-          .select('id, question_id, option_key, option_text, is_correct')
+          .select(
+            'id, question_id, option_key, option_text, is_correct, display_order',
+          )
           .inFilter('question_id', questionIds)
-          .order('option_key');
+          .order('question_id')
+          .order('display_order');
 
       final optionsByQuestion = <String, List<_OptionVm>>{};
       for (final row in optionRows) {
         final questionId = row['question_id'].toString();
         optionsByQuestion.putIfAbsent(questionId, () => []);
+
+        final rawDisplayOrder = row['display_order'];
+        final displayOrder = rawDisplayOrder is num
+            ? rawDisplayOrder.toInt()
+            : int.tryParse((rawDisplayOrder ?? '').toString()) ?? 999;
+
         optionsByQuestion[questionId]!.add(
           _OptionVm(
             id: row['id'].toString(),
             key: (row['option_key'] ?? '').toString(),
             text: (row['option_text'] ?? '').toString(),
             isCorrect: (row['is_correct'] ?? false) as bool,
+            displayOrder: displayOrder,
           ),
         );
+      }
+
+      for (final list in optionsByQuestion.values) {
+        list.sort((a, b) => a.displayOrder.compareTo(b.displayOrder));
       }
 
       final baseQuestions = questionRows.map((row) {
@@ -415,17 +429,18 @@ class _PreAssessmentExtinguisherPageState
     });
 
     try {
-      await _supabase.from('assessment_attempt_answers').upsert(
-        {
-          'attempt_id': _attemptId,
-          'question_id': _questions[questionIndex].id,
-          'selected_option_id': optionId,
-          'is_correct': _isCorrectSelection(questionIndex, optionId),
-          'updated_at': DateTime.now().toIso8601String(),
-        },
-        onConflict: 'attempt_id,question_id',
-      );
-    } catch (_) {}
+      await _supabase
+          .from('assessment_attempt_answers')
+          .update({
+            'selected_option_id': optionId,
+            'is_correct': _isCorrectSelection(questionIndex, optionId),
+            'updated_at': DateTime.now().toIso8601String(),
+          })
+          .eq('attempt_id', _attemptId!)
+          .eq('question_id', _questions[questionIndex].id);
+    } catch (e) {
+      debugPrint('SELECT ANSWER UPDATE ERROR: $e');
+    }
   }
 
   Future<void> _toggleFlag(int questionIndex) async {
@@ -440,16 +455,17 @@ class _PreAssessmentExtinguisherPageState
     });
 
     try {
-      await _supabase.from('assessment_attempt_answers').upsert(
-        {
-          'attempt_id': _attemptId,
-          'question_id': _questions[questionIndex].id,
-          'is_flagged': newFlagState,
-          'updated_at': DateTime.now().toIso8601String(),
-        },
-        onConflict: 'attempt_id,question_id',
-      );
-    } catch (_) {}
+      await _supabase
+          .from('assessment_attempt_answers')
+          .update({
+            'is_flagged': newFlagState,
+            'updated_at': DateTime.now().toIso8601String(),
+          })
+          .eq('attempt_id', _attemptId!)
+          .eq('question_id', _questions[questionIndex].id);
+    } catch (e) {
+      debugPrint('FLAG UPDATE ERROR: $e');
+    }
   }
 
   bool _isCorrectSelection(int questionIndex, String optionId) {
@@ -568,18 +584,17 @@ class _PreAssessmentExtinguisherPageState
           correctCount++;
         }
 
-        await _supabase.from('assessment_attempt_answers').upsert(
-          {
-            'attempt_id': _attemptId,
-            'question_id': _questions[i].id,
-            'selected_option_id': selectedId,
-            'is_flagged': _flaggedIndexes.contains(i),
-            'display_order': i,
-            'is_correct': isCorrect,
-            'updated_at': DateTime.now().toIso8601String(),
-          },
-          onConflict: 'attempt_id,question_id',
-        );
+        await _supabase
+            .from('assessment_attempt_answers')
+            .update({
+              'selected_option_id': selectedId,
+              'is_flagged': _flaggedIndexes.contains(i),
+              'display_order': i,
+              'is_correct': isCorrect,
+              'updated_at': DateTime.now().toIso8601String(),
+            })
+            .eq('attempt_id', _attemptId!)
+            .eq('question_id', _questions[i].id);
       }
 
       final scorePercent =
@@ -619,6 +634,8 @@ class _PreAssessmentExtinguisherPageState
         _showReview = true;
       });
     } catch (e) {
+      debugPrint('SUBMIT ASSESSMENT ERROR: $e');
+
       if (!mounted) return;
 
       await _showInfoDialog(
@@ -756,12 +773,15 @@ class _PreAssessmentExtinguisherPageState
                       onFlagTap: () => _toggleFlag(index),
                     ),
                     const SizedBox(height: 16),
-                    ...question.options.map((option) {
+                    ...question.options.asMap().entries.map((entry) {
+                      final option = entry.value;
                       final selected = selectedId == option.id;
+                      final label = String.fromCharCode(65 + entry.key);
+
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 12),
                         child: _OptionCard(
-                          label: option.key.isEmpty ? '' : option.key.toUpperCase(),
+                          label: label,
                           text: option.text,
                           selected: selected,
                           onTap: () => _selectAnswer(index, option.id),
@@ -1038,14 +1058,6 @@ class _PreAssessmentExtinguisherPageState
 
   @override
   Widget build(BuildContext context) {
-    final progress = _questions.isEmpty
-        ? 0.0
-        : _showReview
-            ? 1.0
-            : _showSummary
-                ? 1.0
-                : (_currentIndex + 1) / _questions.length;
-
     return Scaffold(
       backgroundColor: kSoftBg,
       body: Stack(
@@ -1070,7 +1082,8 @@ class _PreAssessmentExtinguisherPageState
                             IconButton(
                               padding: EdgeInsets.zero,
                               constraints: const BoxConstraints(),
-                              icon: const Icon(Icons.close, color: Colors.white),
+                              icon:
+                                  const Icon(Icons.close, color: Colors.white),
                               onPressed: () => Navigator.pop(context),
                             ),
                             const SizedBox(height: 15),
@@ -1211,12 +1224,14 @@ class _OptionVm {
   final String key;
   final String text;
   final bool isCorrect;
+  final int displayOrder;
 
   const _OptionVm({
     required this.id,
     required this.key,
     required this.text,
     required this.isCorrect,
+    required this.displayOrder,
   });
 }
 
@@ -1933,7 +1948,9 @@ class _ReviewCard extends StatelessWidget {
               height: 1.35,
             ),
           ),
-          if (!isCorrect && explanation != null && explanation!.trim().isNotEmpty) ...[
+          if (!isCorrect &&
+              explanation != null &&
+              explanation!.trim().isNotEmpty) ...[
             const SizedBox(height: 12),
             const Text(
               'Why this is wrong',

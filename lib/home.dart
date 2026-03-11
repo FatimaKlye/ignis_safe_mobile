@@ -11,6 +11,7 @@ enum HomeTab { learn, simulation, profile, about }
 
 class IgnisHomePage extends StatefulWidget {
   const IgnisHomePage({super.key, this.initialTabIndex = 0});
+
   final int initialTabIndex;
 
   @override
@@ -20,7 +21,7 @@ class IgnisHomePage extends StatefulWidget {
 class _IgnisHomePageState extends State<IgnisHomePage> {
   static const String _kLastTab = 'last_tab_index';
 
-  HomeTab _currentTab = HomeTab.learn;
+  late HomeTab _currentTab;
 
   final List<IconData> _icons = const [
     Icons.menu_book_rounded,
@@ -31,11 +32,15 @@ class _IgnisHomePageState extends State<IgnisHomePage> {
 
   late final List<Widget> _pages = [
     LearningMaterialsTab(
-      onRequestTabChange: (index) => _onItemTapped(index),
+      onRequestTabChange: _onItemTapped,
     ),
-    FireMaterialsTab(),
-    ProfilePage(),     // content-only
-    AboutUsPage(),
+    FireMaterialsTab(
+      onRequestTabChange: _onItemTapped,
+    ),
+    const ProfilePage(),
+    AboutUsPage(
+      onRequestTabChange: _onItemTapped,
+    ),
   ];
 
   int get _selectedIndex => _currentTab.index;
@@ -43,19 +48,24 @@ class _IgnisHomePageState extends State<IgnisHomePage> {
   @override
   void initState() {
     super.initState();
-    final safeInitial = widget.initialTabIndex.clamp(0, HomeTab.values.length - 1);
+
+    final safeInitial =
+        widget.initialTabIndex.clamp(0, HomeTab.values.length - 1);
     _currentTab = HomeTab.values[safeInitial];
+
     _restoreLastTab();
   }
 
   Future<void> _restoreLastTab() async {
     final prefs = await SharedPreferences.getInstance();
     final saved = prefs.getInt(_kLastTab);
-    if (!mounted || saved == null) return;
 
+    if (!mounted || saved == null) return;
     if (saved < 0 || saved >= HomeTab.values.length) return;
 
-    setState(() => _currentTab = HomeTab.values[saved]);
+    setState(() {
+      _currentTab = HomeTab.values[saved];
+    });
   }
 
   Future<void> _saveLastTab(int index) async {
@@ -67,7 +77,10 @@ class _IgnisHomePageState extends State<IgnisHomePage> {
     if (index < 0 || index >= HomeTab.values.length) return;
     if (index == _selectedIndex) return;
 
-    setState(() => _currentTab = HomeTab.values[index]);
+    setState(() {
+      _currentTab = HomeTab.values[index];
+    });
+
     _saveLastTab(index);
   }
 
@@ -97,7 +110,6 @@ class _IgnisHomePageState extends State<IgnisHomePage> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: _buildBody(),
-
       bottomNavigationBar: FloatingNavBar(
         selectedIndex: _selectedIndex,
         onItemTapped: _onItemTapped,

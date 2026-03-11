@@ -8,7 +8,9 @@ import 'profile.dart';
 enum AboutFilter { all, about, team, bfpDasmarinas , contacts }
 
 class AboutUsPage extends StatefulWidget {
-  const AboutUsPage({super.key});
+  const AboutUsPage({super.key, this.onRequestTabChange});
+
+  final ValueChanged<int>? onRequestTabChange;
 
   @override
   State<AboutUsPage> createState() => _AboutUsPageState();
@@ -64,15 +66,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
   }
 
   Future<void> _goToProfile() async {
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => ProfilePage(
-          name: '$_firstName $_lastName'.trim(),
-        ),
-      ),
-    );
-    if (mounted) _loadProfile();
+    widget.onRequestTabChange?.call(2);
   }
 
   void _onSearchChanged(String v) => setState(() => _searchQuery = v);

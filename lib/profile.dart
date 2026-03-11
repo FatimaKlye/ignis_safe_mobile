@@ -420,16 +420,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   child: Row(
                     children: [
-                      IconButton(
-                        onPressed: () => Navigator.pushReplacementNamed(
-                          context,
-                          '/home',
-                        ),
-                        icon: const Icon(
-                          Icons.arrow_back,
-                          color: Colors.white,
-                        ),
-                      ),
+                      const SizedBox(width: 48),
                       const Spacer(),
                       const Text(
                         "Profile",

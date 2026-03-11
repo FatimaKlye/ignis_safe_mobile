@@ -6,7 +6,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'login.dart';
-import 'profile.dart';
 
 import 'module_1.dart/pre_test_module1.dart' as pre1;
 import 'module_1.dart/postassessment_extinguisher.dart';
@@ -21,7 +20,9 @@ import 'module_3.dart/simulation_scene.dart' as sim3;
 enum ModuleFilter { all, pending, inProgress, completed }
 
 class FireMaterialsTab extends StatefulWidget {
-  const FireMaterialsTab({super.key});
+  const FireMaterialsTab({super.key, this.onRequestTabChange});
+
+  final ValueChanged<int>? onRequestTabChange;
 
   @override
   State<FireMaterialsTab> createState() => _FireMaterialsTabState();
@@ -98,7 +99,7 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
       setState(() {
         _firstName = (data['first_name'] ?? '').toString();
         _lastName = (data['last_name'] ?? '').toString();
-        _avatarUrl = data['avatar_url'] as String?;
+        _avatarUrl = data['avatar_url']?.toString();
       });
     } catch (e) {
       debugPrint('Failed to load profile: $e');
@@ -192,15 +193,7 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
   }
 
   Future<void> _goToProfile() async {
-    if (!mounted) return;
-
-    await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const ProfilePage()),
-    );
-
-    await _loadProfile();
-    await _loadModuleProgressFromDatabase();
+    widget.onRequestTabChange?.call(2);
   }
 
   Future<void> _openModuleActions(_ModuleItem m) async {

@@ -1,4 +1,4 @@
-﻿import 'dart:io';
+﻿import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -13,20 +13,20 @@ class EditProfilePage extends StatefulWidget {
 class _EditProfilePageState extends State<EditProfilePage> {
   static const Color brandRed = Color(0xFFB11217);
   static const Color darkText = Color(0xFF222222);
+  static const String _bucketName = 'profile_pic';
 
   final ImagePicker _picker = ImagePicker();
 
   final _firstNameCtrl = TextEditingController();
   final _lastNameCtrl = TextEditingController();
-  final _usernameCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
   final _confirmCtrl = TextEditingController();
 
-  File? _avatarFile;
+  Uint8List? _newAvatarBytes;
+  String? _newAvatarExt;
   String? _existingAvatarUrl;
 
-  bool _avatarChanged = false;
   bool _isLoading = true;
   bool _isSaving = false;
   bool _showPass = false;
@@ -34,7 +34,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   String _originalFirstName = '';
   String _originalLastName = '';
-  String _originalUsername = '';
 
   @override
   void initState() {
@@ -46,7 +45,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
   void dispose() {
     _firstNameCtrl.dispose();
     _lastNameCtrl.dispose();
-    _usernameCtrl.dispose();
     _emailCtrl.dispose();
     _passwordCtrl.dispose();
     _confirmCtrl.dispose();
@@ -64,7 +62,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
       final data = await supabase
           .from('profiles')
-          .select('first_name, last_name, username, email, avatar_url')
+          .select('first_name, last_name, email, avatar_url')
           .eq('id', user.id)
           .maybeSingle();
 
@@ -75,7 +73,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
           'id': user.id,
           'first_name': (metadata['first_name'] ?? '').toString(),
           'last_name': (metadata['last_name'] ?? '').toString(),
-          'username': (metadata['username'] ?? '').toString(),
           'email': user.email ?? '',
           'updated_at': DateTime.now().toIso8601String(),
         });
@@ -83,7 +80,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
       final refreshed = await supabase
           .from('profiles')
-          .select('first_name, last_name, username, email, avatar_url')
+          .select('first_name, last_name, email, avatar_url')
           .eq('id', user.id)
           .maybeSingle();
 
@@ -91,20 +88,17 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
       final firstName = (refreshed?['first_name'] ?? '').toString();
       final lastName = (refreshed?['last_name'] ?? '').toString();
-      final username = (refreshed?['username'] ?? '').toString();
       final email = (refreshed?['email'] ?? user.email ?? '').toString();
       final avatarUrl = refreshed?['avatar_url']?.toString();
 
       setState(() {
         _firstNameCtrl.text = firstName;
         _lastNameCtrl.text = lastName;
-        _usernameCtrl.text = username;
         _emailCtrl.text = email;
         _existingAvatarUrl = avatarUrl;
 
         _originalFirstName = firstName;
         _originalLastName = lastName;
-        _originalUsername = username;
 
         _isLoading = false;
       });
@@ -122,31 +116,44 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   Future<void> _pickAvatar() async {
-    final picked = await _picker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 85,
-    );
+    try {
+      final picked = await _picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 85,
+      );
 
-    if (picked == null) return;
+      if (picked == null) return;
 
-    setState(() {
-      _avatarFile = File(picked.path);
-      _avatarChanged = true;
-    });
+      final bytes = await picked.readAsBytes();
+      final ext = picked.name.contains('.')
+          ? picked.name.split('.').last.toLowerCase()
+          : 'jpg';
+
+      if (!mounted) return;
+
+      setState(() {
+        _newAvatarBytes = bytes;
+        _newAvatarExt = ext;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      await _showInfoDialog(
+        title: 'Image Error',
+        message: 'Could not read selected image.\n$e',
+        buttonText: 'OK',
+      );
+    }
   }
 
   Future<bool> _validateInputs() async {
     final first = _firstNameCtrl.text.trim();
     final last = _lastNameCtrl.text.trim();
-    // final username = _usernameCtrl.text.trim();
     final password = _passwordCtrl.text;
     final confirm = _confirmCtrl.text;
 
-    // if (first.isEmpty || last.isEmpty || username.isEmpty) {
     if (first.isEmpty || last.isEmpty) {
       await _showInfoDialog(
         title: 'Incomplete Details',
-        // message: 'Please complete First Name, Last Name, and Username.',
         message: 'Please complete First Name and Last Name.',
         buttonText: 'OK',
       );
@@ -179,8 +186,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   bool _hasActualChanges() {
     return _firstNameCtrl.text.trim() != _originalFirstName ||
         _lastNameCtrl.text.trim() != _originalLastName ||
-      // _usernameCtrl.text.trim() != _originalUsername ||
-        _avatarChanged ||
+        _newAvatarBytes != null ||
         _passwordCtrl.text.trim().isNotEmpty;
   }
 
@@ -189,7 +195,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
     final first = _firstNameCtrl.text.trim();
     final last = _lastNameCtrl.text.trim();
-    // final username = _usernameCtrl.text.trim();
     final password = _passwordCtrl.text.trim();
 
     if (first != _originalFirstName) {
@@ -200,11 +205,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       changes.add('Last Name: "$_originalLastName" → "$last"');
     }
 
-    // if (username != _originalUsername) {
-    //   changes.add('Username: "$_originalUsername" → "$username"');
-    // }
-
-    if (_avatarChanged) {
+    if (_newAvatarBytes != null) {
       changes.add('Profile Photo: Updated');
     }
 
@@ -289,28 +290,27 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
     String? avatarUrl = _existingAvatarUrl;
 
-    if (_avatarChanged && _avatarFile != null) {
-      final bytes = await _avatarFile!.readAsBytes();
-      final path = '${user.id}/avatar.jpg';
+    if (_newAvatarBytes != null) {
+      final ext = (_newAvatarExt ?? 'jpg').toLowerCase();
+      final path = '${user.id}/avatar.$ext';
 
-      await supabase.storage.from('avatars').uploadBinary(
+      await supabase.storage.from(_bucketName).uploadBinary(
         path,
-        bytes,
-        fileOptions: const FileOptions(
+        _newAvatarBytes!,
+        fileOptions: FileOptions(
           upsert: true,
-          contentType: 'image/jpeg',
+          contentType: _getContentType(ext),
         ),
       );
 
-      final publicUrl = supabase.storage.from('avatars').getPublicUrl(path);
-      avatarUrl = '$publicUrl?t=${DateTime.now().millisecondsSinceEpoch}';
+      final rawUrl = supabase.storage.from(_bucketName).getPublicUrl(path);
+      avatarUrl = '$rawUrl?v=${DateTime.now().millisecondsSinceEpoch}';
     }
 
     await supabase.from('profiles').upsert({
       'id': user.id,
       'first_name': _firstNameCtrl.text.trim(),
       'last_name': _lastNameCtrl.text.trim(),
-      // 'username': _usernameCtrl.text.trim(),
       'email': _emailCtrl.text.trim(),
       'avatar_url': avatarUrl,
       'updated_at': DateTime.now().toIso8601String(),
@@ -328,10 +328,25 @@ class _EditProfilePageState extends State<EditProfilePage> {
     setState(() {
       _originalFirstName = _firstNameCtrl.text.trim();
       _originalLastName = _lastNameCtrl.text.trim();
-      _originalUsername = _usernameCtrl.text.trim();
       _existingAvatarUrl = avatarUrl;
-      _avatarChanged = false;
+      _newAvatarBytes = null;
+      _newAvatarExt = null;
     });
+  }
+
+  String _getContentType(String ext) {
+    switch (ext) {
+      case 'png':
+        return 'image/png';
+      case 'webp':
+        return 'image/webp';
+      case 'gif':
+        return 'image/gif';
+      case 'jpg':
+      case 'jpeg':
+      default:
+        return 'image/jpeg';
+    }
   }
 
   Future<bool?> _showChangesDialog(List<String> changes) {
@@ -543,7 +558,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   ImageProvider? _buildAvatarImage() {
-    if (_avatarFile != null) return FileImage(_avatarFile!);
+    if (_newAvatarBytes != null) {
+      return MemoryImage(_newAvatarBytes!);
+    }
 
     if (_existingAvatarUrl != null && _existingAvatarUrl!.isNotEmpty) {
       if (_existingAvatarUrl!.startsWith('http')) {
@@ -688,12 +705,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           icon: Icons.badge_outlined,
                         ),
                         const SizedBox(height: 12),
-                        // _Field(
-                        //   label: 'Username',
-                        //   controller: _usernameCtrl,
-                        //   icon: Icons.alternate_email,
-                        // ),
-                        // const SizedBox(height: 12),
                         _Field(
                           label: 'Email',
                           controller: _emailCtrl,

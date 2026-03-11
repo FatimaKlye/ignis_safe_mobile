@@ -96,16 +96,7 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
   }
 
   Future<void> _goToProfile() async {
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => ProfilePage(
-          name: '$_firstName $_lastName'.trim(),
-        ),
-      ),
-    );
-    // Refresh header name in case the user edited their profile
-    if (mounted) _loadProfile();
+    widget.onRequestTabChange?.call(2); // change 3 to your actual Profile tab index
   }
 
   @override
