@@ -321,19 +321,19 @@ class _LoginPageState extends State<LoginPage> {
 
                           const SizedBox(height: 40),
                           _buildLoginButton(),
-                          if (!_agreedToTerms)
-                            const Padding(
-                              padding: EdgeInsets.only(top: 8),
-                              child: Text(
-                                'Please read and agree to the Terms and Conditions to enable login.',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontFamily: 'Poppins',
-                                  fontSize: 11,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ),
+                          // if (!_agreedToTerms)
+                          //   const Padding(
+                          //     padding: EdgeInsets.only(top: 8),
+                          //     child: Text(
+                          //       'Please read and agree to the Terms and Conditions to enable login.',
+                          //       textAlign: TextAlign.center,
+                          //       style: TextStyle(
+                          //         fontFamily: 'Poppins',
+                          //         fontSize: 11,
+                          //         color: Colors.grey,
+                          //       ),
+                          //     ),
+                          //   ),
                           const SizedBox(height: 20),
                           const SizedBox(height: 10),
                           _buildFooter(),
