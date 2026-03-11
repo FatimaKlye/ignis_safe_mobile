@@ -32,6 +32,7 @@ class _LoginPageState extends State<LoginPage> {
 
   bool _isLoading = false;
   bool _showPassword = false;
+  bool _agreedToTerms = false;
 
   StreamSubscription<AuthState>? _authSub;
 
@@ -39,8 +40,15 @@ class _LoginPageState extends State<LoginPage> {
   void initState() {
     super.initState();
     _restoreSavedEmail();
+    _loadTermsAgreement();
     _listenAuthChanges();
     _routeIfAlreadySignedIn();
+  }
+
+  Future<void> _loadTermsAgreement() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!mounted) return;
+    setState(() => _agreedToTerms = prefs.getBool('agreed_to_terms') ?? false);
   }
 
   void _listenAuthChanges() {
@@ -124,6 +132,18 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _login() async {
+    // Terms and Conditions validation is intentionally disabled.
+    // if (!_agreedToTerms) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     const SnackBar(
+    //       content: Text(
+    //         'You must read and agree to the Terms and Conditions before logging in.',
+    //       ),
+    //     ),
+    //   );
+    //   return;
+    // }
+
     final ok = _formKey.currentState?.validate() ?? false;
     if (!ok) return;
 
@@ -301,6 +321,19 @@ class _LoginPageState extends State<LoginPage> {
 
                           const SizedBox(height: 40),
                           _buildLoginButton(),
+                          if (!_agreedToTerms)
+                            const Padding(
+                              padding: EdgeInsets.only(top: 8),
+                              child: Text(
+                                'Please read and agree to the Terms and Conditions to enable login.',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontSize: 11,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ),
                           const SizedBox(height: 20),
                           const SizedBox(height: 10),
                           _buildFooter(),
@@ -473,11 +506,14 @@ class _LoginPageState extends State<LoginPage> {
       // ),
       const SizedBox(height: 20),
       GestureDetector(
-        onTap: () {
-          Navigator.push(
+        onTap: () async {
+          final agreed = await Navigator.push<bool>(
             context,
             MaterialPageRoute(builder: (_) => const TermsAndConditionsPage()),
           );
+          if (agreed == true) {
+            setState(() => _agreedToTerms = true);
+          }
         },
         child: const Text(
           'Terms and Conditions and Privacy Policy.',

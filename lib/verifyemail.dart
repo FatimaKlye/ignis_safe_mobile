@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
 import 'forgotpass.dart';
-import 'login.dart';
 import 'passwordvalidation.dart';
+import 'login.dart';
 
 class VerifyEmailPage extends StatefulWidget {
   final String email;
@@ -63,24 +62,30 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   String get _code => _ctrl.map((c) => c.text).join();
   bool get _codeComplete => RegExp(r'^\d{6}$').hasMatch(_code);
 
+  void _clearOtp() {
+    for (final c in _ctrl) {
+      c.clear();
+    }
+    _focus.first.requestFocus();
+    setState(() {});
+  }
+
   Future<bool> _emailAlreadyExists(String email) async {
     final normalizedEmail = email.trim().toLowerCase();
 
-    final result = await supabase.rpc(
-      'check_email_exists',
-      params: {'p_email': normalizedEmail},
-    );
+    final existing = await Supabase.instance.client
+        .from('profiles')
+        .select('id')
+        .eq('email', normalizedEmail)
+        .limit(1)
+        .maybeSingle();
 
-    return result == true;
+    return existing != null;
   }
 
-  Future<void> _showExistingAccountDialog(
-    String email, {
-    bool popCurrentPageOnCancel = false,
-  }) async {
-    final action = await showDialog<String>(
+  void _showExistingAccountDialog(String email) {
+    showDialog(
       context: context,
-      barrierDismissible: false,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
@@ -98,77 +103,64 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, 'cancel'),
+            onPressed: () => Navigator.pop(context),
             child: const Text('Cancel'),
           ),
           TextButton(
-            onPressed: () => Navigator.pop(context, 'forgot'),
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ForgotPassPage()),
+              );
+            },
             child: const Text('Forgot Password'),
           ),
           ElevatedButton(
-            onPressed: () => Navigator.pop(context, 'login'),
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => const LoginPage()),
+              );
+            },
             child: const Text('Login'),
           ),
         ],
       ),
     );
-
-    if (!mounted) return;
-
-    if (action == 'forgot') {
-      LoginPage.skipAutoRoute = false;
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (_) => const ForgotPassPage()),
-        (route) => false,
-      );
-    } else if (action == 'login') {
-      LoginPage.skipAutoRoute = false;
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (_) => const LoginPage()),
-        (route) => false,
-      );
-    } else if (action == 'cancel' && popCurrentPageOnCancel) {
-      Navigator.pop(context);
-    }
-  }
-
-  void _clearOtp() {
-    for (final c in _ctrl) {
-      c.clear();
-    }
-    _focus.first.requestFocus();
-    setState(() {});
   }
 
   Future<void> _sendCode({bool showToast = true}) async {
+    final email = widget.email.trim().toLowerCase();
+
+    final exists = await _emailAlreadyExists(email);
+
+    if (!mounted) return;
+
+    if (exists) {
+      _showExistingAccountDialog(email);
+      return;
+    }
+
+    await _sendOtp(showToast: showToast);
+  }
+
+  Future<void> _sendOtp({bool showToast = true}) async {
     if (_isSending) return;
 
-    final email = widget.email.trim().toLowerCase();
+    final email = widget.email.trim();
     if (email.isEmpty) return;
 
     setState(() => _isSending = true);
 
     try {
-      final exists = await _emailAlreadyExists(email);
-
-      if (!mounted) return;
-
-      if (exists) {
-        await _showExistingAccountDialog(
-          email,
-          popCurrentPageOnCancel: true,
-        );
-        return;
-      }
-
       await supabase.auth.signInWithOtp(
         email: email,
         shouldCreateUser: true,
         data: {
-          'first_name': widget.firstName.trim(),
-          'last_name': widget.lastName.trim(),
+          'first_name': widget.firstName,
+          'last_name': widget.lastName,
         },
       );
 
@@ -177,9 +169,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       if (showToast) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text(
-              'Verification code sent. Check your email inbox or spam.',
-            ),
+            content: Text('Verification code sent. Check your email inbox/spam.'),
           ),
         );
       }
@@ -201,7 +191,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   Future<void> _verifyOtp() async {
     if (_isVerifying) return;
 
-    final email = widget.email.trim().toLowerCase();
+    final email = widget.email.trim();
     if (email.isEmpty) return;
 
     if (!_codeComplete) {
@@ -228,7 +218,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
         context,
         MaterialPageRoute(
           builder: (_) => CreatePasswordPage(
-            email: email,
+            email: widget.email,
             firstName: widget.firstName,
             lastName: widget.lastName,
           ),
@@ -263,7 +253,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
 
   @override
   Widget build(BuildContext context) {
-    final email = widget.email.trim().toLowerCase();
+    final email = widget.email.trim();
 
     if (email.isEmpty) {
       return Scaffold(
@@ -546,7 +536,6 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                             ),
                             GestureDetector(
                               onTap: () {
-                                LoginPage.skipAutoRoute = false;
                                 Navigator.pushAndRemoveUntil(
                                   context,
                                   MaterialPageRoute(

@@ -540,11 +540,11 @@ class _ProfilePageState extends State<ProfilePage> {
                           },
                         ),
                         const SizedBox(height: 14),
-                        _LanguageSelector(
-                          selected: _language,
-                          onChanged: _changeLanguage,
-                        ),
-                        const SizedBox(height: 14),
+                        // _LanguageSelector(
+                        //   selected: _language,
+                        //   onChanged: _changeLanguage,
+                        // ),
+                        // const SizedBox(height: 14),
                         _BigButton(
                           icon: Icons.help_outline,
                           label: "FAQ",

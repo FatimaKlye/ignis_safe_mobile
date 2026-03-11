@@ -14,14 +14,12 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   static const Color brandRed = Color(0xFFB71C1C);
-
-  final SupabaseClient supabase = Supabase.instance.client;
+  final supabase = Supabase.instance.client;
 
   final _formKey = GlobalKey<FormState>();
   final firstNameCtrl = TextEditingController();
   final lastNameCtrl = TextEditingController();
   final emailCtrl = TextEditingController();
-
   bool _isLoading = false;
 
   @override
@@ -59,124 +57,78 @@ class _RegisterPageState extends State<RegisterPage> {
   Future<bool> _emailAlreadyExists(String email) async {
     final normalizedEmail = email.trim().toLowerCase();
 
-    final result = await supabase.rpc(
-      'check_email_exists',
-      params: {'p_email': normalizedEmail},
-    );
+    final existing = await Supabase.instance.client
+        .from('profiles')
+        .select('id')
+        .eq('email', normalizedEmail)
+        .limit(1)
+        .maybeSingle();
 
-    return result == true;
+    return existing != null;
   }
 
-  Future<void> _showExistingAccountDialog(String email) async {
-    final action = await showDialog<String>(
+  void _showExistingAccountDialog(String email) {
+    showDialog(
       context: context,
-      barrierDismissible: false,
       builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        contentPadding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
-        titlePadding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
-        title: Row(
-          children: const [
-            CircleAvatar(
-              radius: 16,
-              backgroundColor: Color(0xFFB71C1C),
-              child: Icon(Icons.warning_amber_rounded, color: Colors.white, size: 18),
-            ),
-            SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                'Email already has an account',
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 16,
-                  fontWeight: FontWeight.w800,
-                  color: Color(0xFF1F1F1F),
-                ),
-              ),
-            ),
-          ],
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: const Text(
+          'Email already has an account',
+          style: TextStyle(fontWeight: FontWeight.w900),
         ),
         content: Text(
           '$email already has an account.\n\nWould you like to log in or reset your password?',
           style: const TextStyle(
-            fontFamily: 'Poppins',
-            fontSize: 13,
             fontWeight: FontWeight.w600,
             height: 1.4,
-            color: Color(0xFF2D2D2D),
           ),
         ),
-        actionsPadding: const EdgeInsets.fromLTRB(12, 0, 12, 10),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, 'cancel'),
-            child: const Text(
-              'Cancel',
-              style: TextStyle(
-                fontFamily: 'Poppins',
-                fontWeight: FontWeight.w600,
-                color: Colors.black54,
-              ),
-            ),
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
           ),
-          OutlinedButton(
-            onPressed: () => Navigator.pop(context, 'forgot'),
-            style: OutlinedButton.styleFrom(
-              side: const BorderSide(color: Color(0xFFB71C1C)),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            ),
-            child: const Text(
-              'Forgot Password',
-              style: TextStyle(
-                fontFamily: 'Poppins',
-                fontWeight: FontWeight.w700,
-                color: Color(0xFFB71C1C),
-              ),
-            ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ForgotPassPage()),
+              );
+            },
+            child: const Text('Forgot Password'),
           ),
           ElevatedButton(
-            onPressed: () => Navigator.pop(context, 'login'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFB71C1C),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            ),
-            child: const Text(
-              'Login',
-              style: TextStyle(
-                fontFamily: 'Poppins',
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
-              ),
-            ),
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => const LoginPage()),
+              );
+            },
+            child: const Text('Login'),
           ),
         ],
       ),
     );
-
-    if (!mounted) return;
-
-    if (action == 'forgot') {
-      LoginPage.skipAutoRoute = false;
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => const ForgotPassPage()),
-      );
-    } else if (action == 'login') {
-      LoginPage.skipAutoRoute = false;
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const LoginPage()),
-      );
-    }
   }
 
   Future<void> _continueToVerifyEmail() async {
-    final ok = _formKey.currentState?.validate() ?? false;
-    if (!ok) return;
-
     final firstName = firstNameCtrl.text.trim();
     final lastName = lastNameCtrl.text.trim();
     final email = emailCtrl.text.trim().toLowerCase();
+
+    if (firstName.isEmpty || lastName.isEmpty || email.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please complete all fields.')),
+      );
+      return;
+    }
+
+    final ok = _formKey.currentState?.validate() ?? false;
+    if (!ok) return;
 
     setState(() => _isLoading = true);
 
@@ -186,10 +138,12 @@ class _RegisterPageState extends State<RegisterPage> {
       if (!mounted) return;
 
       if (exists) {
-        await _showExistingAccountDialog(email);
+        _showExistingAccountDialog(email);
         return;
       }
 
+      // Prevent LoginPage's auth-state listener from redirecting to Home
+      // while the user is still in the registration flow.
       LoginPage.skipAutoRoute = true;
 
       Navigator.push(
@@ -266,10 +220,8 @@ class _RegisterPageState extends State<RegisterPage> {
                   hintText: hint,
                   hintStyle: const TextStyle(fontFamily: 'Poppins'),
                   border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 18,
-                  ),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
                 ),
               ),
             ),
@@ -302,8 +254,8 @@ class _RegisterPageState extends State<RegisterPage> {
               borderRadius: BorderRadius.circular(10),
             ),
           ),
-          onPressed: _isLoading ? null : _continueToVerifyEmail,
-          child: _isLoading
+            onPressed: _isLoading ? null : _continueToVerifyEmail,
+            child: _isLoading
               ? const SizedBox(
                   width: 20,
                   height: 20,
@@ -358,7 +310,6 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
               TextButton(
                 onPressed: () {
-                  LoginPage.skipAutoRoute = false;
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (_) => const LoginPage()),
@@ -464,11 +415,6 @@ class _RegisterPageState extends State<RegisterPage> {
                             keyboardType: TextInputType.emailAddress,
                             validator: _validateEmail,
                             textInputAction: TextInputAction.done,
-                            onSubmitted: (_) {
-                              if (!_isLoading) {
-                                _continueToVerifyEmail();
-                              }
-                            },
                           ),
                           const SizedBox(height: 40),
                           _buildRegisterButton(),
