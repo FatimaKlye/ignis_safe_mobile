@@ -138,14 +138,16 @@ class _EditProfilePageState extends State<EditProfilePage> {
   Future<bool> _validateInputs() async {
     final first = _firstNameCtrl.text.trim();
     final last = _lastNameCtrl.text.trim();
-    final username = _usernameCtrl.text.trim();
+    // final username = _usernameCtrl.text.trim();
     final password = _passwordCtrl.text;
     final confirm = _confirmCtrl.text;
 
-    if (first.isEmpty || last.isEmpty || username.isEmpty) {
+    // if (first.isEmpty || last.isEmpty || username.isEmpty) {
+    if (first.isEmpty || last.isEmpty) {
       await _showInfoDialog(
         title: 'Incomplete Details',
-        message: 'Please complete First Name, Last Name, and Username.',
+        // message: 'Please complete First Name, Last Name, and Username.',
+        message: 'Please complete First Name and Last Name.',
         buttonText: 'OK',
       );
       return false;
@@ -177,7 +179,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   bool _hasActualChanges() {
     return _firstNameCtrl.text.trim() != _originalFirstName ||
         _lastNameCtrl.text.trim() != _originalLastName ||
-        _usernameCtrl.text.trim() != _originalUsername ||
+      // _usernameCtrl.text.trim() != _originalUsername ||
         _avatarChanged ||
         _passwordCtrl.text.trim().isNotEmpty;
   }
@@ -187,7 +189,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
     final first = _firstNameCtrl.text.trim();
     final last = _lastNameCtrl.text.trim();
-    final username = _usernameCtrl.text.trim();
+    // final username = _usernameCtrl.text.trim();
     final password = _passwordCtrl.text.trim();
 
     if (first != _originalFirstName) {
@@ -198,9 +200,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
       changes.add('Last Name: "$_originalLastName" → "$last"');
     }
 
-    if (username != _originalUsername) {
-      changes.add('Username: "$_originalUsername" → "$username"');
-    }
+    // if (username != _originalUsername) {
+    //   changes.add('Username: "$_originalUsername" → "$username"');
+    // }
 
     if (_avatarChanged) {
       changes.add('Profile Photo: Updated');
@@ -308,7 +310,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       'id': user.id,
       'first_name': _firstNameCtrl.text.trim(),
       'last_name': _lastNameCtrl.text.trim(),
-      'username': _usernameCtrl.text.trim(),
+      // 'username': _usernameCtrl.text.trim(),
       'email': _emailCtrl.text.trim(),
       'avatar_url': avatarUrl,
       'updated_at': DateTime.now().toIso8601String(),
@@ -686,12 +688,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           icon: Icons.badge_outlined,
                         ),
                         const SizedBox(height: 12),
-                        _Field(
-                          label: 'Username',
-                          controller: _usernameCtrl,
-                          icon: Icons.alternate_email,
-                        ),
-                        const SizedBox(height: 12),
+                        // _Field(
+                        //   label: 'Username',
+                        //   controller: _usernameCtrl,
+                        //   icon: Icons.alternate_email,
+                        // ),
+                        // const SizedBox(height: 12),
                         _Field(
                           label: 'Email',
                           controller: _emailCtrl,
