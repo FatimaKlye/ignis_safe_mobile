@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../profile_progress_sync.dart';
 
 const Color kBrandRed = Color(0xFFB11217);
 const Color kBrandBlue = Color(0xFF2563EB);
@@ -624,121 +625,123 @@ class _PostAssessmentHousePageState extends State<PostAssessmentHousePage> {
   }
 
   Future<void> _submitAssessment() async {
-    final confirmed = await _showConfirmDialog(
-      title: 'Submit Post-Assessment',
-      message:
-          'Answered: $_answeredCount / ${_questions.length}\n'
-          'Flagged: ${_flaggedIndexes.length}\n\n'
-          'After submission, you will see your score for the 4 multiple-choice questions and your written reflection.',
-      confirmText: 'Submit',
-      cancelText: 'Review Again',
-    );
+  final confirmed = await _showConfirmDialog(
+    title: 'Submit Post-Assessment',
+    message:
+        'Answered: $_answeredCount / ${_questions.length}\n'
+        'Flagged: ${_flaggedIndexes.length}\n\n'
+        'After submission, you will see your score for the 4 multiple-choice questions and your written reflection.',
+    confirmText: 'Submit',
+    cancelText: 'Review Again',
+  );
 
-    if (confirmed != true) return;
+  if (confirmed != true) return;
+
+  setState(() {
+    _isSubmitting = true;
+  });
+
+  try {
+    int correctCount = 0;
+
+    for (int i = 0; i < _questions.length; i++) {
+      final question = _questions[i];
+
+      if (_isEssay(question)) {
+        final answerText = (_writtenAnswers[i] ?? '').trim();
+
+        await _supabase.from('assessment_attempt_answers').upsert(
+          {
+            'attempt_id': _attemptId,
+            'question_id': question.id,
+            'selected_option_id': null,
+            'answer_text': answerText.isEmpty ? null : answerText,
+            'is_flagged': _flaggedIndexes.contains(i),
+            'display_order': i,
+            'is_correct': false,
+            'updated_at': DateTime.now().toIso8601String(),
+          },
+          onConflict: 'attempt_id,question_id',
+        );
+      } else {
+        final selectedId = _selectedOptionIds[i];
+        final isCorrect =
+            selectedId == null ? false : _isCorrectSelection(i, selectedId);
+
+        if (isCorrect) {
+          correctCount++;
+        }
+
+        await _supabase.from('assessment_attempt_answers').upsert(
+          {
+            'attempt_id': _attemptId,
+            'question_id': question.id,
+            'selected_option_id': selectedId,
+            'answer_text': null,
+            'is_flagged': _flaggedIndexes.contains(i),
+            'display_order': i,
+            'is_correct': isCorrect,
+            'updated_at': DateTime.now().toIso8601String(),
+          },
+          onConflict: 'attempt_id,question_id',
+        );
+      }
+    }
+
+    final scorePercent =
+        _scoredTotal == 0 ? 0 : (correctCount / _scoredTotal) * 100;
+
+    await _supabase.from('assessment_attempts').update({
+      'submitted_at': DateTime.now().toIso8601String(),
+      'status': 'submitted',
+      'correct_count': correctCount,
+      'score': scorePercent,
+    }).eq('id', _attemptId!);
+
+    final progressRow = await _supabase
+        .from('module_progress')
+        .select('id')
+        .eq('user_id', _user.id)
+        .eq('module_id', _moduleId!)
+        .maybeSingle();
+
+    if (progressRow == null) {
+      await _supabase.from('module_progress').insert({
+        'user_id': _user.id,
+        'module_id': _moduleId,
+        'post_test_completed_at': DateTime.now().toIso8601String(),
+      });
+    } else {
+      await _supabase.from('module_progress').update({
+        'post_test_completed_at': DateTime.now().toIso8601String(),
+      }).eq('id', progressRow['id']);
+    }
+
+    await ProfileProgressSync.syncCompletedSimulations();
+
+    if (!mounted) return;
 
     setState(() {
-      _isSubmitting = true;
+      _score = correctCount;
+      _showSummary = false;
+      _showReview = true;
     });
+  } catch (e) {
+    if (!mounted) return;
 
-    try {
-      int correctCount = 0;
+    await _showInfoDialog(
+      title: 'Submission failed',
+      message: '$e',
+      buttonText: 'OK',
+    );
+  } finally {
+    if (!mounted) return;
 
-      for (int i = 0; i < _questions.length; i++) {
-        final question = _questions[i];
-
-        if (_isEssay(question)) {
-          final answerText = (_writtenAnswers[i] ?? '').trim();
-
-          await _supabase.from('assessment_attempt_answers').upsert(
-            {
-              'attempt_id': _attemptId,
-              'question_id': question.id,
-              'selected_option_id': null,
-              'answer_text': answerText.isEmpty ? null : answerText,
-              'is_flagged': _flaggedIndexes.contains(i),
-              'display_order': i,
-              'is_correct': false,
-              'updated_at': DateTime.now().toIso8601String(),
-            },
-            onConflict: 'attempt_id,question_id',
-          );
-        } else {
-          final selectedId = _selectedOptionIds[i];
-          final isCorrect =
-              selectedId == null ? false : _isCorrectSelection(i, selectedId);
-
-          if (isCorrect) {
-            correctCount++;
-          }
-
-          await _supabase.from('assessment_attempt_answers').upsert(
-            {
-              'attempt_id': _attemptId,
-              'question_id': question.id,
-              'selected_option_id': selectedId,
-              'answer_text': null,
-              'is_flagged': _flaggedIndexes.contains(i),
-              'display_order': i,
-              'is_correct': isCorrect,
-              'updated_at': DateTime.now().toIso8601String(),
-            },
-            onConflict: 'attempt_id,question_id',
-          );
-        }
-      }
-
-      final scorePercent =
-          _scoredTotal == 0 ? 0 : (correctCount / _scoredTotal) * 100;
-
-      await _supabase.from('assessment_attempts').update({
-        'submitted_at': DateTime.now().toIso8601String(),
-        'status': 'submitted',
-        'correct_count': correctCount,
-        'score': scorePercent,
-      }).eq('id', _attemptId!);
-
-      final progressRow = await _supabase
-          .from('module_progress')
-          .select('id')
-          .eq('user_id', _user.id)
-          .eq('module_id', _moduleId!)
-          .maybeSingle();
-
-      if (progressRow == null) {
-        await _supabase.from('module_progress').insert({
-          'user_id': _user.id,
-          'module_id': _moduleId,
-          'post_test_completed_at': DateTime.now().toIso8601String(),
-        });
-      } else {
-        await _supabase.from('module_progress').update({
-          'post_test_completed_at': DateTime.now().toIso8601String(),
-        }).eq('id', progressRow['id']);
-      }
-
-      if (!mounted) return;
-
-      setState(() {
-        _score = correctCount;
-        _showSummary = false;
-        _showReview = true;
-      });
-    } catch (e) {
-      if (!mounted) return;
-
-      await _showInfoDialog(
-        title: 'Submission failed',
-        message: '$e',
-        buttonText: 'OK',
-      );
-    } finally {
-      if (!mounted) return;
-
-      setState(() {
-        _isSubmitting = false;
-      });
-    }
+    setState(() {
+      _isSubmitting = false;
+    });
   }
+}
 
   Future<bool?> _showConfirmDialog({
     required String title,

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
 import 'pre_assessment_completion_page.dart';
+import '../profile_progress_sync.dart';
+
 
 const Color kBrandRed = Color(0xFFB11217);
 const Color kBrandBlue = Color(0xFF2563EB);
@@ -667,112 +668,116 @@ class _PreAssessmentExtinguisherPageState
   }
 
   Future<void> _submitAssessment() async {
-    if (_hasUnansweredQuestions) {
-      _showIncompleteSnackBar();
-      return;
+  if (_hasUnansweredQuestions) {
+    _showIncompleteSnackBar();
+    return;
+  }
+
+  final confirmed = await _showConfirmDialog(
+    title: 'Submit Pre-Assessment',
+    message:
+        'Answered: $_answeredCount / ${_questions.length}\n\n'
+        'After submission, you will be redirected to the completion page.',
+    confirmText: 'Submit',
+    cancelText: 'Review Again',
+  );
+
+  if (confirmed != true) return;
+
+  setState(() {
+    _isSubmitting = true;
+  });
+
+  try {
+    int correctCount = 0;
+
+    for (int i = 0; i < _questions.length; i++) {
+      final selectedId = _selectedOptionIds[i];
+      final isCorrect =
+          selectedId == null ? false : _isCorrectSelection(i, selectedId);
+
+      if (isCorrect) {
+        correctCount++;
+      }
+
+      await _supabase
+          .from('assessment_attempt_answers')
+          .update({
+            'selected_option_id': selectedId,
+            'is_flagged': _flaggedIndexes.contains(i),
+            'display_order': i,
+            'is_correct': isCorrect,
+            'updated_at': DateTime.now().toIso8601String(),
+          })
+          .eq('attempt_id', _attemptId!)
+          .eq('question_id', _questions[i].id);
     }
 
-    final confirmed = await _showConfirmDialog(
-      title: 'Submit Pre-Assessment',
-      message:
-          'Answered: $_answeredCount / ${_questions.length}\n\n'
-          'After submission, you will be redirected to the completion page.',
-      confirmText: 'Submit',
-      cancelText: 'Review Again',
-    );
+    final scorePercent =
+        _questions.isEmpty ? 0 : (correctCount / _questions.length) * 100;
 
-    if (confirmed != true) return;
+    await _supabase.from('assessment_attempts').update({
+      'submitted_at': DateTime.now().toIso8601String(),
+      'status': 'submitted',
+      'correct_count': correctCount,
+      'score': scorePercent,
+    }).eq('id', _attemptId!);
+
+    final progressRow = await _supabase
+        .from('module_progress')
+        .select('id')
+        .eq('user_id', _user.id)
+        .eq('module_id', _moduleId!)
+        .maybeSingle();
+
+    if (progressRow == null) {
+      await _supabase.from('module_progress').insert({
+        'user_id': _user.id,
+        'module_id': _moduleId,
+        'pre_test_completed_at': DateTime.now().toIso8601String(),
+      });
+    } else {
+      await _supabase.from('module_progress').update({
+        'pre_test_completed_at': DateTime.now().toIso8601String(),
+      }).eq('id', progressRow['id']);
+    }
+
+    await ProfileProgressSync.syncCompletedSimulations();
+
+    if (!mounted) return;
+
+    _score = correctCount;
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (_) => PreAssessmentCompletionPage(
+          score: correctCount,
+          totalQuestions: _questions.length,
+          assessmentTitle: _assessmentTitle,
+        ),
+      ),
+    );
+  } catch (e) {
+    debugPrint('SUBMIT ASSESSMENT ERROR: $e');
+
+    if (!mounted) return;
+
+    await _showInfoDialog(
+      title: 'Submission failed',
+      message: '$e',
+      buttonText: 'OK',
+    );
+  } finally {
+    if (!mounted) return;
 
     setState(() {
-      _isSubmitting = true;
+      _isSubmitting = false;
     });
-
-    try {
-      int correctCount = 0;
-
-      for (int i = 0; i < _questions.length; i++) {
-        final selectedId = _selectedOptionIds[i];
-        final isCorrect =
-            selectedId == null ? false : _isCorrectSelection(i, selectedId);
-
-        if (isCorrect) {
-          correctCount++;
-        }
-
-        await _supabase
-            .from('assessment_attempt_answers')
-            .update({
-              'selected_option_id': selectedId,
-              'is_flagged': _flaggedIndexes.contains(i),
-              'display_order': i,
-              'is_correct': isCorrect,
-              'updated_at': DateTime.now().toIso8601String(),
-            })
-            .eq('attempt_id', _attemptId!)
-            .eq('question_id', _questions[i].id);
-      }
-
-      final scorePercent =
-          _questions.isEmpty ? 0 : (correctCount / _questions.length) * 100;
-
-      await _supabase.from('assessment_attempts').update({
-        'submitted_at': DateTime.now().toIso8601String(),
-        'status': 'submitted',
-        'correct_count': correctCount,
-        'score': scorePercent,
-      }).eq('id', _attemptId!);
-
-      final progressRow = await _supabase
-          .from('module_progress')
-          .select('id')
-          .eq('user_id', _user.id)
-          .eq('module_id', _moduleId!)
-          .maybeSingle();
-
-      if (progressRow == null) {
-        await _supabase.from('module_progress').insert({
-          'user_id': _user.id,
-          'module_id': _moduleId,
-          'pre_test_completed_at': DateTime.now().toIso8601String(),
-        });
-      } else {
-        await _supabase.from('module_progress').update({
-          'pre_test_completed_at': DateTime.now().toIso8601String(),
-        }).eq('id', progressRow['id']);
-      }
-
-      if (!mounted) return;
-
-      _score = correctCount;
-
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => PreAssessmentCompletionPage(
-            score: correctCount,
-            totalQuestions: _questions.length,
-            assessmentTitle: _assessmentTitle,
-          ),
-        ),
-      );
-    } catch (e) {
-      debugPrint('SUBMIT ASSESSMENT ERROR: $e');
-
-      if (!mounted) return;
-
-      await _showInfoDialog(
-        title: 'Submission failed',
-        message: '$e',
-        buttonText: 'OK',
-      );
-    } finally {
-      if (!mounted) return;
-
-      setState(() {
-        _isSubmitting = false;
-      });
-    }
   }
+}
+
+  
 
   Future<bool?> _showConfirmDialog({
     required String title,

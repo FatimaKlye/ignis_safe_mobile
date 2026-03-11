@@ -502,7 +502,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         _InfoTile(
                           icon: Icons.check_box_outlined,
                           text:
-                              "${isEnglish ? "Completed Simulations" : "Natapos na Simulation"}: $_completedSimulations",
+                              "${isEnglish ? "Completed Modules" : "Natapos na Module"}: $_completedSimulations",
                         ),
                         const SizedBox(height: 12),
                         _InfoTile(
