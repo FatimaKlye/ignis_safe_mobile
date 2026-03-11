@@ -222,7 +222,7 @@ class _SimulationScene3State extends State<SimulationScene3> {
                         title: "BUILDING",
                         description:
                             "Learn the correct actions during a building fire, including safe evacuation and what to do in a tenement or condo setting.",
-                        asset: "assets/building.png", // <-- change to your asset
+                        asset: "assets/condo.jpg", // <-- change to your asset
                         buttonText: "Scene",
                         onPressed: _openSceneFlow,
                       ),

@@ -50,6 +50,9 @@ flutter:
     - assets/dev_fatima1.jpg
     - assets/dev_sarah.jpg
     - assets/dev_andrei.jpg
+    - assets/house.jpg
+    - assets/condo.jpg
+
 
   fonts:
     - family: Poppins

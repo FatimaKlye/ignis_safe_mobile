@@ -256,7 +256,7 @@ class _SimulationScene2State extends State<SimulationScene2> {
                         title: "HOUSE",
                         description:
                             "Learn how to respond safely during a house fire, including evacuation, electrical fire response, and kitchen fire safety.",
-                        asset: "assets/house.png",
+                        asset: "assets/house.jpg",
                         buttonText: "Scene",
                         onPressed: _openSceneFlow,
                       ),

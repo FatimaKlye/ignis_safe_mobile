@@ -269,7 +269,7 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
                           final isLast = index == filtered.length - 1;
 
                           return Padding(
-                            padding: EdgeInsets.only(bottom: isLast ? 0 : 15),
+                            padding: EdgeInsets.only(bottom: isLast ? 0 : 25),
                             child: _ModuleCard(
                               moduleLabel: m.moduleLabel,
                               title: m.title,

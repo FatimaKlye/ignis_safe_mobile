@@ -99,7 +99,7 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
       setState(() {
         _firstName = (data['first_name'] ?? '').toString();
         _lastName = (data['last_name'] ?? '').toString();
-        _avatarUrl = data['avatar_url']?.toString();
+        _avatarUrl = data['avatar_url'] as String?;
       });
     } catch (e) {
       debugPrint('Failed to load profile: $e');
@@ -594,7 +594,7 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
                                           );
 
                                   return Padding(
-                                    padding: EdgeInsets.only(bottom: isLast ? 0 : 15),
+                                    padding: EdgeInsets.only(bottom: isLast ? 0 : 30),
                                     child: _ModuleCard(
                                       moduleLabel: m.moduleLabel,
                                       title: m.title,
