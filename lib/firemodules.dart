@@ -58,17 +58,17 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
     _ModuleItem(
       moduleNo: 2,
       moduleLabel: "MODULE 2",
-      title: "ELECTRICAL FIRE",
+      title: "ELECTRICAL AND HOUSE FIRE",
       description:
-          "Learn how electrical fires occur and the correct actions to take during an electrical fire emergency.",
+          "Learn how electrical and household fires start, and understand the proper safety actions to prevent and respond to emergencies at home.",
       asset: "assets/electrical.png",
     ),
     _ModuleItem(
       moduleNo: 3,
       moduleLabel: "MODULE 3",
-      title: "KITCHEN FIRE",
+      title: "KITCHEN AND BUILDING FIRE",
       description:
-          "Understand safe cooking practices and proper response to grease and oil fires.",
+          "Understand common kitchen and building fire risks, and learn the correct fire safety practices and emergency response steps.",
       asset: "assets/kitchen.png",
     ),
   ];
@@ -581,39 +581,37 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
                                 return _matchesFilter(progress);
                               }).toList();
 
-                              return Padding(
+                              return ListView.builder(
                                 padding: EdgeInsets.only(
                                   top: 14,
                                   bottom:
                                       (MediaQuery.of(context).padding.bottom - 20)
                                           .clamp(0.0, 999.0),
                                 ),
-                                child: Column(
-                                  children: filteredModules.asMap().entries.map((entry) {
-                                    final index = entry.key;
-                                    final m = entry.value;
-                                    final isLast = index == filteredModules.length - 1;
-                                    final progress =
-                                        _progressByModuleNo[m.moduleNo] ??
-                                            const ModuleProgress(
-                                              preDone: false,
-                                              simDone: false,
-                                              postDone: false,
-                                            );
+                                itemCount: filteredModules.length,
+                                itemBuilder: (context, index) {
+                                  final m = filteredModules[index];
+                                  final isLast = index == filteredModules.length - 1;
+                                  final progress =
+                                      _progressByModuleNo[m.moduleNo] ??
+                                          const ModuleProgress(
+                                            preDone: false,
+                                            simDone: false,
+                                            postDone: false,
+                                          );
 
-                                    return Padding(
-                                      padding: EdgeInsets.only(bottom: isLast ? 0 : 15),
-                                      child: _ModuleCard(
-                                        moduleLabel: m.moduleLabel,
-                                        title: m.title,
-                                        description: m.description,
-                                        asset: m.asset,
-                                        progress: progress,
-                                        onPressed: () => _openModuleActions(m),
-                                      ),
-                                    );
-                                  }).toList(),
-                                ),
+                                  return Padding(
+                                    padding: EdgeInsets.only(bottom: isLast ? 0 : 15),
+                                    child: _ModuleCard(
+                                      moduleLabel: m.moduleLabel,
+                                      title: m.title,
+                                      description: m.description,
+                                      asset: m.asset,
+                                      progress: progress,
+                                      onPressed: () => _openModuleActions(m),
+                                    ),
+                                  );
+                                },
                               );
                             },
                           ),
