@@ -1,37 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'pre_assessment_completion_page2.dart';
-
 const Color kBrandRed = Color(0xFFB11217);
-const Color kBrandAmber = Color(0xFFF59E0B);
+const Color kBrandBlue = Color(0xFF2563EB);
 const Color kDarkText = Color(0xFF1F2937);
 const Color kSoftBg = Color(0xFFF8FAFC);
 
-class PreAssessmentKitchenPage extends StatefulWidget {
-  const PreAssessmentKitchenPage({super.key});
+class PostAssessmentHousePage extends StatefulWidget {
+  const PostAssessmentHousePage({super.key});
 
   @override
-  State<PreAssessmentKitchenPage> createState() =>
-      _PreAssessmentKitchenPageState();
+  State<PostAssessmentHousePage> createState() =>
+      _PostAssessmentHousePageState();
 }
 
-class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
-  static const int _moduleNo = 3;
-  static const String _assessmentType = 'pre';
+class _PostAssessmentHousePageState extends State<PostAssessmentHousePage> {
+  static const int _moduleNo = 2;
+  static const String _assessmentType = 'post';
 
   final PageController _pageCtrl = PageController();
+  final Map<int, TextEditingController> _essayControllers = {};
 
   bool _isLoading = true;
   bool _isSubmitting = false;
   bool _showSummary = false;
   bool _showReview = false;
-  bool _editingFromSummary = false;
 
   String? _moduleId;
   String? _assessmentId;
   String? _attemptId;
-  String _assessmentTitle = 'Pre-Assessment';
+  String _assessmentTitle = 'Post-Assessment';
   String _instructions = '';
 
   int _currentIndex = 0;
@@ -39,6 +37,7 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
 
   List<_QuestionVm> _questions = [];
   List<String?> _selectedOptionIds = [];
+  List<String?> _writtenAnswers = [];
   Set<int> _flaggedIndexes = {};
 
   SupabaseClient get _supabase => Supabase.instance.client;
@@ -60,7 +59,51 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
   @override
   void dispose() {
     _pageCtrl.dispose();
+    for (final c in _essayControllers.values) {
+      c.dispose();
+    }
     super.dispose();
+  }
+
+  bool _isEssay(_QuestionVm q) => q.type == 'essay';
+  bool _isMcq(_QuestionVm q) => q.type == 'multiple_choice';
+
+  int get _scoredTotal => _questions.where(_isMcq).length;
+
+  int get _answeredCount {
+    int count = 0;
+    for (int i = 0; i < _questions.length; i++) {
+      if (_isEssay(_questions[i])) {
+        if ((_writtenAnswers[i] ?? '').trim().isNotEmpty) count++;
+      } else {
+        if (_selectedOptionIds[i] != null) count++;
+      }
+    }
+    return count;
+  }
+
+  void _rebuildEssayControllers(
+    List<_QuestionVm> questions,
+    List<String?> writtenAnswers,
+  ) {
+    for (final c in _essayControllers.values) {
+      c.dispose();
+    }
+    _essayControllers.clear();
+
+    for (int i = 0; i < questions.length; i++) {
+      if (_isEssay(questions[i])) {
+        _essayControllers[i] = TextEditingController(
+          text: writtenAnswers[i] ?? '',
+        );
+      }
+    }
+  }
+
+  List<_QuestionVm> _orderedQuestions(List<_QuestionVm> questions) {
+    final mcq = questions.where(_isMcq).toList()..shuffle();
+    final essay = questions.where(_isEssay).toList();
+    return [...mcq, ...essay];
   }
 
   Future<void> _loadOrCreateAttempt({bool forceNewAttempt = false}) async {
@@ -92,18 +135,18 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
 
       if (assessmentRow == null) {
         throw Exception(
-          'Assessment for module $_moduleNo and type "$_assessmentType" was not found.',
+          'Post-assessment for module $_moduleNo was not found.',
         );
       }
 
       final assessmentId = assessmentRow['id'].toString();
       final assessmentTitle =
-          (assessmentRow['title'] ?? 'Pre-Assessment').toString();
+          (assessmentRow['title'] ?? 'Post-Assessment').toString();
       final instructions = (assessmentRow['instructions'] ?? '').toString();
 
       final questionRows = await _supabase
           .from('assessment_questions')
-          .select('id, question_no, prompt, explanation')
+          .select('id, question_no, prompt, explanation, question_type')
           .eq('assessment_id', assessmentId)
           .eq('is_active', true)
           .order('question_no');
@@ -117,36 +160,22 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
 
       final optionRows = await _supabase
           .from('assessment_options')
-          .select(
-            'id, question_id, option_key, option_text, is_correct, display_order',
-          )
+          .select('id, question_id, option_key, option_text, is_correct')
           .inFilter('question_id', questionIds)
-          .order('question_id')
-          .order('display_order');
+          .order('option_key');
 
       final optionsByQuestion = <String, List<_OptionVm>>{};
       for (final row in optionRows) {
         final questionId = row['question_id'].toString();
         optionsByQuestion.putIfAbsent(questionId, () => []);
-
-        final rawDisplayOrder = row['display_order'];
-        final displayOrder = rawDisplayOrder is num
-            ? rawDisplayOrder.toInt()
-            : int.tryParse((rawDisplayOrder ?? '').toString()) ?? 999;
-
         optionsByQuestion[questionId]!.add(
           _OptionVm(
             id: row['id'].toString(),
             key: (row['option_key'] ?? '').toString(),
             text: (row['option_text'] ?? '').toString(),
             isCorrect: (row['is_correct'] ?? false) as bool,
-            displayOrder: displayOrder,
           ),
         );
-      }
-
-      for (final list in optionsByQuestion.values) {
-        list.sort((a, b) => a.displayOrder.compareTo(b.displayOrder));
       }
 
       final baseQuestions = questionRows.map((row) {
@@ -155,19 +184,21 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
           id: questionId,
           prompt: (row['prompt'] ?? '').toString(),
           explanation: (row['explanation'] ?? '').toString(),
+          type: ((row['question_type'] ?? 'multiple_choice').toString()),
           options: optionsByQuestion[questionId] ?? [],
         );
       }).toList();
 
-      if (baseQuestions.any((q) => q.options.isEmpty)) {
+      if (baseQuestions.any((q) => _isMcq(q) && q.options.isEmpty)) {
         throw Exception(
-          'One or more questions do not have options in assessment_options.',
+          'One or more multiple-choice questions do not have options.',
         );
       }
 
       String attemptId;
       List<_QuestionVm> orderedQuestions;
       List<String?> selectedOptionIds;
+      List<String?> writtenAnswers;
       Set<int> flaggedIndexes;
 
       if (!forceNewAttempt) {
@@ -186,7 +217,7 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
           final savedRows = await _supabase
               .from('assessment_attempt_answers')
               .select(
-                'question_id, selected_option_id, is_flagged, display_order',
+                'question_id, selected_option_id, answer_text, is_flagged, display_order',
               )
               .eq('attempt_id', attemptId)
               .order('display_order');
@@ -198,6 +229,8 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
             );
             orderedQuestions = created.questions;
             selectedOptionIds =
+                List<String?>.filled(orderedQuestions.length, null);
+            writtenAnswers =
                 List<String?>.filled(orderedQuestions.length, null);
             flaggedIndexes = {};
           } else {
@@ -211,13 +244,14 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
 
             if (missingQuestions.isNotEmpty) {
               final startOrder = savedRows.length;
+              final orderedMissing = _orderedQuestions(missingQuestions);
 
               await _supabase.from('assessment_attempt_answers').insert(
                 List.generate(
-                  missingQuestions.length,
+                  orderedMissing.length,
                   (index) => {
                     'attempt_id': attemptId,
-                    'question_id': missingQuestions[index].id,
+                    'question_id': orderedMissing[index].id,
                     'display_order': startOrder + index,
                     'is_flagged': false,
                   },
@@ -228,17 +262,16 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
             final refreshedSavedRows = await _supabase
                 .from('assessment_attempt_answers')
                 .select(
-                  'question_id, selected_option_id, is_flagged, display_order',
+                  'question_id, selected_option_id, answer_text, is_flagged, display_order',
                 )
                 .eq('attempt_id', attemptId)
                 .order('display_order');
 
-            final questionMap = {
-              for (final q in baseQuestions) q.id: q,
-            };
+            final questionMap = {for (final q in baseQuestions) q.id: q};
 
             orderedQuestions = [];
             selectedOptionIds = [];
+            writtenAnswers = [];
             flaggedIndexes = {};
 
             for (int i = 0; i < refreshedSavedRows.length; i++) {
@@ -252,6 +285,11 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
                 row['selected_option_id'] == null
                     ? null
                     : row['selected_option_id'].toString(),
+              );
+              writtenAnswers.add(
+                row['answer_text'] == null
+                    ? null
+                    : row['answer_text'].toString(),
               );
 
               if ((row['is_flagged'] ?? false) as bool) {
@@ -269,6 +307,8 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
               orderedQuestions = created.questions;
               selectedOptionIds =
                   List<String?>.filled(orderedQuestions.length, null);
+              writtenAnswers =
+                  List<String?>.filled(orderedQuestions.length, null);
               flaggedIndexes = {};
             }
           }
@@ -282,6 +322,8 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
           orderedQuestions = created.questions;
           selectedOptionIds =
               List<String?>.filled(orderedQuestions.length, null);
+          writtenAnswers =
+              List<String?>.filled(orderedQuestions.length, null);
           flaggedIndexes = {};
         }
       } else {
@@ -292,10 +334,12 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
         );
         attemptId = created.attemptId;
         orderedQuestions = created.questions;
-        selectedOptionIds =
-            List<String?>.filled(orderedQuestions.length, null);
+        selectedOptionIds = List<String?>.filled(orderedQuestions.length, null);
+        writtenAnswers = List<String?>.filled(orderedQuestions.length, null);
         flaggedIndexes = {};
       }
+
+      _rebuildEssayControllers(orderedQuestions, writtenAnswers);
 
       if (!mounted) return;
 
@@ -307,12 +351,12 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
         _instructions = instructions;
         _questions = orderedQuestions;
         _selectedOptionIds = selectedOptionIds;
+        _writtenAnswers = writtenAnswers;
         _flaggedIndexes = flaggedIndexes;
         _currentIndex = 0;
         _score = 0;
         _showSummary = false;
         _showReview = false;
-        _editingFromSummary = false;
         _isLoading = false;
       });
 
@@ -329,7 +373,7 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
       });
 
       await _showInfoDialog(
-        title: 'Failed to load pre-assessment',
+        title: 'Failed to load post-assessment',
         message: '$e',
         buttonText: 'OK',
       );
@@ -341,7 +385,7 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
     required String assessmentId,
     required List<_QuestionVm> questions,
   }) async {
-    final shuffled = List<_QuestionVm>.from(questions)..shuffle();
+    final ordered = _orderedQuestions(questions);
 
     final insertedAttempt = await _supabase
         .from('assessment_attempts')
@@ -349,7 +393,7 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
           'user_id': userId,
           'assessment_id': assessmentId,
           'status': 'in_progress',
-          'total_questions': shuffled.length,
+          'total_questions': ordered.length,
           'correct_count': 0,
           'score': 0,
         })
@@ -360,10 +404,10 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
 
     await _supabase.from('assessment_attempt_answers').insert(
       List.generate(
-        shuffled.length,
+        ordered.length,
         (index) => {
           'attempt_id': attemptId,
-          'question_id': shuffled[index].id,
+          'question_id': ordered[index].id,
           'display_order': index,
           'is_flagged': false,
         },
@@ -372,7 +416,7 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
 
     return _CreatedAttempt(
       attemptId: attemptId,
-      questions: shuffled,
+      questions: ordered,
     );
   }
 
@@ -380,14 +424,14 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
     required String attemptId,
     required List<_QuestionVm> questions,
   }) async {
-    final shuffled = List<_QuestionVm>.from(questions)..shuffle();
+    final ordered = _orderedQuestions(questions);
 
     await _supabase.from('assessment_attempt_answers').insert(
       List.generate(
-        shuffled.length,
+        ordered.length,
         (index) => {
           'attempt_id': attemptId,
-          'question_id': shuffled[index].id,
+          'question_id': ordered[index].id,
           'display_order': index,
           'is_flagged': false,
         },
@@ -396,7 +440,7 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
 
     return _CreatedAttempt(
       attemptId: attemptId,
-      questions: shuffled,
+      questions: ordered,
     );
   }
 
@@ -405,7 +449,7 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
       final confirmed = await _showConfirmDialog(
         title: 'Start new attempt?',
         message:
-            'You already finished this pre-assessment. Starting again will generate a new attempt.',
+            'You already finished this post-assessment. Starting again will generate a new attempt.',
         confirmText: 'New Attempt',
         cancelText: 'Cancel',
       );
@@ -419,7 +463,7 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
     await _showInfoDialog(
       title: 'Current attempt preserved',
       message:
-          'This pre-assessment is still unfinished, so refresh will keep the same attempt and the same questions.',
+          'This post-assessment is still unfinished, so refresh will keep the same attempt and the same questions.',
       buttonText: 'OK',
     );
 
@@ -432,18 +476,38 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
     });
 
     try {
-      await _supabase
-          .from('assessment_attempt_answers')
-          .update({
-            'selected_option_id': optionId,
-            'is_correct': _isCorrectSelection(questionIndex, optionId),
-            'updated_at': DateTime.now().toIso8601String(),
-          })
-          .eq('attempt_id', _attemptId!)
-          .eq('question_id', _questions[questionIndex].id);
-    } catch (e) {
-      debugPrint('SELECT ANSWER UPDATE ERROR: $e');
-    }
+      await _supabase.from('assessment_attempt_answers').upsert(
+        {
+          'attempt_id': _attemptId,
+          'question_id': _questions[questionIndex].id,
+          'selected_option_id': optionId,
+          'answer_text': null,
+          'is_correct': _isCorrectSelection(questionIndex, optionId),
+          'updated_at': DateTime.now().toIso8601String(),
+        },
+        onConflict: 'attempt_id,question_id',
+      );
+    } catch (_) {}
+  }
+
+  Future<void> _saveEssayAnswer(int questionIndex, String value) async {
+    setState(() {
+      _writtenAnswers[questionIndex] = value;
+    });
+
+    try {
+      await _supabase.from('assessment_attempt_answers').upsert(
+        {
+          'attempt_id': _attemptId,
+          'question_id': _questions[questionIndex].id,
+          'selected_option_id': null,
+          'answer_text': value.trim().isEmpty ? null : value.trim(),
+          'is_correct': false,
+          'updated_at': DateTime.now().toIso8601String(),
+        },
+        onConflict: 'attempt_id,question_id',
+      );
+    } catch (_) {}
   }
 
   Future<void> _toggleFlag(int questionIndex) async {
@@ -458,17 +522,16 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
     });
 
     try {
-      await _supabase
-          .from('assessment_attempt_answers')
-          .update({
-            'is_flagged': newFlagState,
-            'updated_at': DateTime.now().toIso8601String(),
-          })
-          .eq('attempt_id', _attemptId!)
-          .eq('question_id', _questions[questionIndex].id);
-    } catch (e) {
-      debugPrint('FLAG UPDATE ERROR: $e');
-    }
+      await _supabase.from('assessment_attempt_answers').upsert(
+        {
+          'attempt_id': _attemptId,
+          'question_id': _questions[questionIndex].id,
+          'is_flagged': newFlagState,
+          'updated_at': DateTime.now().toIso8601String(),
+        },
+        onConflict: 'attempt_id,question_id',
+      );
+    } catch (_) {}
   }
 
   bool _isCorrectSelection(int questionIndex, String optionId) {
@@ -487,7 +550,8 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
     return null;
   }
 
-  _OptionVm _correctOptionFor(int questionIndex) {
+  _OptionVm? _correctOptionFor(int questionIndex) {
+    if (_questions[questionIndex].options.isEmpty) return null;
     return _questions[questionIndex].options.firstWhere(
       (opt) => opt.isCorrect,
       orElse: () => _questions[questionIndex].options.first,
@@ -502,67 +566,14 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
       return question.explanation.trim();
     }
 
-    return 'The correct answer is "${correct.text}" based on the lesson content for this module.';
-  }
-
-  int get _answeredCount =>
-      _selectedOptionIds.where((value) => value != null).length;
-
-  int get _unansweredCount =>
-      _selectedOptionIds.where((value) => value == null).length;
-
-  bool get _hasUnansweredQuestions => _unansweredCount > 0;
-
-  List<int> get _unansweredIndexes {
-    final result = <int>[];
-    for (int i = 0; i < _selectedOptionIds.length; i++) {
-      if (_selectedOptionIds[i] == null) {
-        result.add(i);
-      }
-    }
-    return result;
-  }
-
-  String _optionLetter(_QuestionVm question, _OptionVm option) {
-    final index = question.options.indexWhere((opt) => opt.id == option.id);
-    if (index >= 0) {
-      return String.fromCharCode(65 + index);
-    }
-    if (option.key.trim().isNotEmpty) {
-      return option.key.trim().toUpperCase();
-    }
-    return 'A';
-  }
-
-  String _optionDisplay(_QuestionVm question, _OptionVm option) {
-    return '${_optionLetter(question, option)}. ${option.text}';
-  }
-
-  String _reviewAnswerText(int questionIndex) {
-    final question = _questions[questionIndex];
-    final selected = _selectedOptionFor(questionIndex);
-    final correct = _correctOptionFor(questionIndex);
-
-    if (selected == null) {
-      return 'No answer not ${_optionDisplay(question, correct)}';
+    if (correct != null) {
+      return 'The correct answer is "${correct.text}" based on the lesson for this module.';
     }
 
-    if (selected.id == correct.id) {
-      return _optionDisplay(question, selected);
-    }
-
-    return '${_optionDisplay(question, selected)} not ${_optionDisplay(question, correct)}';
+    return 'Review the house, electrical, and kitchen fire safety steps from this module.';
   }
 
   void _goNext() {
-    if (_editingFromSummary) {
-      setState(() {
-        _showSummary = true;
-        _editingFromSummary = false;
-      });
-      return;
-    }
-
     if (_currentIndex < _questions.length - 1) {
       _pageCtrl.nextPage(
         duration: const Duration(milliseconds: 250),
@@ -584,15 +595,6 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
     if (_showSummary) {
       setState(() {
         _showSummary = false;
-        _editingFromSummary = false;
-      });
-      return;
-    }
-
-    if (_editingFromSummary) {
-      setState(() {
-        _showSummary = true;
-        _editingFromSummary = false;
       });
       return;
     }
@@ -611,8 +613,6 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
   void _openQuestionFromSummary(int index) {
     setState(() {
       _showSummary = false;
-      _showReview = false;
-      _editingFromSummary = true;
       _currentIndex = index;
     });
 
@@ -623,59 +623,13 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
     });
   }
 
-  void _showIncompleteSnackBar() {
-    final missing = _unansweredIndexes.map((i) => 'Q${i + 1}').toList();
-    final preview = missing.take(8).join(', ');
-    final suffix = missing.length > 8 ? '...' : '';
-
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: const Color(0xFFB45309),
-          margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
-          ),
-          content: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Padding(
-                padding: EdgeInsets.only(top: 2),
-                child: Icon(
-                  Icons.info_outline_rounded,
-                  color: Colors.white,
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  'Please answer all questions before submitting. Missing: $preview$suffix',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w700,
-                    height: 1.35,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-  }
-
   Future<void> _submitAssessment() async {
-    if (_hasUnansweredQuestions) {
-      _showIncompleteSnackBar();
-      return;
-    }
-
     final confirmed = await _showConfirmDialog(
-      title: 'Submit Pre-Assessment',
+      title: 'Submit Post-Assessment',
       message:
-          'Answered: $_answeredCount / ${_questions.length}\n\n'
-          'After submission, you will be redirected to the completion page.',
+          'Answered: $_answeredCount / ${_questions.length}\n'
+          'Flagged: ${_flaggedIndexes.length}\n\n'
+          'After submission, you will see your score for the 4 multiple-choice questions and your written reflection.',
       confirmText: 'Submit',
       cancelText: 'Review Again',
     );
@@ -690,29 +644,51 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
       int correctCount = 0;
 
       for (int i = 0; i < _questions.length; i++) {
-        final selectedId = _selectedOptionIds[i];
-        final isCorrect =
-            selectedId == null ? false : _isCorrectSelection(i, selectedId);
+        final question = _questions[i];
 
-        if (isCorrect) {
-          correctCount++;
-        }
+        if (_isEssay(question)) {
+          final answerText = (_writtenAnswers[i] ?? '').trim();
 
-        await _supabase
-            .from('assessment_attempt_answers')
-            .update({
+          await _supabase.from('assessment_attempt_answers').upsert(
+            {
+              'attempt_id': _attemptId,
+              'question_id': question.id,
+              'selected_option_id': null,
+              'answer_text': answerText.isEmpty ? null : answerText,
+              'is_flagged': _flaggedIndexes.contains(i),
+              'display_order': i,
+              'is_correct': false,
+              'updated_at': DateTime.now().toIso8601String(),
+            },
+            onConflict: 'attempt_id,question_id',
+          );
+        } else {
+          final selectedId = _selectedOptionIds[i];
+          final isCorrect =
+              selectedId == null ? false : _isCorrectSelection(i, selectedId);
+
+          if (isCorrect) {
+            correctCount++;
+          }
+
+          await _supabase.from('assessment_attempt_answers').upsert(
+            {
+              'attempt_id': _attemptId,
+              'question_id': question.id,
               'selected_option_id': selectedId,
+              'answer_text': null,
               'is_flagged': _flaggedIndexes.contains(i),
               'display_order': i,
               'is_correct': isCorrect,
               'updated_at': DateTime.now().toIso8601String(),
-            })
-            .eq('attempt_id', _attemptId!)
-            .eq('question_id', _questions[i].id);
+            },
+            onConflict: 'attempt_id,question_id',
+          );
+        }
       }
 
       final scorePercent =
-          _questions.isEmpty ? 0 : (correctCount / _questions.length) * 100;
+          _scoredTotal == 0 ? 0 : (correctCount / _scoredTotal) * 100;
 
       await _supabase.from('assessment_attempts').update({
         'submitted_at': DateTime.now().toIso8601String(),
@@ -732,31 +708,22 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
         await _supabase.from('module_progress').insert({
           'user_id': _user.id,
           'module_id': _moduleId,
-          'pre_test_completed_at': DateTime.now().toIso8601String(),
+          'post_test_completed_at': DateTime.now().toIso8601String(),
         });
       } else {
         await _supabase.from('module_progress').update({
-          'pre_test_completed_at': DateTime.now().toIso8601String(),
+          'post_test_completed_at': DateTime.now().toIso8601String(),
         }).eq('id', progressRow['id']);
       }
 
       if (!mounted) return;
 
-      _score = correctCount;
-
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => PreAssessmentCompletionPage2(
-            score: correctCount,
-            totalQuestions: _questions.length,
-            assessmentTitle: _assessmentTitle,
-          ),
-        ),
-      );
+      setState(() {
+        _score = correctCount;
+        _showSummary = false;
+        _showReview = true;
+      });
     } catch (e) {
-      debugPrint('SUBMIT ASSESSMENT ERROR: $e');
-
       if (!mounted) return;
 
       await _showInfoDialog(
@@ -894,26 +861,33 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
                       onFlagTap: () => _toggleFlag(index),
                     ),
                     const SizedBox(height: 16),
-                    ...question.options.asMap().entries.map((entry) {
-                      final option = entry.value;
-                      final selected = selectedId == option.id;
-                      final label = String.fromCharCode(65 + entry.key);
-
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: _OptionCard(
-                          label: label,
-                          text: option.text,
-                          selected: selected,
-                          onTap: () => _selectAnswer(index, option.id),
-                        ),
-                      );
-                    }),
+                    if (_isMcq(question)) ...[
+                      ...question.options.map((option) {
+                        final selected = selectedId == option.id;
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: _OptionCard(
+                            label: option.key.isEmpty
+                                ? ''
+                                : option.key.toUpperCase(),
+                            text: option.text,
+                            selected: selected,
+                            onTap: () => _selectAnswer(index, option.id),
+                          ),
+                        );
+                      }),
+                    ] else ...[
+                      _EssayAnswerCard(
+                        controller: _essayControllers[index]!,
+                        onChanged: (value) => _saveEssayAnswer(index, value),
+                      ),
+                    ],
                     const SizedBox(height: 8),
-                    const _HintCard(
+                    _HintCard(
                       icon: Icons.info_outline_rounded,
-                      text:
-                          'Use the summary to jump back to any question before submitting.',
+                      text: _isEssay(question)
+                          ? 'Write 1 to 2 sentences about what you learned from house, electrical, and kitchen fire safety.'
+                          : 'You can flag a question now and return to it later from the summary.',
                     ),
                   ],
                 ),
@@ -934,8 +908,6 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
             answered: _answeredCount,
             total: _questions.length,
             flagged: _flaggedIndexes.length,
-            hasUnanswered: _hasUnansweredQuestions,
-            unansweredCount: _unansweredCount,
           ),
           const SizedBox(height: 14),
           Expanded(
@@ -945,14 +917,19 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
               itemBuilder: (context, index) {
                 final question = _questions[index];
                 final selected = _selectedOptionFor(index);
+                final responseText = _isEssay(question)
+                    ? ((_writtenAnswers[index] ?? '').trim().isEmpty
+                        ? 'No reflection written'
+                        : _writtenAnswers[index]!.trim())
+                    : (selected?.text ?? 'No answer selected');
 
                 return _SummaryCard(
                   questionNumber: index + 1,
-                  question: question.prompt,
-                  selectedAnswer: selected == null
-                      ? 'No answer selected'
-                      : _optionDisplay(question, selected),
-                  answered: selected != null,
+                  question: _questions[index].prompt,
+                  selectedAnswer: responseText,
+                  answered: _isEssay(question)
+                      ? ((_writtenAnswers[index] ?? '').trim().isNotEmpty)
+                      : (selected != null),
                   flagged: _flaggedIndexes.contains(index),
                   onEdit: () => _openQuestionFromSummary(index),
                   onFlagTap: () => _toggleFlag(index),
@@ -972,7 +949,7 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
         children: [
           _ReviewTopCard(
             score: _score,
-            total: _questions.length,
+            total: _scoredTotal,
           ),
           const SizedBox(height: 14),
           Expanded(
@@ -981,17 +958,36 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
               separatorBuilder: (_, __) => const SizedBox(height: 12),
               itemBuilder: (context, index) {
                 final question = _questions[index];
+
+                if (_isEssay(question)) {
+                  return _ReviewCard(
+                    questionNumber: index + 1,
+                    question: question.prompt,
+                    userAnswer: ((_writtenAnswers[index] ?? '').trim().isEmpty)
+                        ? 'No reflection submitted'
+                        : _writtenAnswers[index]!.trim(),
+                    correctAnswer: '',
+                    isCorrect: false,
+                    explanation: question.explanation,
+                    isEssay: true,
+                  );
+                }
+
                 final selected = _selectedOptionFor(index);
                 final correct = _correctOptionFor(index);
-                final isCorrect = selected != null && selected.id == correct.id;
+                final isCorrect =
+                    selected != null &&
+                    correct != null &&
+                    selected.id == correct.id;
 
                 return _ReviewCard(
                   questionNumber: index + 1,
                   question: question.prompt,
-                  userAnswer: _reviewAnswerText(index),
-                  correctAnswer: _optionDisplay(question, correct),
+                  userAnswer: selected?.text ?? 'No answer selected',
+                  correctAnswer: correct?.text ?? 'No correct answer configured',
                   isCorrect: isCorrect,
                   explanation: isCorrect ? null : _reviewExplanationFor(index),
+                  isEssay: false,
                 );
               },
             ),
@@ -1030,7 +1026,7 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
             Expanded(
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: kBrandAmber,
+                  backgroundColor: kBrandBlue,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18),
                   ),
@@ -1054,8 +1050,6 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
     }
 
     if (_showSummary) {
-      final locked = _hasUnansweredQuestions;
-
       return Padding(
         padding: const EdgeInsets.fromLTRB(24, 8, 24, 20),
         child: Row(
@@ -1072,7 +1066,6 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
                 onPressed: () {
                   setState(() {
                     _showSummary = false;
-                    _editingFromSummary = false;
                   });
                 },
                 child: const Text(
@@ -1088,7 +1081,7 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
             Expanded(
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: locked ? Colors.grey.shade400 : kBrandAmber,
+                  backgroundColor: kBrandBlue,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18),
                   ),
@@ -1096,11 +1089,7 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
                 ),
                 onPressed: _isSubmitting ? null : _submitAssessment,
                 child: Text(
-                  _isSubmitting
-                      ? 'Submitting...'
-                      : locked
-                          ? 'Complete All'
-                          : 'Submit',
+                  _isSubmitting ? 'Submitting...' : 'Submit',
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w900,
@@ -1114,8 +1103,7 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
     }
 
     final isLast = _currentIndex == _questions.length - 1;
-    final nextLabel =
-        _editingFromSummary ? 'Review Summary' : (isLast ? 'Review Summary' : 'Next');
+    final isFlagged = _flaggedIndexes.contains(_currentIndex);
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 8, 24, 20),
@@ -1132,12 +1120,36 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
               ),
               onPressed: _goBack,
               child: Text(
-                _editingFromSummary
-                    ? 'Back to Summary'
-                    : (_currentIndex == 0 ? 'Exit' : 'Back'),
+                _currentIndex == 0 ? 'Exit' : 'Back',
                 style: const TextStyle(
                   color: kBrandRed,
                   fontWeight: FontWeight.w900,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: OutlinedButton.icon(
+              style: OutlinedButton.styleFrom(
+                side: BorderSide(
+                  color: isFlagged ? kBrandBlue : Colors.black26,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18),
+                ),
+                padding: const EdgeInsets.symmetric(vertical: 14),
+              ),
+              onPressed: () => _toggleFlag(_currentIndex),
+              icon: Icon(
+                isFlagged ? Icons.flag_rounded : Icons.outlined_flag_rounded,
+                color: isFlagged ? kBrandBlue : kDarkText,
+              ),
+              label: Text(
+                isFlagged ? 'Flagged' : 'Flag',
+                style: TextStyle(
+                  color: isFlagged ? kBrandBlue : kDarkText,
+                  fontWeight: FontWeight.w800,
                 ),
               ),
             ),
@@ -1154,7 +1166,7 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
               ),
               onPressed: _goNext,
               child: Text(
-                nextLabel,
+                isLast ? 'Review Summary' : 'Next',
                 style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w900,
@@ -1169,6 +1181,14 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
 
   @override
   Widget build(BuildContext context) {
+    final progress = _questions.isEmpty
+        ? 0.0
+        : _showReview
+            ? 1.0
+            : _showSummary
+                ? 1.0
+                : (_currentIndex + 1) / _questions.length;
+
     return Scaffold(
       backgroundColor: kSoftBg,
       body: Stack(
@@ -1182,124 +1202,129 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
           SafeArea(
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())
-                : RefreshIndicator(
-                    onRefresh: _handleRefresh,
-                    child: Column(
-                      children: [
-                        const SizedBox(height: 15),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 9, right: 25),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              IconButton(
-                                padding: EdgeInsets.zero,
-                                constraints: const BoxConstraints(),
-                                icon: const Icon(Icons.close, color: Colors.white),
-                                onPressed: () => Navigator.pop(context),
-                              ),
-                              const SizedBox(height: 15),
-                              const Center(
-                                child: Text(
-                                  'Pre Assessment',
-                                  style: TextStyle(
+                : Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(14, 8, 14, 16),
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                IconButton(
+                                  onPressed: _goBack,
+                                  icon: const Icon(
+                                    Icons.arrow_back_rounded,
                                     color: Colors.white,
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: 'Poppins',
                                   ),
                                 ),
-                              ),
-                              const SizedBox(height: 15),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 25),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 18,
-                                        vertical: 10,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        gradient: const LinearGradient(
-                                          begin: Alignment.topLeft,
-                                          end: Alignment.bottomRight,
-                                          colors: [kBrandRed, kBrandAmber],
-                                        ),
-                                        borderRadius: BorderRadius.circular(10),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.black.withOpacity(0.18),
-                                            blurRadius: 10,
-                                            offset: const Offset(0, 6),
-                                          ),
-                                        ],
-                                      ),
-                                      child: const Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Icon(
-                                            Icons.bolt_rounded,
-                                            color: Colors.white,
-                                            size: 18,
-                                          ),
-                                          SizedBox(width: 8),
-                                          Text(
-                                            'MODULE 3',
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.white,
-                                              fontFamily: 'Poppins',
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    const SizedBox(width: 15),
-                                    const Expanded(
-                                      child: Text(
-                                        'Building Fire Safety (Tenement / Condo)',
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.w600,
-                                          fontFamily: 'Poppins',
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                                const Spacer(),
+                                Text(
+                                  _showReview
+                                      ? 'Assessment Review'
+                                      : 'Post-Assessment',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 28,
+                                    fontWeight: FontWeight.w900,
+                                  ),
                                 ),
-                              ),
-                              if (_instructions.trim().isNotEmpty &&
-                                  !_showReview) ...[
-                                const SizedBox(height: 15),
-                                Align(
-                                  alignment: Alignment.center,
+                                const Spacer(),
+                                IconButton(
+                                  onPressed: _handleRefresh,
+                                  icon: const Icon(
+                                    Icons.refresh_rounded,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 9,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    gradient: const LinearGradient(
+                                      colors: [kBrandRed, kBrandBlue],
+                                    ),
+                                    borderRadius: BorderRadius.circular(12),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.16),
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 5),
+                                      ),
+                                    ],
+                                  ),
+                                  child: const Text(
+                                    'MODULE 2',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w900,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
                                   child: Text(
-                                    _instructions,
-                                    textAlign: TextAlign.center,
+                                    _showReview
+                                        ? 'Your score for the 4 graded items plus your written reflection'
+                                        : (_assessmentTitle.isEmpty
+                                            ? 'House Fire Safety - Post-Assessment'
+                                            : _assessmentTitle),
                                     style: const TextStyle(
-                                      color: Colors.black87,
-                                      fontWeight: FontWeight.w600,
-                                      height: 1.35,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w700,
                                     ),
                                   ),
                                 ),
                               ],
+                            ),
+                            if (_instructions.trim().isNotEmpty &&
+                                !_showReview) ...[
+                              const SizedBox(height: 10),
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  _instructions,
+                                  style: const TextStyle(
+                                    color: Colors.black87,
+                                    fontWeight: FontWeight.w600,
+                                    height: 1.35,
+                                  ),
+                                ),
+                              ),
                             ],
-                          ),
+                            const SizedBox(height: 14),
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(999),
+                              child: SizedBox(
+                                height: 7,
+                                child: LinearProgressIndicator(
+                                  value: progress,
+                                  backgroundColor:
+                                      Colors.white.withOpacity(0.30),
+                                  valueColor: const AlwaysStoppedAnimation(
+                                    kBrandBlue,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 30),
-                        Expanded(
-                          child: _showReview
-                              ? _buildReviewView()
-                              : _showSummary
-                                  ? _buildSummaryView()
-                                  : _buildQuizView(),
-                        ),
-                        _buildBottomBar(),
-                      ],
-                    ),
+                      ),
+                      Expanded(
+                        child: _showReview
+                            ? _buildReviewView()
+                            : _showSummary
+                                ? _buildSummaryView()
+                                : _buildQuizView(),
+                      ),
+                      _buildBottomBar(),
+                    ],
                   ),
           ),
         ],
@@ -1322,12 +1347,14 @@ class _QuestionVm {
   final String id;
   final String prompt;
   final String explanation;
+  final String type;
   final List<_OptionVm> options;
 
   const _QuestionVm({
     required this.id,
     required this.prompt,
     required this.explanation,
+    required this.type,
     required this.options,
   });
 }
@@ -1337,14 +1364,12 @@ class _OptionVm {
   final String key;
   final String text;
   final bool isCorrect;
-  final int displayOrder;
 
   const _OptionVm({
     required this.id,
     required this.key,
     required this.text,
     required this.isCorrect,
-    required this.displayOrder,
   });
 }
 
@@ -1377,7 +1402,7 @@ class _StatsRow extends StatelessWidget {
             icon: Icons.outlined_flag_rounded,
             label: 'Flagged',
             value: '$flagged',
-            color: kBrandAmber,
+            color: kBrandBlue,
           ),
         ),
       ],
@@ -1490,7 +1515,7 @@ class _QuestionHeaderCard extends StatelessWidget {
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                    colors: [kBrandRed, kBrandAmber],
+                    colors: [kBrandRed, kBrandBlue],
                   ),
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -1512,11 +1537,11 @@ class _QuestionHeaderCard extends StatelessWidget {
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                   decoration: BoxDecoration(
                     color: isFlagged
-                        ? kBrandAmber.withOpacity(0.12)
+                        ? kBrandBlue.withOpacity(0.12)
                         : Colors.black.withOpacity(0.04),
                     borderRadius: BorderRadius.circular(999),
                     border: Border.all(
-                      color: isFlagged ? kBrandAmber : Colors.black12,
+                      color: isFlagged ? kBrandBlue : Colors.black12,
                     ),
                   ),
                   child: Row(
@@ -1526,14 +1551,14 @@ class _QuestionHeaderCard extends StatelessWidget {
                             ? Icons.flag_rounded
                             : Icons.outlined_flag_rounded,
                         size: 16,
-                        color: isFlagged ? kBrandAmber : kDarkText,
+                        color: isFlagged ? kBrandBlue : kDarkText,
                       ),
                       const SizedBox(width: 6),
                       Text(
                         isFlagged ? 'Flagged' : 'Flag',
                         style: TextStyle(
                           fontWeight: FontWeight.w800,
-                          color: isFlagged ? kBrandAmber : kDarkText,
+                          color: isFlagged ? kBrandBlue : kDarkText,
                         ),
                       ),
                     ],
@@ -1573,8 +1598,9 @@ class _OptionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final borderColor = selected ? kBrandRed : Colors.black.withOpacity(0.08);
-    final bgColor = selected ? kBrandAmber.withOpacity(0.10) : Colors.white;
+    final borderColor =
+        selected ? kBrandRed : Colors.black.withOpacity(0.08);
+    final bgColor = selected ? kBrandRed.withOpacity(0.08) : Colors.white;
 
     return Material(
       color: Colors.transparent,
@@ -1638,6 +1664,57 @@ class _OptionCard extends StatelessWidget {
   }
 }
 
+class _EssayAnswerCard extends StatelessWidget {
+  const _EssayAnswerCard({
+    required this.controller,
+    required this.onChanged,
+  });
+
+  final TextEditingController controller;
+  final ValueChanged<String> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: kBrandRed.withOpacity(0.18)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: TextField(
+        controller: controller,
+        maxLines: 5,
+        minLines: 4,
+        cursorColor: kBrandRed,
+        onChanged: onChanged,
+        decoration: InputDecoration(
+          hintText:
+              'Write 1 to 2 sentences about what you learned from house, electrical, and kitchen fire safety.',
+          hintStyle: TextStyle(
+            color: Colors.grey.shade600,
+            fontWeight: FontWeight.w500,
+          ),
+          border: InputBorder.none,
+        ),
+        style: const TextStyle(
+          fontSize: 15,
+          height: 1.45,
+          fontWeight: FontWeight.w700,
+          color: kDarkText,
+        ),
+      ),
+    );
+  }
+}
+
 class _HintCard extends StatelessWidget {
   const _HintCard({
     required this.icon,
@@ -1652,15 +1729,15 @@ class _HintCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(13),
       decoration: BoxDecoration(
-        color: kBrandAmber.withOpacity(0.10),
+        color: kBrandBlue.withOpacity(0.08),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: kBrandAmber.withOpacity(0.24),
+          color: kBrandBlue.withOpacity(0.18),
         ),
       ),
       child: Row(
         children: [
-          Icon(icon, color: kBrandRed, size: 18),
+          Icon(icon, color: kBrandBlue, size: 18),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
@@ -1682,15 +1759,11 @@ class _SummaryHeaderCard extends StatelessWidget {
     required this.answered,
     required this.total,
     required this.flagged,
-    required this.hasUnanswered,
-    required this.unansweredCount,
   });
 
   final int answered;
   final int total;
   final int flagged;
-  final bool hasUnanswered;
-  final int unansweredCount;
 
   @override
   Widget build(BuildContext context) {
@@ -1699,11 +1772,7 @@ class _SummaryHeaderCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: hasUnanswered
-              ? Colors.orange.withOpacity(0.25)
-              : Colors.black.withOpacity(0.06),
-        ),
+        border: Border.all(color: Colors.black.withOpacity(0.06)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.08),
@@ -1722,16 +1791,6 @@ class _SummaryHeaderCard extends StatelessWidget {
               color: kDarkText,
             ),
           ),
-          if (hasUnanswered) ...[
-            const SizedBox(height: 8),
-            Text(
-              '$unansweredCount question(s) still need an answer.',
-              style: const TextStyle(
-                color: Colors.orange,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-          ],
           const SizedBox(height: 10),
           _StatsRow(
             answered: answered,
@@ -1770,9 +1829,9 @@ class _SummaryCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: answered ? Colors.white : const Color(0xFFFFFBEB),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: statusColor.withOpacity(0.22)),
+        border: Border.all(color: Colors.black.withOpacity(0.06)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.07),
@@ -1824,14 +1883,14 @@ class _SummaryCard extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                   decoration: BoxDecoration(
-                    color: kBrandAmber.withOpacity(0.16),
+                    color: kBrandBlue.withOpacity(0.12),
                     borderRadius: BorderRadius.circular(999),
                   ),
                   child: const Text(
                     'Flagged',
                     style: TextStyle(
                       fontWeight: FontWeight.w900,
-                      color: Color(0xFF9A6700),
+                      color: kBrandBlue,
                       fontSize: 12,
                     ),
                   ),
@@ -1842,7 +1901,7 @@ class _SummaryCard extends StatelessWidget {
                 onPressed: onFlagTap,
                 icon: Icon(
                   flagged ? Icons.flag_rounded : Icons.outlined_flag_rounded,
-                  color: flagged ? kBrandAmber : Colors.grey.shade600,
+                  color: flagged ? kBrandBlue : Colors.grey.shade600,
                 ),
               ),
             ],
@@ -1861,7 +1920,7 @@ class _SummaryCard extends StatelessWidget {
           Text(
             selectedAnswer,
             style: TextStyle(
-              color: answered ? Colors.black87 : Colors.orange.shade800,
+              color: answered ? Colors.black87 : Colors.grey.shade600,
               fontWeight: FontWeight.w600,
               height: 1.35,
             ),
@@ -1928,7 +1987,7 @@ class _ReviewTopCard extends StatelessWidget {
       child: Column(
         children: [
           const Text(
-            'Pre-Assessment Result',
+            'Post-Assessment Result',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w900,
@@ -1946,11 +2005,11 @@ class _ReviewTopCard extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            '$percent%',
+            '$percent% • scored questions only',
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w800,
-              color: Color(0xFF9A6700),
+              color: kBrandBlue,
             ),
           ),
         ],
@@ -1967,6 +2026,7 @@ class _ReviewCard extends StatelessWidget {
     required this.correctAnswer,
     required this.isCorrect,
     required this.explanation,
+    required this.isEssay,
   });
 
   final int questionNumber;
@@ -1975,10 +2035,13 @@ class _ReviewCard extends StatelessWidget {
   final String correctAnswer;
   final bool isCorrect;
   final String? explanation;
+  final bool isEssay;
 
   @override
   Widget build(BuildContext context) {
-    final statusColor = isCorrect ? const Color(0xFF16A34A) : kBrandRed;
+    final statusColor = isEssay
+        ? kBrandRed
+        : (isCorrect ? const Color(0xFF16A34A) : kBrandRed);
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -2023,7 +2086,7 @@ class _ReviewCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
-                  isCorrect ? 'Correct' : 'Incorrect',
+                  isEssay ? 'Reflection' : (isCorrect ? 'Correct' : 'Incorrect'),
                   style: TextStyle(
                     fontWeight: FontWeight.w900,
                     color: statusColor,
@@ -2044,9 +2107,9 @@ class _ReviewCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          const Text(
-            'Answer Review',
-            style: TextStyle(
+          Text(
+            isEssay ? 'Your Reflection' : 'Your Answer',
+            style: const TextStyle(
               fontWeight: FontWeight.w900,
               color: Colors.black54,
             ),
@@ -2055,12 +2118,14 @@ class _ReviewCard extends StatelessWidget {
           Text(
             userAnswer,
             style: TextStyle(
-              color: statusColor,
+              color: isEssay
+                  ? kDarkText
+                  : (isCorrect ? const Color(0xFF16A34A) : kBrandRed),
               fontWeight: FontWeight.w700,
               height: 1.35,
             ),
           ),
-          if (!isCorrect) ...[
+          if (!isEssay) ...[
             const SizedBox(height: 12),
             const Text(
               'Correct Answer',
@@ -2079,13 +2144,11 @@ class _ReviewCard extends StatelessWidget {
               ),
             ),
           ],
-          if (!isCorrect &&
-              explanation != null &&
-              explanation!.trim().isNotEmpty) ...[
+          if (explanation != null && explanation!.trim().isNotEmpty) ...[
             const SizedBox(height: 12),
-            const Text(
-              'Why this is wrong',
-              style: TextStyle(
+            Text(
+              isEssay ? 'Reflection Note' : 'Why this is wrong',
+              style: const TextStyle(
                 fontWeight: FontWeight.w900,
                 color: Colors.black54,
               ),
