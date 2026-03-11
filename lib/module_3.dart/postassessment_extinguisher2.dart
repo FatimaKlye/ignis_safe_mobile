@@ -26,6 +26,7 @@ class _PostAssessmentModule3PageState
   bool _isSubmitting = false;
   bool _showSummary = false;
   bool _showReview = false;
+  bool _openedFromSummaryEdit = false;
 
   String? _moduleId;
   String? _assessmentId;
@@ -45,7 +46,9 @@ class _PostAssessmentModule3PageState
 
   User get _user {
     final user = _supabase.auth.currentUser;
-    if (user == null) throw Exception('No active user session.');
+    if (user == null) {
+      throw Exception('No active user session.');
+    }
     return user;
   }
 
@@ -69,6 +72,8 @@ class _PostAssessmentModule3PageState
 
   int get _scoredTotal => _questions.where(_isMcq).length;
 
+  bool get _hasUnansweredQuestions => _answeredCount < _questions.length;
+
   int get _answeredCount {
     int count = 0;
     for (int i = 0; i < _questions.length; i++) {
@@ -89,6 +94,7 @@ class _PostAssessmentModule3PageState
       c.dispose();
     }
     _essayControllers.clear();
+
     for (int i = 0; i < questions.length; i++) {
       if (_isEssay(questions[i])) {
         _essayControllers[i] = TextEditingController(
@@ -106,7 +112,9 @@ class _PostAssessmentModule3PageState
 
   Future<void> _loadOrCreateAttempt({bool forceNewAttempt = false}) async {
     try {
-      setState(() => _isLoading = true);
+      setState(() {
+        _isLoading = true;
+      });
 
       final user = _user;
 
@@ -130,7 +138,9 @@ class _PostAssessmentModule3PageState
           .maybeSingle();
 
       if (assessmentRow == null) {
-        throw Exception('Post-assessment for module $_moduleNo was not found.');
+        throw Exception(
+          'Post-assessment for module $_moduleNo was not found.',
+        );
       }
 
       final assessmentId = assessmentRow['id'].toString();
@@ -155,8 +165,7 @@ class _PostAssessmentModule3PageState
       final optionRows = await _supabase
           .from('assessment_options')
           .select('id, question_id, option_key, option_text, is_correct')
-          .inFilter('question_id', questionIds)
-          .order('option_key');
+          .inFilter('question_id', questionIds);
 
       final optionsByQuestion = <String, List<_OptionVm>>{};
       for (final row in optionRows) {
@@ -165,11 +174,15 @@ class _PostAssessmentModule3PageState
         optionsByQuestion[questionId]!.add(
           _OptionVm(
             id: row['id'].toString(),
-            key: (row['option_key'] ?? '').toString(),
+            key: (row['option_key'] ?? '').toString().toUpperCase(),
             text: (row['option_text'] ?? '').toString(),
             isCorrect: (row['is_correct'] ?? false) as bool,
           ),
         );
+      }
+
+      for (final entry in optionsByQuestion.entries) {
+        entry.value.sort((a, b) => a.key.compareTo(b.key));
       }
 
       final baseQuestions = questionRows.map((row) {
@@ -185,7 +198,8 @@ class _PostAssessmentModule3PageState
 
       if (baseQuestions.any((q) => _isMcq(q) && q.options.isEmpty)) {
         throw Exception(
-            'One or more multiple-choice questions do not have options.');
+          'One or more multiple-choice questions do not have options.',
+        );
       }
 
       String attemptId;
@@ -210,7 +224,8 @@ class _PostAssessmentModule3PageState
           final savedRows = await _supabase
               .from('assessment_attempt_answers')
               .select(
-                  'question_id, selected_option_id, answer_text, is_flagged, display_order')
+                'question_id, selected_option_id, answer_text, is_flagged, display_order',
+              )
               .eq('attempt_id', attemptId)
               .order('display_order');
 
@@ -237,27 +252,30 @@ class _PostAssessmentModule3PageState
             if (missingQuestions.isNotEmpty) {
               final startOrder = savedRows.length;
               final orderedMissing = _orderedQuestions(missingQuestions);
+
               await _supabase.from('assessment_attempt_answers').insert(
-                    List.generate(
-                      orderedMissing.length,
-                      (index) => {
-                        'attempt_id': attemptId,
-                        'question_id': orderedMissing[index].id,
-                        'display_order': startOrder + index,
-                        'is_flagged': false,
-                      },
-                    ),
-                  );
+                List.generate(
+                  orderedMissing.length,
+                  (index) => {
+                    'attempt_id': attemptId,
+                    'question_id': orderedMissing[index].id,
+                    'display_order': startOrder + index,
+                    'is_flagged': false,
+                  },
+                ),
+              );
             }
 
             final refreshedSavedRows = await _supabase
                 .from('assessment_attempt_answers')
                 .select(
-                    'question_id, selected_option_id, answer_text, is_flagged, display_order')
+                  'question_id, selected_option_id, answer_text, is_flagged, display_order',
+                )
                 .eq('attempt_id', attemptId)
                 .order('display_order');
 
             final questionMap = {for (final q in baseQuestions) q.id: q};
+
             orderedQuestions = [];
             selectedOptionIds = [];
             writtenAnswers = [];
@@ -270,12 +288,16 @@ class _PostAssessmentModule3PageState
               if (question == null) continue;
 
               orderedQuestions.add(question);
-              selectedOptionIds.add(row['selected_option_id'] == null
-                  ? null
-                  : row['selected_option_id'].toString());
-              writtenAnswers.add(row['answer_text'] == null
-                  ? null
-                  : row['answer_text'].toString());
+              selectedOptionIds.add(
+                row['selected_option_id'] == null
+                    ? null
+                    : row['selected_option_id'].toString(),
+              );
+              writtenAnswers.add(
+                row['answer_text'] == null
+                    ? null
+                    : row['answer_text'].toString(),
+              );
 
               if ((row['is_flagged'] ?? false) as bool) {
                 flaggedIndexes.add(i);
@@ -307,7 +329,8 @@ class _PostAssessmentModule3PageState
           orderedQuestions = created.questions;
           selectedOptionIds =
               List<String?>.filled(orderedQuestions.length, null);
-          writtenAnswers = List<String?>.filled(orderedQuestions.length, null);
+          writtenAnswers =
+              List<String?>.filled(orderedQuestions.length, null);
           flaggedIndexes = {};
         }
       } else {
@@ -341,15 +364,22 @@ class _PostAssessmentModule3PageState
         _score = 0;
         _showSummary = false;
         _showReview = false;
+        _openedFromSummaryEdit = false;
         _isLoading = false;
       });
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (_pageCtrl.hasClients) _pageCtrl.jumpToPage(0);
+        if (_pageCtrl.hasClients) {
+          _pageCtrl.jumpToPage(0);
+        }
       });
     } catch (e) {
       if (!mounted) return;
-      setState(() => _isLoading = false);
+
+      setState(() {
+        _isLoading = false;
+      });
+
       await _showInfoDialog(
         title: 'Failed to load post-assessment',
         message: '$e',
@@ -381,18 +411,21 @@ class _PostAssessmentModule3PageState
     final attemptId = insertedAttempt['id'].toString();
 
     await _supabase.from('assessment_attempt_answers').insert(
-          List.generate(
-            ordered.length,
-            (index) => {
-              'attempt_id': attemptId,
-              'question_id': ordered[index].id,
-              'display_order': index,
-              'is_flagged': false,
-            },
-          ),
-        );
+      List.generate(
+        ordered.length,
+        (index) => {
+          'attempt_id': attemptId,
+          'question_id': ordered[index].id,
+          'display_order': index,
+          'is_flagged': false,
+        },
+      ),
+    );
 
-    return _CreatedAttempt(attemptId: attemptId, questions: ordered);
+    return _CreatedAttempt(
+      attemptId: attemptId,
+      questions: ordered,
+    );
   }
 
   Future<_CreatedAttempt> _createAnswerRowsForExistingAttempt({
@@ -402,18 +435,21 @@ class _PostAssessmentModule3PageState
     final ordered = _orderedQuestions(questions);
 
     await _supabase.from('assessment_attempt_answers').insert(
-          List.generate(
-            ordered.length,
-            (index) => {
-              'attempt_id': attemptId,
-              'question_id': ordered[index].id,
-              'display_order': index,
-              'is_flagged': false,
-            },
-          ),
-        );
+      List.generate(
+        ordered.length,
+        (index) => {
+          'attempt_id': attemptId,
+          'question_id': ordered[index].id,
+          'display_order': index,
+          'is_flagged': false,
+        },
+      ),
+    );
 
-    return _CreatedAttempt(attemptId: attemptId, questions: ordered);
+    return _CreatedAttempt(
+      attemptId: attemptId,
+      questions: ordered,
+    );
   }
 
   Future<void> _handleRefresh() async {
@@ -425,7 +461,10 @@ class _PostAssessmentModule3PageState
         confirmText: 'New Attempt',
         cancelText: 'Cancel',
       );
-      if (confirmed == true) await _loadOrCreateAttempt(forceNewAttempt: true);
+
+      if (confirmed == true) {
+        await _loadOrCreateAttempt(forceNewAttempt: true);
+      }
       return;
     }
 
@@ -440,7 +479,10 @@ class _PostAssessmentModule3PageState
   }
 
   Future<void> _selectAnswer(int questionIndex, String optionId) async {
-    setState(() => _selectedOptionIds[questionIndex] = optionId);
+    setState(() {
+      _selectedOptionIds[questionIndex] = optionId;
+    });
+
     try {
       await _supabase.from('assessment_attempt_answers').upsert(
         {
@@ -457,7 +499,10 @@ class _PostAssessmentModule3PageState
   }
 
   Future<void> _saveEssayAnswer(int questionIndex, String value) async {
-    setState(() => _writtenAnswers[questionIndex] = value);
+    setState(() {
+      _writtenAnswers[questionIndex] = value;
+    });
+
     try {
       await _supabase.from('assessment_attempt_answers').upsert(
         {
@@ -475,6 +520,7 @@ class _PostAssessmentModule3PageState
 
   Future<void> _toggleFlag(int questionIndex) async {
     final newFlagState = !_flaggedIndexes.contains(questionIndex);
+
     setState(() {
       if (newFlagState) {
         _flaggedIndexes.add(questionIndex);
@@ -482,6 +528,7 @@ class _PostAssessmentModule3PageState
         _flaggedIndexes.remove(questionIndex);
       }
     });
+
     try {
       await _supabase.from('assessment_attempt_answers').upsert(
         {
@@ -504,6 +551,7 @@ class _PostAssessmentModule3PageState
   _OptionVm? _selectedOptionFor(int questionIndex) {
     final selectedId = _selectedOptionIds[questionIndex];
     if (selectedId == null) return null;
+
     for (final option in _questions[questionIndex].options) {
       if (option.id == selectedId) return option;
     }
@@ -518,26 +566,45 @@ class _PostAssessmentModule3PageState
     );
   }
 
+  String? _formatOptionWithKey(_OptionVm? option) {
+    if (option == null) return null;
+    final key = option.key.trim().toUpperCase();
+    return '$key. ${option.text}';
+  }
+
   String _reviewExplanationFor(int questionIndex) {
     final question = _questions[questionIndex];
     final correct = _correctOptionFor(questionIndex);
+
     if (question.explanation.trim().isNotEmpty) {
       return question.explanation.trim();
     }
+
     if (correct != null) {
-      return 'The correct answer is "${correct.text}".';
+      return 'The correct answer is "${correct.text}" based on the lesson for this module.';
     }
-    return 'Review fire safety procedures for buildings.';
+
+    return 'Review the kitchen fire and building fire safety steps from this module.';
   }
 
   void _goNext() {
+    if (_openedFromSummaryEdit) {
+      setState(() {
+        _showSummary = true;
+        _openedFromSummaryEdit = false;
+      });
+      return;
+    }
+
     if (_currentIndex < _questions.length - 1) {
       _pageCtrl.nextPage(
         duration: const Duration(milliseconds: 250),
         curve: Curves.easeOutCubic,
       );
     } else {
-      setState(() => _showSummary = true);
+      setState(() {
+        _showSummary = true;
+      });
     }
   }
 
@@ -546,14 +613,27 @@ class _PostAssessmentModule3PageState
       Navigator.pop(context);
       return;
     }
+
     if (_showSummary) {
-      setState(() => _showSummary = false);
+      setState(() {
+        _showSummary = false;
+      });
       return;
     }
+
+    if (_openedFromSummaryEdit) {
+      setState(() {
+        _showSummary = true;
+        _openedFromSummaryEdit = false;
+      });
+      return;
+    }
+
     if (_currentIndex == 0) {
       Navigator.pop(context);
       return;
     }
+
     _pageCtrl.previousPage(
       duration: const Duration(milliseconds: 250),
       curve: Curves.easeOutCubic,
@@ -564,13 +644,27 @@ class _PostAssessmentModule3PageState
     setState(() {
       _showSummary = false;
       _currentIndex = index;
+      _openedFromSummaryEdit = true;
     });
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_pageCtrl.hasClients) _pageCtrl.jumpToPage(index);
+      if (_pageCtrl.hasClients) {
+        _pageCtrl.jumpToPage(index);
+      }
     });
   }
 
   Future<void> _submitAssessment() async {
+    if (_hasUnansweredQuestions) {
+      await _showInfoDialog(
+        title: 'Cannot submit yet',
+        message:
+            'You must answer all questions before submitting the post-assessment.',
+        buttonText: 'OK',
+      );
+      return;
+    }
+
     final confirmed = await _showConfirmDialog(
       title: 'Submit Post-Assessment',
       message:
@@ -583,7 +677,9 @@ class _PostAssessmentModule3PageState
 
     if (confirmed != true) return;
 
-    setState(() => _isSubmitting = true);
+    setState(() {
+      _isSubmitting = true;
+    });
 
     try {
       int correctCount = 0;
@@ -593,6 +689,7 @@ class _PostAssessmentModule3PageState
 
         if (_isEssay(question)) {
           final answerText = (_writtenAnswers[i] ?? '').trim();
+
           await _supabase.from('assessment_attempt_answers').upsert(
             {
               'attempt_id': _attemptId,
@@ -610,7 +707,10 @@ class _PostAssessmentModule3PageState
           final selectedId = _selectedOptionIds[i];
           final isCorrect =
               selectedId == null ? false : _isCorrectSelection(i, selectedId);
-          if (isCorrect) correctCount++;
+
+          if (isCorrect) {
+            correctCount++;
+          }
 
           await _supabase.from('assessment_attempt_answers').upsert(
             {
@@ -663,9 +763,11 @@ class _PostAssessmentModule3PageState
         _score = correctCount;
         _showSummary = false;
         _showReview = true;
+        _openedFromSummaryEdit = false;
       });
     } catch (e) {
       if (!mounted) return;
+
       await _showInfoDialog(
         title: 'Submission failed',
         message: '$e',
@@ -673,7 +775,10 @@ class _PostAssessmentModule3PageState
       );
     } finally {
       if (!mounted) return;
-      setState(() => _isSubmitting = false);
+
+      setState(() {
+        _isSubmitting = false;
+      });
     }
   }
 
@@ -687,9 +792,14 @@ class _PostAssessmentModule3PageState
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title:
-            Text(title, style: const TextStyle(fontWeight: FontWeight.w900)),
-        content: Text(message, style: const TextStyle(height: 1.45)),
+        title: Text(
+          title,
+          style: const TextStyle(fontWeight: FontWeight.w900),
+        ),
+        content: Text(
+          message,
+          style: const TextStyle(height: 1.45),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -699,12 +809,17 @@ class _PostAssessmentModule3PageState
             style: ElevatedButton.styleFrom(
               backgroundColor: kBrandRed,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
             onPressed: () => Navigator.pop(context, true),
-            child: Text(confirmText,
-                style: const TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.w900)),
+            child: Text(
+              confirmText,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
           ),
         ],
       ),
@@ -720,20 +835,30 @@ class _PostAssessmentModule3PageState
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title:
-            Text(title, style: const TextStyle(fontWeight: FontWeight.w900)),
-        content: Text(message, style: const TextStyle(height: 1.45)),
+        title: Text(
+          title,
+          style: const TextStyle(fontWeight: FontWeight.w900),
+        ),
+        content: Text(
+          message,
+          style: const TextStyle(height: 1.45),
+        ),
         actions: [
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: kBrandRed,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
             onPressed: () => Navigator.pop(context),
-            child: Text(buttonText,
-                style: const TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.w900)),
+            child: Text(
+              buttonText,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
           ),
         ],
       ),
@@ -754,8 +879,13 @@ class _PostAssessmentModule3PageState
         Expanded(
           child: PageView.builder(
             controller: _pageCtrl,
+            physics: const NeverScrollableScrollPhysics(),
             itemCount: _questions.length,
-            onPageChanged: (index) => setState(() => _currentIndex = index),
+            onPageChanged: (index) {
+              setState(() {
+                _currentIndex = index;
+              });
+            },
             itemBuilder: (context, index) {
               final question = _questions[index];
               final selectedId = _selectedOptionIds[index];
@@ -799,7 +929,7 @@ class _PostAssessmentModule3PageState
                     _HintCard(
                       icon: Icons.info_outline_rounded,
                       text: _isEssay(question)
-                          ? 'Write 1 to 2 sentences about what you learned about fire safety in buildings (Tenement / Condo).'
+                          ? 'Write 1 to 2 sentences about what you learned from kitchen and building fire safety.'
                           : 'You can flag a question now and return to it later from the summary.',
                     ),
                   ],
@@ -830,11 +960,12 @@ class _PostAssessmentModule3PageState
               itemBuilder: (context, index) {
                 final question = _questions[index];
                 final selected = _selectedOptionFor(index);
+
                 final responseText = _isEssay(question)
                     ? ((_writtenAnswers[index] ?? '').trim().isEmpty
                         ? 'No reflection written'
                         : _writtenAnswers[index]!.trim())
-                    : (selected?.text ?? 'No answer selected');
+                    : (_formatOptionWithKey(selected) ?? 'No answer selected');
 
                 return _SummaryCard(
                   questionNumber: index + 1,
@@ -860,7 +991,10 @@ class _PostAssessmentModule3PageState
       padding: const EdgeInsets.fromLTRB(24, 0, 24, 18),
       child: Column(
         children: [
-          _ReviewTopCard(score: _score, total: _scoredTotal),
+          _ReviewTopCard(
+            score: _score,
+            total: _scoredTotal,
+          ),
           const SizedBox(height: 14),
           Expanded(
             child: ListView.separated(
@@ -873,10 +1007,9 @@ class _PostAssessmentModule3PageState
                   return _ReviewCard(
                     questionNumber: index + 1,
                     question: question.prompt,
-                    userAnswer:
-                        ((_writtenAnswers[index] ?? '').trim().isEmpty)
-                            ? 'No reflection submitted'
-                            : _writtenAnswers[index]!.trim(),
+                    userAnswer: ((_writtenAnswers[index] ?? '').trim().isEmpty)
+                        ? 'No reflection submitted'
+                        : _writtenAnswers[index]!.trim(),
                     correctAnswer: '',
                     isCorrect: false,
                     explanation: question.explanation,
@@ -886,19 +1019,20 @@ class _PostAssessmentModule3PageState
 
                 final selected = _selectedOptionFor(index);
                 final correct = _correctOptionFor(index);
-                final isCorrect = selected != null &&
+                final isCorrect =
+                    selected != null &&
                     correct != null &&
                     selected.id == correct.id;
 
                 return _ReviewCard(
                   questionNumber: index + 1,
                   question: question.prompt,
-                  userAnswer: selected?.text ?? 'No answer selected',
-                  correctAnswer:
-                      correct?.text ?? 'No correct answer configured',
+                  userAnswer:
+                      _formatOptionWithKey(selected) ?? 'No answer selected',
+                  correctAnswer: _formatOptionWithKey(correct) ??
+                      'No correct answer configured',
                   isCorrect: isCorrect,
-                  explanation:
-                      isCorrect ? null : _reviewExplanationFor(index),
+                  explanation: isCorrect ? null : _reviewExplanationFor(index),
                   isEssay: false,
                 );
               },
@@ -920,13 +1054,18 @@ class _PostAssessmentModule3PageState
                 style: OutlinedButton.styleFrom(
                   side: const BorderSide(color: kBrandRed),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(18)),
+                    borderRadius: BorderRadius.circular(18),
+                  ),
                   padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
                 onPressed: () => Navigator.pop(context),
-                child: const Text('Back',
-                    style: TextStyle(
-                        color: kBrandRed, fontWeight: FontWeight.w900)),
+                child: const Text(
+                  'Back',
+                  style: TextStyle(
+                    color: kBrandRed,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
               ),
             ),
             const SizedBox(width: 10),
@@ -935,15 +1074,20 @@ class _PostAssessmentModule3PageState
                 style: ElevatedButton.styleFrom(
                   backgroundColor: kBrandBlue,
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(18)),
+                    borderRadius: BorderRadius.circular(18),
+                  ),
                   padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
                 onPressed: _isSubmitting
                     ? null
                     : () => _loadOrCreateAttempt(forceNewAttempt: true),
-                child: const Text('New Attempt',
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.w900)),
+                child: const Text(
+                  'New Attempt',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
               ),
             ),
           ],
@@ -961,13 +1105,22 @@ class _PostAssessmentModule3PageState
                 style: OutlinedButton.styleFrom(
                   side: const BorderSide(color: kBrandRed),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(18)),
+                    borderRadius: BorderRadius.circular(18),
+                  ),
                   padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
-                onPressed: () => setState(() => _showSummary = false),
-                child: const Text('Back to Questions',
-                    style: TextStyle(
-                        color: kBrandRed, fontWeight: FontWeight.w900)),
+                onPressed: () {
+                  setState(() {
+                    _showSummary = false;
+                  });
+                },
+                child: const Text(
+                  'Back to Questions',
+                  style: TextStyle(
+                    color: kBrandRed,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
               ),
             ),
             const SizedBox(width: 10),
@@ -976,14 +1129,17 @@ class _PostAssessmentModule3PageState
                 style: ElevatedButton.styleFrom(
                   backgroundColor: kBrandBlue,
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(18)),
+                    borderRadius: BorderRadius.circular(18),
+                  ),
                   padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
                 onPressed: _isSubmitting ? null : _submitAssessment,
                 child: Text(
                   _isSubmitting ? 'Submitting...' : 'Submit',
                   style: const TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.w900),
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                  ),
                 ),
               ),
             ),
@@ -993,7 +1149,6 @@ class _PostAssessmentModule3PageState
     }
 
     final isLast = _currentIndex == _questions.length - 1;
-    final isFlagged = _flaggedIndexes.contains(_currentIndex);
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 8, 24, 20),
@@ -1004,39 +1159,17 @@ class _PostAssessmentModule3PageState
               style: OutlinedButton.styleFrom(
                 side: const BorderSide(color: kBrandRed),
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18)),
+                  borderRadius: BorderRadius.circular(18),
+                ),
                 padding: const EdgeInsets.symmetric(vertical: 14),
               ),
               onPressed: _goBack,
               child: Text(
                 _currentIndex == 0 ? 'Exit' : 'Back',
                 style: const TextStyle(
-                    color: kBrandRed, fontWeight: FontWeight.w900),
-              ),
-            ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: OutlinedButton.icon(
-              style: OutlinedButton.styleFrom(
-                side: BorderSide(
-                    color: isFlagged ? kBrandBlue : Colors.black26),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18)),
-                padding: const EdgeInsets.symmetric(vertical: 14),
-              ),
-              onPressed: () => _toggleFlag(_currentIndex),
-              icon: Icon(
-                isFlagged
-                    ? Icons.flag_rounded
-                    : Icons.outlined_flag_rounded,
-                color: isFlagged ? kBrandBlue : kDarkText,
-              ),
-              label: Text(
-                isFlagged ? 'Flagged' : 'Flag',
-                style: TextStyle(
-                    color: isFlagged ? kBrandBlue : kDarkText,
-                    fontWeight: FontWeight.w800),
+                  color: kBrandRed,
+                  fontWeight: FontWeight.w900,
+                ),
               ),
             ),
           ),
@@ -1046,14 +1179,19 @@ class _PostAssessmentModule3PageState
               style: ElevatedButton.styleFrom(
                 backgroundColor: kBrandRed,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18)),
+                  borderRadius: BorderRadius.circular(18),
+                ),
                 padding: const EdgeInsets.symmetric(vertical: 14),
               ),
               onPressed: _goNext,
               child: Text(
-                isLast ? 'Review Summary' : 'Next',
+                _openedFromSummaryEdit
+                    ? 'Review Summary Again'
+                    : (isLast ? 'Review Summary' : 'Next'),
                 style: const TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.w900),
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900,
+                ),
               ),
             ),
           ),
@@ -1064,103 +1202,136 @@ class _PostAssessmentModule3PageState
 
   @override
   Widget build(BuildContext context) {
-    final progress = _questions.isEmpty
-        ? 0.0
-        : _showReview
-            ? 1.0
-            : _showSummary
-                ? 1.0
-                : (_currentIndex + 1) / _questions.length;
-
     return Scaffold(
       backgroundColor: kSoftBg,
       body: Stack(
         children: [
           Positioned.fill(
-            child: Image.asset('assets/bg.png', fit: BoxFit.cover),
+            child: Image.asset(
+              'assets/bg.png',
+              fit: BoxFit.cover,
+            ),
           ),
           SafeArea(
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : Column(
                     children: [
+                      const SizedBox(height: 15),
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(14, 8, 14, 16),
+                        padding: const EdgeInsets.only(left: 9, right: 25),
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
                               children: [
                                 IconButton(
-                                  onPressed: _goBack,
-                                  icon: const Icon(Icons.arrow_back_rounded,
-                                      color: Colors.white),
-                                ),
-                                const Spacer(),
-                                Text(
-                                  _showReview
-                                      ? 'Assessment Review'
-                                      : 'Post-Assessment',
-                                  style: const TextStyle(
+                                  padding: EdgeInsets.zero,
+                                  constraints: const BoxConstraints(),
+                                  icon: const Icon(
+                                    Icons.close,
                                     color: Colors.white,
-                                    fontSize: 28,
-                                    fontWeight: FontWeight.w900,
                                   ),
+                                  onPressed: () => Navigator.pop(context),
                                 ),
                                 const Spacer(),
                                 IconButton(
+                                  padding: EdgeInsets.zero,
+                                  constraints: const BoxConstraints(),
+                                  icon: const Icon(
+                                    Icons.refresh_rounded,
+                                    color: Colors.white,
+                                  ),
                                   onPressed: _handleRefresh,
-                                  icon: const Icon(Icons.refresh_rounded,
-                                      color: Colors.white),
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 8),
-                            Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16, vertical: 9),
-                                  decoration: BoxDecoration(
-                                    gradient: const LinearGradient(
-                                        colors: [kBrandRed, kBrandBlue]),
-                                    borderRadius: BorderRadius.circular(12),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.16),
-                                        blurRadius: 10,
-                                        offset: const Offset(0, 5),
+                            const SizedBox(height: 15),
+                            Center(
+                              child: Text(
+                                _showReview
+                                    ? 'Assessment Review'
+                                    : 'Post Assessment',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'Poppins',
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 15),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 25),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 18,
+                                      vertical: 10,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      gradient: const LinearGradient(
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                        colors: [kBrandRed, kBrandBlue],
                                       ),
-                                    ],
+                                      borderRadius: BorderRadius.circular(10),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.18),
+                                          blurRadius: 10,
+                                          offset: const Offset(0, 6),
+                                        ),
+                                      ],
+                                    ),
+                                    child: const Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(
+                                          Icons.bolt_rounded,
+                                          color: Colors.white,
+                                          size: 18,
+                                        ),
+                                        SizedBox(width: 8),
+                                        Text(
+                                          'MODULE 3',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                            fontFamily: 'Poppins',
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                  child: const Text(
-                                    'MODULE 3',
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w900),
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Text(
-                                    _showReview
-                                        ? 'Your score for the 4 graded items plus your written reflection'
-                                        : (_assessmentTitle.isEmpty
-                                            ? 'Building Fire Safety – Tenement / Condo Post-Assessment'
-                                            : _assessmentTitle),
-                                    style: const TextStyle(
+                                  const SizedBox(width: 15),
+                                  Expanded(
+                                    child: Text(
+                                      _showReview
+                                          ? 'Your score for the graded items plus your written reflection'
+                                          : (_assessmentTitle.isEmpty
+                                              ? 'Kitchen Fire and Building Fire Safety'
+                                              : _assessmentTitle),
+                                      style: const TextStyle(
                                         color: Colors.black,
-                                        fontWeight: FontWeight.w700),
+                                        fontWeight: FontWeight.w600,
+                                        fontFamily: 'Poppins',
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                             if (_instructions.trim().isNotEmpty &&
                                 !_showReview) ...[
-                              const SizedBox(height: 10),
+                              const SizedBox(height: 15),
                               Align(
-                                alignment: Alignment.centerLeft,
+                                alignment: Alignment.center,
                                 child: Text(
                                   _instructions,
+                                  textAlign: TextAlign.center,
                                   style: const TextStyle(
                                     color: Colors.black87,
                                     fontWeight: FontWeight.w600,
@@ -1169,20 +1340,6 @@ class _PostAssessmentModule3PageState
                                 ),
                               ),
                             ],
-                            const SizedBox(height: 14),
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(999),
-                              child: SizedBox(
-                                height: 7,
-                                child: LinearProgressIndicator(
-                                  value: progress,
-                                  backgroundColor:
-                                      Colors.white.withOpacity(0.30),
-                                  valueColor:
-                                      const AlwaysStoppedAnimation(kBrandBlue),
-                                ),
-                              ),
-                            ),
                           ],
                         ),
                       ),
@@ -1203,12 +1360,14 @@ class _PostAssessmentModule3PageState
   }
 }
 
-// ─── Data models ────────────────────────────────────────────────────────────
-
 class _CreatedAttempt {
   final String attemptId;
   final List<_QuestionVm> questions;
-  const _CreatedAttempt({required this.attemptId, required this.questions});
+
+  const _CreatedAttempt({
+    required this.attemptId,
+    required this.questions,
+  });
 }
 
 class _QuestionVm {
@@ -1217,6 +1376,7 @@ class _QuestionVm {
   final String explanation;
   final String type;
   final List<_OptionVm> options;
+
   const _QuestionVm({
     required this.id,
     required this.prompt,
@@ -1231,6 +1391,7 @@ class _OptionVm {
   final String key;
   final String text;
   final bool isCorrect;
+
   const _OptionVm({
     required this.id,
     required this.key,
@@ -1239,11 +1400,13 @@ class _OptionVm {
   });
 }
 
-// ─── Reusable UI widgets ─────────────────────────────────────────────────────
-
 class _StatsRow extends StatelessWidget {
-  const _StatsRow(
-      {required this.answered, required this.total, required this.flagged});
+  const _StatsRow({
+    required this.answered,
+    required this.total,
+    required this.flagged,
+  });
+
   final int answered;
   final int total;
   final int flagged;
@@ -1275,11 +1438,13 @@ class _StatsRow extends StatelessWidget {
 }
 
 class _StatChip extends StatelessWidget {
-  const _StatChip(
-      {required this.icon,
-      required this.label,
-      required this.value,
-      required this.color});
+  const _StatChip({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.color,
+  });
+
   final IconData icon;
   final String label;
   final String value;
@@ -1300,7 +1465,9 @@ class _StatChip extends StatelessWidget {
             width: 34,
             height: 34,
             decoration: BoxDecoration(
-                color: color.withOpacity(0.12), shape: BoxShape.circle),
+              color: color.withOpacity(0.12),
+              shape: BoxShape.circle,
+            ),
             child: Icon(icon, color: color, size: 18),
           ),
           const SizedBox(width: 10),
@@ -1308,15 +1475,22 @@ class _StatChip extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label,
-                    style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.black54)),
+                Text(
+                  label,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.black54,
+                  ),
+                ),
                 const SizedBox(height: 2),
-                Text(value,
-                    style: TextStyle(
-                        fontWeight: FontWeight.w900, color: color)),
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w900,
+                    color: color,
+                  ),
+                ),
               ],
             ),
           ),
@@ -1334,6 +1508,7 @@ class _QuestionHeaderCard extends StatelessWidget {
     required this.isFlagged,
     required this.onFlagTap,
   });
+
   final int questionNumber;
   final int totalQuestions;
   final String question;
@@ -1351,9 +1526,10 @@ class _QuestionHeaderCard extends StatelessWidget {
         border: Border.all(color: Colors.black.withOpacity(0.06)),
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withOpacity(0.09),
-              blurRadius: 18,
-              offset: const Offset(0, 8))
+            color: Colors.black.withOpacity(0.09),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
+          ),
         ],
       ),
       child: Column(
@@ -1366,15 +1542,17 @@ class _QuestionHeaderCard extends StatelessWidget {
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                      colors: [kBrandRed, kBrandBlue]),
+                    colors: [kBrandRed, kBrandBlue],
+                  ),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
                   'QUESTION $questionNumber / $totalQuestions',
                   style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w900,
-                      fontSize: 12),
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 12,
+                  ),
                 ),
               ),
               const Spacer(),
@@ -1390,21 +1568,26 @@ class _QuestionHeaderCard extends StatelessWidget {
                         : Colors.black.withOpacity(0.04),
                     borderRadius: BorderRadius.circular(999),
                     border: Border.all(
-                        color: isFlagged ? kBrandBlue : Colors.black12),
+                      color: isFlagged ? kBrandBlue : Colors.black12,
+                    ),
                   ),
                   child: Row(
                     children: [
                       Icon(
-                          isFlagged
-                              ? Icons.flag_rounded
-                              : Icons.outlined_flag_rounded,
-                          size: 16,
-                          color: isFlagged ? kBrandBlue : kDarkText),
+                        isFlagged
+                            ? Icons.flag_rounded
+                            : Icons.outlined_flag_rounded,
+                        size: 16,
+                        color: isFlagged ? kBrandBlue : kDarkText,
+                      ),
                       const SizedBox(width: 6),
-                      Text(isFlagged ? 'Flagged' : 'Flag',
-                          style: TextStyle(
-                              fontWeight: FontWeight.w800,
-                              color: isFlagged ? kBrandBlue : kDarkText)),
+                      Text(
+                        isFlagged ? 'Flagged' : 'Flag',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w800,
+                          color: isFlagged ? kBrandBlue : kDarkText,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -1412,12 +1595,15 @@ class _QuestionHeaderCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          Text(question,
-              style: const TextStyle(
-                  fontSize: 20,
-                  height: 1.4,
-                  fontWeight: FontWeight.w800,
-                  color: kDarkText)),
+          Text(
+            question,
+            style: const TextStyle(
+              fontSize: 20,
+              height: 1.4,
+              fontWeight: FontWeight.w800,
+              color: kDarkText,
+            ),
+          ),
         ],
       ),
     );
@@ -1431,6 +1617,7 @@ class _OptionCard extends StatelessWidget {
     required this.selected,
     required this.onTap,
   });
+
   final String label;
   final String text;
   final bool selected;
@@ -1452,12 +1639,16 @@ class _OptionCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: bgColor,
             borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: borderColor, width: selected ? 1.4 : 1),
+            border: Border.all(
+              color: borderColor,
+              width: selected ? 1.4 : 1,
+            ),
             boxShadow: [
               BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 12,
-                  offset: const Offset(0, 6))
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 12,
+                offset: const Offset(0, 6),
+              ),
             ],
           ),
           child: Row(
@@ -1467,23 +1658,30 @@ class _OptionCard extends StatelessWidget {
                 width: 34,
                 height: 34,
                 decoration: BoxDecoration(
-                    color: selected ? kBrandRed : Colors.grey.shade100,
-                    shape: BoxShape.circle),
+                  color: selected ? kBrandRed : Colors.grey.shade100,
+                  shape: BoxShape.circle,
+                ),
                 child: Center(
-                  child: Text(label,
-                      style: TextStyle(
-                          color: selected ? Colors.white : Colors.black87,
-                          fontWeight: FontWeight.w900)),
+                  child: Text(
+                    label,
+                    style: TextStyle(
+                      color: selected ? Colors.white : Colors.black87,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: Text(text,
-                    style: const TextStyle(
-                        fontSize: 15,
-                        height: 1.45,
-                        fontWeight: FontWeight.w700,
-                        color: kDarkText)),
+                child: Text(
+                  text,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    height: 1.45,
+                    fontWeight: FontWeight.w700,
+                    color: kDarkText,
+                  ),
+                ),
               ),
             ],
           ),
@@ -1494,8 +1692,11 @@ class _OptionCard extends StatelessWidget {
 }
 
 class _EssayAnswerCard extends StatelessWidget {
-  const _EssayAnswerCard(
-      {required this.controller, required this.onChanged});
+  const _EssayAnswerCard({
+    required this.controller,
+    required this.onChanged,
+  });
+
   final TextEditingController controller;
   final ValueChanged<String> onChanged;
 
@@ -1509,9 +1710,10 @@ class _EssayAnswerCard extends StatelessWidget {
         border: Border.all(color: kBrandRed.withOpacity(0.18)),
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 12,
-              offset: const Offset(0, 6))
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
+          ),
         ],
       ),
       child: TextField(
@@ -1522,23 +1724,30 @@ class _EssayAnswerCard extends StatelessWidget {
         onChanged: onChanged,
         decoration: InputDecoration(
           hintText:
-              'Write 1 to 2 sentences about what you learned about fire safety in buildings.',
+              'Write 1 to 2 sentences about what you learned from kitchen and building fire safety.',
           hintStyle: TextStyle(
-              color: Colors.grey.shade600, fontWeight: FontWeight.w500),
+            color: Colors.grey.shade600,
+            fontWeight: FontWeight.w500,
+          ),
           border: InputBorder.none,
         ),
         style: const TextStyle(
-            fontSize: 15,
-            height: 1.45,
-            fontWeight: FontWeight.w700,
-            color: kDarkText),
+          fontSize: 15,
+          height: 1.45,
+          fontWeight: FontWeight.w700,
+          color: kDarkText,
+        ),
       ),
     );
   }
 }
 
 class _HintCard extends StatelessWidget {
-  const _HintCard({required this.icon, required this.text});
+  const _HintCard({
+    required this.icon,
+    required this.text,
+  });
+
   final IconData icon;
   final String text;
 
@@ -1549,16 +1758,22 @@ class _HintCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: kBrandBlue.withOpacity(0.08),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: kBrandBlue.withOpacity(0.18)),
+        border: Border.all(
+          color: kBrandBlue.withOpacity(0.18),
+        ),
       ),
       child: Row(
         children: [
           Icon(icon, color: kBrandBlue, size: 18),
           const SizedBox(width: 10),
           Expanded(
-            child: Text(text,
-                style: const TextStyle(
-                    height: 1.35, fontWeight: FontWeight.w600)),
+            child: Text(
+              text,
+              style: const TextStyle(
+                height: 1.35,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
         ],
       ),
@@ -1567,8 +1782,12 @@ class _HintCard extends StatelessWidget {
 }
 
 class _SummaryHeaderCard extends StatelessWidget {
-  const _SummaryHeaderCard(
-      {required this.answered, required this.total, required this.flagged});
+  const _SummaryHeaderCard({
+    required this.answered,
+    required this.total,
+    required this.flagged,
+  });
+
   final int answered;
   final int total;
   final int flagged;
@@ -1583,20 +1802,28 @@ class _SummaryHeaderCard extends StatelessWidget {
         border: Border.all(color: Colors.black.withOpacity(0.06)),
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withOpacity(0.08),
-              blurRadius: 16,
-              offset: const Offset(0, 8))
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 16,
+            offset: const Offset(0, 8),
+          ),
         ],
       ),
       child: Column(
         children: [
-          const Text('Review all questions before you submit',
-              style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w900,
-                  color: kDarkText)),
+          const Text(
+            'Review all questions before you submit',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w900,
+              color: kDarkText,
+            ),
+          ),
           const SizedBox(height: 10),
-          _StatsRow(answered: answered, total: total, flagged: flagged),
+          _StatsRow(
+            answered: answered,
+            total: total,
+            flagged: flagged,
+          ),
         ],
       ),
     );
@@ -1613,6 +1840,7 @@ class _SummaryCard extends StatelessWidget {
     required this.onEdit,
     required this.onFlagTap,
   });
+
   final int questionNumber;
   final String question;
   final String selectedAnswer;
@@ -1633,9 +1861,10 @@ class _SummaryCard extends StatelessWidget {
         border: Border.all(color: Colors.black.withOpacity(0.06)),
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withOpacity(0.07),
-              blurRadius: 16,
-              offset: const Offset(0, 8))
+            color: Colors.black.withOpacity(0.07),
+            blurRadius: 16,
+            offset: const Offset(0, 8),
+          ),
         ],
       ),
       child: Column(
@@ -1647,24 +1876,33 @@ class _SummaryCard extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                 decoration: BoxDecoration(
-                    color: kBrandRed.withOpacity(0.10),
-                    borderRadius: BorderRadius.circular(999)),
-                child: Text('Q$questionNumber',
-                    style: const TextStyle(
-                        fontWeight: FontWeight.w900, color: kBrandRed)),
+                  color: kBrandRed.withOpacity(0.10),
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: Text(
+                  'Q$questionNumber',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w900,
+                    color: kBrandRed,
+                  ),
+                ),
               ),
               const SizedBox(width: 8),
               Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                 decoration: BoxDecoration(
-                    color: statusColor.withOpacity(0.12),
-                    borderRadius: BorderRadius.circular(999)),
-                child: Text(answered ? 'Answered' : 'Unanswered',
-                    style: TextStyle(
-                        fontWeight: FontWeight.w900,
-                        color: statusColor,
-                        fontSize: 12)),
+                  color: statusColor.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: Text(
+                  answered ? 'Answered' : 'Unanswered',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w900,
+                    color: statusColor,
+                    fontSize: 12,
+                  ),
+                ),
               ),
               if (flagged) ...[
                 const SizedBox(width: 8),
@@ -1672,37 +1910,48 @@ class _SummaryCard extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                   decoration: BoxDecoration(
-                      color: kBrandBlue.withOpacity(0.12),
-                      borderRadius: BorderRadius.circular(999)),
-                  child: const Text('Flagged',
-                      style: TextStyle(
-                          fontWeight: FontWeight.w900,
-                          color: kBrandBlue,
-                          fontSize: 12)),
+                    color: kBrandBlue.withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: const Text(
+                    'Flagged',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w900,
+                      color: kBrandBlue,
+                      fontSize: 12,
+                    ),
+                  ),
                 ),
               ],
               const Spacer(),
               IconButton(
                 onPressed: onFlagTap,
                 icon: Icon(
-                    flagged ? Icons.flag_rounded : Icons.outlined_flag_rounded,
-                    color: flagged ? kBrandBlue : Colors.grey.shade600),
+                  flagged ? Icons.flag_rounded : Icons.outlined_flag_rounded,
+                  color: flagged ? kBrandBlue : Colors.grey.shade600,
+                ),
               ),
             ],
           ),
           const SizedBox(height: 8),
-          Text(question,
-              style: const TextStyle(
-                  fontWeight: FontWeight.w800,
-                  fontSize: 15,
-                  height: 1.4,
-                  color: kDarkText)),
+          Text(
+            question,
+            style: const TextStyle(
+              fontWeight: FontWeight.w800,
+              fontSize: 15,
+              height: 1.4,
+              color: kDarkText,
+            ),
+          ),
           const SizedBox(height: 10),
-          Text(selectedAnswer,
-              style: TextStyle(
-                  color: answered ? Colors.black87 : Colors.grey.shade600,
-                  fontWeight: FontWeight.w600,
-                  height: 1.35)),
+          Text(
+            selectedAnswer,
+            style: TextStyle(
+              color: answered ? Colors.black87 : Colors.grey.shade600,
+              fontWeight: FontWeight.w600,
+              height: 1.35,
+            ),
+          ),
           const SizedBox(height: 14),
           Align(
             alignment: Alignment.centerRight,
@@ -1710,14 +1959,22 @@ class _SummaryCard extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: kBrandRed,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
               onPressed: onEdit,
-              icon: const Icon(Icons.edit_rounded,
-                  color: Colors.white, size: 18),
-              label: const Text('Edit',
-                  style: TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.w900)),
+              icon: const Icon(
+                Icons.edit_rounded,
+                color: Colors.white,
+                size: 18,
+              ),
+              label: const Text(
+                'Edit',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
             ),
           ),
         ],
@@ -1727,7 +1984,11 @@ class _SummaryCard extends StatelessWidget {
 }
 
 class _ReviewTopCard extends StatelessWidget {
-  const _ReviewTopCard({required this.score, required this.total});
+  const _ReviewTopCard({
+    required this.score,
+    required this.total,
+  });
+
   final int score;
   final int total;
 
@@ -1744,30 +2005,40 @@ class _ReviewTopCard extends StatelessWidget {
         border: Border.all(color: Colors.black.withOpacity(0.06)),
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withOpacity(0.08),
-              blurRadius: 16,
-              offset: const Offset(0, 8))
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 16,
+            offset: const Offset(0, 8),
+          ),
         ],
       ),
       child: Column(
         children: [
-          const Text('Post-Assessment Result',
-              style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w900,
-                  color: kDarkText)),
+          const Text(
+            'Post-Assessment Result',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w900,
+              color: kDarkText,
+            ),
+          ),
           const SizedBox(height: 10),
-          Text('$score / $total',
-              style: const TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.w900,
-                  color: kBrandRed)),
+          Text(
+            '$score / $total',
+            style: const TextStyle(
+              fontSize: 30,
+              fontWeight: FontWeight.w900,
+              color: kBrandRed,
+            ),
+          ),
           const SizedBox(height: 4),
-          Text('$percent% • scored questions only',
-              style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w800,
-                  color: kBrandBlue)),
+          Text(
+            '$percent% • scored questions only',
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w800,
+              color: kBrandBlue,
+            ),
+          ),
         ],
       ),
     );
@@ -1784,6 +2055,7 @@ class _ReviewCard extends StatelessWidget {
     required this.explanation,
     required this.isEssay,
   });
+
   final int questionNumber;
   final String question;
   final String userAnswer;
@@ -1798,6 +2070,8 @@ class _ReviewCard extends StatelessWidget {
         ? kBrandRed
         : (isCorrect ? const Color(0xFF16A34A) : kBrandRed);
 
+    final note = explanation?.trim();
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -1806,9 +2080,10 @@ class _ReviewCard extends StatelessWidget {
         border: Border.all(color: statusColor.withOpacity(0.18)),
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withOpacity(0.07),
-              blurRadius: 16,
-              offset: const Offset(0, 8))
+            color: Colors.black.withOpacity(0.07),
+            blurRadius: 16,
+            offset: const Offset(0, 8),
+          ),
         ],
       ),
       child: Column(
@@ -1820,72 +2095,102 @@ class _ReviewCard extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                 decoration: BoxDecoration(
-                    color: statusColor.withOpacity(0.12),
-                    borderRadius: BorderRadius.circular(999)),
-                child: Text('Q$questionNumber',
-                    style: TextStyle(
-                        fontWeight: FontWeight.w900, color: statusColor)),
+                  color: statusColor.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: Text(
+                  'Q$questionNumber',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w900,
+                    color: statusColor,
+                  ),
+                ),
               ),
               const SizedBox(width: 8),
               Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                 decoration: BoxDecoration(
-                    color: statusColor.withOpacity(0.12),
-                    borderRadius: BorderRadius.circular(999)),
+                  color: statusColor.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(999),
+                ),
                 child: Text(
-                    isEssay
-                        ? 'Reflection'
-                        : (isCorrect ? 'Correct' : 'Incorrect'),
-                    style: TextStyle(
-                        fontWeight: FontWeight.w900,
-                        color: statusColor,
-                        fontSize: 12)),
+                  isEssay ? 'Reflection' : (isCorrect ? 'Correct' : 'Incorrect'),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w900,
+                    color: statusColor,
+                    fontSize: 12,
+                  ),
+                ),
               ),
             ],
           ),
           const SizedBox(height: 10),
-          Text(question,
-              style: const TextStyle(
-                  fontWeight: FontWeight.w800,
-                  fontSize: 15,
-                  height: 1.4,
-                  color: kDarkText)),
+          Text(
+            question,
+            style: const TextStyle(
+              fontWeight: FontWeight.w800,
+              fontSize: 15,
+              height: 1.4,
+              color: kDarkText,
+            ),
+          ),
           const SizedBox(height: 12),
-          Text(isEssay ? 'Your Reflection' : 'Your Answer',
-              style: const TextStyle(
-                  fontWeight: FontWeight.w900, color: Colors.black54)),
+          Text(
+            isEssay ? 'Your Reflection' : 'Your Answer',
+            style: const TextStyle(
+              fontWeight: FontWeight.w900,
+              color: Colors.black54,
+            ),
+          ),
           const SizedBox(height: 4),
-          Text(userAnswer,
-              style: TextStyle(
-                  color: isEssay
-                      ? kDarkText
-                      : (isCorrect ? const Color(0xFF16A34A) : kBrandRed),
-                  fontWeight: FontWeight.w700,
-                  height: 1.35)),
+          Text(
+            userAnswer,
+            style: TextStyle(
+              color: isEssay
+                  ? kDarkText
+                  : (isCorrect ? const Color(0xFF16A34A) : kBrandRed),
+              fontWeight: FontWeight.w700,
+              height: 1.35,
+            ),
+          ),
           if (!isEssay) ...[
             const SizedBox(height: 12),
-            const Text('Correct Answer',
-                style: TextStyle(
-                    fontWeight: FontWeight.w900, color: Colors.black54)),
+            const Text(
+              'Correct Answer',
+              style: TextStyle(
+                fontWeight: FontWeight.w900,
+                color: Colors.black54,
+              ),
+            ),
             const SizedBox(height: 4),
-            Text(correctAnswer,
-                style: const TextStyle(
-                    color: Color(0xFF16A34A),
-                    fontWeight: FontWeight.w700,
-                    height: 1.35)),
+            Text(
+              correctAnswer,
+              style: const TextStyle(
+                color: Color(0xFF16A34A),
+                fontWeight: FontWeight.w700,
+                height: 1.35,
+              ),
+            ),
           ],
-          if (explanation != null && explanation!.trim().isNotEmpty) ...[
+          if (note != null && note.isNotEmpty) ...[
             const SizedBox(height: 12),
-            Text(isEssay ? 'Reflection Note' : 'Why this is wrong',
-                style: const TextStyle(
-                    fontWeight: FontWeight.w900, color: Colors.black54)),
+            Text(
+              isEssay ? 'Reflection Note' : 'Why this is wrong',
+              style: const TextStyle(
+                fontWeight: FontWeight.w900,
+                color: Colors.black54,
+              ),
+            ),
             const SizedBox(height: 4),
-            Text(explanation!,
-                style: const TextStyle(
-                    color: kDarkText,
-                    fontWeight: FontWeight.w600,
-                    height: 1.45)),
+            Text(
+              note,
+              style: const TextStyle(
+                color: kDarkText,
+                fontWeight: FontWeight.w600,
+                height: 1.45,
+              ),
+            ),
           ],
         ],
       ),

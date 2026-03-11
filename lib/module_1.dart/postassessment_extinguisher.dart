@@ -25,6 +25,8 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
   bool _showSummary = false;
   bool _showReview = false;
 
+  bool _openedFromSummaryEdit = false;
+
   String? _moduleId;
   String? _assessmentId;
   String? _attemptId;
@@ -68,6 +70,8 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
   bool _isMcq(_QuestionVm q) => q.type == 'multiple_choice';
 
   int get _scoredTotal => _questions.where(_isMcq).length;
+
+  bool get _hasUnansweredQuestions => _answeredCount < _questions.length;
 
   int get _answeredCount {
     int count = 0;
@@ -160,8 +164,7 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
       final optionRows = await _supabase
           .from('assessment_options')
           .select('id, question_id, option_key, option_text, is_correct')
-          .inFilter('question_id', questionIds)
-          .order('option_key');
+          .inFilter('question_id', questionIds);
 
       final optionsByQuestion = <String, List<_OptionVm>>{};
       for (final row in optionRows) {
@@ -170,11 +173,15 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
         optionsByQuestion[questionId]!.add(
           _OptionVm(
             id: row['id'].toString(),
-            key: (row['option_key'] ?? '').toString(),
+            key: (row['option_key'] ?? '').toString().toUpperCase(),
             text: (row['option_text'] ?? '').toString(),
             isCorrect: (row['is_correct'] ?? false) as bool,
           ),
         );
+      }
+
+      for (final entry in optionsByQuestion.entries) {
+        entry.value.sort((a, b) => a.key.compareTo(b.key));
       }
 
       final baseQuestions = questionRows.map((row) {
@@ -356,6 +363,7 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
         _score = 0;
         _showSummary = false;
         _showReview = false;
+        _openedFromSummaryEdit = false;
         _isLoading = false;
       });
 
@@ -557,6 +565,12 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
     );
   }
 
+  String? _formatOptionWithKey(_OptionVm? option) {
+    if (option == null) return null;
+    final key = option.key.trim().toUpperCase();
+    return '$key. ${option.text}';
+  }
+
   String _reviewExplanationFor(int questionIndex) {
     final question = _questions[questionIndex];
     final correct = _correctOptionFor(questionIndex);
@@ -573,6 +587,14 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
   }
 
   void _goNext() {
+    if (_openedFromSummaryEdit) {
+      setState(() {
+        _showSummary = true;
+        _openedFromSummaryEdit = false;
+      });
+      return;
+    }
+
     if (_currentIndex < _questions.length - 1) {
       _pageCtrl.nextPage(
         duration: const Duration(milliseconds: 250),
@@ -598,6 +620,14 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
       return;
     }
 
+    if (_openedFromSummaryEdit) {
+      setState(() {
+        _showSummary = true;
+        _openedFromSummaryEdit = false;
+      });
+      return;
+    }
+
     if (_currentIndex == 0) {
       Navigator.pop(context);
       return;
@@ -613,6 +643,7 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
     setState(() {
       _showSummary = false;
       _currentIndex = index;
+      _openedFromSummaryEdit = true;
     });
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -623,6 +654,16 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
   }
 
   Future<void> _submitAssessment() async {
+    if (_hasUnansweredQuestions) {
+      await _showInfoDialog(
+        title: 'Cannot submit yet',
+        message:
+            'You must answer all questions before submitting the post-assessment.',
+        buttonText: 'OK',
+      );
+      return;
+    }
+
     final confirmed = await _showConfirmDialog(
       title: 'Submit Post-Assessment',
       message:
@@ -721,6 +762,7 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
         _score = correctCount;
         _showSummary = false;
         _showReview = true;
+        _openedFromSummaryEdit = false;
       });
     } catch (e) {
       if (!mounted) return;
@@ -836,6 +878,7 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
         Expanded(
           child: PageView.builder(
             controller: _pageCtrl,
+            physics: const NeverScrollableScrollPhysics(),
             itemCount: _questions.length,
             onPageChanged: (index) {
               setState(() {
@@ -916,11 +959,12 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
               itemBuilder: (context, index) {
                 final question = _questions[index];
                 final selected = _selectedOptionFor(index);
+
                 final responseText = _isEssay(question)
                     ? ((_writtenAnswers[index] ?? '').trim().isEmpty
                         ? 'No reflection written'
                         : _writtenAnswers[index]!.trim())
-                    : (selected?.text ?? 'No answer selected');
+                    : (_formatOptionWithKey(selected) ?? 'No answer selected');
 
                 return _SummaryCard(
                   questionNumber: index + 1,
@@ -982,8 +1026,10 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
                 return _ReviewCard(
                   questionNumber: index + 1,
                   question: question.prompt,
-                  userAnswer: selected?.text ?? 'No answer selected',
-                  correctAnswer: correct?.text ?? 'No correct answer configured',
+                  userAnswer:
+                      _formatOptionWithKey(selected) ?? 'No answer selected',
+                  correctAnswer: _formatOptionWithKey(correct) ??
+                      'No correct answer configured',
                   isCorrect: isCorrect,
                   explanation: isCorrect ? null : _reviewExplanationFor(index),
                   isEssay: false,
@@ -1102,7 +1148,6 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
     }
 
     final isLast = _currentIndex == _questions.length - 1;
-    final isFlagged = _flaggedIndexes.contains(_currentIndex);
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 8, 24, 20),
@@ -1129,32 +1174,6 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
           ),
           const SizedBox(width: 10),
           Expanded(
-            child: OutlinedButton.icon(
-              style: OutlinedButton.styleFrom(
-                side: BorderSide(
-                  color: isFlagged ? kBrandBlue : Colors.black26,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(18),
-                ),
-                padding: const EdgeInsets.symmetric(vertical: 14),
-              ),
-              onPressed: () => _toggleFlag(_currentIndex),
-              icon: Icon(
-                isFlagged ? Icons.flag_rounded : Icons.outlined_flag_rounded,
-                color: isFlagged ? kBrandBlue : kDarkText,
-              ),
-              label: Text(
-                isFlagged ? 'Flagged' : 'Flag',
-                style: TextStyle(
-                  color: isFlagged ? kBrandBlue : kDarkText,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: kBrandRed,
@@ -1165,7 +1184,9 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
               ),
               onPressed: _goNext,
               child: Text(
-                isLast ? 'Review Summary' : 'Next',
+                _openedFromSummaryEdit
+                    ? 'Review Summary Again'
+                    : (isLast ? 'Review Summary' : 'Next'),
                 style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w900,
@@ -1180,14 +1201,6 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
 
   @override
   Widget build(BuildContext context) {
-    final progress = _questions.isEmpty
-        ? 0.0
-        : _showReview
-            ? 1.0
-            : _showSummary
-                ? 1.0
-                : (_currentIndex + 1) / _questions.length;
-
     return Scaffold(
       backgroundColor: kSoftBg,
       body: Stack(
@@ -1201,119 +1214,134 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
           SafeArea(
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())
-                : RefreshIndicator(
-                    onRefresh: _handleRefresh,
-                    child: Column(
-                      children: [
-                        const SizedBox(height: 15),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 9, right: 25),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              IconButton(
-                                padding: EdgeInsets.zero,
-                                constraints: const BoxConstraints(),
-                                icon:
-                                    const Icon(Icons.close, color: Colors.white),
-                                onPressed: () => Navigator.pop(context),
-                              ),
-                              const SizedBox(height: 15),
-                              const Center(
-                                child: Text(
-                                  'Post Assessment',
-                                  style: TextStyle(
+                : Column(
+                    children: [
+                      const SizedBox(height: 15),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 9, right: 25),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                IconButton(
+                                  padding: EdgeInsets.zero,
+                                  constraints: const BoxConstraints(),
+                                  icon: const Icon(
+                                    Icons.close,
                                     color: Colors.white,
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: 'Poppins',
                                   ),
+                                  onPressed: () => Navigator.pop(context),
                                 ),
-                              ),
-                              const SizedBox(height: 15),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 25),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 18,
-                                        vertical: 10,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        gradient: const LinearGradient(
-                                          begin: Alignment.topLeft,
-                                          end: Alignment.bottomRight,
-                                          colors: [kBrandRed, kBrandBlue],
-                                        ),
-                                        borderRadius: BorderRadius.circular(10),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.black.withOpacity(0.18),
-                                            blurRadius: 10,
-                                            offset: const Offset(0, 6),
-                                          ),
-                                        ],
-                                      ),
-                                      child: const Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Icon(
-                                            Icons.bolt_rounded,
-                                            color: Colors.white,
-                                            size: 18,
-                                          ),
-                                          SizedBox(width: 8),
-                                          Text(
-                                            'MODULE 1',
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.white,
-                                              fontFamily: 'Poppins',
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    const SizedBox(width: 15),
-                                    const Expanded(
-                                      child: Text(
-                                        'Fire Extinguisher: Basics, Types, and How to Use',
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.w600,
-                                          fontFamily: 'Poppins',
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              if (_instructions.trim().isNotEmpty &&
-                              
-                                  !_showReview) ...[
-                                    
-                                const SizedBox(height: 15),
-                                Align(
-                                  alignment: Alignment.center,
-                                  child: Text(
-                                    _instructions,
-                                    textAlign: TextAlign.center,
-                                    style: const TextStyle(
-                                      color: Colors.black87,
-                                      fontWeight: FontWeight.w600,
-                                      height: 1.35,
-                                      
-                                    ),
-                                    
+                                const Spacer(),
+                                IconButton(
+                                  padding: EdgeInsets.zero,
+                                  constraints: const BoxConstraints(),
+                                  icon: const Icon(
+                                    Icons.refresh_rounded,
+                                    color: Colors.white,
                                   ),
-                                  
+                                  onPressed: _handleRefresh,
                                 ),
                               ],
+                            ),
+                            const SizedBox(height: 15),
+                            Center(
+                              child: Text(
+                                _showReview
+                                    ? 'Assessment Review'
+                                    : 'Post Assessment',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'Poppins',
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 15),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 25),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 18,
+                                      vertical: 10,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      gradient: const LinearGradient(
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                        colors: [kBrandRed, kBrandBlue],
+                                      ),
+                                      borderRadius: BorderRadius.circular(10),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.18),
+                                          blurRadius: 10,
+                                          offset: const Offset(0, 6),
+                                        ),
+                                      ],
+                                    ),
+                                    child: const Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(
+                                          Icons.bolt_rounded,
+                                          color: Colors.white,
+                                          size: 18,
+                                        ),
+                                        SizedBox(width: 8),
+                                        Text(
+                                          'MODULE 1',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                            fontFamily: 'Poppins',
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 15),
+                                  Expanded(
+                                    child: Text(
+                                      _showReview
+                                          ? 'Your score for the 4 graded items plus your written reflection'
+                                          : (_assessmentTitle.isEmpty
+                                              ? 'Fire Extinguisher: Basics, Types, and How to Use'
+                                              : _assessmentTitle),
+                                      style: const TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.w600,
+                                        fontFamily: 'Poppins',
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            if (_instructions.trim().isNotEmpty &&
+                                !_showReview) ...[
+                              const SizedBox(height: 15),
+                              Align(
+                                alignment: Alignment.center,
+                                child: Text(
+                                  _instructions,
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    color: Colors.black87,
+                                    fontWeight: FontWeight.w600,
+                                    height: 1.35,
+                                  ),
+                                ),
+                              ),
                             ],
-                          ),
+                          ],
                         ),
+                      ),
                       Expanded(
                         child: _showReview
                             ? _buildReviewView()
@@ -1324,7 +1352,6 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
                       _buildBottomBar(),
                     ],
                   ),
-          ),
           ),
         ],
       ),
@@ -2042,6 +2069,8 @@ class _ReviewCard extends StatelessWidget {
         ? kBrandRed
         : (isCorrect ? const Color(0xFF16A34A) : kBrandRed);
 
+    final note = explanation?.trim();
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -2143,7 +2172,7 @@ class _ReviewCard extends StatelessWidget {
               ),
             ),
           ],
-          if (explanation != null && explanation!.trim().isNotEmpty) ...[
+          if (note != null && note.isNotEmpty) ...[
             const SizedBox(height: 12),
             Text(
               isEssay ? 'Reflection Note' : 'Why this is wrong',
@@ -2154,7 +2183,7 @@ class _ReviewCard extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              explanation!,
+              note,
               style: const TextStyle(
                 color: kDarkText,
                 fontWeight: FontWeight.w600,
