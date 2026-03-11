@@ -11,9 +11,11 @@ import 'module_1.dart/pre_test_module1.dart' as pre1;
 import 'module_1.dart/postassessment_extinguisher.dart';
 import 'module_1.dart/simulation_scene.dart';
 
+import 'module_2.dart/postassessment_extinguisher1.dart';
 import 'module_2.dart/pre_test_module2.dart' as pre2;
 import 'module_2.dart/simulation_scene.dart' as sim2;
 
+import 'module_3.dart/postassessment_extinguisher2.dart';
 import 'module_3.dart/pre_test_module3.dart' as pre3;
 import 'module_3.dart/simulation_scene.dart' as sim3;
 
@@ -334,6 +336,20 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
           builder: (_) => const PostAssessmentPassPage(),
         ),
       );
+    } else if (m.moduleNo == 2) {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const PostAssessmentHousePage(),
+        ),
+      );
+    } else if (m.moduleNo == 3) {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const PostAssessmentModule3Page(),
+        ),
+      );
     } else {
       await Navigator.push(
         context,
@@ -578,7 +594,7 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
                                 padding: EdgeInsets.only(
                                   top: 14,
                                   bottom:
-                                      (MediaQuery.of(context).padding.bottom - 20)
+                                      (MediaQuery.of(context).padding.bottom + 12)
                                           .clamp(0.0, 999.0),
                                 ),
                                 itemCount: filteredModules.length,

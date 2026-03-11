@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'pre_assessment_completion_page1.dart';
+
 const Color kBrandRed = Color(0xFFB11217);
 const Color kBrandBlue = Color(0xFF2563EB);
 const Color kDarkText = Color(0xFF1F2937);
@@ -25,6 +27,7 @@ class _PreAssessmentElectricalPageState
   bool _isSubmitting = false;
   bool _showSummary = false;
   bool _showReview = false;
+  bool _editingFromSummary = false;
 
   String? _moduleId;
   String? _assessmentId;
@@ -115,22 +118,36 @@ class _PreAssessmentElectricalPageState
 
       final optionRows = await _supabase
           .from('assessment_options')
-          .select('id, question_id, option_key, option_text, is_correct')
+          .select(
+            'id, question_id, option_key, option_text, is_correct, display_order',
+          )
           .inFilter('question_id', questionIds)
-          .order('option_key');
+          .order('question_id')
+          .order('display_order');
 
       final optionsByQuestion = <String, List<_OptionVm>>{};
       for (final row in optionRows) {
         final questionId = row['question_id'].toString();
         optionsByQuestion.putIfAbsent(questionId, () => []);
+
+        final rawDisplayOrder = row['display_order'];
+        final displayOrder = rawDisplayOrder is num
+            ? rawDisplayOrder.toInt()
+            : int.tryParse((rawDisplayOrder ?? '').toString()) ?? 999;
+
         optionsByQuestion[questionId]!.add(
           _OptionVm(
             id: row['id'].toString(),
             key: (row['option_key'] ?? '').toString(),
             text: (row['option_text'] ?? '').toString(),
             isCorrect: (row['is_correct'] ?? false) as bool,
+            displayOrder: displayOrder,
           ),
         );
+      }
+
+      for (final list in optionsByQuestion.values) {
+        list.sort((a, b) => a.displayOrder.compareTo(b.displayOrder));
       }
 
       final baseQuestions = questionRows.map((row) {
@@ -296,6 +313,7 @@ class _PreAssessmentElectricalPageState
         _score = 0;
         _showSummary = false;
         _showReview = false;
+        _editingFromSummary = false;
         _isLoading = false;
       });
 
@@ -415,17 +433,18 @@ class _PreAssessmentElectricalPageState
     });
 
     try {
-      await _supabase.from('assessment_attempt_answers').upsert(
-        {
-          'attempt_id': _attemptId,
-          'question_id': _questions[questionIndex].id,
-          'selected_option_id': optionId,
-          'is_correct': _isCorrectSelection(questionIndex, optionId),
-          'updated_at': DateTime.now().toIso8601String(),
-        },
-        onConflict: 'attempt_id,question_id',
-      );
-    } catch (_) {}
+      await _supabase
+          .from('assessment_attempt_answers')
+          .update({
+            'selected_option_id': optionId,
+            'is_correct': _isCorrectSelection(questionIndex, optionId),
+            'updated_at': DateTime.now().toIso8601String(),
+          })
+          .eq('attempt_id', _attemptId!)
+          .eq('question_id', _questions[questionIndex].id);
+    } catch (e) {
+      debugPrint('SELECT ANSWER UPDATE ERROR: $e');
+    }
   }
 
   Future<void> _toggleFlag(int questionIndex) async {
@@ -440,16 +459,17 @@ class _PreAssessmentElectricalPageState
     });
 
     try {
-      await _supabase.from('assessment_attempt_answers').upsert(
-        {
-          'attempt_id': _attemptId,
-          'question_id': _questions[questionIndex].id,
-          'is_flagged': newFlagState,
-          'updated_at': DateTime.now().toIso8601String(),
-        },
-        onConflict: 'attempt_id,question_id',
-      );
-    } catch (_) {}
+      await _supabase
+          .from('assessment_attempt_answers')
+          .update({
+            'is_flagged': newFlagState,
+            'updated_at': DateTime.now().toIso8601String(),
+          })
+          .eq('attempt_id', _attemptId!)
+          .eq('question_id', _questions[questionIndex].id);
+    } catch (e) {
+      debugPrint('FLAG UPDATE ERROR: $e');
+    }
   }
 
   bool _isCorrectSelection(int questionIndex, String optionId) {
@@ -483,13 +503,67 @@ class _PreAssessmentElectricalPageState
       return question.explanation.trim();
     }
 
-    return 'The correct answer is "${correct.text}" based on the electrical fire safety guidance in Module 2.';
+    return 'The correct answer is "${correct.text}" based on the lesson content for this module.';
   }
 
   int get _answeredCount =>
       _selectedOptionIds.where((value) => value != null).length;
 
+  int get _unansweredCount =>
+      _selectedOptionIds.where((value) => value == null).length;
+
+  bool get _hasUnansweredQuestions => _unansweredCount > 0;
+
+  List<int> get _unansweredIndexes {
+    final result = <int>[];
+    for (int i = 0; i < _selectedOptionIds.length; i++) {
+      if (_selectedOptionIds[i] == null) {
+        result.add(i);
+      }
+    }
+    return result;
+  }
+
+  String _optionLetter(_QuestionVm question, _OptionVm option) {
+    final index = question.options.indexWhere((opt) => opt.id == option.id);
+    if (index >= 0) {
+      return String.fromCharCode(65 + index);
+    }
+    if (option.key.trim().isNotEmpty) {
+      return option.key.trim().toUpperCase();
+    }
+    return 'A';
+  }
+
+  String _optionDisplay(_QuestionVm question, _OptionVm option) {
+    return '${_optionLetter(question, option)}. ${option.text}';
+  }
+
+  String _reviewAnswerText(int questionIndex) {
+    final question = _questions[questionIndex];
+    final selected = _selectedOptionFor(questionIndex);
+    final correct = _correctOptionFor(questionIndex);
+
+    if (selected == null) {
+      return 'No answer not ${_optionDisplay(question, correct)}';
+    }
+
+    if (selected.id == correct.id) {
+      return _optionDisplay(question, selected);
+    }
+
+    return '${_optionDisplay(question, selected)} not ${_optionDisplay(question, correct)}';
+  }
+
   void _goNext() {
+    if (_editingFromSummary) {
+      setState(() {
+        _showSummary = true;
+        _editingFromSummary = false;
+      });
+      return;
+    }
+
     if (_currentIndex < _questions.length - 1) {
       _pageCtrl.nextPage(
         duration: const Duration(milliseconds: 250),
@@ -511,6 +585,15 @@ class _PreAssessmentElectricalPageState
     if (_showSummary) {
       setState(() {
         _showSummary = false;
+        _editingFromSummary = false;
+      });
+      return;
+    }
+
+    if (_editingFromSummary) {
+      setState(() {
+        _showSummary = true;
+        _editingFromSummary = false;
       });
       return;
     }
@@ -529,6 +612,8 @@ class _PreAssessmentElectricalPageState
   void _openQuestionFromSummary(int index) {
     setState(() {
       _showSummary = false;
+      _showReview = false;
+      _editingFromSummary = true;
       _currentIndex = index;
     });
 
@@ -539,13 +624,59 @@ class _PreAssessmentElectricalPageState
     });
   }
 
+  void _showIncompleteSnackBar() {
+    final missing = _unansweredIndexes.map((i) => 'Q${i + 1}').toList();
+    final preview = missing.take(8).join(', ');
+    final suffix = missing.length > 8 ? '...' : '';
+
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: const Color(0xFFB45309),
+          margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+          content: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Padding(
+                padding: EdgeInsets.only(top: 2),
+                child: Icon(
+                  Icons.info_outline_rounded,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  'Please answer all questions before submitting. Missing: $preview$suffix',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                    height: 1.35,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+  }
+
   Future<void> _submitAssessment() async {
+    if (_hasUnansweredQuestions) {
+      _showIncompleteSnackBar();
+      return;
+    }
+
     final confirmed = await _showConfirmDialog(
       title: 'Submit Pre-Assessment',
       message:
-          'Answered: $_answeredCount / ${_questions.length}\n'
-          'Flagged: ${_flaggedIndexes.length}\n\n'
-          'After submission, you will see your answers, the correct answers, and explanations.',
+          'Answered: $_answeredCount / ${_questions.length}\n\n'
+          'After submission, you will be redirected to the completion page.',
       confirmText: 'Submit',
       cancelText: 'Review Again',
     );
@@ -568,18 +699,17 @@ class _PreAssessmentElectricalPageState
           correctCount++;
         }
 
-        await _supabase.from('assessment_attempt_answers').upsert(
-          {
-            'attempt_id': _attemptId,
-            'question_id': _questions[i].id,
-            'selected_option_id': selectedId,
-            'is_flagged': _flaggedIndexes.contains(i),
-            'display_order': i,
-            'is_correct': isCorrect,
-            'updated_at': DateTime.now().toIso8601String(),
-          },
-          onConflict: 'attempt_id,question_id',
-        );
+        await _supabase
+            .from('assessment_attempt_answers')
+            .update({
+              'selected_option_id': selectedId,
+              'is_flagged': _flaggedIndexes.contains(i),
+              'display_order': i,
+              'is_correct': isCorrect,
+              'updated_at': DateTime.now().toIso8601String(),
+            })
+            .eq('attempt_id', _attemptId!)
+            .eq('question_id', _questions[i].id);
       }
 
       final scorePercent =
@@ -613,12 +743,21 @@ class _PreAssessmentElectricalPageState
 
       if (!mounted) return;
 
-      setState(() {
-        _score = correctCount;
-        _showSummary = false;
-        _showReview = true;
-      });
+      _score = correctCount;
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => PreAssessmentCompletionPage1(
+            score: correctCount,
+            totalQuestions: _questions.length,
+            assessmentTitle: _assessmentTitle,
+          ),
+        ),
+      );
     } catch (e) {
+      debugPrint('SUBMIT ASSESSMENT ERROR: $e');
+
       if (!mounted) return;
 
       await _showInfoDialog(
@@ -660,7 +799,7 @@ class _PreAssessmentElectricalPageState
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: kBrandRed,
+              backgroundColor: kBrandBlue,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -699,7 +838,7 @@ class _PreAssessmentElectricalPageState
         actions: [
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: kBrandRed,
+              backgroundColor: kBrandBlue,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -756,13 +895,15 @@ class _PreAssessmentElectricalPageState
                       onFlagTap: () => _toggleFlag(index),
                     ),
                     const SizedBox(height: 16),
-                    ...question.options.map((option) {
+                    ...question.options.asMap().entries.map((entry) {
+                      final option = entry.value;
                       final selected = selectedId == option.id;
+                      final label = String.fromCharCode(65 + entry.key);
+
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 12),
                         child: _OptionCard(
-                          label:
-                              option.key.isEmpty ? '' : option.key.toUpperCase(),
+                          label: label,
                           text: option.text,
                           selected: selected,
                           onTap: () => _selectAnswer(index, option.id),
@@ -773,7 +914,7 @@ class _PreAssessmentElectricalPageState
                     const _HintCard(
                       icon: Icons.info_outline_rounded,
                       text:
-                          'You can flag a question now and return to it later from the summary.',
+                          'Use the summary to jump back to any question before submitting.',
                     ),
                   ],
                 ),
@@ -794,6 +935,8 @@ class _PreAssessmentElectricalPageState
             answered: _answeredCount,
             total: _questions.length,
             flagged: _flaggedIndexes.length,
+            hasUnanswered: _hasUnansweredQuestions,
+            unansweredCount: _unansweredCount,
           ),
           const SizedBox(height: 14),
           Expanded(
@@ -801,12 +944,15 @@ class _PreAssessmentElectricalPageState
               itemCount: _questions.length,
               separatorBuilder: (_, __) => const SizedBox(height: 12),
               itemBuilder: (context, index) {
+                final question = _questions[index];
                 final selected = _selectedOptionFor(index);
 
                 return _SummaryCard(
                   questionNumber: index + 1,
-                  question: _questions[index].prompt,
-                  selectedAnswer: selected?.text ?? 'No answer selected',
+                  question: question.prompt,
+                  selectedAnswer: selected == null
+                      ? 'No answer selected'
+                      : _optionDisplay(question, selected),
                   answered: selected != null,
                   flagged: _flaggedIndexes.contains(index),
                   onEdit: () => _openQuestionFromSummary(index),
@@ -835,15 +981,16 @@ class _PreAssessmentElectricalPageState
               itemCount: _questions.length,
               separatorBuilder: (_, __) => const SizedBox(height: 12),
               itemBuilder: (context, index) {
+                final question = _questions[index];
                 final selected = _selectedOptionFor(index);
                 final correct = _correctOptionFor(index);
                 final isCorrect = selected != null && selected.id == correct.id;
 
                 return _ReviewCard(
                   questionNumber: index + 1,
-                  question: _questions[index].prompt,
-                  userAnswer: selected?.text ?? 'No answer selected',
-                  correctAnswer: correct.text,
+                  question: question.prompt,
+                  userAnswer: _reviewAnswerText(index),
+                  correctAnswer: _optionDisplay(question, correct),
                   isCorrect: isCorrect,
                   explanation: isCorrect ? null : _reviewExplanationFor(index),
                 );
@@ -864,7 +1011,7 @@ class _PreAssessmentElectricalPageState
             Expanded(
               child: OutlinedButton(
                 style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: kBrandRed),
+                  side: const BorderSide(color: kBrandBlue),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18),
                   ),
@@ -874,7 +1021,7 @@ class _PreAssessmentElectricalPageState
                 child: const Text(
                   'Back',
                   style: TextStyle(
-                    color: kBrandRed,
+                    color: kBrandBlue,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -884,7 +1031,7 @@ class _PreAssessmentElectricalPageState
             Expanded(
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: kBrandBlue,
+                  backgroundColor: const Color(0xFF7C3AED),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18),
                   ),
@@ -908,6 +1055,8 @@ class _PreAssessmentElectricalPageState
     }
 
     if (_showSummary) {
+      final locked = _hasUnansweredQuestions;
+
       return Padding(
         padding: const EdgeInsets.fromLTRB(24, 8, 24, 20),
         child: Row(
@@ -915,7 +1064,7 @@ class _PreAssessmentElectricalPageState
             Expanded(
               child: OutlinedButton(
                 style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: kBrandRed),
+                  side: const BorderSide(color: kBrandBlue),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18),
                   ),
@@ -924,12 +1073,13 @@ class _PreAssessmentElectricalPageState
                 onPressed: () {
                   setState(() {
                     _showSummary = false;
+                    _editingFromSummary = false;
                   });
                 },
                 child: const Text(
                   'Back to Questions',
                   style: TextStyle(
-                    color: kBrandRed,
+                    color: kBrandBlue,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -939,7 +1089,7 @@ class _PreAssessmentElectricalPageState
             Expanded(
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: kBrandBlue,
+                  backgroundColor: locked ? Colors.grey.shade400 : kBrandBlue,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18),
                   ),
@@ -947,7 +1097,11 @@ class _PreAssessmentElectricalPageState
                 ),
                 onPressed: _isSubmitting ? null : _submitAssessment,
                 child: Text(
-                  _isSubmitting ? 'Submitting...' : 'Submit',
+                  _isSubmitting
+                      ? 'Submitting...'
+                      : locked
+                          ? 'Complete All'
+                          : 'Submit',
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w900,
@@ -961,7 +1115,8 @@ class _PreAssessmentElectricalPageState
     }
 
     final isLast = _currentIndex == _questions.length - 1;
-    final isFlagged = _flaggedIndexes.contains(_currentIndex);
+    final nextLabel =
+        _editingFromSummary ? 'Review Summary' : (isLast ? 'Review Summary' : 'Next');
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 8, 24, 20),
@@ -970,7 +1125,7 @@ class _PreAssessmentElectricalPageState
           Expanded(
             child: OutlinedButton(
               style: OutlinedButton.styleFrom(
-                side: const BorderSide(color: kBrandRed),
+                side: const BorderSide(color: kBrandBlue),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(18),
                 ),
@@ -978,36 +1133,12 @@ class _PreAssessmentElectricalPageState
               ),
               onPressed: _goBack,
               child: Text(
-                _currentIndex == 0 ? 'Exit' : 'Back',
+                _editingFromSummary
+                    ? 'Back to Summary'
+                    : (_currentIndex == 0 ? 'Exit' : 'Back'),
                 style: const TextStyle(
-                  color: kBrandRed,
+                  color: kBrandBlue,
                   fontWeight: FontWeight.w900,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: OutlinedButton.icon(
-              style: OutlinedButton.styleFrom(
-                side: BorderSide(
-                  color: isFlagged ? kBrandBlue : Colors.black26,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(18),
-                ),
-                padding: const EdgeInsets.symmetric(vertical: 14),
-              ),
-              onPressed: () => _toggleFlag(_currentIndex),
-              icon: Icon(
-                isFlagged ? Icons.flag_rounded : Icons.outlined_flag_rounded,
-                color: isFlagged ? kBrandBlue : kDarkText,
-              ),
-              label: Text(
-                isFlagged ? 'Flagged' : 'Flag',
-                style: TextStyle(
-                  color: isFlagged ? kBrandBlue : kDarkText,
-                  fontWeight: FontWeight.w800,
                 ),
               ),
             ),
@@ -1016,7 +1147,7 @@ class _PreAssessmentElectricalPageState
           Expanded(
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: kBrandRed,
+                backgroundColor: kBrandBlue,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(18),
                 ),
@@ -1024,7 +1155,7 @@ class _PreAssessmentElectricalPageState
               ),
               onPressed: _goNext,
               child: Text(
-                isLast ? 'Review Summary' : 'Next',
+                nextLabel,
                 style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w900,
@@ -1039,14 +1170,6 @@ class _PreAssessmentElectricalPageState
 
   @override
   Widget build(BuildContext context) {
-    final progress = _questions.isEmpty
-        ? 0.0
-        : _showReview
-            ? 1.0
-            : _showSummary
-                ? 1.0
-                : (_currentIndex + 1) / _questions.length;
-
     return Scaffold(
       backgroundColor: kSoftBg,
       body: Stack(
@@ -1060,121 +1183,125 @@ class _PreAssessmentElectricalPageState
           SafeArea(
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())
-                : Column(
-                    children: [
-                      const SizedBox(height: 15),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 9, right: 25),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            IconButton(
-                              padding: EdgeInsets.zero,
-                              constraints: const BoxConstraints(),
-                              icon: const Icon(Icons.close, color: Colors.white),
-                              onPressed: () => Navigator.pop(context),
-                            ),
-                            const SizedBox(height: 15),
-                            const Center(
-                              child: Text(
-                                'Pre Assessment',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 30,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'Poppins',
-                                ),
+                : RefreshIndicator(
+                    onRefresh: _handleRefresh,
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 15),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 9, right: 25),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              IconButton(
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(),
+                                icon:
+                                    const Icon(Icons.close, color: Colors.white),
+                                onPressed: () => Navigator.pop(context),
                               ),
-                            ),
-                            const SizedBox(height: 15),
-                            Padding(
-                              padding: const EdgeInsets.only(left: 25),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 18,
-                                      vertical: 10,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      gradient: const LinearGradient(
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                        colors: [kBrandBlue, Color(0xFF7C3AED)],
-                                      ),
-                                      borderRadius: BorderRadius.circular(10),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withOpacity(0.18),
-                                          blurRadius: 10,
-                                          offset: const Offset(0, 6),
-                                        ),
-                                      ],
-                                    ),
-                                    child: const Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Icon(
-                                          Icons.bolt_rounded,
-                                          color: Colors.white,
-                                          size: 18,
-                                        ),
-                                        SizedBox(width: 8),
-                                        Text(
-                                          'MODULE 2',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
-                                            fontFamily: 'Poppins',
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(width: 15),
-                                  const Expanded(
-                                    child: Text(
-                                      'House Fire: Safety and Evacuation',
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.w600,
-                                        fontFamily: 'Poppins',
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            if (_instructions.trim().isNotEmpty &&
-                                !_showReview) ...[
                               const SizedBox(height: 15),
-                              Align(
-                                alignment: Alignment.center,
+                              const Center(
                                 child: Text(
-                                  _instructions,
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                    color: Colors.black87,
-                                    fontWeight: FontWeight.w600,
-                                    height: 1.35,
+                                  'Pre Assessment',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'Poppins',
                                   ),
                                 ),
                               ),
+                              const SizedBox(height: 15),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 25),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 18,
+                                        vertical: 10,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        gradient: const LinearGradient(
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
+                                          colors: [kBrandBlue, Color(0xFF7C3AED)],
+                                        ),
+                                        borderRadius: BorderRadius.circular(10),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black.withOpacity(0.18),
+                                            blurRadius: 10,
+                                            offset: const Offset(0, 6),
+                                          ),
+                                        ],
+                                      ),
+                                      child: const Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(
+                                            Icons.bolt_rounded,
+                                            color: Colors.white,
+                                            size: 18,
+                                          ),
+                                          SizedBox(width: 8),
+                                          Text(
+                                            'MODULE 2',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                              fontFamily: 'Poppins',
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(width: 15),
+                                    const Expanded(
+                                      child: Text(
+                                        'House Fire: Safety and Evacuation',
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.w600,
+                                          fontFamily: 'Poppins',
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              if (_instructions.trim().isNotEmpty &&
+                                  !_showReview) ...[
+                                const SizedBox(height: 15),
+                                Align(
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    _instructions,
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                      color: Colors.black87,
+                                      fontWeight: FontWeight.w600,
+                                      height: 1.35,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ],
-                          ],
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 30),
-                      Expanded(
-                        child: _showReview
-                            ? _buildReviewView()
-                            : _showSummary
-                                ? _buildSummaryView()
-                                : _buildQuizView(),
-                      ),
-                      _buildBottomBar(),
-                    ],
+                        const SizedBox(height: 30),
+                        Expanded(
+                          child: _showReview
+                              ? _buildReviewView()
+                              : _showSummary
+                                  ? _buildSummaryView()
+                                  : _buildQuizView(),
+                        ),
+                        _buildBottomBar(),
+                      ],
+                    ),
                   ),
           ),
         ],
@@ -1212,12 +1339,14 @@ class _OptionVm {
   final String key;
   final String text;
   final bool isCorrect;
+  final int displayOrder;
 
   const _OptionVm({
     required this.id,
     required this.key,
     required this.text,
     required this.isCorrect,
+    required this.displayOrder,
   });
 }
 
@@ -1446,10 +1575,8 @@ class _OptionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final borderColor =
-        selected ? kBrandBlue : Colors.black.withOpacity(0.08);
-    final bgColor =
-        selected ? kBrandBlue.withOpacity(0.08) : Colors.white;
+    final borderColor = selected ? kBrandBlue : Colors.black.withOpacity(0.08);
+    final bgColor = selected ? kBrandBlue.withOpacity(0.08) : Colors.white;
 
     return Material(
       color: Colors.transparent,
@@ -1557,11 +1684,15 @@ class _SummaryHeaderCard extends StatelessWidget {
     required this.answered,
     required this.total,
     required this.flagged,
+    required this.hasUnanswered,
+    required this.unansweredCount,
   });
 
   final int answered;
   final int total;
   final int flagged;
+  final bool hasUnanswered;
+  final int unansweredCount;
 
   @override
   Widget build(BuildContext context) {
@@ -1570,7 +1701,11 @@ class _SummaryHeaderCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: Colors.black.withOpacity(0.06)),
+        border: Border.all(
+          color: hasUnanswered
+              ? Colors.orange.withOpacity(0.25)
+              : Colors.black.withOpacity(0.06),
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.08),
@@ -1589,6 +1724,16 @@ class _SummaryHeaderCard extends StatelessWidget {
               color: kDarkText,
             ),
           ),
+          if (hasUnanswered) ...[
+            const SizedBox(height: 8),
+            Text(
+              '$unansweredCount question(s) still need an answer.',
+              style: const TextStyle(
+                color: Colors.orange,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ],
           const SizedBox(height: 10),
           _StatsRow(
             answered: answered,
@@ -1627,9 +1772,9 @@ class _SummaryCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: answered ? Colors.white : const Color(0xFFFFFBEB),
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: Colors.black.withOpacity(0.06)),
+        border: Border.all(color: statusColor.withOpacity(0.22)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.07),
@@ -1718,7 +1863,7 @@ class _SummaryCard extends StatelessWidget {
           Text(
             selectedAnswer,
             style: TextStyle(
-              color: answered ? Colors.black87 : Colors.grey.shade600,
+              color: answered ? Colors.black87 : Colors.orange.shade800,
               fontWeight: FontWeight.w600,
               height: 1.35,
             ),
@@ -1802,11 +1947,11 @@ class _ReviewTopCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 4),
-          Text(
-            '$percent%',
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w800,
+          const Text(
+            'This pre-assessment is not graded',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
               color: Color(0xFF7C3AED),
             ),
           ),
@@ -1902,7 +2047,7 @@ class _ReviewCard extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           const Text(
-            'Your Answer',
+            'Answer Review',
             style: TextStyle(
               fontWeight: FontWeight.w900,
               color: Colors.black54,
@@ -1912,47 +2057,51 @@ class _ReviewCard extends StatelessWidget {
           Text(
             userAnswer,
             style: TextStyle(
-              color: isCorrect ? const Color(0xFF16A34A) : kBrandBlue,
+              color: statusColor,
               fontWeight: FontWeight.w700,
               height: 1.35,
             ),
           ),
-          const SizedBox(height: 12),
-          const Text(
-            'Correct Answer',
-            style: TextStyle(
-              fontWeight: FontWeight.w900,
-              color: Colors.black54,
+          if (!isCorrect) ...[
+            const SizedBox(height: 12),
+            const Text(
+              'Correct Answer',
+              style: TextStyle(
+                fontWeight: FontWeight.w900,
+                color: Colors.black54,
+              ),
             ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            correctAnswer,
-            style: const TextStyle(
-              color: Color(0xFF16A34A),
-              fontWeight: FontWeight.w700,
-              height: 1.35,
+            const SizedBox(height: 4),
+            Text(
+              correctAnswer,
+              style: const TextStyle(
+                color: Color(0xFF16A34A),
+                fontWeight: FontWeight.w700,
+                height: 1.35,
+              ),
             ),
-          ),
-      if (!isCorrect && explanation != null && explanation!.trim().isNotEmpty) ...[
-          const SizedBox(height: 12),
-          const Text(
-            'Why this is wrong',
-            style: TextStyle(
-              fontWeight: FontWeight.w900,
-              color: Colors.black54,
+          ],
+          if (!isCorrect &&
+              explanation != null &&
+              explanation!.trim().isNotEmpty) ...[
+            const SizedBox(height: 12),
+            const Text(
+              'Why this is wrong',
+              style: TextStyle(
+                fontWeight: FontWeight.w900,
+                color: Colors.black54,
+              ),
             ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            explanation!,
-            style: const TextStyle(
-              color: kDarkText,
-              fontWeight: FontWeight.w600,
-              height: 1.45,
+            const SizedBox(height: 4),
+            Text(
+              explanation!,
+              style: const TextStyle(
+                color: kDarkText,
+                fontWeight: FontWeight.w600,
+                height: 1.45,
+              ),
             ),
-          ),
-        ],
+          ],
         ],
       ),
     );
