@@ -1,6 +1,8 @@
 // simulation_scene.dart
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import '../unity_launcher.dart';
 
 class SimulationScene2 extends StatefulWidget {
   const SimulationScene2({super.key});
@@ -13,6 +15,19 @@ class _SimulationScene2State extends State<SimulationScene2> {
   static const accent = Color(0xFF1E3A8A); // deep blue
   static const accent2 = Color(0xFF7C3AED); // purple
 
+  String? _unitySceneNameFor(int scene) {
+    switch (scene) {
+      case 2:
+        return 'House_FireEscape';
+      case 3:
+        return null; // not yet created in Unity
+      case 4:
+        return null; // not yet created in Unity
+      default:
+        return null;
+    }
+  }
+
   Future<void> _openSceneFlow() async {
     final picked = await _showScenePickerPopup();
     if (!mounted || picked == null) return;
@@ -20,11 +35,27 @@ class _SimulationScene2State extends State<SimulationScene2> {
     final confirmed = await _showSceneConfirmPopup(picked);
     if (!mounted || confirmed != true) return;
 
-    // TODO: Replace with Unity launch / actual scene route
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => _ScenePlaceholder(scene: picked)),
-    );
+    final unitySceneName = _unitySceneNameFor(picked);
+
+    if (unitySceneName == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Scene $picked is not yet available in Unity.'),
+        ),
+      );
+      return;
+    }
+
+    try {
+      await UnityLauncher.openScene(unitySceneName);
+    } on PlatformException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to open Unity: ${e.message ?? e.code}'),
+        ),
+      );
+    }
   }
 
   Future<int?> _showScenePickerPopup() {
@@ -55,7 +86,8 @@ class _SimulationScene2State extends State<SimulationScene2> {
         );
       },
       transitionBuilder: (_, anim, __, child) {
-        final curved = CurvedAnimation(parent: anim, curve: Curves.easeOutCubic);
+        final curved =
+            CurvedAnimation(parent: anim, curve: Curves.easeOutCubic);
         return FadeTransition(
           opacity: curved,
           child: ScaleTransition(
@@ -94,7 +126,8 @@ class _SimulationScene2State extends State<SimulationScene2> {
         );
       },
       transitionBuilder: (_, anim, __, child) {
-        final curved = CurvedAnimation(parent: anim, curve: Curves.easeOutCubic);
+        final curved =
+            CurvedAnimation(parent: anim, curve: Curves.easeOutCubic);
         return FadeTransition(
           opacity: curved,
           child: ScaleTransition(
@@ -223,7 +256,7 @@ class _SimulationScene2State extends State<SimulationScene2> {
                         title: "HOUSE",
                         description:
                             "Learn how to respond safely during a house fire, including evacuation, electrical fire response, and kitchen fire safety.",
-                        asset: "assets/house.png", // <-- change to your asset
+                        asset: "assets/house.png",
                         buttonText: "Scene",
                         onPressed: _openSceneFlow,
                       ),
@@ -467,7 +500,6 @@ class _ScenePickerPopup extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-
             _ModernSceneTile(
               title: "Scene 2",
               subtitle: "How to get out of the house if the house is on fire",
@@ -754,25 +786,6 @@ class _SceneConfirmPopup extends StatelessWidget {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-/* ---------------------- Placeholder ---------------------- */
-
-class _ScenePlaceholder extends StatelessWidget {
-  final int scene;
-  const _ScenePlaceholder({required this.scene});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Text(
-          "Scene $scene Placeholder (launch Unity here)",
-          style: const TextStyle(fontFamily: 'Poppins'),
         ),
       ),
     );

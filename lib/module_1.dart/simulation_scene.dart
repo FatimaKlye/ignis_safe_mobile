@@ -1,6 +1,8 @@
 // simulation_scene.dart
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import '../unity_launcher.dart';
 
 class SimulationScene extends StatefulWidget {
   const SimulationScene({super.key});
@@ -10,22 +12,46 @@ class SimulationScene extends StatefulWidget {
 }
 
 class _SimulationSceneState extends State<SimulationScene> {
-  // Brand + header gradient (matches your header style)
-  static const Color accent = Color(0xFFB11217); // red
-  static const Color accent2 = Color(0xFF2563EB); // blue
+  static const Color accent = Color(0xFFB11217);
+  static const Color accent2 = Color(0xFF2563EB);
+
+  String? _unitySceneNameFor(int scene) {
+    switch (scene) {
+      case 1:
+        return 'FireExtinguisher_PASS';
+      default:
+        return null;
+    }
+  }
 
   Future<void> _openSceneFlow() async {
     final picked = await _showScenePickerPopup();
     if (!mounted || picked == null) return;
 
-    final confirmed = await _showSceneConfirmPopup();
+    final confirmed = await _showSceneConfirmPopup(picked);
     if (!mounted || confirmed != true) return;
 
-    // TODO: Replace with Unity launch / actual scene route
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const _ScenePlaceholder()),
-    );
+    final unitySceneName = _unitySceneNameFor(picked);
+
+    if (unitySceneName == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Scene $picked is not yet available in Unity.'),
+        ),
+      );
+      return;
+    }
+
+    try {
+      await UnityLauncher.openScene(unitySceneName);
+    } on PlatformException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to open Unity: ${e.message ?? e.code}'),
+        ),
+      );
+    }
   }
 
   Future<int?> _showScenePickerPopup() {
@@ -54,7 +80,8 @@ class _SimulationSceneState extends State<SimulationScene> {
         );
       },
       transitionBuilder: (_, anim, __, child) {
-        final curved = CurvedAnimation(parent: anim, curve: Curves.easeOutCubic);
+        final curved =
+            CurvedAnimation(parent: anim, curve: Curves.easeOutCubic);
         return FadeTransition(
           opacity: curved,
           child: ScaleTransition(
@@ -66,7 +93,7 @@ class _SimulationSceneState extends State<SimulationScene> {
     );
   }
 
-  Future<bool?> _showSceneConfirmPopup() {
+  Future<bool?> _showSceneConfirmPopup(int scene) {
     return showGeneralDialog<bool>(
       context: context,
       barrierLabel: "scene_confirm",
@@ -83,6 +110,7 @@ class _SimulationSceneState extends State<SimulationScene> {
               ),
               Center(
                 child: _SceneConfirmPopup(
+                  scene: scene,
                   onClose: () => Navigator.pop(context, false),
                   onStart: () => Navigator.pop(context, true),
                 ),
@@ -92,7 +120,8 @@ class _SimulationSceneState extends State<SimulationScene> {
         );
       },
       transitionBuilder: (_, anim, __, child) {
-        final curved = CurvedAnimation(parent: anim, curve: Curves.easeOutCubic);
+        final curved =
+            CurvedAnimation(parent: anim, curve: Curves.easeOutCubic);
         return FadeTransition(
           opacity: curved,
           child: ScaleTransition(
@@ -124,7 +153,7 @@ class _SimulationSceneState extends State<SimulationScene> {
               children: [
                 const SizedBox(height: 15),
 
-                // ===== HEADER (kept) =====
+                // ===== HEADER =====
                 Padding(
                   padding: const EdgeInsets.only(left: 9, right: 25),
                   child: Column(
@@ -211,7 +240,7 @@ class _SimulationSceneState extends State<SimulationScene> {
 
                 const SizedBox(height: 30),
 
-                // ===== CONTENT AREA (fills remaining height) =====
+                // ===== CONTENT AREA =====
                 Expanded(
                   child: ListView(
                     padding: const EdgeInsets.fromLTRB(16, 14, 16, 18),
@@ -237,7 +266,7 @@ class _SimulationSceneState extends State<SimulationScene> {
   }
 }
 
-/* ---------------------- BIG MODULE CARD (fixed size) ---------------------- */
+/* ---------------------- BIG MODULE CARD ---------------------- */
 
 class _ModuleCard extends StatelessWidget {
   final String moduleLabel;
@@ -350,7 +379,6 @@ class _ModuleCard extends StatelessWidget {
             ],
           ),
         ),
-
         Positioned(
           top: 0,
           left: 14,
@@ -447,14 +475,14 @@ class _ScenePickerPopup extends StatelessWidget {
                 IconButton(
                   onPressed: onClose,
                   icon: const Icon(Icons.close_rounded),
-                  color: Colors.black.withOpacity(0.45),
+                  color: Colors.black54,
                   splashRadius: 18,
                 ),
               ],
             ),
             const SizedBox(height: 10),
             Text(
-              "You selected Module 1. Only Scene 1 is available for this module.",
+              "Module 1 (Fire Extinguisher) currently has one scene available.",
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: 'Poppins',
@@ -470,24 +498,6 @@ class _ScenePickerPopup extends StatelessWidget {
               subtitle: "PASS Method Tutorial",
               icon: Icons.school_rounded,
               onTap: onPickScene1,
-            ),
-            const SizedBox(height: 14),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.info_outline_rounded,
-                    size: 16, color: Colors.black.withOpacity(0.35)),
-                const SizedBox(width: 6),
-                Text(
-                  "Tap Scene 1 to continue.",
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black.withOpacity(0.38),
-                  ),
-                ),
-              ],
             ),
           ],
         ),
@@ -597,18 +607,36 @@ class _ModernSceneTile extends StatelessWidget {
   }
 }
 
-/* ---------------------- POPUP #2 (explanation) ---------------------- */
+/* ---------------------- POPUP #2 (dynamic explanation) ---------------------- */
 
 class _SceneConfirmPopup extends StatelessWidget {
+  final int scene;
   final VoidCallback onClose;
   final VoidCallback onStart;
 
   const _SceneConfirmPopup({
+    required this.scene,
     required this.onClose,
     required this.onStart,
   });
 
   static const Color brandRed = Color(0xFFB11217);
+
+  String get _title => "Chosen Scene: Scene $scene";
+
+  String get _body {
+    switch (scene) {
+      case 1:
+        return "You chose Scene 1: PASS Method Tutorial.\n\n"
+            "In this scene, you will learn the correct steps to use a fire extinguisher:\n"
+            "• Pull the pin\n"
+            "• Aim at the base of the fire\n"
+            "• Squeeze the handle\n"
+            "• Sweep side to side";
+      default:
+        return "You chose a scene. Press Start to continue.";
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -641,14 +669,14 @@ class _SceneConfirmPopup extends StatelessWidget {
                     color: brandRed.withOpacity(0.10),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(Icons.check_circle_rounded,
-                      color: brandRed),
+                  child:
+                      const Icon(Icons.check_circle_rounded, color: brandRed),
                 ),
                 const SizedBox(width: 12),
-                const Expanded(
+                Expanded(
                   child: Text(
-                    "Chosen Scene: Scene 1",
-                    style: TextStyle(
+                    _title,
+                    style: const TextStyle(
                       fontFamily: 'Poppins',
                       fontSize: 16,
                       fontWeight: FontWeight.w900,
@@ -674,12 +702,7 @@ class _SceneConfirmPopup extends StatelessWidget {
                 border: Border.all(color: Colors.black.withOpacity(0.06)),
               ),
               child: Text(
-                "You chose Scene 1: PASS Method Tutorial.\n\n"
-                "In this scene, you will learn the correct steps to use a fire extinguisher:\n"
-                "P — Pull the pin\n"
-                "A — Aim at the base of the fire\n"
-                "S — Squeeze the handle\n"
-                "S — Sweep side to side",
+                _body,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontFamily: 'Poppins',
@@ -728,24 +751,6 @@ class _SceneConfirmPopup extends StatelessWidget {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-/* ---------------------- Placeholder ---------------------- */
-
-class _ScenePlaceholder extends StatelessWidget {
-  const _ScenePlaceholder();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text(
-          "Scene 1 Placeholder (launch Unity here)",
-          style: TextStyle(fontFamily: 'Poppins'),
         ),
       ),
     );

@@ -1,0 +1,14318 @@
+﻿#include "pch-cpp.hpp"
+
+
+
+
+
+struct VirtualActionInvoker0
+{
+	typedef void (*Action)(void*, const RuntimeMethod*);
+
+	static inline void Invoke (Il2CppMethodSlot slot, RuntimeObject* obj)
+	{
+		const VirtualInvokeData& invokeData = il2cpp_codegen_get_virtual_invoke_data(slot, obj);
+		((Action)invokeData.methodPtr)(obj, invokeData.method);
+	}
+};
+struct GenericVirtualActionInvoker0
+{
+	typedef void (*Action)(void*, const RuntimeMethod*);
+
+	static inline void Invoke (const RuntimeMethod* method, RuntimeObject* obj)
+	{
+		VirtualInvokeData invokeData;
+		il2cpp_codegen_get_generic_virtual_invoke_data(method, obj, &invokeData);
+		((Action)invokeData.methodPtr)(obj, invokeData.method);
+	}
+};
+struct InterfaceActionInvoker0
+{
+	typedef void (*Action)(void*, const RuntimeMethod*);
+
+	static inline void Invoke (Il2CppMethodSlot slot, RuntimeClass* declaringInterface, RuntimeObject* obj)
+	{
+		const VirtualInvokeData& invokeData = il2cpp_codegen_get_interface_invoke_data(slot, obj, declaringInterface);
+		((Action)invokeData.methodPtr)(obj, invokeData.method);
+	}
+};
+struct GenericInterfaceActionInvoker0
+{
+	typedef void (*Action)(void*, const RuntimeMethod*);
+
+	static inline void Invoke (const RuntimeMethod* method, RuntimeObject* obj)
+	{
+		VirtualInvokeData invokeData;
+		il2cpp_codegen_get_generic_interface_invoke_data(method, obj, &invokeData);
+		((Action)invokeData.methodPtr)(obj, invokeData.method);
+	}
+};
+
+struct HashSet_1_t4A2F2B74276D0AD3ED0F873045BD61E9504ECAE2;
+struct IEnumerable_1_tB8C86BD783ADA156CF66B9AF8F1FB3B64D57CE5C;
+struct IEnumerable_1_tF95C9E01A913DD50575531C8305932628663D9E9;
+struct InputProcessor_1_tFE49B42CB371A9A2A3F29802695BD251947AD0B4;
+struct List_1_tFED1C27AA4B8AC9813FF4858B3ABB1B3F74558EF;
+struct List_1_t58F89DEDCD7DABB0CFB009AAD9C0CFE061592252;
+struct List_1_tB951CE80B58D1BF9650862451D8DAD8C231F207B;
+struct List_1_t386E09F4F22DDE4D2AC41A8567FFF283C254537B;
+struct List_1_tA239CB83DE5615F348BB0507E45F490F4F7C9A8D;
+struct UnityEvent_1_t8ABE5544759145B8D7A09F1C54FFCB6907EDD56E;
+struct InputProcessor_1U5BU5D_tFEE411B67EEAA6B997AF875A65D072993C8C809C;
+struct ByteU5BU5D_tA6237BF417AE52AD70CFB4EF24A7A82613DF9031;
+struct CharU5BU5D_t799905CF001DD5F13F7DBB310181FC4D8B7D0AAB;
+struct ColliderU5BU5D_t94A9D70F63D095AFF2A9B4613012A5F7F3141787;
+struct DelegateU5BU5D_tC5AB7E8F745616680F337909D3A8E6C722CDF771;
+struct DoorInfoU5BU5D_tE7DC1312989605285BB3C891E8CA89FD1A4605E2;
+struct DoorKindU5BU5D_tE3A6220B579D8E30E313169232EDEFC0C71A7F28;
+struct GameObjectU5BU5D_tFF67550DFCE87096D7A3734EA15B75896B2722CF;
+struct HandleInfoU5BU5D_tDCDA16399E2E608D56F4CD046723B56801671A1E;
+struct HandlePlacementU5BU5D_tDD9B6C149E365F0A8655F2F8FB0D1AE8693E362C;
+struct InputControlU5BU5D_t0B951FEF1504D6340387C4735F5D6F426F40FE17;
+struct IntPtrU5BU5D_tFD177F8C806A6921AD7150264CCC62FA00CAD832;
+struct InternedStringU5BU5D_t0B851758733FC0B118D84BE83AED10A0404C18D5;
+struct MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D;
+struct MeshRendererU5BU5D_tDF429EF168050A5CE085D0B51909A6AE2067E446;
+struct MotionInfoU5BU5D_t45427AD297C0AD583CA2F6315DA7E73698D3DDD5;
+struct ObjectU5BU5D_t8061030B0A12A55D5AD8652A20C922FE99450918;
+struct OmniDoor3DU5BU5D_t3B0E16839B27AC359BFE5E3F32ACDC141098E966;
+struct OmniDoor3DControllerU5BU5D_tA2C650B4032DEB60C68BABE13C51185BCF96CE31;
+struct OmniDoorDBU5BU5D_tF16DAEC8020B9DA8CD6C22B6CB4F6D60EE25D502;
+struct PostInfoU5BU5D_t40BB55D73F43C6AA09CFBC0D1B7A9D4118E31227;
+struct StackTraceU5BU5D_t32FBCB20930EAF5BAE3F450FF75228E5450DA0DF;
+struct TypeU5BU5D_t97234E1129B564EB38B8D85CAC2AD8B5B9522FFB;
+struct UInt16U5BU5D_tEB7C42D811D999D2AA815BADC3FCCDD9C67B3F83;
+struct UInt32U5BU5D_t02FBD658AD156A17574ECE6106CF1FBFCC9807FA;
+struct ControlBitRangeNodeU5BU5D_t912A404149DE6D350D1735A026182C409C510F27;
+struct Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4;
+struct AsyncCallback_t7FEF460CBDCFB9C5FA2EF776984778B9A4145F4C;
+struct AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20;
+struct AudioSource_t871AC2272F896738252F04EE949AEF5B241D3299;
+struct AxisControl_tD6613A2445A3C2BFA22C77E16CA3201AF72354A7;
+struct Binder_t91BFCE95A7057FADF4D8A1A342AFE52872246235;
+struct BoxCollider_tFA5D239388334D6DE0B8FFDAD6825C5B03786E23;
+struct ButtonControl_t85949109B98AAF5B7ADC0285F0EC98A61EC88ECF;
+struct Camera_tA92CC927D7439999BC82DBEDC0AA45B470F9E184;
+struct CancellationTokenSource_tAAE1E0033BCFC233801F8CB4CED5C852B350CB7B;
+struct CharacterController_t847C1A2719F60547D7D6077B648D6CE2D1EF3A6A;
+struct Collider_t1CC3163924FCD6C4CC2E816373A929C1E3D55E76;
+struct Component_t39FBE53E5EFCF4409111FB22C15FF73717632EC3;
+struct Coroutine_t85EA685566A254C23F3FD77AB5BDFFFF8799596B;
+struct Delegate_t;
+struct DelegateData_t9B286B493293CD2D23A5B2B5EF0E5B1324C2B77E;
+struct DeltaControl_t63053AF5E0CD02B62F3CDE79821E4A12F72D573B;
+struct DoorControllerExample_t7764C4F0A254D914B8E378680A4F273D55FE0933;
+struct GameObject_t76FEDD663AB33C991A9C9A23129337651094216F;
+struct IAsyncResult_t7B9B5A0ECB35DCEC31B8A8122C37D687369253B5;
+struct IDictionary_t6D03155AF1FA9083817AA5B6AD7DEEACC26AB220;
+struct IEnumerator_t7B609C2FFA6EB5167D9C62A0C32A21DE2F666DAA;
+struct InputActionState_t780948EA293BAA800AD8699518B58B59FFB8A700;
+struct InputDevice_t8BCF67533E872A75779C24C93D1D7085B72D364B;
+struct InputValue_t4F053958518BDF6FD85C55F31B0597C9521B4231;
+struct IntegerControl_tA24544EFF42204852F638FF5147F754962C997AB;
+struct ItsLocked_t28889B0EBCBE99A9D4F0B4824407D45791512669;
+struct Material_t18053F08F347D0DCA5E1140EC7EC4533DD8A14E3;
+struct MemberFilter_tF644F1AE82F611B677CE1964D5A3277DDA21D553;
+struct Mesh_t6D9C539763A09BC2B12AEAEF36F6DFFC98AE63D4;
+struct MeshCollider_tB525E4DDE383252364ED0BDD32CF2B53914EE455;
+struct MeshFilter_t6D1CE2473A1E45AC73013400585A1163BF66B2F5;
+struct MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE;
+struct MethodInfo_t;
+struct MonoBehaviour_t532A11E69716D348D8AA7F854AFCBFCB8AD17F71;
+struct Mouse_t9A9CC4636FA9CDBAD7FB7A02DB0D6395EDCC338F;
+struct NotSupportedException_t1429765983D409BD2986508963C98D214E4EBF4A;
+struct Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C;
+struct OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC;
+struct OmniDoor3DConfig_t190977036D4995316F7EBBC5305FE39D88914957;
+struct OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6;
+struct OmniDoorDB_t370225F36C9C4B0D70F59485EC3D8ABB4B1DCB46;
+struct PlayerOrbital_tF69524049E80DB19D1E220115D3472F6614CCA7A;
+struct PressureSwitch_t69495303BB205C04B725F04CD3979A6CAF9CB6AC;
+struct Renderer_t320575F223BCB177A982E5DDB5DB19FAA89E7FBF;
+struct SafeSerializationManager_tCBB85B95DFD1634237140CD892E82D06ECB3F5E6;
+struct ScriptableObject_tB3BFDB921A1B1795B38A5417D3B97A89A140436A;
+struct SphereCollider_tBA111C542CE97F6873DE742757213D6265C7D275;
+struct SpriteRenderer_t1DD7FE258F072E1FA87D6577BA27225892B8047B;
+struct String_t;
+struct Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1;
+struct Type_t;
+struct UnitySourceGeneratedAssemblyMonoScriptTypes_v1_tC4249931E82CEBAEC1968B680E9E9A0DF4A946C6;
+struct Vector2Control_t8D1B4021A1D82671AF916D3C0A476AA94E46A432;
+struct Void_t4861ACF8F4594C3437BB48B6E56783494B843915;
+struct WaitForSeconds_tF179DF251655B8DF044952E70A60DF4B358A3DD3;
+struct PCMReaderCallback_t3396D9613664F0AFF65FB91018FD0F901CC16F1E;
+struct PCMSetPositionCallback_t8D7135A2FB40647CAEC93F5254AD59E18DEB6072;
+struct CameraCallback_t844E527BFE37BC0495E7F67993E43C07642DA9DD;
+struct U3CFlashLockedSpriteU3Ed__5_tA7E7D004963111EECBD0B36EFEE1989F1E951B65;
+struct U3CCloseU3Ed__127_tE6E46BD2B6269348B940DAB4E07CCD62BC6053BC;
+struct U3CCloseAfterU3Ed__137_t584913F7212C26F25FC8D9229420A68194CB6B51;
+struct U3COpenU3Ed__126_t07F27A92AAC04A17C76494E8AEE7086DAEAD36F3;
+struct DoorClosedEvt_t3512971C2165EA9C9D0F0A489E03B04EEE894C5C;
+struct DoorLockedEvt_t24FA80C7BCDB52586B684991ECB99317F4F4F8AA;
+struct DoorOpenFailedEvt_t1032FDEE75EB91423C95DF2155669047463F16C8;
+struct DoorOpenedEvt_t000102A9D09036B3D64BB710FE11FD7FE05AD585;
+struct DoorUnlockedEvt_t1E6D58AC4C10BE4C2135F3580DBAEE0D87024854;
+struct DoorWillCloseEvt_tCF052CFCAD1F6F42971A6A7F50DB3F69766740B3;
+struct DoorWillOpenEvt_t3A953E675BDD6E13F554E0BDDD07F831A039BE22;
+struct CloseDoorEvt_t0FA9DD6BBFED77AF496D88825BE7100D2C05E507;
+struct LockDoorEvt_t15338F49A7805255093B5E4DE5994C05EC2FEC84;
+struct OpenDoorEvt_t53FDC500F958704C0041B93E83B01FD1685D2A98;
+struct ToggleDoorEvt_tFE20427E5BADD68E7E1BE9380F1D78CFC33DDA40;
+struct UnlockDoorEvt_t6006D394CC44175581D7140CCCC65A71B68F20CF;
+
+IL2CPP_EXTERN_C RuntimeClass* Application_tDB03BE91CDF0ACA614A5E0B67CFB77C44EB19B21_il2cpp_TypeInfo_var;
+IL2CPP_EXTERN_C RuntimeClass* ByteU5BU5D_tA6237BF417AE52AD70CFB4EF24A7A82613DF9031_il2cpp_TypeInfo_var;
+IL2CPP_EXTERN_C RuntimeClass* CloseDoorEvt_t0FA9DD6BBFED77AF496D88825BE7100D2C05E507_il2cpp_TypeInfo_var;
+IL2CPP_EXTERN_C RuntimeClass* DoorKindU5BU5D_tE3A6220B579D8E30E313169232EDEFC0C71A7F28_il2cpp_TypeInfo_var;
+IL2CPP_EXTERN_C RuntimeClass* DoorOpenFailedEvt_t1032FDEE75EB91423C95DF2155669047463F16C8_il2cpp_TypeInfo_var;
+IL2CPP_EXTERN_C RuntimeClass* DoorOpenedEvt_t000102A9D09036B3D64BB710FE11FD7FE05AD585_il2cpp_TypeInfo_var;
+IL2CPP_EXTERN_C RuntimeClass* GameObject_t76FEDD663AB33C991A9C9A23129337651094216F_il2cpp_TypeInfo_var;
+IL2CPP_EXTERN_C RuntimeClass* List_1_t386E09F4F22DDE4D2AC41A8567FFF283C254537B_il2cpp_TypeInfo_var;
+IL2CPP_EXTERN_C RuntimeClass* List_1_t58F89DEDCD7DABB0CFB009AAD9C0CFE061592252_il2cpp_TypeInfo_var;
+IL2CPP_EXTERN_C RuntimeClass* List_1_tB951CE80B58D1BF9650862451D8DAD8C231F207B_il2cpp_TypeInfo_var;
+IL2CPP_EXTERN_C RuntimeClass* LockDoorEvt_t15338F49A7805255093B5E4DE5994C05EC2FEC84_il2cpp_TypeInfo_var;
+IL2CPP_EXTERN_C RuntimeClass* MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D_il2cpp_TypeInfo_var;
+IL2CPP_EXTERN_C RuntimeClass* Math_tEB65DE7CA8B083C412C969C92981C030865486CE_il2cpp_TypeInfo_var;
+IL2CPP_EXTERN_C RuntimeClass* Mouse_t9A9CC4636FA9CDBAD7FB7A02DB0D6395EDCC338F_il2cpp_TypeInfo_var;
+IL2CPP_EXTERN_C RuntimeClass* NotSupportedException_t1429765983D409BD2986508963C98D214E4EBF4A_il2cpp_TypeInfo_var;
+IL2CPP_EXTERN_C RuntimeClass* Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_il2cpp_TypeInfo_var;
+IL2CPP_EXTERN_C RuntimeClass* OmniDoor3DData_tC2F25EE7B9156401B8B1CC7164E74372B6F83F45_il2cpp_TypeInfo_var;
+IL2CPP_EXTERN_C RuntimeClass* OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC_il2cpp_TypeInfo_var;
+IL2CPP_EXTERN_C RuntimeClass* OpenDoorEvt_t53FDC500F958704C0041B93E83B01FD1685D2A98_il2cpp_TypeInfo_var;
+IL2CPP_EXTERN_C RuntimeClass* Quaternion_tDA59F214EF07D7700B26E40E562F267AF7306974_il2cpp_TypeInfo_var;
+IL2CPP_EXTERN_C RuntimeClass* ToggleDoorEvt_tFE20427E5BADD68E7E1BE9380F1D78CFC33DDA40_il2cpp_TypeInfo_var;
+IL2CPP_EXTERN_C RuntimeClass* TypeU5BU5D_t97234E1129B564EB38B8D85CAC2AD8B5B9522FFB_il2cpp_TypeInfo_var;
+IL2CPP_EXTERN_C RuntimeClass* U3CCloseAfterU3Ed__137_t584913F7212C26F25FC8D9229420A68194CB6B51_il2cpp_TypeInfo_var;
+IL2CPP_EXTERN_C RuntimeClass* U3CCloseU3Ed__127_tE6E46BD2B6269348B940DAB4E07CCD62BC6053BC_il2cpp_TypeInfo_var;
+IL2CPP_EXTERN_C RuntimeClass* U3CFlashLockedSpriteU3Ed__5_tA7E7D004963111EECBD0B36EFEE1989F1E951B65_il2cpp_TypeInfo_var;
+IL2CPP_EXTERN_C RuntimeClass* U3COpenU3Ed__126_t07F27A92AAC04A17C76494E8AEE7086DAEAD36F3_il2cpp_TypeInfo_var;
+IL2CPP_EXTERN_C RuntimeClass* UnlockDoorEvt_t6006D394CC44175581D7140CCCC65A71B68F20CF_il2cpp_TypeInfo_var;
+IL2CPP_EXTERN_C RuntimeClass* Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7_il2cpp_TypeInfo_var;
+IL2CPP_EXTERN_C RuntimeClass* Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4_il2cpp_TypeInfo_var;
+IL2CPP_EXTERN_C RuntimeClass* Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2_il2cpp_TypeInfo_var;
+IL2CPP_EXTERN_C RuntimeClass* WaitForSeconds_tF179DF251655B8DF044952E70A60DF4B358A3DD3_il2cpp_TypeInfo_var;
+IL2CPP_EXTERN_C RuntimeField* DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81____doorMesh_FieldInfo_var;
+IL2CPP_EXTERN_C RuntimeField* HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE____handlePrefab_FieldInfo_var;
+IL2CPP_EXTERN_C RuntimeField* PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900____postPrefab_FieldInfo_var;
+IL2CPP_EXTERN_C RuntimeField* U3CPrivateImplementationDetailsU3E_tDF76FE2002958A97429065AC028E0A0C70442121____67E2A8FC1FEBD460E2F91F2E0DEF7277FD09E3A1EA149EFC3C83728EFFB5712D_FieldInfo_var;
+IL2CPP_EXTERN_C RuntimeField* U3CPrivateImplementationDetailsU3E_tDF76FE2002958A97429065AC028E0A0C70442121____8D78C950ED403FE2F565C96527DD837E1BA2543BC4B3AE1EEC90926A9F090706_FieldInfo_var;
+IL2CPP_EXTERN_C RuntimeField* U3CPrivateImplementationDetailsU3E_tDF76FE2002958A97429065AC028E0A0C70442121____D9FA9CB11B2703EA6F85F329046B8D9E97CD82FC10BB88A764C96CD6C17F32C4_FieldInfo_var;
+IL2CPP_EXTERN_C String_t* _stringLiteral1088082BDF4892857924E9BAA9F3EE95EF6015FA;
+IL2CPP_EXTERN_C String_t* _stringLiteral1976730B9E9AF01F35EECF7EDED9FF885AE7F511;
+IL2CPP_EXTERN_C String_t* _stringLiteral2ACCC949FA3E4FD2BE1482B94739DB47175BABA3;
+IL2CPP_EXTERN_C String_t* _stringLiteral83634C9AB1A7C33744BD4CB251B887C74A4FA50E;
+IL2CPP_EXTERN_C String_t* _stringLiteral96DD569462D53E469E4E232A7AB66FD32C4F5E87;
+IL2CPP_EXTERN_C String_t* _stringLiteral9958C957F2B324EAB987DDB06C0B29843D42B18D;
+IL2CPP_EXTERN_C String_t* _stringLiteralA8C5CDA1FD0D841FE50F3DDFA1912303224B5621;
+IL2CPP_EXTERN_C String_t* _stringLiteralB241E1218D39693961E9E6B5F23F3A5EBEF1F6FF;
+IL2CPP_EXTERN_C String_t* _stringLiteralB8315863F071CDBFB1D74861031F66B4CD14F6A5;
+IL2CPP_EXTERN_C String_t* _stringLiteralC0CFCC6EB910B96A817F56A875DA75AA71D7C32B;
+IL2CPP_EXTERN_C String_t* _stringLiteralCAF8804297181FF007CA835529DD4477CFD94A70;
+IL2CPP_EXTERN_C const RuntimeMethod* Component_GetComponentInChildren_TisMeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE_m36EDCB3A47ABF63F0F0630998380AA7635920535_RuntimeMethod_var;
+IL2CPP_EXTERN_C const RuntimeMethod* Component_GetComponent_TisAudioSource_t871AC2272F896738252F04EE949AEF5B241D3299_m42DA4DEA19EB60D80CBED7413ADEB27FA033C77B_RuntimeMethod_var;
+IL2CPP_EXTERN_C const RuntimeMethod* Component_GetComponent_TisCharacterController_t847C1A2719F60547D7D6077B648D6CE2D1EF3A6A_m96B48A644EDC97C5C82F154D1FEA551B2E392040_RuntimeMethod_var;
+IL2CPP_EXTERN_C const RuntimeMethod* Component_GetComponent_TisCollider_t1CC3163924FCD6C4CC2E816373A929C1E3D55E76_m820398EDBF1D3766C3166A0C323A127662A29A14_RuntimeMethod_var;
+IL2CPP_EXTERN_C const RuntimeMethod* Component_GetComponent_TisMeshCollider_tB525E4DDE383252364ED0BDD32CF2B53914EE455_mFC0F02CCD26A6A186031CF43E92D7B60EA1CC370_RuntimeMethod_var;
+IL2CPP_EXTERN_C const RuntimeMethod* Component_GetComponent_TisMeshFilter_t6D1CE2473A1E45AC73013400585A1163BF66B2F5_mB82F66059DFB5715DD85BDED1D90BC03A6C9E623_RuntimeMethod_var;
+IL2CPP_EXTERN_C const RuntimeMethod* Component_GetComponent_TisOmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6_m1E08F03E67FCFF643285BD146713535A5FE8FFF4_RuntimeMethod_var;
+IL2CPP_EXTERN_C const RuntimeMethod* Component_GetComponent_TisPlayerOrbital_tF69524049E80DB19D1E220115D3472F6614CCA7A_m9F4AE622EACEA668F0C6807340906160178ACF2F_RuntimeMethod_var;
+IL2CPP_EXTERN_C const RuntimeMethod* Component_GetComponent_TisSpriteRenderer_t1DD7FE258F072E1FA87D6577BA27225892B8047B_m6181F10C09FC1650DAE0EF2308D344A2F170AA45_RuntimeMethod_var;
+IL2CPP_EXTERN_C const RuntimeMethod* Component_GetComponentsInChildren_TisMeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE_m820D038F52BDC71ECDEAE04ED05D98CCF63E9243_RuntimeMethod_var;
+IL2CPP_EXTERN_C const RuntimeMethod* Component_TryGetComponent_TisBoxCollider_tFA5D239388334D6DE0B8FFDAD6825C5B03786E23_m011E26A4DB9D56A12F8CFF26FB9E086B662BF89F_RuntimeMethod_var;
+IL2CPP_EXTERN_C const RuntimeMethod* Component_TryGetComponent_TisSphereCollider_tBA111C542CE97F6873DE742757213D6265C7D275_mF1BA0B87B30EBE200D611A6CA17BBC8C8A2AD79E_RuntimeMethod_var;
+IL2CPP_EXTERN_C const RuntimeMethod* Enumerator_Dispose_m07D362A07C19B36C2FD1B4DC79DD99903D4DA95D_RuntimeMethod_var;
+IL2CPP_EXTERN_C const RuntimeMethod* Enumerator_MoveNext_m96F4B0BD0A5485C8E8CC57D961DF6F1FA256AF27_RuntimeMethod_var;
+IL2CPP_EXTERN_C const RuntimeMethod* Enumerator_get_Current_m7236EBE1CFCB6533F96E030500D322B13D0CA5A4_RuntimeMethod_var;
+IL2CPP_EXTERN_C const RuntimeMethod* GameObject_AddComponent_TisBoxCollider_tFA5D239388334D6DE0B8FFDAD6825C5B03786E23_m655518C8454E418FE8CF0E4770881B7A2B12BB23_RuntimeMethod_var;
+IL2CPP_EXTERN_C const RuntimeMethod* GameObject_AddComponent_TisSphereCollider_tBA111C542CE97F6873DE742757213D6265C7D275_m3D05F19667844A2949840753F7A3287115BE029E_RuntimeMethod_var;
+IL2CPP_EXTERN_C const RuntimeMethod* GameObject_GetComponent_TisMeshCollider_tB525E4DDE383252364ED0BDD32CF2B53914EE455_m21E4C15ED89B2D1A80F393D96CF4464B16E9F1F9_RuntimeMethod_var;
+IL2CPP_EXTERN_C const RuntimeMethod* GameObject_GetComponent_TisMeshFilter_t6D1CE2473A1E45AC73013400585A1163BF66B2F5_mDF6525BCE37B444313BE0AA2305BDF4EB8B92FE8_RuntimeMethod_var;
+IL2CPP_EXTERN_C const RuntimeMethod* GameObject_GetComponent_TisMeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE_m7FF948365C38BC39333D82B235A7C4EAD219960D_RuntimeMethod_var;
+IL2CPP_EXTERN_C const RuntimeMethod* InputValue_Get_TisVector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7_mBA56AD2906D3B6F2B87F3DE248CB62E1AA4D2293_RuntimeMethod_var;
+IL2CPP_EXTERN_C const RuntimeMethod* ItsLocked_OnDoorOpenFailed_m244494686A3F3F13419FE4706AEADB8C188C6FB0_RuntimeMethod_var;
+IL2CPP_EXTERN_C const RuntimeMethod* List_1_Add_m43FBF207375C6E06B8C45ECE614F9B8008FB686E_RuntimeMethod_var;
+IL2CPP_EXTERN_C const RuntimeMethod* List_1_Add_m5F62EE992DBCC5323267265794235C9EEE07997B_RuntimeMethod_var;
+IL2CPP_EXTERN_C const RuntimeMethod* List_1_Add_m67ADCB698F31486B35CF5DB4CFB1E97EB807FEFD_RuntimeMethod_var;
+IL2CPP_EXTERN_C const RuntimeMethod* List_1_Clear_m32D399BDD753B5BD6CE27560249096418F3F0867_RuntimeMethod_var;
+IL2CPP_EXTERN_C const RuntimeMethod* List_1_GetEnumerator_mA843D26C63E5963415DFCA6E49DFA27AFD9C75E8_RuntimeMethod_var;
+IL2CPP_EXTERN_C const RuntimeMethod* List_1_RemoveAt_mD461DC585ED2CF965C6FABF04A941287186E0354_RuntimeMethod_var;
+IL2CPP_EXTERN_C const RuntimeMethod* List_1_Remove_m033842E17A41459D42A3E0F26F50C4541AE57BFC_RuntimeMethod_var;
+IL2CPP_EXTERN_C const RuntimeMethod* List_1__ctor_m0CDD6F02F45026B4267E7117C5DDC188F87EE7BE_RuntimeMethod_var;
+IL2CPP_EXTERN_C const RuntimeMethod* List_1__ctor_m447372C1EF7141193B93090A77395B786C72C7BC_RuntimeMethod_var;
+IL2CPP_EXTERN_C const RuntimeMethod* List_1__ctor_mE6AD85B1B839B7A36AC76E52A884895705D95638_RuntimeMethod_var;
+IL2CPP_EXTERN_C const RuntimeMethod* List_1_get_Count_m4C37ED2D928D63B80F55AF434730C2D64EEB9F22_RuntimeMethod_var;
+IL2CPP_EXTERN_C const RuntimeMethod* List_1_get_Count_m8D408B57AE7C2D791BB61817BBC93B84537AB617_RuntimeMethod_var;
+IL2CPP_EXTERN_C const RuntimeMethod* List_1_get_Item_m70F5CFC2DEA9332B78C5ADC0EE1CE1B7465B1456_RuntimeMethod_var;
+IL2CPP_EXTERN_C const RuntimeMethod* List_1_get_Item_mE8DBE527F24D9CFED839C34216C475B716169979_RuntimeMethod_var;
+IL2CPP_EXTERN_C const RuntimeMethod* Object_Instantiate_TisGameObject_t76FEDD663AB33C991A9C9A23129337651094216F_m58C654F1134533E29502629CA67645682B404811_RuntimeMethod_var;
+IL2CPP_EXTERN_C const RuntimeMethod* OmniDoor3D_OnControllerClose_m480918131D4363CF79EB2CA45E24517D9F319F6B_RuntimeMethod_var;
+IL2CPP_EXTERN_C const RuntimeMethod* OmniDoor3D_OnControllerLock_m97D4C8914E92DAC5F83BFD80292DE0DC8EFA8C44_RuntimeMethod_var;
+IL2CPP_EXTERN_C const RuntimeMethod* OmniDoor3D_OnControllerOpen_mA1A637000670A15FAAB35E7E8BA72038C0FD9432_RuntimeMethod_var;
+IL2CPP_EXTERN_C const RuntimeMethod* OmniDoor3D_OnControllerToggle_mA63C59658D5ACC4C4BE1982D9B5A9E66C4EC115A_RuntimeMethod_var;
+IL2CPP_EXTERN_C const RuntimeMethod* OmniDoor3D_OnControllerUnlock_m4D825D706D046AFA2A946466D937913C2C89DCFE_RuntimeMethod_var;
+IL2CPP_EXTERN_C const RuntimeMethod* OmniDoor3D_OnDoorOpened_m0B23CFFE2802695D62EC4DC06BB58333C12231BF_RuntimeMethod_var;
+IL2CPP_EXTERN_C const RuntimeMethod* Resources_Load_TisOmniDoor3DConfig_t190977036D4995316F7EBBC5305FE39D88914957_m174F7175E5FACC8828B2E91AEFEA8AED29E6DA57_RuntimeMethod_var;
+IL2CPP_EXTERN_C const RuntimeMethod* U3CCloseAfterU3Ed__137_System_Collections_IEnumerator_Reset_m19E726A66915EA506F2EF61B55687365BF282BF4_RuntimeMethod_var;
+IL2CPP_EXTERN_C const RuntimeMethod* U3CCloseU3Ed__127_System_Collections_IEnumerator_Reset_m40067C0200B0494DA7A83FE3649A06FBAF78A92B_RuntimeMethod_var;
+IL2CPP_EXTERN_C const RuntimeMethod* U3CFlashLockedSpriteU3Ed__5_System_Collections_IEnumerator_Reset_m6F4D8025768F4D2D687674EBF9BE7F3EC412D8B6_RuntimeMethod_var;
+IL2CPP_EXTERN_C const RuntimeMethod* U3COpenU3Ed__126_System_Collections_IEnumerator_Reset_m5EAF55F020E95431123EACD222EAF20CFDDB9447_RuntimeMethod_var;
+IL2CPP_EXTERN_C const RuntimeType* DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81_0_0_0_var;
+IL2CPP_EXTERN_C const RuntimeType* HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE_0_0_0_var;
+IL2CPP_EXTERN_C const RuntimeType* MeshCollider_tB525E4DDE383252364ED0BDD32CF2B53914EE455_0_0_0_var;
+IL2CPP_EXTERN_C const RuntimeType* MeshFilter_t6D1CE2473A1E45AC73013400585A1163BF66B2F5_0_0_0_var;
+IL2CPP_EXTERN_C const RuntimeType* MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE_0_0_0_var;
+IL2CPP_EXTERN_C const RuntimeType* PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900_0_0_0_var;
+struct Delegate_t_marshaled_com;
+struct Delegate_t_marshaled_pinvoke;
+struct Exception_t_marshaled_com;
+struct Exception_t_marshaled_pinvoke;
+struct HandlePlacement_t501AE58E56D7614CD5583DECA99405B710D41907;
+
+struct ByteU5BU5D_tA6237BF417AE52AD70CFB4EF24A7A82613DF9031;
+struct DelegateU5BU5D_tC5AB7E8F745616680F337909D3A8E6C722CDF771;
+struct DoorInfoU5BU5D_tE7DC1312989605285BB3C891E8CA89FD1A4605E2;
+struct DoorKindU5BU5D_tE3A6220B579D8E30E313169232EDEFC0C71A7F28;
+struct HandleInfoU5BU5D_tDCDA16399E2E608D56F4CD046723B56801671A1E;
+struct HandlePlacementU5BU5D_tDD9B6C149E365F0A8655F2F8FB0D1AE8693E362C;
+struct MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D;
+struct MeshRendererU5BU5D_tDF429EF168050A5CE085D0B51909A6AE2067E446;
+struct MotionInfoU5BU5D_t45427AD297C0AD583CA2F6315DA7E73698D3DDD5;
+struct ObjectU5BU5D_t8061030B0A12A55D5AD8652A20C922FE99450918;
+struct OmniDoor3DU5BU5D_t3B0E16839B27AC359BFE5E3F32ACDC141098E966;
+struct OmniDoor3DControllerU5BU5D_tA2C650B4032DEB60C68BABE13C51185BCF96CE31;
+struct OmniDoorDBU5BU5D_tF16DAEC8020B9DA8CD6C22B6CB4F6D60EE25D502;
+struct PostInfoU5BU5D_t40BB55D73F43C6AA09CFBC0D1B7A9D4118E31227;
+struct TypeU5BU5D_t97234E1129B564EB38B8D85CAC2AD8B5B9522FFB;
+struct Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4;
+
+IL2CPP_EXTERN_C_BEGIN
+IL2CPP_EXTERN_C_END
+
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#pragma clang diagnostic ignored "-Wunused-variable"
+#endif
+struct U3CModuleU3E_tF062866229C4952B8051AD32AB6E9D931142CC95 
+{
+};
+struct List_1_t58F89DEDCD7DABB0CFB009AAD9C0CFE061592252  : public RuntimeObject
+{
+	ColliderU5BU5D_t94A9D70F63D095AFF2A9B4613012A5F7F3141787* ____items;
+	int32_t ____size;
+	int32_t ____version;
+	RuntimeObject* ____syncRoot;
+};
+struct List_1_tB951CE80B58D1BF9650862451D8DAD8C231F207B  : public RuntimeObject
+{
+	GameObjectU5BU5D_tFF67550DFCE87096D7A3734EA15B75896B2722CF* ____items;
+	int32_t ____size;
+	int32_t ____version;
+	RuntimeObject* ____syncRoot;
+};
+struct List_1_t386E09F4F22DDE4D2AC41A8567FFF283C254537B  : public RuntimeObject
+{
+	MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D* ____items;
+	int32_t ____size;
+	int32_t ____version;
+	RuntimeObject* ____syncRoot;
+};
+struct List_1_tA239CB83DE5615F348BB0507E45F490F4F7C9A8D  : public RuntimeObject
+{
+	ObjectU5BU5D_t8061030B0A12A55D5AD8652A20C922FE99450918* ____items;
+	int32_t ____size;
+	int32_t ____version;
+	RuntimeObject* ____syncRoot;
+};
+struct U3CPrivateImplementationDetailsU3E_tDF76FE2002958A97429065AC028E0A0C70442121  : public RuntimeObject
+{
+};
+struct MemberInfo_t  : public RuntimeObject
+{
+};
+struct OmniDoor3DData_tC2F25EE7B9156401B8B1CC7164E74372B6F83F45  : public RuntimeObject
+{
+};
+struct String_t  : public RuntimeObject
+{
+	int32_t ____stringLength;
+	Il2CppChar ____firstChar;
+};
+struct UnitySourceGeneratedAssemblyMonoScriptTypes_v1_tC4249931E82CEBAEC1968B680E9E9A0DF4A946C6  : public RuntimeObject
+{
+};
+struct ValueType_t6D9B272BD21782F0A9A14F2E41F85A50E97A986F  : public RuntimeObject
+{
+};
+struct ValueType_t6D9B272BD21782F0A9A14F2E41F85A50E97A986F_marshaled_pinvoke
+{
+};
+struct ValueType_t6D9B272BD21782F0A9A14F2E41F85A50E97A986F_marshaled_com
+{
+};
+struct YieldInstruction_tFCE35FD0907950EFEE9BC2890AC664E41C53728D  : public RuntimeObject
+{
+};
+struct YieldInstruction_tFCE35FD0907950EFEE9BC2890AC664E41C53728D_marshaled_pinvoke
+{
+};
+struct YieldInstruction_tFCE35FD0907950EFEE9BC2890AC664E41C53728D_marshaled_com
+{
+};
+struct U3CFlashLockedSpriteU3Ed__5_tA7E7D004963111EECBD0B36EFEE1989F1E951B65  : public RuntimeObject
+{
+	int32_t ___U3CU3E1__state;
+	RuntimeObject* ___U3CU3E2__current;
+	ItsLocked_t28889B0EBCBE99A9D4F0B4824407D45791512669* ___U3CU3E4__this;
+};
+struct U3CCloseU3Ed__127_tE6E46BD2B6269348B940DAB4E07CCD62BC6053BC  : public RuntimeObject
+{
+	int32_t ___U3CU3E1__state;
+	RuntimeObject* ___U3CU3E2__current;
+	OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___U3CU3E4__this;
+	bool ___U3CwasMovingU3E5__2;
+};
+struct U3CCloseAfterU3Ed__137_t584913F7212C26F25FC8D9229420A68194CB6B51  : public RuntimeObject
+{
+	int32_t ___U3CU3E1__state;
+	RuntimeObject* ___U3CU3E2__current;
+	float ___fSec;
+	OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___U3CU3E4__this;
+};
+struct U3COpenU3Ed__126_t07F27A92AAC04A17C76494E8AEE7086DAEAD36F3  : public RuntimeObject
+{
+	int32_t ___U3CU3E1__state;
+	RuntimeObject* ___U3CU3E2__current;
+	OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___U3CU3E4__this;
+	bool ___U3CwasMovingU3E5__2;
+};
+struct Enumerator_t88BD1282EF117E59AACFC9EC55B89F0B9EDACE60 
+{
+	List_1_tB951CE80B58D1BF9650862451D8DAD8C231F207B* ____list;
+	int32_t ____index;
+	int32_t ____version;
+	GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* ____current;
+};
+struct Enumerator_t9473BAB568A27E2339D48C1F91319E0F6D244D7A 
+{
+	List_1_tA239CB83DE5615F348BB0507E45F490F4F7C9A8D* ____list;
+	int32_t ____index;
+	int32_t ____version;
+	RuntimeObject* ____current;
+};
+struct InlinedArray_1_t2A86A6C75E0160EE14310E053C5249518871D847 
+{
+	int32_t ___length;
+	InputProcessor_1_tFE49B42CB371A9A2A3F29802695BD251947AD0B4* ___firstValue;
+	InputProcessor_1U5BU5D_tFEE411B67EEAA6B997AF875A65D072993C8C809C* ___additionalValues;
+};
+struct Boolean_t09A6377A54BE2F9E6985A8149F19234FD7DDFE22 
+{
+	bool ___m_value;
+};
+struct Byte_t94D9231AC217BE4D2E004C4CD32DF6D099EA41A3 
+{
+	uint8_t ___m_value;
+};
+struct Double_tE150EF3D1D43DEE85D533810AB4C742307EEDE5F 
+{
+	double ___m_value;
+};
+struct Enum_t2A1A94B24E3B776EEF4E5E485E290BB9D4D072E2  : public ValueType_t6D9B272BD21782F0A9A14F2E41F85A50E97A986F
+{
+};
+struct Enum_t2A1A94B24E3B776EEF4E5E485E290BB9D4D072E2_marshaled_pinvoke
+{
+};
+struct Enum_t2A1A94B24E3B776EEF4E5E485E290BB9D4D072E2_marshaled_com
+{
+};
+struct FourCC_tA6CAA4015BC25A7F1053B6C512202D57A9C994ED 
+{
+	int32_t ___m_Code;
+};
+struct InputDeviceDescription_tE86DD77422AAF60ADDAC788B31E5A05E739B708F 
+{
+	String_t* ___m_InterfaceName;
+	String_t* ___m_DeviceClass;
+	String_t* ___m_Manufacturer;
+	String_t* ___m_Product;
+	String_t* ___m_Serial;
+	String_t* ___m_Version;
+	String_t* ___m_Capabilities;
+};
+struct InputDeviceDescription_tE86DD77422AAF60ADDAC788B31E5A05E739B708F_marshaled_pinvoke
+{
+	char* ___m_InterfaceName;
+	char* ___m_DeviceClass;
+	char* ___m_Manufacturer;
+	char* ___m_Product;
+	char* ___m_Serial;
+	char* ___m_Version;
+	char* ___m_Capabilities;
+};
+struct InputDeviceDescription_tE86DD77422AAF60ADDAC788B31E5A05E739B708F_marshaled_com
+{
+	Il2CppChar* ___m_InterfaceName;
+	Il2CppChar* ___m_DeviceClass;
+	Il2CppChar* ___m_Manufacturer;
+	Il2CppChar* ___m_Product;
+	Il2CppChar* ___m_Serial;
+	Il2CppChar* ___m_Version;
+	Il2CppChar* ___m_Capabilities;
+};
+struct Int32_t680FF22E76F6EFAD4375103CBBFFA0421349384C 
+{
+	int32_t ___m_value;
+};
+struct IntPtr_t 
+{
+	void* ___m_value;
+};
+struct InternedString_t8D62A48CB7D85AAE9CFCCCFB0A77AC2844905735 
+{
+	String_t* ___m_StringOriginalCase;
+	String_t* ___m_StringLowerCase;
+};
+struct InternedString_t8D62A48CB7D85AAE9CFCCCFB0A77AC2844905735_marshaled_pinvoke
+{
+	char* ___m_StringOriginalCase;
+	char* ___m_StringLowerCase;
+};
+struct InternedString_t8D62A48CB7D85AAE9CFCCCFB0A77AC2844905735_marshaled_com
+{
+	Il2CppChar* ___m_StringOriginalCase;
+	Il2CppChar* ___m_StringLowerCase;
+};
+struct LayerMask_t97CB6BDADEDC3D6423C7BCFEA7F86DA2EC6241DB 
+{
+	int32_t ___m_Mask;
+};
+struct Matrix4x4_tDB70CF134A14BA38190C59AA700BCE10E2AED3E6 
+{
+	float ___m00;
+	float ___m10;
+	float ___m20;
+	float ___m30;
+	float ___m01;
+	float ___m11;
+	float ___m21;
+	float ___m31;
+	float ___m02;
+	float ___m12;
+	float ___m22;
+	float ___m32;
+	float ___m03;
+	float ___m13;
+	float ___m23;
+	float ___m33;
+};
+struct Quaternion_tDA59F214EF07D7700B26E40E562F267AF7306974 
+{
+	float ___x;
+	float ___y;
+	float ___z;
+	float ___w;
+};
+struct Single_t4530F2FF86FCB0DC29F35385CA1BD21BE294761C 
+{
+	float ___m_value;
+};
+struct Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7 
+{
+	float ___x;
+	float ___y;
+};
+struct Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 
+{
+	float ___x;
+	float ___y;
+	float ___z;
+};
+struct Void_t4861ACF8F4594C3437BB48B6E56783494B843915 
+{
+	union
+	{
+		struct
+		{
+		};
+		uint8_t Void_t4861ACF8F4594C3437BB48B6E56783494B843915__padding[1];
+	};
+};
+struct WaitForSeconds_tF179DF251655B8DF044952E70A60DF4B358A3DD3  : public YieldInstruction_tFCE35FD0907950EFEE9BC2890AC664E41C53728D
+{
+	float ___m_Seconds;
+};
+struct WaitForSeconds_tF179DF251655B8DF044952E70A60DF4B358A3DD3_marshaled_pinvoke : public YieldInstruction_tFCE35FD0907950EFEE9BC2890AC664E41C53728D_marshaled_pinvoke
+{
+	float ___m_Seconds;
+};
+struct WaitForSeconds_tF179DF251655B8DF044952E70A60DF4B358A3DD3_marshaled_com : public YieldInstruction_tFCE35FD0907950EFEE9BC2890AC664E41C53728D_marshaled_com
+{
+	float ___m_Seconds;
+};
+#pragma pack(push, tp, 1)
+struct __StaticArrayInitTypeSizeU3D16_t68EE8386E456CD4C7C65DA7A48BD79DB18F6A764 
+{
+	union
+	{
+		struct
+		{
+			union
+			{
+			};
+		};
+		uint8_t __StaticArrayInitTypeSizeU3D16_t68EE8386E456CD4C7C65DA7A48BD79DB18F6A764__padding[16];
+	};
+};
+#pragma pack(pop, tp)
+#pragma pack(push, tp, 1)
+struct __StaticArrayInitTypeSizeU3D562_t20C5B01469247798202FEFC607FFDFE2A00BA2DC 
+{
+	union
+	{
+		struct
+		{
+			union
+			{
+			};
+		};
+		uint8_t __StaticArrayInitTypeSizeU3D562_t20C5B01469247798202FEFC607FFDFE2A00BA2DC__padding[562];
+	};
+};
+#pragma pack(pop, tp)
+#pragma pack(push, tp, 1)
+struct __StaticArrayInitTypeSizeU3D613_t371605E0662E15BE116E21F26A2748A5009640F2 
+{
+	union
+	{
+		struct
+		{
+			union
+			{
+			};
+		};
+		uint8_t __StaticArrayInitTypeSizeU3D613_t371605E0662E15BE116E21F26A2748A5009640F2__padding[613];
+	};
+};
+#pragma pack(pop, tp)
+struct CallbackContext_tB251EE41F509C6E8A6B05EC97C029A45DF4F5FA8 
+{
+	InputActionState_t780948EA293BAA800AD8699518B58B59FFB8A700* ___m_State;
+	int32_t ___m_ActionIndex;
+};
+struct CallbackContext_tB251EE41F509C6E8A6B05EC97C029A45DF4F5FA8_marshaled_pinvoke
+{
+	InputActionState_t780948EA293BAA800AD8699518B58B59FFB8A700* ___m_State;
+	int32_t ___m_ActionIndex;
+};
+struct CallbackContext_tB251EE41F509C6E8A6B05EC97C029A45DF4F5FA8_marshaled_com
+{
+	InputActionState_t780948EA293BAA800AD8699518B58B59FFB8A700* ___m_State;
+	int32_t ___m_ActionIndex;
+};
+struct MonoScriptData_t3405F29D573A6DFAAC547345A6BDBBE41CF54685 
+{
+	ByteU5BU5D_tA6237BF417AE52AD70CFB4EF24A7A82613DF9031* ___FilePathsData;
+	ByteU5BU5D_tA6237BF417AE52AD70CFB4EF24A7A82613DF9031* ___TypesData;
+	int32_t ___TotalTypes;
+	int32_t ___TotalFiles;
+	bool ___IsEditorOnly;
+};
+struct MonoScriptData_t3405F29D573A6DFAAC547345A6BDBBE41CF54685_marshaled_pinvoke
+{
+	Il2CppSafeArray* ___FilePathsData;
+	Il2CppSafeArray* ___TypesData;
+	int32_t ___TotalTypes;
+	int32_t ___TotalFiles;
+	int32_t ___IsEditorOnly;
+};
+struct MonoScriptData_t3405F29D573A6DFAAC547345A6BDBBE41CF54685_marshaled_com
+{
+	Il2CppSafeArray* ___FilePathsData;
+	Il2CppSafeArray* ___TypesData;
+	int32_t ___TotalTypes;
+	int32_t ___TotalFiles;
+	int32_t ___IsEditorOnly;
+};
+struct Nullable_1_t69306F42657D3DC9EDCF5E87D81E582BDE7DAC42 
+{
+	bool ___hasValue;
+	CallbackContext_tB251EE41F509C6E8A6B05EC97C029A45DF4F5FA8 ___value;
+};
+struct Bounds_t367E830C64BBF235ED8C3B2F8CF6254FDCAD39C3 
+{
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___m_Center;
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___m_Extents;
+};
+struct CollisionFlags_t3132E5D974C485D3F3C97B7AF475965AB0C3F9C1 
+{
+	int32_t ___value__;
+};
+struct Coroutine_t85EA685566A254C23F3FD77AB5BDFFFF8799596B  : public YieldInstruction_tFCE35FD0907950EFEE9BC2890AC664E41C53728D
+{
+	intptr_t ___m_Ptr;
+};
+struct Coroutine_t85EA685566A254C23F3FD77AB5BDFFFF8799596B_marshaled_pinvoke : public YieldInstruction_tFCE35FD0907950EFEE9BC2890AC664E41C53728D_marshaled_pinvoke
+{
+	intptr_t ___m_Ptr;
+};
+struct Coroutine_t85EA685566A254C23F3FD77AB5BDFFFF8799596B_marshaled_com : public YieldInstruction_tFCE35FD0907950EFEE9BC2890AC664E41C53728D_marshaled_com
+{
+	intptr_t ___m_Ptr;
+};
+struct Delegate_t  : public RuntimeObject
+{
+	intptr_t ___method_ptr;
+	intptr_t ___invoke_impl;
+	RuntimeObject* ___m_target;
+	intptr_t ___method;
+	intptr_t ___delegate_trampoline;
+	intptr_t ___extra_arg;
+	intptr_t ___method_code;
+	intptr_t ___interp_method;
+	intptr_t ___interp_invoke_impl;
+	MethodInfo_t* ___method_info;
+	MethodInfo_t* ___original_method_info;
+	DelegateData_t9B286B493293CD2D23A5B2B5EF0E5B1324C2B77E* ___data;
+	bool ___method_is_virtual;
+};
+struct Delegate_t_marshaled_pinvoke
+{
+	intptr_t ___method_ptr;
+	intptr_t ___invoke_impl;
+	Il2CppIUnknown* ___m_target;
+	intptr_t ___method;
+	intptr_t ___delegate_trampoline;
+	intptr_t ___extra_arg;
+	intptr_t ___method_code;
+	intptr_t ___interp_method;
+	intptr_t ___interp_invoke_impl;
+	MethodInfo_t* ___method_info;
+	MethodInfo_t* ___original_method_info;
+	DelegateData_t9B286B493293CD2D23A5B2B5EF0E5B1324C2B77E* ___data;
+	int32_t ___method_is_virtual;
+};
+struct Delegate_t_marshaled_com
+{
+	intptr_t ___method_ptr;
+	intptr_t ___invoke_impl;
+	Il2CppIUnknown* ___m_target;
+	intptr_t ___method;
+	intptr_t ___delegate_trampoline;
+	intptr_t ___extra_arg;
+	intptr_t ___method_code;
+	intptr_t ___interp_method;
+	intptr_t ___interp_invoke_impl;
+	MethodInfo_t* ___method_info;
+	MethodInfo_t* ___original_method_info;
+	DelegateData_t9B286B493293CD2D23A5B2B5EF0E5B1324C2B77E* ___data;
+	int32_t ___method_is_virtual;
+};
+struct DoorKind_t8CF0CB608D9682834D4F9120E6741582DB5A9B13 
+{
+	int32_t ___value__;
+};
+struct Exception_t  : public RuntimeObject
+{
+	String_t* ____className;
+	String_t* ____message;
+	RuntimeObject* ____data;
+	Exception_t* ____innerException;
+	String_t* ____helpURL;
+	RuntimeObject* ____stackTrace;
+	String_t* ____stackTraceString;
+	String_t* ____remoteStackTraceString;
+	int32_t ____remoteStackIndex;
+	RuntimeObject* ____dynamicMethods;
+	int32_t ____HResult;
+	String_t* ____source;
+	SafeSerializationManager_tCBB85B95DFD1634237140CD892E82D06ECB3F5E6* ____safeSerializationManager;
+	StackTraceU5BU5D_t32FBCB20930EAF5BAE3F450FF75228E5450DA0DF* ___captured_traces;
+	IntPtrU5BU5D_tFD177F8C806A6921AD7150264CCC62FA00CAD832* ___native_trace_ips;
+	int32_t ___caught_in_unmanaged;
+};
+struct Exception_t_marshaled_pinvoke
+{
+	char* ____className;
+	char* ____message;
+	RuntimeObject* ____data;
+	Exception_t_marshaled_pinvoke* ____innerException;
+	char* ____helpURL;
+	Il2CppIUnknown* ____stackTrace;
+	char* ____stackTraceString;
+	char* ____remoteStackTraceString;
+	int32_t ____remoteStackIndex;
+	Il2CppIUnknown* ____dynamicMethods;
+	int32_t ____HResult;
+	char* ____source;
+	SafeSerializationManager_tCBB85B95DFD1634237140CD892E82D06ECB3F5E6* ____safeSerializationManager;
+	StackTraceU5BU5D_t32FBCB20930EAF5BAE3F450FF75228E5450DA0DF* ___captured_traces;
+	Il2CppSafeArray* ___native_trace_ips;
+	int32_t ___caught_in_unmanaged;
+};
+struct Exception_t_marshaled_com
+{
+	Il2CppChar* ____className;
+	Il2CppChar* ____message;
+	RuntimeObject* ____data;
+	Exception_t_marshaled_com* ____innerException;
+	Il2CppChar* ____helpURL;
+	Il2CppIUnknown* ____stackTrace;
+	Il2CppChar* ____stackTraceString;
+	Il2CppChar* ____remoteStackTraceString;
+	int32_t ____remoteStackIndex;
+	Il2CppIUnknown* ____dynamicMethods;
+	int32_t ____HResult;
+	Il2CppChar* ____source;
+	SafeSerializationManager_tCBB85B95DFD1634237140CD892E82D06ECB3F5E6* ____safeSerializationManager;
+	StackTraceU5BU5D_t32FBCB20930EAF5BAE3F450FF75228E5450DA0DF* ___captured_traces;
+	Il2CppSafeArray* ___native_trace_ips;
+	int32_t ___caught_in_unmanaged;
+};
+struct HandleKind_t8BFB5DC8C3DA78EE23A1C8B673F9C328DC3838AB 
+{
+	int32_t ___value__;
+};
+struct InputStateBlock_t0E05211ACF29A99C0FE7FC9EA7042196BFF1F3B5 
+{
+	FourCC_tA6CAA4015BC25A7F1053B6C512202D57A9C994ED ___U3CformatU3Ek__BackingField;
+	uint32_t ___m_ByteOffset;
+	uint32_t ___U3CbitOffsetU3Ek__BackingField;
+	uint32_t ___U3CsizeInBitsU3Ek__BackingField;
+};
+struct MotionKind_t229ACB6D484C48B5E9F93550A086BD5E78E0F608 
+{
+	int32_t ___value__;
+};
+struct Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C  : public RuntimeObject
+{
+	intptr_t ___m_CachedPtr;
+};
+struct Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_marshaled_pinvoke
+{
+	intptr_t ___m_CachedPtr;
+};
+struct Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_marshaled_com
+{
+	intptr_t ___m_CachedPtr;
+};
+struct PostLayout_t2F9C164F8242CE1A1563CD231D3AC45833600F2F 
+{
+	int32_t ___value__;
+};
+struct RuntimeFieldHandle_t6E4C45B6D2EA12FC99185805A7E77527899B25C5 
+{
+	intptr_t ___value;
+};
+struct RuntimeTypeHandle_t332A452B8B6179E4469B69525D0FE82A88030F7B 
+{
+	intptr_t ___value;
+};
+struct SwDir_t8E4396B1DED5406C5A08F0C57A88E434B490E7E7 
+{
+	int32_t ___value__;
+};
+struct TriggerShape_t1F3E23DD98037AEFF951E4E179DF46097E4B817A 
+{
+	int32_t ___value__;
+};
+struct TypeCode_tBEF9BE86C8BCF5A6B82F3381219738D27804EF79 
+{
+	int32_t ___value__;
+};
+struct Clamp_tCB96E8D34067B0DCBED42C565F4443DF880DD284 
+{
+	int32_t ___value__;
+};
+struct ControlFlags_t9C297F208DE19CEB00A0560F7FDE59F6A2004132 
+{
+	int32_t ___value__;
+};
+struct DeviceFlags_tF02F85DA24FF16879A67B540FCA560EC955CE728 
+{
+	int32_t ___value__;
+};
+struct AudioResource_t35B84706031E4F08C928B1640B804839F4B6500A  : public Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C
+{
+};
+struct Component_t39FBE53E5EFCF4409111FB22C15FF73717632EC3  : public Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C
+{
+};
+struct DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81 
+{
+	int32_t ___doorKind;
+	Mesh_t6D9C539763A09BC2B12AEAEF36F6DFFC98AE63D4* ___doorMesh;
+	MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D* ___doorMaterials;
+	AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20* ___defaultOpenSound;
+	AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20* ___defaultCloseSound;
+	AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20* ___defaultLockedSound;
+	AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20* ___defaultLockingSound;
+	AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20* ___defaultUnlockingSound;
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___localPosition;
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___localRotation;
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___localScale;
+	HandlePlacementU5BU5D_tDD9B6C149E365F0A8655F2F8FB0D1AE8693E362C* ___handles;
+};
+struct DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81_marshaled_pinvoke
+{
+	int32_t ___doorKind;
+	Mesh_t6D9C539763A09BC2B12AEAEF36F6DFFC98AE63D4* ___doorMesh;
+	MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D* ___doorMaterials;
+	AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20* ___defaultOpenSound;
+	AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20* ___defaultCloseSound;
+	AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20* ___defaultLockedSound;
+	AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20* ___defaultLockingSound;
+	AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20* ___defaultUnlockingSound;
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___localPosition;
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___localRotation;
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___localScale;
+	HandlePlacement_t501AE58E56D7614CD5583DECA99405B710D41907* ___handles;
+};
+struct DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81_marshaled_com
+{
+	int32_t ___doorKind;
+	Mesh_t6D9C539763A09BC2B12AEAEF36F6DFFC98AE63D4* ___doorMesh;
+	MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D* ___doorMaterials;
+	AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20* ___defaultOpenSound;
+	AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20* ___defaultCloseSound;
+	AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20* ___defaultLockedSound;
+	AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20* ___defaultLockingSound;
+	AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20* ___defaultUnlockingSound;
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___localPosition;
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___localRotation;
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___localScale;
+	HandlePlacement_t501AE58E56D7614CD5583DECA99405B710D41907* ___handles;
+};
+struct GameObject_t76FEDD663AB33C991A9C9A23129337651094216F  : public Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C
+{
+};
+struct HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE 
+{
+	int32_t ___handleKind;
+	GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* ___handlePrefab;
+};
+struct HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE_marshaled_pinvoke
+{
+	int32_t ___handleKind;
+	GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* ___handlePrefab;
+};
+struct HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE_marshaled_com
+{
+	int32_t ___handleKind;
+	GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* ___handlePrefab;
+};
+struct HandlePlacement_t501AE58E56D7614CD5583DECA99405B710D41907 
+{
+	int32_t ___handleKind;
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___handlePosition;
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___handleRotation;
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___handleScale;
+};
+struct InputValue_t4F053958518BDF6FD85C55F31B0597C9521B4231  : public RuntimeObject
+{
+	Nullable_1_t69306F42657D3DC9EDCF5E87D81E582BDE7DAC42 ___m_Context;
+};
+struct Material_t18053F08F347D0DCA5E1140EC7EC4533DD8A14E3  : public Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C
+{
+};
+struct Mesh_t6D9C539763A09BC2B12AEAEF36F6DFFC98AE63D4  : public Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C
+{
+};
+struct MotionInfo_tF0A4F63839720486FA5651B8A1CF8162CB22263C 
+{
+	int32_t ___motionKind;
+	DoorKindU5BU5D_tE3A6220B579D8E30E313169232EDEFC0C71A7F28* ___allowedDoorKinds;
+};
+struct MotionInfo_tF0A4F63839720486FA5651B8A1CF8162CB22263C_marshaled_pinvoke
+{
+	int32_t ___motionKind;
+	int32_t* ___allowedDoorKinds;
+};
+struct MotionInfo_tF0A4F63839720486FA5651B8A1CF8162CB22263C_marshaled_com
+{
+	int32_t ___motionKind;
+	int32_t* ___allowedDoorKinds;
+};
+struct MulticastDelegate_t  : public Delegate_t
+{
+	DelegateU5BU5D_tC5AB7E8F745616680F337909D3A8E6C722CDF771* ___delegates;
+};
+struct MulticastDelegate_t_marshaled_pinvoke : public Delegate_t_marshaled_pinvoke
+{
+	Delegate_t_marshaled_pinvoke** ___delegates;
+};
+struct MulticastDelegate_t_marshaled_com : public Delegate_t_marshaled_com
+{
+	Delegate_t_marshaled_com** ___delegates;
+};
+struct PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900 
+{
+	int32_t ___doorKind;
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___leftPostPosition;
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___rightPostPosition;
+	GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* ___postPrefab;
+};
+struct PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900_marshaled_pinvoke
+{
+	int32_t ___doorKind;
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___leftPostPosition;
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___rightPostPosition;
+	GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* ___postPrefab;
+};
+struct PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900_marshaled_com
+{
+	int32_t ___doorKind;
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___leftPostPosition;
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___rightPostPosition;
+	GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* ___postPrefab;
+};
+struct PrimitiveValue_t1CC37566F40746757D5E3F87474A05909D85C2D4 
+{
+	union
+	{
+		#pragma pack(push, tp, 1)
+		struct
+		{
+			int32_t ___m_Type;
+		};
+		#pragma pack(pop, tp)
+		struct
+		{
+			int32_t ___m_Type_forAlignmentOnly;
+		};
+		#pragma pack(push, tp, 1)
+		struct
+		{
+			char ___m_BoolValue_OffsetPadding[4];
+			bool ___m_BoolValue;
+		};
+		#pragma pack(pop, tp)
+		struct
+		{
+			char ___m_BoolValue_OffsetPadding_forAlignmentOnly[4];
+			bool ___m_BoolValue_forAlignmentOnly;
+		};
+		#pragma pack(push, tp, 1)
+		struct
+		{
+			char ___m_CharValue_OffsetPadding[4];
+			Il2CppChar ___m_CharValue;
+		};
+		#pragma pack(pop, tp)
+		struct
+		{
+			char ___m_CharValue_OffsetPadding_forAlignmentOnly[4];
+			Il2CppChar ___m_CharValue_forAlignmentOnly;
+		};
+		#pragma pack(push, tp, 1)
+		struct
+		{
+			char ___m_ByteValue_OffsetPadding[4];
+			uint8_t ___m_ByteValue;
+		};
+		#pragma pack(pop, tp)
+		struct
+		{
+			char ___m_ByteValue_OffsetPadding_forAlignmentOnly[4];
+			uint8_t ___m_ByteValue_forAlignmentOnly;
+		};
+		#pragma pack(push, tp, 1)
+		struct
+		{
+			char ___m_SByteValue_OffsetPadding[4];
+			int8_t ___m_SByteValue;
+		};
+		#pragma pack(pop, tp)
+		struct
+		{
+			char ___m_SByteValue_OffsetPadding_forAlignmentOnly[4];
+			int8_t ___m_SByteValue_forAlignmentOnly;
+		};
+		#pragma pack(push, tp, 1)
+		struct
+		{
+			char ___m_ShortValue_OffsetPadding[4];
+			int16_t ___m_ShortValue;
+		};
+		#pragma pack(pop, tp)
+		struct
+		{
+			char ___m_ShortValue_OffsetPadding_forAlignmentOnly[4];
+			int16_t ___m_ShortValue_forAlignmentOnly;
+		};
+		#pragma pack(push, tp, 1)
+		struct
+		{
+			char ___m_UShortValue_OffsetPadding[4];
+			uint16_t ___m_UShortValue;
+		};
+		#pragma pack(pop, tp)
+		struct
+		{
+			char ___m_UShortValue_OffsetPadding_forAlignmentOnly[4];
+			uint16_t ___m_UShortValue_forAlignmentOnly;
+		};
+		#pragma pack(push, tp, 1)
+		struct
+		{
+			char ___m_IntValue_OffsetPadding[4];
+			int32_t ___m_IntValue;
+		};
+		#pragma pack(pop, tp)
+		struct
+		{
+			char ___m_IntValue_OffsetPadding_forAlignmentOnly[4];
+			int32_t ___m_IntValue_forAlignmentOnly;
+		};
+		#pragma pack(push, tp, 1)
+		struct
+		{
+			char ___m_UIntValue_OffsetPadding[4];
+			uint32_t ___m_UIntValue;
+		};
+		#pragma pack(pop, tp)
+		struct
+		{
+			char ___m_UIntValue_OffsetPadding_forAlignmentOnly[4];
+			uint32_t ___m_UIntValue_forAlignmentOnly;
+		};
+		#pragma pack(push, tp, 1)
+		struct
+		{
+			char ___m_LongValue_OffsetPadding[4];
+			int64_t ___m_LongValue;
+		};
+		#pragma pack(pop, tp)
+		struct
+		{
+			char ___m_LongValue_OffsetPadding_forAlignmentOnly[4];
+			int64_t ___m_LongValue_forAlignmentOnly;
+		};
+		#pragma pack(push, tp, 1)
+		struct
+		{
+			char ___m_ULongValue_OffsetPadding[4];
+			uint64_t ___m_ULongValue;
+		};
+		#pragma pack(pop, tp)
+		struct
+		{
+			char ___m_ULongValue_OffsetPadding_forAlignmentOnly[4];
+			uint64_t ___m_ULongValue_forAlignmentOnly;
+		};
+		#pragma pack(push, tp, 1)
+		struct
+		{
+			char ___m_FloatValue_OffsetPadding[4];
+			float ___m_FloatValue;
+		};
+		#pragma pack(pop, tp)
+		struct
+		{
+			char ___m_FloatValue_OffsetPadding_forAlignmentOnly[4];
+			float ___m_FloatValue_forAlignmentOnly;
+		};
+		#pragma pack(push, tp, 1)
+		struct
+		{
+			char ___m_DoubleValue_OffsetPadding[4];
+			double ___m_DoubleValue;
+		};
+		#pragma pack(pop, tp)
+		struct
+		{
+			char ___m_DoubleValue_OffsetPadding_forAlignmentOnly[4];
+			double ___m_DoubleValue_forAlignmentOnly;
+		};
+	};
+};
+struct PrimitiveValue_t1CC37566F40746757D5E3F87474A05909D85C2D4_marshaled_pinvoke
+{
+	union
+	{
+		#pragma pack(push, tp, 1)
+		struct
+		{
+			int32_t ___m_Type;
+		};
+		#pragma pack(pop, tp)
+		struct
+		{
+			int32_t ___m_Type_forAlignmentOnly;
+		};
+		#pragma pack(push, tp, 1)
+		struct
+		{
+			char ___m_BoolValue_OffsetPadding[4];
+			int32_t ___m_BoolValue;
+		};
+		#pragma pack(pop, tp)
+		struct
+		{
+			char ___m_BoolValue_OffsetPadding_forAlignmentOnly[4];
+			int32_t ___m_BoolValue_forAlignmentOnly;
+		};
+		#pragma pack(push, tp, 1)
+		struct
+		{
+			char ___m_CharValue_OffsetPadding[4];
+			uint8_t ___m_CharValue;
+		};
+		#pragma pack(pop, tp)
+		struct
+		{
+			char ___m_CharValue_OffsetPadding_forAlignmentOnly[4];
+			uint8_t ___m_CharValue_forAlignmentOnly;
+		};
+		#pragma pack(push, tp, 1)
+		struct
+		{
+			char ___m_ByteValue_OffsetPadding[4];
+			uint8_t ___m_ByteValue;
+		};
+		#pragma pack(pop, tp)
+		struct
+		{
+			char ___m_ByteValue_OffsetPadding_forAlignmentOnly[4];
+			uint8_t ___m_ByteValue_forAlignmentOnly;
+		};
+		#pragma pack(push, tp, 1)
+		struct
+		{
+			char ___m_SByteValue_OffsetPadding[4];
+			int8_t ___m_SByteValue;
+		};
+		#pragma pack(pop, tp)
+		struct
+		{
+			char ___m_SByteValue_OffsetPadding_forAlignmentOnly[4];
+			int8_t ___m_SByteValue_forAlignmentOnly;
+		};
+		#pragma pack(push, tp, 1)
+		struct
+		{
+			char ___m_ShortValue_OffsetPadding[4];
+			int16_t ___m_ShortValue;
+		};
+		#pragma pack(pop, tp)
+		struct
+		{
+			char ___m_ShortValue_OffsetPadding_forAlignmentOnly[4];
+			int16_t ___m_ShortValue_forAlignmentOnly;
+		};
+		#pragma pack(push, tp, 1)
+		struct
+		{
+			char ___m_UShortValue_OffsetPadding[4];
+			uint16_t ___m_UShortValue;
+		};
+		#pragma pack(pop, tp)
+		struct
+		{
+			char ___m_UShortValue_OffsetPadding_forAlignmentOnly[4];
+			uint16_t ___m_UShortValue_forAlignmentOnly;
+		};
+		#pragma pack(push, tp, 1)
+		struct
+		{
+			char ___m_IntValue_OffsetPadding[4];
+			int32_t ___m_IntValue;
+		};
+		#pragma pack(pop, tp)
+		struct
+		{
+			char ___m_IntValue_OffsetPadding_forAlignmentOnly[4];
+			int32_t ___m_IntValue_forAlignmentOnly;
+		};
+		#pragma pack(push, tp, 1)
+		struct
+		{
+			char ___m_UIntValue_OffsetPadding[4];
+			uint32_t ___m_UIntValue;
+		};
+		#pragma pack(pop, tp)
+		struct
+		{
+			char ___m_UIntValue_OffsetPadding_forAlignmentOnly[4];
+			uint32_t ___m_UIntValue_forAlignmentOnly;
+		};
+		#pragma pack(push, tp, 1)
+		struct
+		{
+			char ___m_LongValue_OffsetPadding[4];
+			int64_t ___m_LongValue;
+		};
+		#pragma pack(pop, tp)
+		struct
+		{
+			char ___m_LongValue_OffsetPadding_forAlignmentOnly[4];
+			int64_t ___m_LongValue_forAlignmentOnly;
+		};
+		#pragma pack(push, tp, 1)
+		struct
+		{
+			char ___m_ULongValue_OffsetPadding[4];
+			uint64_t ___m_ULongValue;
+		};
+		#pragma pack(pop, tp)
+		struct
+		{
+			char ___m_ULongValue_OffsetPadding_forAlignmentOnly[4];
+			uint64_t ___m_ULongValue_forAlignmentOnly;
+		};
+		#pragma pack(push, tp, 1)
+		struct
+		{
+			char ___m_FloatValue_OffsetPadding[4];
+			float ___m_FloatValue;
+		};
+		#pragma pack(pop, tp)
+		struct
+		{
+			char ___m_FloatValue_OffsetPadding_forAlignmentOnly[4];
+			float ___m_FloatValue_forAlignmentOnly;
+		};
+		#pragma pack(push, tp, 1)
+		struct
+		{
+			char ___m_DoubleValue_OffsetPadding[4];
+			double ___m_DoubleValue;
+		};
+		#pragma pack(pop, tp)
+		struct
+		{
+			char ___m_DoubleValue_OffsetPadding_forAlignmentOnly[4];
+			double ___m_DoubleValue_forAlignmentOnly;
+		};
+	};
+};
+struct PrimitiveValue_t1CC37566F40746757D5E3F87474A05909D85C2D4_marshaled_com
+{
+	union
+	{
+		#pragma pack(push, tp, 1)
+		struct
+		{
+			int32_t ___m_Type;
+		};
+		#pragma pack(pop, tp)
+		struct
+		{
+			int32_t ___m_Type_forAlignmentOnly;
+		};
+		#pragma pack(push, tp, 1)
+		struct
+		{
+			char ___m_BoolValue_OffsetPadding[4];
+			int32_t ___m_BoolValue;
+		};
+		#pragma pack(pop, tp)
+		struct
+		{
+			char ___m_BoolValue_OffsetPadding_forAlignmentOnly[4];
+			int32_t ___m_BoolValue_forAlignmentOnly;
+		};
+		#pragma pack(push, tp, 1)
+		struct
+		{
+			char ___m_CharValue_OffsetPadding[4];
+			uint8_t ___m_CharValue;
+		};
+		#pragma pack(pop, tp)
+		struct
+		{
+			char ___m_CharValue_OffsetPadding_forAlignmentOnly[4];
+			uint8_t ___m_CharValue_forAlignmentOnly;
+		};
+		#pragma pack(push, tp, 1)
+		struct
+		{
+			char ___m_ByteValue_OffsetPadding[4];
+			uint8_t ___m_ByteValue;
+		};
+		#pragma pack(pop, tp)
+		struct
+		{
+			char ___m_ByteValue_OffsetPadding_forAlignmentOnly[4];
+			uint8_t ___m_ByteValue_forAlignmentOnly;
+		};
+		#pragma pack(push, tp, 1)
+		struct
+		{
+			char ___m_SByteValue_OffsetPadding[4];
+			int8_t ___m_SByteValue;
+		};
+		#pragma pack(pop, tp)
+		struct
+		{
+			char ___m_SByteValue_OffsetPadding_forAlignmentOnly[4];
+			int8_t ___m_SByteValue_forAlignmentOnly;
+		};
+		#pragma pack(push, tp, 1)
+		struct
+		{
+			char ___m_ShortValue_OffsetPadding[4];
+			int16_t ___m_ShortValue;
+		};
+		#pragma pack(pop, tp)
+		struct
+		{
+			char ___m_ShortValue_OffsetPadding_forAlignmentOnly[4];
+			int16_t ___m_ShortValue_forAlignmentOnly;
+		};
+		#pragma pack(push, tp, 1)
+		struct
+		{
+			char ___m_UShortValue_OffsetPadding[4];
+			uint16_t ___m_UShortValue;
+		};
+		#pragma pack(pop, tp)
+		struct
+		{
+			char ___m_UShortValue_OffsetPadding_forAlignmentOnly[4];
+			uint16_t ___m_UShortValue_forAlignmentOnly;
+		};
+		#pragma pack(push, tp, 1)
+		struct
+		{
+			char ___m_IntValue_OffsetPadding[4];
+			int32_t ___m_IntValue;
+		};
+		#pragma pack(pop, tp)
+		struct
+		{
+			char ___m_IntValue_OffsetPadding_forAlignmentOnly[4];
+			int32_t ___m_IntValue_forAlignmentOnly;
+		};
+		#pragma pack(push, tp, 1)
+		struct
+		{
+			char ___m_UIntValue_OffsetPadding[4];
+			uint32_t ___m_UIntValue;
+		};
+		#pragma pack(pop, tp)
+		struct
+		{
+			char ___m_UIntValue_OffsetPadding_forAlignmentOnly[4];
+			uint32_t ___m_UIntValue_forAlignmentOnly;
+		};
+		#pragma pack(push, tp, 1)
+		struct
+		{
+			char ___m_LongValue_OffsetPadding[4];
+			int64_t ___m_LongValue;
+		};
+		#pragma pack(pop, tp)
+		struct
+		{
+			char ___m_LongValue_OffsetPadding_forAlignmentOnly[4];
+			int64_t ___m_LongValue_forAlignmentOnly;
+		};
+		#pragma pack(push, tp, 1)
+		struct
+		{
+			char ___m_ULongValue_OffsetPadding[4];
+			uint64_t ___m_ULongValue;
+		};
+		#pragma pack(pop, tp)
+		struct
+		{
+			char ___m_ULongValue_OffsetPadding_forAlignmentOnly[4];
+			uint64_t ___m_ULongValue_forAlignmentOnly;
+		};
+		#pragma pack(push, tp, 1)
+		struct
+		{
+			char ___m_FloatValue_OffsetPadding[4];
+			float ___m_FloatValue;
+		};
+		#pragma pack(pop, tp)
+		struct
+		{
+			char ___m_FloatValue_OffsetPadding_forAlignmentOnly[4];
+			float ___m_FloatValue_forAlignmentOnly;
+		};
+		#pragma pack(push, tp, 1)
+		struct
+		{
+			char ___m_DoubleValue_OffsetPadding[4];
+			double ___m_DoubleValue;
+		};
+		#pragma pack(pop, tp)
+		struct
+		{
+			char ___m_DoubleValue_OffsetPadding_forAlignmentOnly[4];
+			double ___m_DoubleValue_forAlignmentOnly;
+		};
+	};
+};
+struct ScriptableObject_tB3BFDB921A1B1795B38A5417D3B97A89A140436A  : public Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C
+{
+};
+struct ScriptableObject_tB3BFDB921A1B1795B38A5417D3B97A89A140436A_marshaled_pinvoke : public Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_marshaled_pinvoke
+{
+};
+struct ScriptableObject_tB3BFDB921A1B1795B38A5417D3B97A89A140436A_marshaled_com : public Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_marshaled_com
+{
+};
+struct SystemException_tCC48D868298F4C0705279823E34B00F4FBDB7295  : public Exception_t
+{
+};
+struct Type_t  : public MemberInfo_t
+{
+	RuntimeTypeHandle_t332A452B8B6179E4469B69525D0FE82A88030F7B ____impl;
+};
+struct AsyncCallback_t7FEF460CBDCFB9C5FA2EF776984778B9A4145F4C  : public MulticastDelegate_t
+{
+};
+struct AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20  : public AudioResource_t35B84706031E4F08C928B1640B804839F4B6500A
+{
+	PCMReaderCallback_t3396D9613664F0AFF65FB91018FD0F901CC16F1E* ___m_PCMReaderCallback;
+	PCMSetPositionCallback_t8D7135A2FB40647CAEC93F5254AD59E18DEB6072* ___m_PCMSetPositionCallback;
+};
+struct Behaviour_t01970CFBBA658497AE30F311C447DB0440BAB7FA  : public Component_t39FBE53E5EFCF4409111FB22C15FF73717632EC3
+{
+};
+struct Collider_t1CC3163924FCD6C4CC2E816373A929C1E3D55E76  : public Component_t39FBE53E5EFCF4409111FB22C15FF73717632EC3
+{
+};
+struct InputControl_t74F06B623518F992BF8E38656A5E0857169E3E2E  : public RuntimeObject
+{
+	InputStateBlock_t0E05211ACF29A99C0FE7FC9EA7042196BFF1F3B5 ___m_StateBlock;
+	InternedString_t8D62A48CB7D85AAE9CFCCCFB0A77AC2844905735 ___m_Name;
+	String_t* ___m_Path;
+	String_t* ___m_DisplayName;
+	String_t* ___m_DisplayNameFromLayout;
+	String_t* ___m_ShortDisplayName;
+	String_t* ___m_ShortDisplayNameFromLayout;
+	InternedString_t8D62A48CB7D85AAE9CFCCCFB0A77AC2844905735 ___m_Layout;
+	InternedString_t8D62A48CB7D85AAE9CFCCCFB0A77AC2844905735 ___m_Variants;
+	InputDevice_t8BCF67533E872A75779C24C93D1D7085B72D364B* ___m_Device;
+	InputControl_t74F06B623518F992BF8E38656A5E0857169E3E2E* ___m_Parent;
+	int32_t ___m_UsageCount;
+	int32_t ___m_UsageStartIndex;
+	int32_t ___m_AliasCount;
+	int32_t ___m_AliasStartIndex;
+	int32_t ___m_ChildCount;
+	int32_t ___m_ChildStartIndex;
+	int32_t ___m_ControlFlags;
+	bool ___m_CachedValueIsStale;
+	bool ___m_UnprocessedCachedValueIsStale;
+	PrimitiveValue_t1CC37566F40746757D5E3F87474A05909D85C2D4 ___m_DefaultState;
+	PrimitiveValue_t1CC37566F40746757D5E3F87474A05909D85C2D4 ___m_MinValue;
+	PrimitiveValue_t1CC37566F40746757D5E3F87474A05909D85C2D4 ___m_MaxValue;
+	FourCC_tA6CAA4015BC25A7F1053B6C512202D57A9C994ED ___m_OptimizedControlDataType;
+};
+struct MeshFilter_t6D1CE2473A1E45AC73013400585A1163BF66B2F5  : public Component_t39FBE53E5EFCF4409111FB22C15FF73717632EC3
+{
+};
+struct NotSupportedException_t1429765983D409BD2986508963C98D214E4EBF4A  : public SystemException_tCC48D868298F4C0705279823E34B00F4FBDB7295
+{
+};
+struct OmniDoor3DConfig_t190977036D4995316F7EBBC5305FE39D88914957  : public ScriptableObject_tB3BFDB921A1B1795B38A5417D3B97A89A140436A
+{
+	float ___checkTime;
+	OmniDoorDBU5BU5D_tF16DAEC8020B9DA8CD6C22B6CB4F6D60EE25D502* ___DBList;
+};
+struct OmniDoorDB_t370225F36C9C4B0D70F59485EC3D8ABB4B1DCB46  : public ScriptableObject_tB3BFDB921A1B1795B38A5417D3B97A89A140436A
+{
+	DoorInfoU5BU5D_tE7DC1312989605285BB3C891E8CA89FD1A4605E2* ___DoorList;
+	HandleInfoU5BU5D_tDCDA16399E2E608D56F4CD046723B56801671A1E* ___HandleList;
+	PostInfoU5BU5D_t40BB55D73F43C6AA09CFBC0D1B7A9D4118E31227* ___PostList;
+	MotionInfoU5BU5D_t45427AD297C0AD583CA2F6315DA7E73698D3DDD5* ___MotionList;
+};
+struct Renderer_t320575F223BCB177A982E5DDB5DB19FAA89E7FBF  : public Component_t39FBE53E5EFCF4409111FB22C15FF73717632EC3
+{
+};
+struct Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1  : public Component_t39FBE53E5EFCF4409111FB22C15FF73717632EC3
+{
+};
+struct DoorClosedEvt_t3512971C2165EA9C9D0F0A489E03B04EEE894C5C  : public MulticastDelegate_t
+{
+};
+struct DoorLockedEvt_t24FA80C7BCDB52586B684991ECB99317F4F4F8AA  : public MulticastDelegate_t
+{
+};
+struct DoorOpenFailedEvt_t1032FDEE75EB91423C95DF2155669047463F16C8  : public MulticastDelegate_t
+{
+};
+struct DoorOpenedEvt_t000102A9D09036B3D64BB710FE11FD7FE05AD585  : public MulticastDelegate_t
+{
+};
+struct DoorUnlockedEvt_t1E6D58AC4C10BE4C2135F3580DBAEE0D87024854  : public MulticastDelegate_t
+{
+};
+struct DoorWillCloseEvt_tCF052CFCAD1F6F42971A6A7F50DB3F69766740B3  : public MulticastDelegate_t
+{
+};
+struct DoorWillOpenEvt_t3A953E675BDD6E13F554E0BDDD07F831A039BE22  : public MulticastDelegate_t
+{
+};
+struct CloseDoorEvt_t0FA9DD6BBFED77AF496D88825BE7100D2C05E507  : public MulticastDelegate_t
+{
+};
+struct LockDoorEvt_t15338F49A7805255093B5E4DE5994C05EC2FEC84  : public MulticastDelegate_t
+{
+};
+struct OpenDoorEvt_t53FDC500F958704C0041B93E83B01FD1685D2A98  : public MulticastDelegate_t
+{
+};
+struct ToggleDoorEvt_tFE20427E5BADD68E7E1BE9380F1D78CFC33DDA40  : public MulticastDelegate_t
+{
+};
+struct UnlockDoorEvt_t6006D394CC44175581D7140CCCC65A71B68F20CF  : public MulticastDelegate_t
+{
+};
+struct InputControl_1_t7A35A4AF63A7AA94678E000D4F3265A1FD84288A  : public InputControl_t74F06B623518F992BF8E38656A5E0857169E3E2E
+{
+	InlinedArray_1_t2A86A6C75E0160EE14310E053C5249518871D847 ___m_ProcessorStack;
+	float ___m_CachedValue;
+	float ___m_UnprocessedCachedValue;
+	bool ___evaluateProcessorsEveryRead;
+};
+struct AudioBehaviour_t2DC0BEF7B020C952F3D2DA5AAAC88501C7EEB941  : public Behaviour_t01970CFBBA658497AE30F311C447DB0440BAB7FA
+{
+};
+struct BoxCollider_tFA5D239388334D6DE0B8FFDAD6825C5B03786E23  : public Collider_t1CC3163924FCD6C4CC2E816373A929C1E3D55E76
+{
+};
+struct Camera_tA92CC927D7439999BC82DBEDC0AA45B470F9E184  : public Behaviour_t01970CFBBA658497AE30F311C447DB0440BAB7FA
+{
+	uint32_t ___m_NonSerializedVersion;
+};
+struct CharacterController_t847C1A2719F60547D7D6077B648D6CE2D1EF3A6A  : public Collider_t1CC3163924FCD6C4CC2E816373A929C1E3D55E76
+{
+};
+struct InputDevice_t8BCF67533E872A75779C24C93D1D7085B72D364B  : public InputControl_t74F06B623518F992BF8E38656A5E0857169E3E2E
+{
+	int32_t ___m_DeviceFlags;
+	int32_t ___m_DeviceId;
+	int32_t ___m_ParticipantId;
+	int32_t ___m_DeviceIndex;
+	uint32_t ___m_CurrentProcessedEventBytesOnUpdate;
+	InputDeviceDescription_tE86DD77422AAF60ADDAC788B31E5A05E739B708F ___m_Description;
+	double ___m_LastUpdateTimeInternal;
+	uint32_t ___m_CurrentUpdateStepCount;
+	InternedStringU5BU5D_t0B851758733FC0B118D84BE83AED10A0404C18D5* ___m_AliasesForEachControl;
+	InternedStringU5BU5D_t0B851758733FC0B118D84BE83AED10A0404C18D5* ___m_UsagesForEachControl;
+	InputControlU5BU5D_t0B951FEF1504D6340387C4735F5D6F426F40FE17* ___m_UsageToControl;
+	InputControlU5BU5D_t0B951FEF1504D6340387C4735F5D6F426F40FE17* ___m_ChildrenForEachControl;
+	HashSet_1_t4A2F2B74276D0AD3ED0F873045BD61E9504ECAE2* ___m_UpdatedButtons;
+	List_1_tFED1C27AA4B8AC9813FF4858B3ABB1B3F74558EF* ___m_ButtonControlsCheckingPressState;
+	bool ___m_UseCachePathForButtonPresses;
+	UInt32U5BU5D_t02FBD658AD156A17574ECE6106CF1FBFCC9807FA* ___m_StateOffsetToControlMap;
+	ControlBitRangeNodeU5BU5D_t912A404149DE6D350D1735A026182C409C510F27* ___m_ControlTreeNodes;
+	UInt16U5BU5D_tEB7C42D811D999D2AA815BADC3FCCDD9C67B3F83* ___m_ControlTreeIndices;
+};
+struct MeshCollider_tB525E4DDE383252364ED0BDD32CF2B53914EE455  : public Collider_t1CC3163924FCD6C4CC2E816373A929C1E3D55E76
+{
+};
+struct MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE  : public Renderer_t320575F223BCB177A982E5DDB5DB19FAA89E7FBF
+{
+};
+struct MonoBehaviour_t532A11E69716D348D8AA7F854AFCBFCB8AD17F71  : public Behaviour_t01970CFBBA658497AE30F311C447DB0440BAB7FA
+{
+	CancellationTokenSource_tAAE1E0033BCFC233801F8CB4CED5C852B350CB7B* ___m_CancellationTokenSource;
+};
+struct SphereCollider_tBA111C542CE97F6873DE742757213D6265C7D275  : public Collider_t1CC3163924FCD6C4CC2E816373A929C1E3D55E76
+{
+};
+struct SpriteRenderer_t1DD7FE258F072E1FA87D6577BA27225892B8047B  : public Renderer_t320575F223BCB177A982E5DDB5DB19FAA89E7FBF
+{
+	UnityEvent_1_t8ABE5544759145B8D7A09F1C54FFCB6907EDD56E* ___m_SpriteChangeEvent;
+};
+struct AudioSource_t871AC2272F896738252F04EE949AEF5B241D3299  : public AudioBehaviour_t2DC0BEF7B020C952F3D2DA5AAAC88501C7EEB941
+{
+};
+struct AxisControl_tD6613A2445A3C2BFA22C77E16CA3201AF72354A7  : public InputControl_1_t7A35A4AF63A7AA94678E000D4F3265A1FD84288A
+{
+	int32_t ___clamp;
+	float ___clampMin;
+	float ___clampMax;
+	float ___clampConstant;
+	bool ___invert;
+	bool ___normalize;
+	float ___normalizeMin;
+	float ___normalizeMax;
+	float ___normalizeZero;
+	bool ___scale;
+	float ___scaleFactor;
+};
+struct DoorControllerExample_t7764C4F0A254D914B8E378680A4F273D55FE0933  : public MonoBehaviour_t532A11E69716D348D8AA7F854AFCBFCB8AD17F71
+{
+	SpriteRenderer_t1DD7FE258F072E1FA87D6577BA27225892B8047B* ___spaceHint;
+	OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* ___dc;
+};
+struct ItsLocked_t28889B0EBCBE99A9D4F0B4824407D45791512669  : public MonoBehaviour_t532A11E69716D348D8AA7F854AFCBFCB8AD17F71
+{
+	OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___door;
+	bool ___flashing;
+	SpriteRenderer_t1DD7FE258F072E1FA87D6577BA27225892B8047B* ___spr;
+};
+struct OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC  : public MonoBehaviour_t532A11E69716D348D8AA7F854AFCBFCB8AD17F71
+{
+	DoorOpenedEvt_t000102A9D09036B3D64BB710FE11FD7FE05AD585* ___DoorOpened;
+	DoorOpenFailedEvt_t1032FDEE75EB91423C95DF2155669047463F16C8* ___DoorOpenFailed;
+	DoorClosedEvt_t3512971C2165EA9C9D0F0A489E03B04EEE894C5C* ___DoorClosed;
+	DoorWillOpenEvt_t3A953E675BDD6E13F554E0BDDD07F831A039BE22* ___DoorWillOpen;
+	DoorWillCloseEvt_tCF052CFCAD1F6F42971A6A7F50DB3F69766740B3* ___DoorWillClose;
+	DoorLockedEvt_t24FA80C7BCDB52586B684991ECB99317F4F4F8AA* ___DoorLocked;
+	DoorUnlockedEvt_t1E6D58AC4C10BE4C2135F3580DBAEE0D87024854* ___DoorUnlocked;
+	bool ___autoClose;
+	bool ___autoOpen;
+	bool ___offsetSlide;
+	bool ___playAudio;
+	bool ___reverseSwing;
+	bool ___startLocked;
+	bool ___timedClose;
+	bool ___windowed;
+	int32_t ___doorKind;
+	float ___closeAfter;
+	float ___closeDelay;
+	float ___openDelay;
+	float ___swingAmountX;
+	float ___swingAmountY;
+	float ___swingAmountZ;
+	float ___secondsToClose;
+	float ___secondsToOpen;
+	float ___setOffsetDistance;
+	float ___setTravelDistance;
+	float ___triggerRadius;
+	float ___offsetPortion;
+	LayerMask_t97CB6BDADEDC3D6423C7BCFEA7F86DA2EC6241DB ___openingLayers;
+	int32_t ___triggerShape;
+	int32_t ___swingDirection;
+	int32_t ___handleKind;
+	int32_t ___postLayout;
+	int32_t ___motionKind;
+	OmniDoor3DControllerU5BU5D_tA2C650B4032DEB60C68BABE13C51185BCF96CE31* ___controllingObjects;
+	OmniDoor3DU5BU5D_t3B0E16839B27AC359BFE5E3F32ACDC141098E966* ___linkedDoors;
+	AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20* ___openOvrSound;
+	AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20* ___closeOvrSound;
+	AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20* ___lockedOvrSound;
+	AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20* ___lockingOvrSound;
+	AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20* ___unlockingOvrSound;
+	MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D* ___customMaterials;
+	MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D* ___handleMaterials;
+	MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D* ___postMaterials;
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___offsetDirection;
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___slideDirection;
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___triggerExtents;
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___triggerOffset;
+	int32_t ___doorLayer;
+	AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20* ___openClip;
+	AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20* ___closeClip;
+	AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20* ___lockedClip;
+	AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20* ___lockingClip;
+	AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20* ___unlockingClip;
+	AudioSource_t871AC2272F896738252F04EE949AEF5B241D3299* ___aSrc;
+	bool ___closeDelayComplete;
+	bool ___isLocked;
+	bool ___isMoving;
+	bool ___isOpen;
+	bool ___motionOpen;
+	bool ____needClose;
+	bool ___negZ;
+	bool ___openDelayComplete;
+	bool ___openFwd;
+	Coroutine_t85EA685566A254C23F3FD77AB5BDFFFF8799596B* ___closeAfterRoutine;
+	Coroutine_t85EA685566A254C23F3FD77AB5BDFFFF8799596B* ___closeRoutine;
+	Coroutine_t85EA685566A254C23F3FD77AB5BDFFFF8799596B* ___openRoutine;
+	int32_t ____lastDoorKind;
+	float ___motionStartPct;
+	float ___motionStartTime;
+	float ___percentComplete;
+	float ___rollUpPosition;
+	float ___targetAngleX;
+	float ___targetAngleY;
+	float ___targetAngleZ;
+	float ___timeElapsed;
+	float ___swingStartAngleX;
+	float ___swingStartAngleY;
+	float ___swingStartAngleZ;
+	List_1_t58F89DEDCD7DABB0CFB009AAD9C0CFE061592252* ___openColliders;
+	OmniDoor3DConfig_t190977036D4995316F7EBBC5305FE39D88914957* ___config;
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___targetPos;
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___slideOffset;
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___slideStartPos;
+	Bounds_t367E830C64BBF235ED8C3B2F8CF6254FDCAD39C3 ___doorBounds;
+	int32_t ___lastHandleKind;
+	float ___autoOffsetDistance;
+	float ___autoTravelDistance;
+	List_1_tB951CE80B58D1BF9650862451D8DAD8C231F207B* ___internalPivots;
+	MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE* ___theDoor;
+};
+struct OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6  : public MonoBehaviour_t532A11E69716D348D8AA7F854AFCBFCB8AD17F71
+{
+	OpenDoorEvt_t53FDC500F958704C0041B93E83B01FD1685D2A98* ___OpenDoor;
+	CloseDoorEvt_t0FA9DD6BBFED77AF496D88825BE7100D2C05E507* ___CloseDoor;
+	ToggleDoorEvt_tFE20427E5BADD68E7E1BE9380F1D78CFC33DDA40* ___ToggleDoor;
+	UnlockDoorEvt_t6006D394CC44175581D7140CCCC65A71B68F20CF* ___UnlockDoor;
+	LockDoorEvt_t15338F49A7805255093B5E4DE5994C05EC2FEC84* ___LockDoor;
+};
+struct PlayerOrbital_tF69524049E80DB19D1E220115D3472F6614CCA7A  : public MonoBehaviour_t532A11E69716D348D8AA7F854AFCBFCB8AD17F71
+{
+	float ___moveSpeed;
+	float ___cameraDistance;
+	float ___cameraHeight;
+	float ___orbitSensitivity;
+	float ___minYAngle;
+	float ___maxYAngle;
+	float ___cameraSmoothTime;
+	Camera_tA92CC927D7439999BC82DBEDC0AA45B470F9E184* ___camMain;
+	CharacterController_t847C1A2719F60547D7D6077B648D6CE2D1EF3A6A* ___controller;
+	float ___yaw;
+	float ___pitch;
+	OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* ____doorController;
+	Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7 ___lookAxes;
+	Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7 ___moveAxes;
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___currentCamPos;
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___camVelocity;
+};
+struct Pointer_t800EF2832B62E889AC9C182E3B18098AF220E32A  : public InputDevice_t8BCF67533E872A75779C24C93D1D7085B72D364B
+{
+	Vector2Control_t8D1B4021A1D82671AF916D3C0A476AA94E46A432* ___U3CpositionU3Ek__BackingField;
+	DeltaControl_t63053AF5E0CD02B62F3CDE79821E4A12F72D573B* ___U3CdeltaU3Ek__BackingField;
+	Vector2Control_t8D1B4021A1D82671AF916D3C0A476AA94E46A432* ___U3CradiusU3Ek__BackingField;
+	AxisControl_tD6613A2445A3C2BFA22C77E16CA3201AF72354A7* ___U3CpressureU3Ek__BackingField;
+	ButtonControl_t85949109B98AAF5B7ADC0285F0EC98A61EC88ECF* ___U3CpressU3Ek__BackingField;
+	IntegerControl_tA24544EFF42204852F638FF5147F754962C997AB* ___U3CdisplayIndexU3Ek__BackingField;
+};
+struct PressureSwitch_t69495303BB205C04B725F04CD3979A6CAF9CB6AC  : public MonoBehaviour_t532A11E69716D348D8AA7F854AFCBFCB8AD17F71
+{
+	OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* ___dc;
+};
+struct ButtonControl_t85949109B98AAF5B7ADC0285F0EC98A61EC88ECF  : public AxisControl_tD6613A2445A3C2BFA22C77E16CA3201AF72354A7
+{
+	bool ___m_NeedsToCheckFramePress;
+	uint32_t ___m_UpdateCountLastPressed;
+	uint32_t ___m_UpdateCountLastReleased;
+	bool ___m_LastUpdateWasPress;
+	bool ___U3CneedsToCheckFramePressU3Ek__BackingField;
+	float ___pressPoint;
+};
+struct Mouse_t9A9CC4636FA9CDBAD7FB7A02DB0D6395EDCC338F  : public Pointer_t800EF2832B62E889AC9C182E3B18098AF220E32A
+{
+	DeltaControl_t63053AF5E0CD02B62F3CDE79821E4A12F72D573B* ___U3CscrollU3Ek__BackingField;
+	ButtonControl_t85949109B98AAF5B7ADC0285F0EC98A61EC88ECF* ___U3CleftButtonU3Ek__BackingField;
+	ButtonControl_t85949109B98AAF5B7ADC0285F0EC98A61EC88ECF* ___U3CmiddleButtonU3Ek__BackingField;
+	ButtonControl_t85949109B98AAF5B7ADC0285F0EC98A61EC88ECF* ___U3CrightButtonU3Ek__BackingField;
+	ButtonControl_t85949109B98AAF5B7ADC0285F0EC98A61EC88ECF* ___U3CbackButtonU3Ek__BackingField;
+	ButtonControl_t85949109B98AAF5B7ADC0285F0EC98A61EC88ECF* ___U3CforwardButtonU3Ek__BackingField;
+	IntegerControl_tA24544EFF42204852F638FF5147F754962C997AB* ___U3CclickCountU3Ek__BackingField;
+};
+struct List_1_t58F89DEDCD7DABB0CFB009AAD9C0CFE061592252_StaticFields
+{
+	ColliderU5BU5D_t94A9D70F63D095AFF2A9B4613012A5F7F3141787* ___s_emptyArray;
+};
+struct List_1_tB951CE80B58D1BF9650862451D8DAD8C231F207B_StaticFields
+{
+	GameObjectU5BU5D_tFF67550DFCE87096D7A3734EA15B75896B2722CF* ___s_emptyArray;
+};
+struct List_1_t386E09F4F22DDE4D2AC41A8567FFF283C254537B_StaticFields
+{
+	MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D* ___s_emptyArray;
+};
+struct List_1_tA239CB83DE5615F348BB0507E45F490F4F7C9A8D_StaticFields
+{
+	ObjectU5BU5D_t8061030B0A12A55D5AD8652A20C922FE99450918* ___s_emptyArray;
+};
+struct U3CPrivateImplementationDetailsU3E_tDF76FE2002958A97429065AC028E0A0C70442121_StaticFields
+{
+	__StaticArrayInitTypeSizeU3D16_t68EE8386E456CD4C7C65DA7A48BD79DB18F6A764 ___67E2A8FC1FEBD460E2F91F2E0DEF7277FD09E3A1EA149EFC3C83728EFFB5712D;
+	__StaticArrayInitTypeSizeU3D613_t371605E0662E15BE116E21F26A2748A5009640F2 ___8D78C950ED403FE2F565C96527DD837E1BA2543BC4B3AE1EEC90926A9F090706;
+	__StaticArrayInitTypeSizeU3D562_t20C5B01469247798202FEFC607FFDFE2A00BA2DC ___D9FA9CB11B2703EA6F85F329046B8D9E97CD82FC10BB88A764C96CD6C17F32C4;
+};
+struct OmniDoor3DData_tC2F25EE7B9156401B8B1CC7164E74372B6F83F45_StaticFields
+{
+	DoorKindU5BU5D_tE3A6220B579D8E30E313169232EDEFC0C71A7F28* ___standardKinds;
+	DoorKindU5BU5D_tE3A6220B579D8E30E313169232EDEFC0C71A7F28* ___fenceKinds;
+};
+struct String_t_StaticFields
+{
+	String_t* ___Empty;
+};
+struct Boolean_t09A6377A54BE2F9E6985A8149F19234FD7DDFE22_StaticFields
+{
+	String_t* ___TrueString;
+	String_t* ___FalseString;
+};
+struct IntPtr_t_StaticFields
+{
+	intptr_t ___Zero;
+};
+struct Matrix4x4_tDB70CF134A14BA38190C59AA700BCE10E2AED3E6_StaticFields
+{
+	Matrix4x4_tDB70CF134A14BA38190C59AA700BCE10E2AED3E6 ___zeroMatrix;
+	Matrix4x4_tDB70CF134A14BA38190C59AA700BCE10E2AED3E6 ___identityMatrix;
+};
+struct Quaternion_tDA59F214EF07D7700B26E40E562F267AF7306974_StaticFields
+{
+	Quaternion_tDA59F214EF07D7700B26E40E562F267AF7306974 ___identityQuaternion;
+};
+struct Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7_StaticFields
+{
+	Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7 ___zeroVector;
+	Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7 ___oneVector;
+	Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7 ___upVector;
+	Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7 ___downVector;
+	Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7 ___leftVector;
+	Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7 ___rightVector;
+	Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7 ___positiveInfinityVector;
+	Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7 ___negativeInfinityVector;
+};
+struct Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2_StaticFields
+{
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___zeroVector;
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___oneVector;
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___upVector;
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___downVector;
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___leftVector;
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___rightVector;
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___forwardVector;
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___backVector;
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___positiveInfinityVector;
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___negativeInfinityVector;
+};
+struct Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_StaticFields
+{
+	int32_t ___OffsetOfInstanceIDInCPlusPlusObject;
+};
+struct Material_t18053F08F347D0DCA5E1140EC7EC4533DD8A14E3_StaticFields
+{
+	int32_t ___k_ColorId;
+	int32_t ___k_MainTexId;
+};
+struct Type_t_StaticFields
+{
+	Binder_t91BFCE95A7057FADF4D8A1A342AFE52872246235* ___s_defaultBinder;
+	Il2CppChar ___Delimiter;
+	TypeU5BU5D_t97234E1129B564EB38B8D85CAC2AD8B5B9522FFB* ___EmptyTypes;
+	RuntimeObject* ___Missing;
+	MemberFilter_tF644F1AE82F611B677CE1964D5A3277DDA21D553* ___FilterAttribute;
+	MemberFilter_tF644F1AE82F611B677CE1964D5A3277DDA21D553* ___FilterName;
+	MemberFilter_tF644F1AE82F611B677CE1964D5A3277DDA21D553* ___FilterNameIgnoreCase;
+};
+struct Camera_tA92CC927D7439999BC82DBEDC0AA45B470F9E184_StaticFields
+{
+	CameraCallback_t844E527BFE37BC0495E7F67993E43C07642DA9DD* ___onPreCull;
+	CameraCallback_t844E527BFE37BC0495E7F67993E43C07642DA9DD* ___onPreRender;
+	CameraCallback_t844E527BFE37BC0495E7F67993E43C07642DA9DD* ___onPostRender;
+};
+struct OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC_StaticFields
+{
+	Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* ___section0Waypoints;
+	Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* ___section1Waypoints;
+	Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* ___section2Waypoints;
+	Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* ___section3Waypoints;
+};
+struct ButtonControl_t85949109B98AAF5B7ADC0285F0EC98A61EC88ECF_StaticFields
+{
+	float ___s_GlobalDefaultButtonPressPoint;
+	float ___s_GlobalDefaultButtonReleaseThreshold;
+};
+struct Mouse_t9A9CC4636FA9CDBAD7FB7A02DB0D6395EDCC338F_StaticFields
+{
+	Mouse_t9A9CC4636FA9CDBAD7FB7A02DB0D6395EDCC338F* ___U3CcurrentU3Ek__BackingField;
+	Mouse_t9A9CC4636FA9CDBAD7FB7A02DB0D6395EDCC338F* ___s_PlatformMouseDevice;
+};
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+struct ByteU5BU5D_tA6237BF417AE52AD70CFB4EF24A7A82613DF9031  : public RuntimeArray
+{
+	ALIGN_FIELD (8) uint8_t m_Items[1];
+
+	inline uint8_t GetAt(il2cpp_array_size_t index) const
+	{
+		IL2CPP_ARRAY_BOUNDS_CHECK(index, (uint32_t)(this)->max_length);
+		return m_Items[index];
+	}
+	inline uint8_t* GetAddressAt(il2cpp_array_size_t index)
+	{
+		IL2CPP_ARRAY_BOUNDS_CHECK(index, (uint32_t)(this)->max_length);
+		return m_Items + index;
+	}
+	inline void SetAt(il2cpp_array_size_t index, uint8_t value)
+	{
+		IL2CPP_ARRAY_BOUNDS_CHECK(index, (uint32_t)(this)->max_length);
+		m_Items[index] = value;
+	}
+	inline uint8_t GetAtUnchecked(il2cpp_array_size_t index) const
+	{
+		return m_Items[index];
+	}
+	inline uint8_t* GetAddressAtUnchecked(il2cpp_array_size_t index)
+	{
+		return m_Items + index;
+	}
+	inline void SetAtUnchecked(il2cpp_array_size_t index, uint8_t value)
+	{
+		m_Items[index] = value;
+	}
+};
+struct OmniDoor3DControllerU5BU5D_tA2C650B4032DEB60C68BABE13C51185BCF96CE31  : public RuntimeArray
+{
+	ALIGN_FIELD (8) OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* m_Items[1];
+
+	inline OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* GetAt(il2cpp_array_size_t index) const
+	{
+		IL2CPP_ARRAY_BOUNDS_CHECK(index, (uint32_t)(this)->max_length);
+		return m_Items[index];
+	}
+	inline OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6** GetAddressAt(il2cpp_array_size_t index)
+	{
+		IL2CPP_ARRAY_BOUNDS_CHECK(index, (uint32_t)(this)->max_length);
+		return m_Items + index;
+	}
+	inline void SetAt(il2cpp_array_size_t index, OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* value)
+	{
+		IL2CPP_ARRAY_BOUNDS_CHECK(index, (uint32_t)(this)->max_length);
+		m_Items[index] = value;
+		Il2CppCodeGenWriteBarrier((void**)m_Items + index, (void*)value);
+	}
+	inline OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* GetAtUnchecked(il2cpp_array_size_t index) const
+	{
+		return m_Items[index];
+	}
+	inline OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6** GetAddressAtUnchecked(il2cpp_array_size_t index)
+	{
+		return m_Items + index;
+	}
+	inline void SetAtUnchecked(il2cpp_array_size_t index, OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* value)
+	{
+		m_Items[index] = value;
+		Il2CppCodeGenWriteBarrier((void**)m_Items + index, (void*)value);
+	}
+};
+struct MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D  : public RuntimeArray
+{
+	ALIGN_FIELD (8) Material_t18053F08F347D0DCA5E1140EC7EC4533DD8A14E3* m_Items[1];
+
+	inline Material_t18053F08F347D0DCA5E1140EC7EC4533DD8A14E3* GetAt(il2cpp_array_size_t index) const
+	{
+		IL2CPP_ARRAY_BOUNDS_CHECK(index, (uint32_t)(this)->max_length);
+		return m_Items[index];
+	}
+	inline Material_t18053F08F347D0DCA5E1140EC7EC4533DD8A14E3** GetAddressAt(il2cpp_array_size_t index)
+	{
+		IL2CPP_ARRAY_BOUNDS_CHECK(index, (uint32_t)(this)->max_length);
+		return m_Items + index;
+	}
+	inline void SetAt(il2cpp_array_size_t index, Material_t18053F08F347D0DCA5E1140EC7EC4533DD8A14E3* value)
+	{
+		IL2CPP_ARRAY_BOUNDS_CHECK(index, (uint32_t)(this)->max_length);
+		m_Items[index] = value;
+		Il2CppCodeGenWriteBarrier((void**)m_Items + index, (void*)value);
+	}
+	inline Material_t18053F08F347D0DCA5E1140EC7EC4533DD8A14E3* GetAtUnchecked(il2cpp_array_size_t index) const
+	{
+		return m_Items[index];
+	}
+	inline Material_t18053F08F347D0DCA5E1140EC7EC4533DD8A14E3** GetAddressAtUnchecked(il2cpp_array_size_t index)
+	{
+		return m_Items + index;
+	}
+	inline void SetAtUnchecked(il2cpp_array_size_t index, Material_t18053F08F347D0DCA5E1140EC7EC4533DD8A14E3* value)
+	{
+		m_Items[index] = value;
+		Il2CppCodeGenWriteBarrier((void**)m_Items + index, (void*)value);
+	}
+};
+struct MeshRendererU5BU5D_tDF429EF168050A5CE085D0B51909A6AE2067E446  : public RuntimeArray
+{
+	ALIGN_FIELD (8) MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE* m_Items[1];
+
+	inline MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE* GetAt(il2cpp_array_size_t index) const
+	{
+		IL2CPP_ARRAY_BOUNDS_CHECK(index, (uint32_t)(this)->max_length);
+		return m_Items[index];
+	}
+	inline MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE** GetAddressAt(il2cpp_array_size_t index)
+	{
+		IL2CPP_ARRAY_BOUNDS_CHECK(index, (uint32_t)(this)->max_length);
+		return m_Items + index;
+	}
+	inline void SetAt(il2cpp_array_size_t index, MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE* value)
+	{
+		IL2CPP_ARRAY_BOUNDS_CHECK(index, (uint32_t)(this)->max_length);
+		m_Items[index] = value;
+		Il2CppCodeGenWriteBarrier((void**)m_Items + index, (void*)value);
+	}
+	inline MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE* GetAtUnchecked(il2cpp_array_size_t index) const
+	{
+		return m_Items[index];
+	}
+	inline MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE** GetAddressAtUnchecked(il2cpp_array_size_t index)
+	{
+		return m_Items + index;
+	}
+	inline void SetAtUnchecked(il2cpp_array_size_t index, MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE* value)
+	{
+		m_Items[index] = value;
+		Il2CppCodeGenWriteBarrier((void**)m_Items + index, (void*)value);
+	}
+};
+struct TypeU5BU5D_t97234E1129B564EB38B8D85CAC2AD8B5B9522FFB  : public RuntimeArray
+{
+	ALIGN_FIELD (8) Type_t* m_Items[1];
+
+	inline Type_t* GetAt(il2cpp_array_size_t index) const
+	{
+		IL2CPP_ARRAY_BOUNDS_CHECK(index, (uint32_t)(this)->max_length);
+		return m_Items[index];
+	}
+	inline Type_t** GetAddressAt(il2cpp_array_size_t index)
+	{
+		IL2CPP_ARRAY_BOUNDS_CHECK(index, (uint32_t)(this)->max_length);
+		return m_Items + index;
+	}
+	inline void SetAt(il2cpp_array_size_t index, Type_t* value)
+	{
+		IL2CPP_ARRAY_BOUNDS_CHECK(index, (uint32_t)(this)->max_length);
+		m_Items[index] = value;
+		Il2CppCodeGenWriteBarrier((void**)m_Items + index, (void*)value);
+	}
+	inline Type_t* GetAtUnchecked(il2cpp_array_size_t index) const
+	{
+		return m_Items[index];
+	}
+	inline Type_t** GetAddressAtUnchecked(il2cpp_array_size_t index)
+	{
+		return m_Items + index;
+	}
+	inline void SetAtUnchecked(il2cpp_array_size_t index, Type_t* value)
+	{
+		m_Items[index] = value;
+		Il2CppCodeGenWriteBarrier((void**)m_Items + index, (void*)value);
+	}
+};
+struct OmniDoor3DU5BU5D_t3B0E16839B27AC359BFE5E3F32ACDC141098E966  : public RuntimeArray
+{
+	ALIGN_FIELD (8) OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* m_Items[1];
+
+	inline OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* GetAt(il2cpp_array_size_t index) const
+	{
+		IL2CPP_ARRAY_BOUNDS_CHECK(index, (uint32_t)(this)->max_length);
+		return m_Items[index];
+	}
+	inline OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC** GetAddressAt(il2cpp_array_size_t index)
+	{
+		IL2CPP_ARRAY_BOUNDS_CHECK(index, (uint32_t)(this)->max_length);
+		return m_Items + index;
+	}
+	inline void SetAt(il2cpp_array_size_t index, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* value)
+	{
+		IL2CPP_ARRAY_BOUNDS_CHECK(index, (uint32_t)(this)->max_length);
+		m_Items[index] = value;
+		Il2CppCodeGenWriteBarrier((void**)m_Items + index, (void*)value);
+	}
+	inline OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* GetAtUnchecked(il2cpp_array_size_t index) const
+	{
+		return m_Items[index];
+	}
+	inline OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC** GetAddressAtUnchecked(il2cpp_array_size_t index)
+	{
+		return m_Items + index;
+	}
+	inline void SetAtUnchecked(il2cpp_array_size_t index, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* value)
+	{
+		m_Items[index] = value;
+		Il2CppCodeGenWriteBarrier((void**)m_Items + index, (void*)value);
+	}
+};
+struct Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4  : public RuntimeArray
+{
+	ALIGN_FIELD (8) Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 m_Items[1];
+
+	inline Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 GetAt(il2cpp_array_size_t index) const
+	{
+		IL2CPP_ARRAY_BOUNDS_CHECK(index, (uint32_t)(this)->max_length);
+		return m_Items[index];
+	}
+	inline Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* GetAddressAt(il2cpp_array_size_t index)
+	{
+		IL2CPP_ARRAY_BOUNDS_CHECK(index, (uint32_t)(this)->max_length);
+		return m_Items + index;
+	}
+	inline void SetAt(il2cpp_array_size_t index, Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 value)
+	{
+		IL2CPP_ARRAY_BOUNDS_CHECK(index, (uint32_t)(this)->max_length);
+		m_Items[index] = value;
+	}
+	inline Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 GetAtUnchecked(il2cpp_array_size_t index) const
+	{
+		return m_Items[index];
+	}
+	inline Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* GetAddressAtUnchecked(il2cpp_array_size_t index)
+	{
+		return m_Items + index;
+	}
+	inline void SetAtUnchecked(il2cpp_array_size_t index, Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 value)
+	{
+		m_Items[index] = value;
+	}
+	inline Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 GetAt(il2cpp_array_size_t i, il2cpp_array_size_t j) const
+	{
+		il2cpp_array_size_t iBound = bounds[0].length;
+		IL2CPP_ARRAY_BOUNDS_CHECK(i, iBound);
+		il2cpp_array_size_t jBound = bounds[1].length;
+		IL2CPP_ARRAY_BOUNDS_CHECK(j, jBound);
+
+		il2cpp_array_size_t index = i * jBound + j;
+		return m_Items[index];
+	}
+	inline Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* GetAddressAt(il2cpp_array_size_t i, il2cpp_array_size_t j)
+	{
+		il2cpp_array_size_t iBound = bounds[0].length;
+		IL2CPP_ARRAY_BOUNDS_CHECK(i, iBound);
+		il2cpp_array_size_t jBound = bounds[1].length;
+		IL2CPP_ARRAY_BOUNDS_CHECK(j, jBound);
+
+		il2cpp_array_size_t index = i * jBound + j;
+		return m_Items + index;
+	}
+	inline void SetAt(il2cpp_array_size_t i, il2cpp_array_size_t j, Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 value)
+	{
+		il2cpp_array_size_t iBound = bounds[0].length;
+		IL2CPP_ARRAY_BOUNDS_CHECK(i, iBound);
+		il2cpp_array_size_t jBound = bounds[1].length;
+		IL2CPP_ARRAY_BOUNDS_CHECK(j, jBound);
+
+		il2cpp_array_size_t index = i * jBound + j;
+		m_Items[index] = value;
+	}
+	inline Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 GetAtUnchecked(il2cpp_array_size_t i, il2cpp_array_size_t j) const
+	{
+		il2cpp_array_size_t jBound = bounds[1].length;
+
+		il2cpp_array_size_t index = i * jBound + j;
+		return m_Items[index];
+	}
+	inline Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* GetAddressAtUnchecked(il2cpp_array_size_t i, il2cpp_array_size_t j)
+	{
+		il2cpp_array_size_t jBound = bounds[1].length;
+
+		il2cpp_array_size_t index = i * jBound + j;
+		return m_Items + index;
+	}
+	inline void SetAtUnchecked(il2cpp_array_size_t i, il2cpp_array_size_t j, Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 value)
+	{
+		il2cpp_array_size_t jBound = bounds[1].length;
+
+		il2cpp_array_size_t index = i * jBound + j;
+		m_Items[index] = value;
+	}
+};
+struct OmniDoorDBU5BU5D_tF16DAEC8020B9DA8CD6C22B6CB4F6D60EE25D502  : public RuntimeArray
+{
+	ALIGN_FIELD (8) OmniDoorDB_t370225F36C9C4B0D70F59485EC3D8ABB4B1DCB46* m_Items[1];
+
+	inline OmniDoorDB_t370225F36C9C4B0D70F59485EC3D8ABB4B1DCB46* GetAt(il2cpp_array_size_t index) const
+	{
+		IL2CPP_ARRAY_BOUNDS_CHECK(index, (uint32_t)(this)->max_length);
+		return m_Items[index];
+	}
+	inline OmniDoorDB_t370225F36C9C4B0D70F59485EC3D8ABB4B1DCB46** GetAddressAt(il2cpp_array_size_t index)
+	{
+		IL2CPP_ARRAY_BOUNDS_CHECK(index, (uint32_t)(this)->max_length);
+		return m_Items + index;
+	}
+	inline void SetAt(il2cpp_array_size_t index, OmniDoorDB_t370225F36C9C4B0D70F59485EC3D8ABB4B1DCB46* value)
+	{
+		IL2CPP_ARRAY_BOUNDS_CHECK(index, (uint32_t)(this)->max_length);
+		m_Items[index] = value;
+		Il2CppCodeGenWriteBarrier((void**)m_Items + index, (void*)value);
+	}
+	inline OmniDoorDB_t370225F36C9C4B0D70F59485EC3D8ABB4B1DCB46* GetAtUnchecked(il2cpp_array_size_t index) const
+	{
+		return m_Items[index];
+	}
+	inline OmniDoorDB_t370225F36C9C4B0D70F59485EC3D8ABB4B1DCB46** GetAddressAtUnchecked(il2cpp_array_size_t index)
+	{
+		return m_Items + index;
+	}
+	inline void SetAtUnchecked(il2cpp_array_size_t index, OmniDoorDB_t370225F36C9C4B0D70F59485EC3D8ABB4B1DCB46* value)
+	{
+		m_Items[index] = value;
+		Il2CppCodeGenWriteBarrier((void**)m_Items + index, (void*)value);
+	}
+};
+struct DoorInfoU5BU5D_tE7DC1312989605285BB3C891E8CA89FD1A4605E2  : public RuntimeArray
+{
+	ALIGN_FIELD (8) DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81 m_Items[1];
+
+	inline DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81 GetAt(il2cpp_array_size_t index) const
+	{
+		IL2CPP_ARRAY_BOUNDS_CHECK(index, (uint32_t)(this)->max_length);
+		return m_Items[index];
+	}
+	inline DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81* GetAddressAt(il2cpp_array_size_t index)
+	{
+		IL2CPP_ARRAY_BOUNDS_CHECK(index, (uint32_t)(this)->max_length);
+		return m_Items + index;
+	}
+	inline void SetAt(il2cpp_array_size_t index, DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81 value)
+	{
+		IL2CPP_ARRAY_BOUNDS_CHECK(index, (uint32_t)(this)->max_length);
+		m_Items[index] = value;
+		Il2CppCodeGenWriteBarrier((void**)&((m_Items + index)->___doorMesh), (void*)NULL);
+		#if IL2CPP_ENABLE_STRICT_WRITE_BARRIERS
+		Il2CppCodeGenWriteBarrier((void**)&((m_Items + index)->___doorMaterials), (void*)NULL);
+		#endif
+		#if IL2CPP_ENABLE_STRICT_WRITE_BARRIERS
+		Il2CppCodeGenWriteBarrier((void**)&((m_Items + index)->___defaultOpenSound), (void*)NULL);
+		#endif
+		#if IL2CPP_ENABLE_STRICT_WRITE_BARRIERS
+		Il2CppCodeGenWriteBarrier((void**)&((m_Items + index)->___defaultCloseSound), (void*)NULL);
+		#endif
+		#if IL2CPP_ENABLE_STRICT_WRITE_BARRIERS
+		Il2CppCodeGenWriteBarrier((void**)&((m_Items + index)->___defaultLockedSound), (void*)NULL);
+		#endif
+		#if IL2CPP_ENABLE_STRICT_WRITE_BARRIERS
+		Il2CppCodeGenWriteBarrier((void**)&((m_Items + index)->___defaultLockingSound), (void*)NULL);
+		#endif
+		#if IL2CPP_ENABLE_STRICT_WRITE_BARRIERS
+		Il2CppCodeGenWriteBarrier((void**)&((m_Items + index)->___defaultUnlockingSound), (void*)NULL);
+		#endif
+		#if IL2CPP_ENABLE_STRICT_WRITE_BARRIERS
+		Il2CppCodeGenWriteBarrier((void**)&((m_Items + index)->___handles), (void*)NULL);
+		#endif
+	}
+	inline DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81 GetAtUnchecked(il2cpp_array_size_t index) const
+	{
+		return m_Items[index];
+	}
+	inline DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81* GetAddressAtUnchecked(il2cpp_array_size_t index)
+	{
+		return m_Items + index;
+	}
+	inline void SetAtUnchecked(il2cpp_array_size_t index, DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81 value)
+	{
+		m_Items[index] = value;
+		Il2CppCodeGenWriteBarrier((void**)&((m_Items + index)->___doorMesh), (void*)NULL);
+		#if IL2CPP_ENABLE_STRICT_WRITE_BARRIERS
+		Il2CppCodeGenWriteBarrier((void**)&((m_Items + index)->___doorMaterials), (void*)NULL);
+		#endif
+		#if IL2CPP_ENABLE_STRICT_WRITE_BARRIERS
+		Il2CppCodeGenWriteBarrier((void**)&((m_Items + index)->___defaultOpenSound), (void*)NULL);
+		#endif
+		#if IL2CPP_ENABLE_STRICT_WRITE_BARRIERS
+		Il2CppCodeGenWriteBarrier((void**)&((m_Items + index)->___defaultCloseSound), (void*)NULL);
+		#endif
+		#if IL2CPP_ENABLE_STRICT_WRITE_BARRIERS
+		Il2CppCodeGenWriteBarrier((void**)&((m_Items + index)->___defaultLockedSound), (void*)NULL);
+		#endif
+		#if IL2CPP_ENABLE_STRICT_WRITE_BARRIERS
+		Il2CppCodeGenWriteBarrier((void**)&((m_Items + index)->___defaultLockingSound), (void*)NULL);
+		#endif
+		#if IL2CPP_ENABLE_STRICT_WRITE_BARRIERS
+		Il2CppCodeGenWriteBarrier((void**)&((m_Items + index)->___defaultUnlockingSound), (void*)NULL);
+		#endif
+		#if IL2CPP_ENABLE_STRICT_WRITE_BARRIERS
+		Il2CppCodeGenWriteBarrier((void**)&((m_Items + index)->___handles), (void*)NULL);
+		#endif
+	}
+};
+struct HandleInfoU5BU5D_tDCDA16399E2E608D56F4CD046723B56801671A1E  : public RuntimeArray
+{
+	ALIGN_FIELD (8) HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE m_Items[1];
+
+	inline HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE GetAt(il2cpp_array_size_t index) const
+	{
+		IL2CPP_ARRAY_BOUNDS_CHECK(index, (uint32_t)(this)->max_length);
+		return m_Items[index];
+	}
+	inline HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE* GetAddressAt(il2cpp_array_size_t index)
+	{
+		IL2CPP_ARRAY_BOUNDS_CHECK(index, (uint32_t)(this)->max_length);
+		return m_Items + index;
+	}
+	inline void SetAt(il2cpp_array_size_t index, HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE value)
+	{
+		IL2CPP_ARRAY_BOUNDS_CHECK(index, (uint32_t)(this)->max_length);
+		m_Items[index] = value;
+		Il2CppCodeGenWriteBarrier((void**)&((m_Items + index)->___handlePrefab), (void*)NULL);
+	}
+	inline HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE GetAtUnchecked(il2cpp_array_size_t index) const
+	{
+		return m_Items[index];
+	}
+	inline HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE* GetAddressAtUnchecked(il2cpp_array_size_t index)
+	{
+		return m_Items + index;
+	}
+	inline void SetAtUnchecked(il2cpp_array_size_t index, HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE value)
+	{
+		m_Items[index] = value;
+		Il2CppCodeGenWriteBarrier((void**)&((m_Items + index)->___handlePrefab), (void*)NULL);
+	}
+};
+struct PostInfoU5BU5D_t40BB55D73F43C6AA09CFBC0D1B7A9D4118E31227  : public RuntimeArray
+{
+	ALIGN_FIELD (8) PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900 m_Items[1];
+
+	inline PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900 GetAt(il2cpp_array_size_t index) const
+	{
+		IL2CPP_ARRAY_BOUNDS_CHECK(index, (uint32_t)(this)->max_length);
+		return m_Items[index];
+	}
+	inline PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900* GetAddressAt(il2cpp_array_size_t index)
+	{
+		IL2CPP_ARRAY_BOUNDS_CHECK(index, (uint32_t)(this)->max_length);
+		return m_Items + index;
+	}
+	inline void SetAt(il2cpp_array_size_t index, PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900 value)
+	{
+		IL2CPP_ARRAY_BOUNDS_CHECK(index, (uint32_t)(this)->max_length);
+		m_Items[index] = value;
+		Il2CppCodeGenWriteBarrier((void**)&((m_Items + index)->___postPrefab), (void*)NULL);
+	}
+	inline PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900 GetAtUnchecked(il2cpp_array_size_t index) const
+	{
+		return m_Items[index];
+	}
+	inline PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900* GetAddressAtUnchecked(il2cpp_array_size_t index)
+	{
+		return m_Items + index;
+	}
+	inline void SetAtUnchecked(il2cpp_array_size_t index, PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900 value)
+	{
+		m_Items[index] = value;
+		Il2CppCodeGenWriteBarrier((void**)&((m_Items + index)->___postPrefab), (void*)NULL);
+	}
+};
+struct HandlePlacementU5BU5D_tDD9B6C149E365F0A8655F2F8FB0D1AE8693E362C  : public RuntimeArray
+{
+	ALIGN_FIELD (8) HandlePlacement_t501AE58E56D7614CD5583DECA99405B710D41907 m_Items[1];
+
+	inline HandlePlacement_t501AE58E56D7614CD5583DECA99405B710D41907 GetAt(il2cpp_array_size_t index) const
+	{
+		IL2CPP_ARRAY_BOUNDS_CHECK(index, (uint32_t)(this)->max_length);
+		return m_Items[index];
+	}
+	inline HandlePlacement_t501AE58E56D7614CD5583DECA99405B710D41907* GetAddressAt(il2cpp_array_size_t index)
+	{
+		IL2CPP_ARRAY_BOUNDS_CHECK(index, (uint32_t)(this)->max_length);
+		return m_Items + index;
+	}
+	inline void SetAt(il2cpp_array_size_t index, HandlePlacement_t501AE58E56D7614CD5583DECA99405B710D41907 value)
+	{
+		IL2CPP_ARRAY_BOUNDS_CHECK(index, (uint32_t)(this)->max_length);
+		m_Items[index] = value;
+	}
+	inline HandlePlacement_t501AE58E56D7614CD5583DECA99405B710D41907 GetAtUnchecked(il2cpp_array_size_t index) const
+	{
+		return m_Items[index];
+	}
+	inline HandlePlacement_t501AE58E56D7614CD5583DECA99405B710D41907* GetAddressAtUnchecked(il2cpp_array_size_t index)
+	{
+		return m_Items + index;
+	}
+	inline void SetAtUnchecked(il2cpp_array_size_t index, HandlePlacement_t501AE58E56D7614CD5583DECA99405B710D41907 value)
+	{
+		m_Items[index] = value;
+	}
+};
+struct MotionInfoU5BU5D_t45427AD297C0AD583CA2F6315DA7E73698D3DDD5  : public RuntimeArray
+{
+	ALIGN_FIELD (8) MotionInfo_tF0A4F63839720486FA5651B8A1CF8162CB22263C m_Items[1];
+
+	inline MotionInfo_tF0A4F63839720486FA5651B8A1CF8162CB22263C GetAt(il2cpp_array_size_t index) const
+	{
+		IL2CPP_ARRAY_BOUNDS_CHECK(index, (uint32_t)(this)->max_length);
+		return m_Items[index];
+	}
+	inline MotionInfo_tF0A4F63839720486FA5651B8A1CF8162CB22263C* GetAddressAt(il2cpp_array_size_t index)
+	{
+		IL2CPP_ARRAY_BOUNDS_CHECK(index, (uint32_t)(this)->max_length);
+		return m_Items + index;
+	}
+	inline void SetAt(il2cpp_array_size_t index, MotionInfo_tF0A4F63839720486FA5651B8A1CF8162CB22263C value)
+	{
+		IL2CPP_ARRAY_BOUNDS_CHECK(index, (uint32_t)(this)->max_length);
+		m_Items[index] = value;
+		Il2CppCodeGenWriteBarrier((void**)&((m_Items + index)->___allowedDoorKinds), (void*)NULL);
+	}
+	inline MotionInfo_tF0A4F63839720486FA5651B8A1CF8162CB22263C GetAtUnchecked(il2cpp_array_size_t index) const
+	{
+		return m_Items[index];
+	}
+	inline MotionInfo_tF0A4F63839720486FA5651B8A1CF8162CB22263C* GetAddressAtUnchecked(il2cpp_array_size_t index)
+	{
+		return m_Items + index;
+	}
+	inline void SetAtUnchecked(il2cpp_array_size_t index, MotionInfo_tF0A4F63839720486FA5651B8A1CF8162CB22263C value)
+	{
+		m_Items[index] = value;
+		Il2CppCodeGenWriteBarrier((void**)&((m_Items + index)->___allowedDoorKinds), (void*)NULL);
+	}
+};
+struct DoorKindU5BU5D_tE3A6220B579D8E30E313169232EDEFC0C71A7F28  : public RuntimeArray
+{
+	ALIGN_FIELD (8) int32_t m_Items[1];
+
+	inline int32_t GetAt(il2cpp_array_size_t index) const
+	{
+		IL2CPP_ARRAY_BOUNDS_CHECK(index, (uint32_t)(this)->max_length);
+		return m_Items[index];
+	}
+	inline int32_t* GetAddressAt(il2cpp_array_size_t index)
+	{
+		IL2CPP_ARRAY_BOUNDS_CHECK(index, (uint32_t)(this)->max_length);
+		return m_Items + index;
+	}
+	inline void SetAt(il2cpp_array_size_t index, int32_t value)
+	{
+		IL2CPP_ARRAY_BOUNDS_CHECK(index, (uint32_t)(this)->max_length);
+		m_Items[index] = value;
+	}
+	inline int32_t GetAtUnchecked(il2cpp_array_size_t index) const
+	{
+		return m_Items[index];
+	}
+	inline int32_t* GetAddressAtUnchecked(il2cpp_array_size_t index)
+	{
+		return m_Items + index;
+	}
+	inline void SetAtUnchecked(il2cpp_array_size_t index, int32_t value)
+	{
+		m_Items[index] = value;
+	}
+};
+struct DelegateU5BU5D_tC5AB7E8F745616680F337909D3A8E6C722CDF771  : public RuntimeArray
+{
+	ALIGN_FIELD (8) Delegate_t* m_Items[1];
+
+	inline Delegate_t* GetAt(il2cpp_array_size_t index) const
+	{
+		IL2CPP_ARRAY_BOUNDS_CHECK(index, (uint32_t)(this)->max_length);
+		return m_Items[index];
+	}
+	inline Delegate_t** GetAddressAt(il2cpp_array_size_t index)
+	{
+		IL2CPP_ARRAY_BOUNDS_CHECK(index, (uint32_t)(this)->max_length);
+		return m_Items + index;
+	}
+	inline void SetAt(il2cpp_array_size_t index, Delegate_t* value)
+	{
+		IL2CPP_ARRAY_BOUNDS_CHECK(index, (uint32_t)(this)->max_length);
+		m_Items[index] = value;
+		Il2CppCodeGenWriteBarrier((void**)m_Items + index, (void*)value);
+	}
+	inline Delegate_t* GetAtUnchecked(il2cpp_array_size_t index) const
+	{
+		return m_Items[index];
+	}
+	inline Delegate_t** GetAddressAtUnchecked(il2cpp_array_size_t index)
+	{
+		return m_Items + index;
+	}
+	inline void SetAtUnchecked(il2cpp_array_size_t index, Delegate_t* value)
+	{
+		m_Items[index] = value;
+		Il2CppCodeGenWriteBarrier((void**)m_Items + index, (void*)value);
+	}
+};
+struct ObjectU5BU5D_t8061030B0A12A55D5AD8652A20C922FE99450918  : public RuntimeArray
+{
+	ALIGN_FIELD (8) RuntimeObject* m_Items[1];
+
+	inline RuntimeObject* GetAt(il2cpp_array_size_t index) const
+	{
+		IL2CPP_ARRAY_BOUNDS_CHECK(index, (uint32_t)(this)->max_length);
+		return m_Items[index];
+	}
+	inline RuntimeObject** GetAddressAt(il2cpp_array_size_t index)
+	{
+		IL2CPP_ARRAY_BOUNDS_CHECK(index, (uint32_t)(this)->max_length);
+		return m_Items + index;
+	}
+	inline void SetAt(il2cpp_array_size_t index, RuntimeObject* value)
+	{
+		IL2CPP_ARRAY_BOUNDS_CHECK(index, (uint32_t)(this)->max_length);
+		m_Items[index] = value;
+		Il2CppCodeGenWriteBarrier((void**)m_Items + index, (void*)value);
+	}
+	inline RuntimeObject* GetAtUnchecked(il2cpp_array_size_t index) const
+	{
+		return m_Items[index];
+	}
+	inline RuntimeObject** GetAddressAtUnchecked(il2cpp_array_size_t index)
+	{
+		return m_Items + index;
+	}
+	inline void SetAtUnchecked(il2cpp_array_size_t index, RuntimeObject* value)
+	{
+		m_Items[index] = value;
+		Il2CppCodeGenWriteBarrier((void**)m_Items + index, (void*)value);
+	}
+};
+
+
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* Component_GetComponent_TisRuntimeObject_m7181F81CAEC2CF53F5D2BC79B7425C16E1F80D33_gshared (Component_t39FBE53E5EFCF4409111FB22C15FF73717632EC3* __this, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* Component_GetComponentInChildren_TisRuntimeObject_mE483A27E876DE8E4E6901D6814837F81D7C42F65_gshared (Component_t39FBE53E5EFCF4409111FB22C15FF73717632EC3* __this, const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void List_1_Clear_m16C1F2C61FED5955F10EB36BC1CB2DF34B128994_gshared_inline (List_1_tA239CB83DE5615F348BB0507E45F490F4F7C9A8D* __this, const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void List_1_Add_mEBCF994CC3814631017F46A387B1A192ED6C85C7_gshared_inline (List_1_tA239CB83DE5615F348BB0507E45F490F4F7C9A8D* __this, RuntimeObject* ___0_item, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void List_1__ctor_mE097DBD72433D1AFC11733F5678602603A756424_gshared (List_1_tA239CB83DE5615F348BB0507E45F490F4F7C9A8D* __this, RuntimeObject* ___0_collection, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* List_1_get_Item_m33561245D64798C2AB07584C0EC4F240E4839A38_gshared (List_1_tA239CB83DE5615F348BB0507E45F490F4F7C9A8D* __this, int32_t ___0_index, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void List_1_RemoveAt_m54F62297ADEE4D4FDA697F49ED807BF901201B54_gshared (List_1_tA239CB83DE5615F348BB0507E45F490F4F7C9A8D* __this, int32_t ___0_index, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* Object_Instantiate_TisRuntimeObject_m75BF3B0A3747B60491845FA41612FE7F795F0A59_gshared (RuntimeObject* ___0_original, Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* ___1_parent, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* GameObject_GetComponent_TisRuntimeObject_m6EAED4AA356F0F48288F67899E5958792395563B_gshared (GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* __this, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR ObjectU5BU5D_t8061030B0A12A55D5AD8652A20C922FE99450918* Component_GetComponentsInChildren_TisRuntimeObject_m1F5B6FC0689B07D4FAAC0C605D9B2933A9B32543_gshared (Component_t39FBE53E5EFCF4409111FB22C15FF73717632EC3* __this, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR Enumerator_t9473BAB568A27E2339D48C1F91319E0F6D244D7A List_1_GetEnumerator_mD8294A7FA2BEB1929487127D476F8EC1CDC23BFC_gshared (List_1_tA239CB83DE5615F348BB0507E45F490F4F7C9A8D* __this, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void Enumerator_Dispose_mD9DC3E3C3697830A4823047AB29A77DBBB5ED419_gshared (Enumerator_t9473BAB568A27E2339D48C1F91319E0F6D244D7A* __this, const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR RuntimeObject* Enumerator_get_Current_m6330F15D18EE4F547C05DF9BF83C5EB710376027_gshared_inline (Enumerator_t9473BAB568A27E2339D48C1F91319E0F6D244D7A* __this, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR bool Enumerator_MoveNext_mE921CC8F29FBBDE7CC3209A0ED0D921D58D00BCB_gshared (Enumerator_t9473BAB568A27E2339D48C1F91319E0F6D244D7A* __this, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR bool Component_TryGetComponent_TisRuntimeObject_m69D4ED21F14D49D805A2337F4332934CDA07DEDB_gshared (Component_t39FBE53E5EFCF4409111FB22C15FF73717632EC3* __this, RuntimeObject** ___0_component, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* GameObject_AddComponent_TisRuntimeObject_m69B93700FACCF372F5753371C6E8FB780800B824_gshared (GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* __this, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR bool List_1_Remove_m4DFA48F4CEB9169601E75FC28517C5C06EFA5AD7_gshared (List_1_tA239CB83DE5615F348BB0507E45F490F4F7C9A8D* __this, RuntimeObject* ___0_item, const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR int32_t List_1_get_Count_m4407E4C389F22B8CEC282C15D56516658746C383_gshared_inline (List_1_tA239CB83DE5615F348BB0507E45F490F4F7C9A8D* __this, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* Resources_Load_TisRuntimeObject_mD1AF6299B14F87ED1D1A6199A51480919F7C79D7_gshared (String_t* ___0_path, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void List_1__ctor_m7F078BB342729BDF11327FD89D7872265328F690_gshared (List_1_tA239CB83DE5615F348BB0507E45F490F4F7C9A8D* __this, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7 InputValue_Get_TisVector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7_mBA56AD2906D3B6F2B87F3DE248CB62E1AA4D2293_gshared (InputValue_t4F053958518BDF6FD85C55F31B0597C9521B4231* __this, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_NO_INLINE IL2CPP_METHOD_ATTR void List_1_AddWithResize_m79A9BF770BEF9C06BE40D5401E55E375F2726CC4_gshared (List_1_tA239CB83DE5615F348BB0507E45F490F4F7C9A8D* __this, RuntimeObject* ___0_item, const RuntimeMethod* method) ;
+
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void RuntimeHelpers_InitializeArray_m751372AA3F24FBF6DA9B9D687CBFA2DE436CAB9B (RuntimeArray* ___0_array, RuntimeFieldHandle_t6E4C45B6D2EA12FC99185805A7E77527899B25C5 ___1_fldHandle, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void Object__ctor_mE837C6B9FA8C6D5D109F4B2EC885D79919AC0EA2 (RuntimeObject* __this, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR bool Object_op_Inequality_mD0BE578448EAA61948F25C32F8DD55AB1F778602 (Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C* ___0_x, Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C* ___1_y, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OpenDoorEvt__ctor_m93EE2C0EAFD8330FB5935959ECA507EAACE67773 (OpenDoorEvt_t53FDC500F958704C0041B93E83B01FD1685D2A98* __this, RuntimeObject* ___0_object, intptr_t ___1_method, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR Delegate_t* Delegate_Combine_m1F725AEF318BE6F0426863490691A6F4606E7D00 (Delegate_t* ___0_a, Delegate_t* ___1_b, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void CloseDoorEvt__ctor_m135334B7D8C2D13F0CA3CA1B302150B8F3EA5FB8 (CloseDoorEvt_t0FA9DD6BBFED77AF496D88825BE7100D2C05E507* __this, RuntimeObject* ___0_object, intptr_t ___1_method, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void ToggleDoorEvt__ctor_mCE9D795B7E5C415C8FBBB9967D78D0AC9B890297 (ToggleDoorEvt_tFE20427E5BADD68E7E1BE9380F1D78CFC33DDA40* __this, RuntimeObject* ___0_object, intptr_t ___1_method, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void UnlockDoorEvt__ctor_mBED67DC21D06E11BB16218C6B27020F5DB951574 (UnlockDoorEvt_t6006D394CC44175581D7140CCCC65A71B68F20CF* __this, RuntimeObject* ___0_object, intptr_t ___1_method, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void LockDoorEvt__ctor_mFEC79ED10859BA028795E11E320CE2F0B3AA762A (LockDoorEvt_t15338F49A7805255093B5E4DE5994C05EC2FEC84* __this, RuntimeObject* ___0_object, intptr_t ___1_method, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorOpenedEvt__ctor_m9C9C2897DD8A03B93EED264776517091A4E0C2C1 (DoorOpenedEvt_t000102A9D09036B3D64BB710FE11FD7FE05AD585* __this, RuntimeObject* ___0_object, intptr_t ___1_method, const RuntimeMethod* method) ;
+inline AudioSource_t871AC2272F896738252F04EE949AEF5B241D3299* Component_GetComponent_TisAudioSource_t871AC2272F896738252F04EE949AEF5B241D3299_m42DA4DEA19EB60D80CBED7413ADEB27FA033C77B (Component_t39FBE53E5EFCF4409111FB22C15FF73717632EC3* __this, const RuntimeMethod* method)
+{
+	return ((  AudioSource_t871AC2272F896738252F04EE949AEF5B241D3299* (*) (Component_t39FBE53E5EFCF4409111FB22C15FF73717632EC3*, const RuntimeMethod*))Component_GetComponent_TisRuntimeObject_m7181F81CAEC2CF53F5D2BC79B7425C16E1F80D33_gshared)(__this, method);
+}
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_UpdateDoorVisuals_mEBA99E72ACCAAAF610B9AF31DFBDAFAC9D3FD633 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* Component_get_transform_m2919A1D81931E6932C7F06D4C2F0AB8DDA9A5371 (Component_t39FBE53E5EFCF4409111FB22C15FF73717632EC3* __this, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR int32_t Transform_get_childCount_mE9C29C702AB662CC540CA053EDE48BDAFA35B4B0 (Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* __this, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* Transform_GetChild_mE686DF0C7AAC1F7AEF356967B1C04D8B8E240EAF (Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* __this, int32_t ___0_index, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR String_t* Object_get_name_mAC2F6B897CF1303BA4249B4CB55271AFACBB6392 (Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C* __this, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR bool String_op_Equality_m030E1B219352228970A076136E455C4E568C02C1 (String_t* ___0_a, String_t* ___1_b, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR bool Application_get_isPlaying_m25B0ABDFEF54F5370CD3F263A813540843D00F34 (const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* Component_get_gameObject_m57AEFBB14DB39EC476F740BA000E170355DE691B (Component_t39FBE53E5EFCF4409111FB22C15FF73717632EC3* __this, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void Object_Destroy_mE97D0A766419A81296E8D4E5C23D01D3FE91ACBB (Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C* ___0_obj, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void Object_DestroyImmediate_m6336EBC83591A5DB64EC70C92132824C6E258705 (Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C* ___0_obj, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR bool Object_op_Equality_mB6120F782D83091EF56A198FCEBCF066DB4A9605 (Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C* ___0_x, Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C* ___1_y, const RuntimeMethod* method) ;
+inline MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE* Component_GetComponentInChildren_TisMeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE_m36EDCB3A47ABF63F0F0630998380AA7635920535 (Component_t39FBE53E5EFCF4409111FB22C15FF73717632EC3* __this, const RuntimeMethod* method)
+{
+	return ((  MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE* (*) (Component_t39FBE53E5EFCF4409111FB22C15FF73717632EC3*, const RuntimeMethod*))Component_GetComponentInChildren_TisRuntimeObject_mE483A27E876DE8E4E6901D6814837F81D7C42F65_gshared)(__this, method);
+}
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81 OmniDoor3D_GetDoorInfo_mFF70B2FB604F8340C486A06275694998B42FD654 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, int32_t ___0_doorKind, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void Array_Copy_m4233828B4E6288B6D815F539AAA38575DE627900 (RuntimeArray* ___0_sourceArray, RuntimeArray* ___1_destinationArray, int32_t ___2_length, const RuntimeMethod* method) ;
+inline void List_1_Clear_m32D399BDD753B5BD6CE27560249096418F3F0867_inline (List_1_tB951CE80B58D1BF9650862451D8DAD8C231F207B* __this, const RuntimeMethod* method)
+{
+	((  void (*) (List_1_tB951CE80B58D1BF9650862451D8DAD8C231F207B*, const RuntimeMethod*))List_1_Clear_m16C1F2C61FED5955F10EB36BC1CB2DF34B128994_gshared_inline)(__this, method);
+}
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* Transform_get_parent_m65354E28A4C94EC00EBCF03532F7B0718380791E (Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* __this, const RuntimeMethod* method) ;
+inline void List_1_Add_m43FBF207375C6E06B8C45ECE614F9B8008FB686E_inline (List_1_tB951CE80B58D1BF9650862451D8DAD8C231F207B* __this, GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* ___0_item, const RuntimeMethod* method)
+{
+	((  void (*) (List_1_tB951CE80B58D1BF9650862451D8DAD8C231F207B*, GameObject_t76FEDD663AB33C991A9C9A23129337651094216F*, const RuntimeMethod*))List_1_Add_mEBCF994CC3814631017F46A387B1A192ED6C85C7_gshared_inline)(__this, ___0_item, method);
+}
+inline MeshFilter_t6D1CE2473A1E45AC73013400585A1163BF66B2F5* Component_GetComponent_TisMeshFilter_t6D1CE2473A1E45AC73013400585A1163BF66B2F5_mB82F66059DFB5715DD85BDED1D90BC03A6C9E623 (Component_t39FBE53E5EFCF4409111FB22C15FF73717632EC3* __this, const RuntimeMethod* method)
+{
+	return ((  MeshFilter_t6D1CE2473A1E45AC73013400585A1163BF66B2F5* (*) (Component_t39FBE53E5EFCF4409111FB22C15FF73717632EC3*, const RuntimeMethod*))Component_GetComponent_TisRuntimeObject_m7181F81CAEC2CF53F5D2BC79B7425C16E1F80D33_gshared)(__this, method);
+}
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void MeshFilter_set_mesh_mD2988E2D835205FD6B6CD35A61E1592844D971F8 (MeshFilter_t6D1CE2473A1E45AC73013400585A1163BF66B2F5* __this, Mesh_t6D9C539763A09BC2B12AEAEF36F6DFFC98AE63D4* ___0_value, const RuntimeMethod* method) ;
+inline MeshCollider_tB525E4DDE383252364ED0BDD32CF2B53914EE455* Component_GetComponent_TisMeshCollider_tB525E4DDE383252364ED0BDD32CF2B53914EE455_mFC0F02CCD26A6A186031CF43E92D7B60EA1CC370 (Component_t39FBE53E5EFCF4409111FB22C15FF73717632EC3* __this, const RuntimeMethod* method)
+{
+	return ((  MeshCollider_tB525E4DDE383252364ED0BDD32CF2B53914EE455* (*) (Component_t39FBE53E5EFCF4409111FB22C15FF73717632EC3*, const RuntimeMethod*))Component_GetComponent_TisRuntimeObject_m7181F81CAEC2CF53F5D2BC79B7425C16E1F80D33_gshared)(__this, method);
+}
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void MeshCollider_set_sharedMesh_m05F87B9AC04139285EBBCC159F77B51C6940E79C (MeshCollider_tB525E4DDE383252364ED0BDD32CF2B53914EE455* __this, Mesh_t6D9C539763A09BC2B12AEAEF36F6DFFC98AE63D4* ___0_value, const RuntimeMethod* method) ;
+inline void List_1__ctor_mE6AD85B1B839B7A36AC76E52A884895705D95638 (List_1_t386E09F4F22DDE4D2AC41A8567FFF283C254537B* __this, RuntimeObject* ___0_collection, const RuntimeMethod* method)
+{
+	((  void (*) (List_1_t386E09F4F22DDE4D2AC41A8567FFF283C254537B*, RuntimeObject*, const RuntimeMethod*))List_1__ctor_mE097DBD72433D1AFC11733F5678602603A756424_gshared)(__this, ___0_collection, method);
+}
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void Renderer_SetSharedMaterials_m15D1C285831E553476B7432D97537CC5DF34C55D (Renderer_t320575F223BCB177A982E5DDB5DB19FAA89E7FBF* __this, List_1_t386E09F4F22DDE4D2AC41A8567FFF283C254537B* ___0_materials, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void Transform_set_localPosition_mDE1C997F7D79C0885210B7732B4BA50EE7D73134 (Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* __this, Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___0_value, const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Quaternion_tDA59F214EF07D7700B26E40E562F267AF7306974 Quaternion_Euler_m5BCCC19216CFAD2426F15BC51A30421880D27B73_inline (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___0_euler, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void Transform_set_localRotation_mAB4A011D134BA58AB780BECC0025CA65F16185FA (Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* __this, Quaternion_tDA59F214EF07D7700B26E40E562F267AF7306974 ___0_value, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void Transform_set_localScale_mBA79E811BAF6C47B80FF76414C12B47B3CD03633 (Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* __this, Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___0_value, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR Bounds_t367E830C64BBF235ED8C3B2F8CF6254FDCAD39C3 Renderer_get_bounds_m390CF334730C3C34E45CE59F1D08C3B9F3109C7C (Renderer_t320575F223BCB177A982E5DDB5DB19FAA89E7FBF* __this, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_Cleanup_mC7A5ADA775F5215013B70E4A8B6786C50FA1D35D (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* __this, float ___0_x, float ___1_y, float ___2_z, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE* OmniDoor3D_MakeNewSection_mFEFB2A66DA1D55B4F9A61D7E28CC6DF1AC3C36DA (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, String_t* ___0_sPivot, String_t* ___1_sSection, Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___2_localPos, const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void Bounds_Encapsulate_m7C70C382B9380A8C962074C78E189B53CE8F7A22_inline (Bounds_t367E830C64BBF235ED8C3B2F8CF6254FDCAD39C3* __this, Bounds_t367E830C64BBF235ED8C3B2F8CF6254FDCAD39C3 ___0_bounds, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR bool OmniDoor3DData_IsStandard_mAC537037B236421107762A3388E7DB74E127D43E (int32_t ___0_doorKind, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D* Renderer_get_sharedMaterials_m0B61AFD8EDA35A70C796FFB2F28BB62380051ABF (Renderer_t320575F223BCB177A982E5DDB5DB19FAA89E7FBF* __this, const RuntimeMethod* method) ;
+inline Material_t18053F08F347D0DCA5E1140EC7EC4533DD8A14E3* List_1_get_Item_m70F5CFC2DEA9332B78C5ADC0EE1CE1B7465B1456 (List_1_t386E09F4F22DDE4D2AC41A8567FFF283C254537B* __this, int32_t ___0_index, const RuntimeMethod* method)
+{
+	return ((  Material_t18053F08F347D0DCA5E1140EC7EC4533DD8A14E3* (*) (List_1_t386E09F4F22DDE4D2AC41A8567FFF283C254537B*, int32_t, const RuntimeMethod*))List_1_get_Item_m33561245D64798C2AB07584C0EC4F240E4839A38_gshared)(__this, ___0_index, method);
+}
+inline void List_1_Add_m5F62EE992DBCC5323267265794235C9EEE07997B_inline (List_1_t386E09F4F22DDE4D2AC41A8567FFF283C254537B* __this, Material_t18053F08F347D0DCA5E1140EC7EC4533DD8A14E3* ___0_item, const RuntimeMethod* method)
+{
+	((  void (*) (List_1_t386E09F4F22DDE4D2AC41A8567FFF283C254537B*, Material_t18053F08F347D0DCA5E1140EC7EC4533DD8A14E3*, const RuntimeMethod*))List_1_Add_mEBCF994CC3814631017F46A387B1A192ED6C85C7_gshared_inline)(__this, ___0_item, method);
+}
+inline void List_1_RemoveAt_mD461DC585ED2CF965C6FABF04A941287186E0354 (List_1_t386E09F4F22DDE4D2AC41A8567FFF283C254537B* __this, int32_t ___0_index, const RuntimeMethod* method)
+{
+	((  void (*) (List_1_t386E09F4F22DDE4D2AC41A8567FFF283C254537B*, int32_t, const RuntimeMethod*))List_1_RemoveAt_m54F62297ADEE4D4FDA697F49ED807BF901201B54_gshared)(__this, ___0_index, method);
+}
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D* OmniDoor3D_GetHandleMaterials_mB0B774D925ED6F8F3CFA1AA6B2B84828DAB7C6D2 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, int32_t ___0_hk, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR bool OmniDoor3D_GetHandlePlacement_mBE88C2D24B123D0566FEF1E5658FDFCAAECA9012 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81 ___0_di, int32_t ___1_hk, HandlePlacement_t501AE58E56D7614CD5583DECA99405B710D41907* ___2_hpOut, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* OmniDoor3D_GetHandlePrefab_m54B1EE39320C4B237AE0E08BB809FB76AC210176 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, int32_t ___0_handleKind, const RuntimeMethod* method) ;
+inline GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* Object_Instantiate_TisGameObject_t76FEDD663AB33C991A9C9A23129337651094216F_m58C654F1134533E29502629CA67645682B404811 (GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* ___0_original, Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* ___1_parent, const RuntimeMethod* method)
+{
+	return ((  GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* (*) (GameObject_t76FEDD663AB33C991A9C9A23129337651094216F*, Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1*, const RuntimeMethod*))Object_Instantiate_TisRuntimeObject_m75BF3B0A3747B60491845FA41612FE7F795F0A59_gshared)(___0_original, ___1_parent, method);
+}
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void Object_set_name_mC79E6DC8FFD72479C90F0C4CC7F42A0FEAF5AE47 (Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C* __this, String_t* ___0_value, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* GameObject_get_transform_m0BC10ADFA1632166AE5544BDF9038A2650C2AE56 (GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* __this, const RuntimeMethod* method) ;
+inline MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE* GameObject_GetComponent_TisMeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE_m7FF948365C38BC39333D82B235A7C4EAD219960D (GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* __this, const RuntimeMethod* method)
+{
+	return ((  MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE* (*) (GameObject_t76FEDD663AB33C991A9C9A23129337651094216F*, const RuntimeMethod*))GameObject_GetComponent_TisRuntimeObject_m6EAED4AA356F0F48288F67899E5958792395563B_gshared)(__this, method);
+}
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void GameObject_set_isStatic_m0468F0E4553F5B3DDBE03F3788BE0A1A3736839C (GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* __this, bool ___0_value, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 OmniDoor3D_GetRightPostPos_mD9A808E1BEF9F19E1BEA091444B449840F3BD564 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, int32_t ___0_dk, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_MakeFencePost_m2F573714C43AB5663E533421546EFF42BCFA1DA5 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___0_pos, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 OmniDoor3D_GetLeftPostPos_mB1C40BF2872290615E81173D11DE9B51E3A865C6 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, int32_t ___0_dk, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D* OmniDoor3D_GetPostMaterials_m76B030C398B25123393DEECBAAD8F5A94361DA57 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, int32_t ___0_dk, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_UpdateTriggerShapeAndSize_m23401190A3A1C0F86E3953ED580E99BEE5726C9C (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_UpdateMeshLayers_m93DF5BE8E2B965ACE18F6A7BEE1FB9D9D164F494 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) ;
+inline MeshRendererU5BU5D_tDF429EF168050A5CE085D0B51909A6AE2067E446* Component_GetComponentsInChildren_TisMeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE_m820D038F52BDC71ECDEAE04ED05D98CCF63E9243 (Component_t39FBE53E5EFCF4409111FB22C15FF73717632EC3* __this, const RuntimeMethod* method)
+{
+	return ((  MeshRendererU5BU5D_tDF429EF168050A5CE085D0B51909A6AE2067E446* (*) (Component_t39FBE53E5EFCF4409111FB22C15FF73717632EC3*, const RuntimeMethod*))Component_GetComponentsInChildren_TisRuntimeObject_m1F5B6FC0689B07D4FAAC0C605D9B2933A9B32543_gshared)(__this, method);
+}
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR int32_t GameObject_get_layer_m108902B9C89E9F837CE06B9942AA42307450FEAF (GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* __this, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void GameObject_set_layer_m6E1AF478A2CC86BD222B96317BEB78B7D89B18D0 (GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* __this, int32_t ___0_value, const RuntimeMethod* method) ;
+inline Enumerator_t88BD1282EF117E59AACFC9EC55B89F0B9EDACE60 List_1_GetEnumerator_mA843D26C63E5963415DFCA6E49DFA27AFD9C75E8 (List_1_tB951CE80B58D1BF9650862451D8DAD8C231F207B* __this, const RuntimeMethod* method)
+{
+	return ((  Enumerator_t88BD1282EF117E59AACFC9EC55B89F0B9EDACE60 (*) (List_1_tB951CE80B58D1BF9650862451D8DAD8C231F207B*, const RuntimeMethod*))List_1_GetEnumerator_mD8294A7FA2BEB1929487127D476F8EC1CDC23BFC_gshared)(__this, method);
+}
+inline void Enumerator_Dispose_m07D362A07C19B36C2FD1B4DC79DD99903D4DA95D (Enumerator_t88BD1282EF117E59AACFC9EC55B89F0B9EDACE60* __this, const RuntimeMethod* method)
+{
+	((  void (*) (Enumerator_t88BD1282EF117E59AACFC9EC55B89F0B9EDACE60*, const RuntimeMethod*))Enumerator_Dispose_mD9DC3E3C3697830A4823047AB29A77DBBB5ED419_gshared)(__this, method);
+}
+inline GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* Enumerator_get_Current_m7236EBE1CFCB6533F96E030500D322B13D0CA5A4_inline (Enumerator_t88BD1282EF117E59AACFC9EC55B89F0B9EDACE60* __this, const RuntimeMethod* method)
+{
+	return ((  GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* (*) (Enumerator_t88BD1282EF117E59AACFC9EC55B89F0B9EDACE60*, const RuntimeMethod*))Enumerator_get_Current_m6330F15D18EE4F547C05DF9BF83C5EB710376027_gshared_inline)(__this, method);
+}
+inline bool Enumerator_MoveNext_m96F4B0BD0A5485C8E8CC57D961DF6F1FA256AF27 (Enumerator_t88BD1282EF117E59AACFC9EC55B89F0B9EDACE60* __this, const RuntimeMethod* method)
+{
+	return ((  bool (*) (Enumerator_t88BD1282EF117E59AACFC9EC55B89F0B9EDACE60*, const RuntimeMethod*))Enumerator_MoveNext_mE921CC8F29FBBDE7CC3209A0ED0D921D58D00BCB_gshared)(__this, method);
+}
+inline bool Component_TryGetComponent_TisBoxCollider_tFA5D239388334D6DE0B8FFDAD6825C5B03786E23_m011E26A4DB9D56A12F8CFF26FB9E086B662BF89F (Component_t39FBE53E5EFCF4409111FB22C15FF73717632EC3* __this, BoxCollider_tFA5D239388334D6DE0B8FFDAD6825C5B03786E23** ___0_component, const RuntimeMethod* method)
+{
+	return ((  bool (*) (Component_t39FBE53E5EFCF4409111FB22C15FF73717632EC3*, BoxCollider_tFA5D239388334D6DE0B8FFDAD6825C5B03786E23**, const RuntimeMethod*))Component_TryGetComponent_TisRuntimeObject_m69D4ED21F14D49D805A2337F4332934CDA07DEDB_gshared)(__this, ___0_component, method);
+}
+inline Collider_t1CC3163924FCD6C4CC2E816373A929C1E3D55E76* Component_GetComponent_TisCollider_t1CC3163924FCD6C4CC2E816373A929C1E3D55E76_m820398EDBF1D3766C3166A0C323A127662A29A14 (Component_t39FBE53E5EFCF4409111FB22C15FF73717632EC3* __this, const RuntimeMethod* method)
+{
+	return ((  Collider_t1CC3163924FCD6C4CC2E816373A929C1E3D55E76* (*) (Component_t39FBE53E5EFCF4409111FB22C15FF73717632EC3*, const RuntimeMethod*))Component_GetComponent_TisRuntimeObject_m7181F81CAEC2CF53F5D2BC79B7425C16E1F80D33_gshared)(__this, method);
+}
+inline BoxCollider_tFA5D239388334D6DE0B8FFDAD6825C5B03786E23* GameObject_AddComponent_TisBoxCollider_tFA5D239388334D6DE0B8FFDAD6825C5B03786E23_m655518C8454E418FE8CF0E4770881B7A2B12BB23 (GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* __this, const RuntimeMethod* method)
+{
+	return ((  BoxCollider_tFA5D239388334D6DE0B8FFDAD6825C5B03786E23* (*) (GameObject_t76FEDD663AB33C991A9C9A23129337651094216F*, const RuntimeMethod*))GameObject_AddComponent_TisRuntimeObject_m69B93700FACCF372F5753371C6E8FB780800B824_gshared)(__this, method);
+}
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void Collider_set_isTrigger_mFCD22F3EB5E28C97863956AB725D53F7F4B7CA78 (Collider_t1CC3163924FCD6C4CC2E816373A929C1E3D55E76* __this, bool ___0_value, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void Collider_set_includeLayers_m48BF564FEE364CA2AD7FBDC98A584977F5140AC1 (Collider_t1CC3163924FCD6C4CC2E816373A929C1E3D55E76* __this, LayerMask_t97CB6BDADEDC3D6423C7BCFEA7F86DA2EC6241DB ___0_value, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR Matrix4x4_tDB70CF134A14BA38190C59AA700BCE10E2AED3E6 Transform_get_worldToLocalMatrix_mB633C122A01BCE8E51B10B8B8CB95F580750B3F1 (Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* __this, const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 Bounds_get_center_m5B05F81CB835EB6DD8628FDA24B638F477984DC3_inline (Bounds_t367E830C64BBF235ED8C3B2F8CF6254FDCAD39C3* __this, const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 Matrix4x4_MultiplyPoint3x4_mACCBD70AFA82C63DA88555780B7B6B01281AB814_inline (Matrix4x4_tDB70CF134A14BA38190C59AA700BCE10E2AED3E6* __this, Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___0_point, const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 Vector3_op_Addition_m78C0EC70CB66E8DCAC225743D82B268DAEE92067_inline (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___0_a, Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___1_b, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void BoxCollider_set_center_m0AB0482699735FEE8306A7FCAAE66A76C479F0F0 (BoxCollider_tFA5D239388334D6DE0B8FFDAD6825C5B03786E23* __this, Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___0_value, const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 Vector3_op_Multiply_m87BA7C578F96C8E49BB07088DAAC4649F83B0353_inline (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___0_a, float ___1_d, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void BoxCollider_set_size_m8374267FDE5DD628973E0E5E1331E781552B855A (BoxCollider_tFA5D239388334D6DE0B8FFDAD6825C5B03786E23* __this, Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___0_value, const RuntimeMethod* method) ;
+inline bool Component_TryGetComponent_TisSphereCollider_tBA111C542CE97F6873DE742757213D6265C7D275_mF1BA0B87B30EBE200D611A6CA17BBC8C8A2AD79E (Component_t39FBE53E5EFCF4409111FB22C15FF73717632EC3* __this, SphereCollider_tBA111C542CE97F6873DE742757213D6265C7D275** ___0_component, const RuntimeMethod* method)
+{
+	return ((  bool (*) (Component_t39FBE53E5EFCF4409111FB22C15FF73717632EC3*, SphereCollider_tBA111C542CE97F6873DE742757213D6265C7D275**, const RuntimeMethod*))Component_TryGetComponent_TisRuntimeObject_m69D4ED21F14D49D805A2337F4332934CDA07DEDB_gshared)(__this, ___0_component, method);
+}
+inline SphereCollider_tBA111C542CE97F6873DE742757213D6265C7D275* GameObject_AddComponent_TisSphereCollider_tBA111C542CE97F6873DE742757213D6265C7D275_m3D05F19667844A2949840753F7A3287115BE029E (GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* __this, const RuntimeMethod* method)
+{
+	return ((  SphereCollider_tBA111C542CE97F6873DE742757213D6265C7D275* (*) (GameObject_t76FEDD663AB33C991A9C9A23129337651094216F*, const RuntimeMethod*))GameObject_AddComponent_TisRuntimeObject_m69B93700FACCF372F5753371C6E8FB780800B824_gshared)(__this, method);
+}
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void SphereCollider_set_center_m83F6CC0056B491CD577B9AC08FA1E331074203D4 (SphereCollider_tBA111C542CE97F6873DE742757213D6265C7D275* __this, Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___0_value, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void SphereCollider_set_radius_m6119FE18C6739B077AB17334B1B53984911017FF (SphereCollider_tBA111C542CE97F6873DE742757213D6265C7D275* __this, float ___0_value, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* OmniDoor3D_GetPostPrefab_mCA6BD64DC4AF8EC77B370F5E0A7A16F014F55380 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, int32_t ___0_dk, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void GameObject__ctor_m37D512B05D292F954792225E6C6EEE95293A9B88 (GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* __this, String_t* ___0_name, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void Transform_SetParent_m6677538B60246D958DD91F931C50F969CCBB5250 (Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* __this, Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* ___0_p, const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 Vector3_get_one_mC9B289F1E15C42C597180C9FE6FB492495B51D02_inline (const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Quaternion_tDA59F214EF07D7700B26E40E562F267AF7306974 Quaternion_get_identity_m7E701AE095ED10FD5EA0B50ABCFDE2EEFF2173A5_inline (const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 Vector3_get_zero_m0C1249C3F25B1C70EAD3CC8B31259975A457AE39_inline (const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR Type_t* Type_GetTypeFromHandle_m6062B81682F79A4D6DF2640692EE6D9987858C57 (RuntimeTypeHandle_t332A452B8B6179E4469B69525D0FE82A88030F7B ___0_handle, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void GameObject__ctor_m721D643351E55308EA4F5F41B67D5446D11C61F0 (GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* __this, String_t* ___0_name, TypeU5BU5D_t97234E1129B564EB38B8D85CAC2AD8B5B9522FFB* ___1_components, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 Transform_get_localScale_m804A002A53A645CDFCD15BB0F37209162720363F (Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* __this, const RuntimeMethod* method) ;
+inline MeshFilter_t6D1CE2473A1E45AC73013400585A1163BF66B2F5* GameObject_GetComponent_TisMeshFilter_t6D1CE2473A1E45AC73013400585A1163BF66B2F5_mDF6525BCE37B444313BE0AA2305BDF4EB8B92FE8 (GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* __this, const RuntimeMethod* method)
+{
+	return ((  MeshFilter_t6D1CE2473A1E45AC73013400585A1163BF66B2F5* (*) (GameObject_t76FEDD663AB33C991A9C9A23129337651094216F*, const RuntimeMethod*))GameObject_GetComponent_TisRuntimeObject_m6EAED4AA356F0F48288F67899E5958792395563B_gshared)(__this, method);
+}
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR Mesh_t6D9C539763A09BC2B12AEAEF36F6DFFC98AE63D4* MeshFilter_get_sharedMesh_mE4ED3E7E31C1DE5097E4980DA996E620F7D7CB8C (MeshFilter_t6D1CE2473A1E45AC73013400585A1163BF66B2F5* __this, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void MeshFilter_set_sharedMesh_m946F7E3F583761982642BDA4753784AF1DF6E16F (MeshFilter_t6D1CE2473A1E45AC73013400585A1163BF66B2F5* __this, Mesh_t6D9C539763A09BC2B12AEAEF36F6DFFC98AE63D4* ___0_value, const RuntimeMethod* method) ;
+inline MeshCollider_tB525E4DDE383252364ED0BDD32CF2B53914EE455* GameObject_GetComponent_TisMeshCollider_tB525E4DDE383252364ED0BDD32CF2B53914EE455_m21E4C15ED89B2D1A80F393D96CF4464B16E9F1F9 (GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* __this, const RuntimeMethod* method)
+{
+	return ((  MeshCollider_tB525E4DDE383252364ED0BDD32CF2B53914EE455* (*) (GameObject_t76FEDD663AB33C991A9C9A23129337651094216F*, const RuntimeMethod*))GameObject_GetComponent_TisRuntimeObject_m6EAED4AA356F0F48288F67899E5958792395563B_gshared)(__this, method);
+}
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR bool OmniDoor3D_InOpeningLayers_m8936F6D9C0B8017700E33401BC44B7D807DFDF62 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* ___0_go, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 Transform_get_position_m69CD5FA214FDAE7BB701552943674846C220FDE1 (Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* __this, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 Transform_InverseTransformPoint_m18CD395144D9C78F30E15A5B82B6670E792DBA5D (Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* __this, Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___0_position, const RuntimeMethod* method) ;
+inline void List_1_Add_m67ADCB698F31486B35CF5DB4CFB1E97EB807FEFD_inline (List_1_t58F89DEDCD7DABB0CFB009AAD9C0CFE061592252* __this, Collider_t1CC3163924FCD6C4CC2E816373A929C1E3D55E76* ___0_item, const RuntimeMethod* method)
+{
+	((  void (*) (List_1_t58F89DEDCD7DABB0CFB009AAD9C0CFE061592252*, Collider_t1CC3163924FCD6C4CC2E816373A929C1E3D55E76*, const RuntimeMethod*))List_1_Add_mEBCF994CC3814631017F46A387B1A192ED6C85C7_gshared_inline)(__this, ___0_item, method);
+}
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_TryOpen_m0E0088365BF5206AC2C7525807DA3CBB4C3888EC (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) ;
+inline bool List_1_Remove_m033842E17A41459D42A3E0F26F50C4541AE57BFC (List_1_t58F89DEDCD7DABB0CFB009AAD9C0CFE061592252* __this, Collider_t1CC3163924FCD6C4CC2E816373A929C1E3D55E76* ___0_item, const RuntimeMethod* method)
+{
+	return ((  bool (*) (List_1_t58F89DEDCD7DABB0CFB009AAD9C0CFE061592252*, Collider_t1CC3163924FCD6C4CC2E816373A929C1E3D55E76*, const RuntimeMethod*))List_1_Remove_m4DFA48F4CEB9169601E75FC28517C5C06EFA5AD7_gshared)(__this, ___0_item, method);
+}
+inline int32_t List_1_get_Count_m8D408B57AE7C2D791BB61817BBC93B84537AB617_inline (List_1_t58F89DEDCD7DABB0CFB009AAD9C0CFE061592252* __this, const RuntimeMethod* method)
+{
+	return ((  int32_t (*) (List_1_t58F89DEDCD7DABB0CFB009AAD9C0CFE061592252*, const RuntimeMethod*))List_1_get_Count_m4407E4C389F22B8CEC282C15D56516658746C383_gshared_inline)(__this, method);
+}
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_CloseLinkedDoors_mED6AD9FCD60C5242DA62085DCA76BB384409AED1 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void OmniDoor3D_set_needClose_mBDACD3FCE99D25E9508221B8EDC1A77593E44020_inline (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, bool ___0_value, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_TryLock_mD91BBAA1ABF2F7E9F8AD7DA670700178BAB97DB3 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_LockLinkedDoors_m4FB164275A6B7528B42CB0B19351B89A5C621808 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void AudioSource_set_clip_mFF441895E274286C88D9C75ED5CA1B1B39528D70 (AudioSource_t871AC2272F896738252F04EE949AEF5B241D3299* __this, AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20* ___0_value, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void AudioSource_Play_m95DF07111C61D0E0F00257A00384D31531D590C3 (AudioSource_t871AC2272F896738252F04EE949AEF5B241D3299* __this, const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void DoorLockedEvt_Invoke_m0336C43427A49DB8930EB24C0811C4F59FFAE7AD_inline (DoorLockedEvt_t24FA80C7BCDB52586B684991ECB99317F4F4F8AA* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_TryUnlock_mCD6C6F3F02F034D30C1310EB37987E66C5FA67DE (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_UnlockLinkedDoors_m40A8D9BF50CF7407CCF29D4754E1DFDE261B53A5 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void DoorUnlockedEvt_Invoke_m0946810F4DE203283827D39345B8A3AA528B4E17_inline (DoorUnlockedEvt_t1E6D58AC4C10BE4C2135F3580DBAEE0D87024854* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void U3COpenU3Ed__126__ctor_mD82276CE05291B1D8086F73DA5D162D2F9B56F42 (U3COpenU3Ed__126_t07F27A92AAC04A17C76494E8AEE7086DAEAD36F3* __this, int32_t ___0_U3CU3E1__state, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void U3CCloseU3Ed__127__ctor_m77782AC05F4445B5BA758504B3A85CE4DA937B4F (U3CCloseU3Ed__127_tE6E46BD2B6269348B940DAB4E07CCD62BC6053BC* __this, int32_t ___0_U3CU3E1__state, const RuntimeMethod* method) ;
+inline OmniDoor3DConfig_t190977036D4995316F7EBBC5305FE39D88914957* Resources_Load_TisOmniDoor3DConfig_t190977036D4995316F7EBBC5305FE39D88914957_m174F7175E5FACC8828B2E91AEFEA8AED29E6DA57 (String_t* ___0_path, const RuntimeMethod* method)
+{
+	return ((  OmniDoor3DConfig_t190977036D4995316F7EBBC5305FE39D88914957* (*) (String_t*, const RuntimeMethod*))Resources_Load_TisRuntimeObject_mD1AF6299B14F87ED1D1A6199A51480919F7C79D7_gshared)(___0_path, method);
+}
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void DoorOpenFailedEvt_Invoke_mEB611B296A59578C322CF8D16385203BB26E8BA4_inline (DoorOpenFailedEvt_t1032FDEE75EB91423C95DF2155669047463F16C8* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void MonoBehaviour_StopCoroutine_mB0FC91BE84203BD8E360B3FBAE5B958B4C5ED22A (MonoBehaviour_t532A11E69716D348D8AA7F854AFCBFCB8AD17F71* __this, Coroutine_t85EA685566A254C23F3FD77AB5BDFFFF8799596B* ___0_routine, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* OmniDoor3D_Open_mCCEFA0F50C377A2CB50B3B1C519B6CE12F236819 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR Coroutine_t85EA685566A254C23F3FD77AB5BDFFFF8799596B* MonoBehaviour_StartCoroutine_m4CAFF732AA28CD3BDC5363B44A863575530EC812 (MonoBehaviour_t532A11E69716D348D8AA7F854AFCBFCB8AD17F71* __this, RuntimeObject* ___0_routine, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR int32_t LayerMask_op_Implicit_m7F5A5B9D079281AC445ED39DEE1FCFA9D795810D (LayerMask_t97CB6BDADEDC3D6423C7BCFEA7F86DA2EC6241DB ___0_mask, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR float Time_get_deltaTime_mC3195000401F0FD167DD2F948FD2BC58330D0865 (const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR OmniDoor3DConfig_t190977036D4995316F7EBBC5305FE39D88914957* OmniDoor3D_GetConfig_mEA289FF8960B4B268671B5C8A87107C5A979982B (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR bool OmniDoor3D_get_needClose_mA8C427131EBA052EE262833A830ECF878CE737C2_inline (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* OmniDoor3D_Close_m68052BB2E99899B1F23C5074200578D7AB862D48 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR float Mathf_Clamp01_mA7E048DBDA832D399A581BE4D6DED9FA44CE0F14_inline (float ___0_value, const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void DoorOpenedEvt_Invoke_m25A787A473AE4D2FAA71159238C4E729C1AB59B5_inline (DoorOpenedEvt_t000102A9D09036B3D64BB710FE11FD7FE05AD585* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void DoorClosedEvt_Invoke_mB5F245C3A2B92B56DBB9B92FE3878F7FAB5353AA_inline (DoorClosedEvt_t3512971C2165EA9C9D0F0A489E03B04EEE894C5C* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR int32_t Array_GetLength_mFE7A9FE891DE1E07795230BE09854441CDD0E935 (RuntimeArray* __this, int32_t ___0_dimension, const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR int32_t Mathf_FloorToInt_m2A39AE881CAEE6B6A4B3BFEF9CA1ED40625F5AB7_inline (float ___0_f, const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR int32_t Mathf_Clamp_m4DC36EEFDBE5F07C16249DA568023C5ECCFF0E7B_inline (int32_t ___0_value, int32_t ___1_min, int32_t ___2_max, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_ApplyGarageDoorWaypoint_m7BA4AB457647FCF366364E6E9A7F1EB25F6ACFC4 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, int32_t ___0_sectionIndex, int32_t ___1_waypointIndex, float ___2_lerpFactor, const RuntimeMethod* method) ;
+inline int32_t List_1_get_Count_m4C37ED2D928D63B80F55AF434730C2D64EEB9F22_inline (List_1_tB951CE80B58D1BF9650862451D8DAD8C231F207B* __this, const RuntimeMethod* method)
+{
+	return ((  int32_t (*) (List_1_tB951CE80B58D1BF9650862451D8DAD8C231F207B*, const RuntimeMethod*))List_1_get_Count_m4407E4C389F22B8CEC282C15D56516658746C383_gshared_inline)(__this, method);
+}
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR float Time_get_time_m3A271BB1B20041144AC5B7863B71AB1F0150374B (const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 Vector3_Lerp_m3A906D0530A94FAABB94F0F905E84D99BE85C3F8_inline (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___0_a, Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___1_b, float ___2_t, const RuntimeMethod* method) ;
+inline GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* List_1_get_Item_mE8DBE527F24D9CFED839C34216C475B716169979 (List_1_tB951CE80B58D1BF9650862451D8DAD8C231F207B* __this, int32_t ___0_index, const RuntimeMethod* method)
+{
+	return ((  GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* (*) (List_1_tB951CE80B58D1BF9650862451D8DAD8C231F207B*, int32_t, const RuntimeMethod*))List_1_get_Item_m33561245D64798C2AB07584C0EC4F240E4839A38_gshared)(__this, ___0_index, method);
+}
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* OmniDoor3D_CloseAfter_mBAED5404B74F32957AFFFB62B0BB65CF5FF685D0 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, float ___0_fSec, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void U3CCloseAfterU3Ed__137__ctor_m29F51D3EDB7FFB4140938C795D156C39718E0655 (U3CCloseAfterU3Ed__137_t584913F7212C26F25FC8D9229420A68194CB6B51* __this, int32_t ___0_U3CU3E1__state, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void MonoBehaviour_StopAllCoroutines_m872033451D42013A99867D09337490017E9ED318 (MonoBehaviour_t532A11E69716D348D8AA7F854AFCBFCB8AD17F71* __this, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR Delegate_t* Delegate_Remove_m8B7DD5661308FA972E23CA1CC3FC9CEB355504E3 (Delegate_t* ___0_source, Delegate_t* ___1_value, const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 Vector3_get_back_mCA5A84170E8DE5CE38C0551B4CCAD647BF215E57_inline (const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 Vector3_get_right_mFF573AFBBB2186E7AFA1BA7CA271A78DF67E4EA0_inline (const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 Vector3_op_Multiply_m7F3B0FA9256CE368D7636558EFEFC4AB0E1A0F41_inline (float ___0_d, Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___1_a, const RuntimeMethod* method) ;
+inline void List_1__ctor_m0CDD6F02F45026B4267E7117C5DDC188F87EE7BE (List_1_t58F89DEDCD7DABB0CFB009AAD9C0CFE061592252* __this, const RuntimeMethod* method)
+{
+	((  void (*) (List_1_t58F89DEDCD7DABB0CFB009AAD9C0CFE061592252*, const RuntimeMethod*))List_1__ctor_m7F078BB342729BDF11327FD89D7872265328F690_gshared)(__this, method);
+}
+inline void List_1__ctor_m447372C1EF7141193B93090A77395B786C72C7BC (List_1_tB951CE80B58D1BF9650862451D8DAD8C231F207B* __this, const RuntimeMethod* method)
+{
+	((  void (*) (List_1_tB951CE80B58D1BF9650862451D8DAD8C231F207B*, const RuntimeMethod*))List_1__ctor_m7F078BB342729BDF11327FD89D7872265328F690_gshared)(__this, method);
+}
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void MonoBehaviour__ctor_m592DB0105CA0BC97AA1C5F4AD27B12D68A3B7C1E (MonoBehaviour_t532A11E69716D348D8AA7F854AFCBFCB8AD17F71* __this, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void WaitForSeconds__ctor_m579F95BADEDBAB4B3A7E302C6EE3995926EF2EFC (WaitForSeconds_tF179DF251655B8DF044952E70A60DF4B358A3DD3* __this, float ___0_seconds, const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void DoorWillCloseEvt_Invoke_m53BFA21E364CD48B295BC3ECAD5D32FAC66FCF4D_inline (DoorWillCloseEvt_tCF052CFCAD1F6F42971A6A7F50DB3F69766740B3* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR float Mathf_Lerp_m47EF2FFB7647BD0A1FDC26DC03E28B19812139B5_inline (float ___0_a, float ___1_b, float ___2_t, const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 Vector3_get_normalized_m736BBF65D5CDA7A18414370D15B4DFCC1E466F07_inline (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* __this, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void NotSupportedException__ctor_m1398D0CDE19B36AA3DE9392879738C1EA2439CDF (NotSupportedException_t1429765983D409BD2986508963C98D214E4EBF4A* __this, const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void DoorWillOpenEvt_Invoke_mD170B0E6804066068C1825C3E35BBB31D6472AE5_inline (DoorWillOpenEvt_t3A953E675BDD6E13F554E0BDDD07F831A039BE22* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void ScriptableObject__ctor_mD037FDB0B487295EA47F79A4DB1BF1846C9087FF (ScriptableObject_tB3BFDB921A1B1795B38A5417D3B97A89A140436A* __this, const RuntimeMethod* method) ;
+inline OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* Component_GetComponent_TisOmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6_m1E08F03E67FCFF643285BD146713535A5FE8FFF4 (Component_t39FBE53E5EFCF4409111FB22C15FF73717632EC3* __this, const RuntimeMethod* method)
+{
+	return ((  OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* (*) (Component_t39FBE53E5EFCF4409111FB22C15FF73717632EC3*, const RuntimeMethod*))Component_GetComponent_TisRuntimeObject_m7181F81CAEC2CF53F5D2BC79B7425C16E1F80D33_gshared)(__this, method);
+}
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void OpenDoorEvt_Invoke_mBC4CCF7F672C37BF8C2CC5556F906550F13F8DCC_inline (OpenDoorEvt_t53FDC500F958704C0041B93E83B01FD1685D2A98* __this, const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void CloseDoorEvt_Invoke_m3DF1BF5991F943417FB2FDAA0E63682AEF1CF612_inline (CloseDoorEvt_t0FA9DD6BBFED77AF496D88825BE7100D2C05E507* __this, const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void LockDoorEvt_Invoke_m0ED3A8C1C3B21230CB550F56580CE576CEA0A9B8_inline (LockDoorEvt_t15338F49A7805255093B5E4DE5994C05EC2FEC84* __this, const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void UnlockDoorEvt_Invoke_mE2370B6BA7803BA0199F438F608256535AAF7D07_inline (UnlockDoorEvt_t6006D394CC44175581D7140CCCC65A71B68F20CF* __this, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR bool Component_CompareTag_mE6F8897E84F12DF12D302FFC4D58204D51096FC5 (Component_t39FBE53E5EFCF4409111FB22C15FF73717632EC3* __this, String_t* ___0_tag, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void Renderer_set_enabled_m015E6D7B825528A31182F267234CC6A925F71DA8 (Renderer_t320575F223BCB177A982E5DDB5DB19FAA89E7FBF* __this, bool ___0_value, const RuntimeMethod* method) ;
+inline PlayerOrbital_tF69524049E80DB19D1E220115D3472F6614CCA7A* Component_GetComponent_TisPlayerOrbital_tF69524049E80DB19D1E220115D3472F6614CCA7A_m9F4AE622EACEA668F0C6807340906160178ACF2F (Component_t39FBE53E5EFCF4409111FB22C15FF73717632EC3* __this, const RuntimeMethod* method)
+{
+	return ((  PlayerOrbital_tF69524049E80DB19D1E220115D3472F6614CCA7A* (*) (Component_t39FBE53E5EFCF4409111FB22C15FF73717632EC3*, const RuntimeMethod*))Component_GetComponent_TisRuntimeObject_m7181F81CAEC2CF53F5D2BC79B7425C16E1F80D33_gshared)(__this, method);
+}
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void PlayerOrbital_set_doorController_m693A76ECD26EBA11E594BA3E3DB69F86865D2F43_inline (PlayerOrbital_tF69524049E80DB19D1E220115D3472F6614CCA7A* __this, OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* ___0_value, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorOpenFailedEvt__ctor_mEC8DDD242C47E1508C4DDFEC673B731F643D3E01 (DoorOpenFailedEvt_t1032FDEE75EB91423C95DF2155669047463F16C8* __this, RuntimeObject* ___0_object, intptr_t ___1_method, const RuntimeMethod* method) ;
+inline SpriteRenderer_t1DD7FE258F072E1FA87D6577BA27225892B8047B* Component_GetComponent_TisSpriteRenderer_t1DD7FE258F072E1FA87D6577BA27225892B8047B_m6181F10C09FC1650DAE0EF2308D344A2F170AA45 (Component_t39FBE53E5EFCF4409111FB22C15FF73717632EC3* __this, const RuntimeMethod* method)
+{
+	return ((  SpriteRenderer_t1DD7FE258F072E1FA87D6577BA27225892B8047B* (*) (Component_t39FBE53E5EFCF4409111FB22C15FF73717632EC3*, const RuntimeMethod*))Component_GetComponent_TisRuntimeObject_m7181F81CAEC2CF53F5D2BC79B7425C16E1F80D33_gshared)(__this, method);
+}
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* ItsLocked_FlashLockedSprite_mE06B158999B225C006FB6E30CBA7633BD3F0AA15 (ItsLocked_t28889B0EBCBE99A9D4F0B4824407D45791512669* __this, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void U3CFlashLockedSpriteU3Ed__5__ctor_mF679643F0269634E8DB0BD7B84E1BD9A2A700AEA (U3CFlashLockedSpriteU3Ed__5_tA7E7D004963111EECBD0B36EFEE1989F1E951B65* __this, int32_t ___0_U3CU3E1__state, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR Camera_tA92CC927D7439999BC82DBEDC0AA45B470F9E184* Camera_get_main_m52C992F18E05355ABB9EEB64A4BF2215E12762DF (const RuntimeMethod* method) ;
+inline CharacterController_t847C1A2719F60547D7D6077B648D6CE2D1EF3A6A* Component_GetComponent_TisCharacterController_t847C1A2719F60547D7D6077B648D6CE2D1EF3A6A_m96B48A644EDC97C5C82F154D1FEA551B2E392040 (Component_t39FBE53E5EFCF4409111FB22C15FF73717632EC3* __this, const RuntimeMethod* method)
+{
+	return ((  CharacterController_t847C1A2719F60547D7D6077B648D6CE2D1EF3A6A* (*) (Component_t39FBE53E5EFCF4409111FB22C15FF73717632EC3*, const RuntimeMethod*))Component_GetComponent_TisRuntimeObject_m7181F81CAEC2CF53F5D2BC79B7425C16E1F80D33_gshared)(__this, method);
+}
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Quaternion_tDA59F214EF07D7700B26E40E562F267AF7306974 Quaternion_Euler_m9262AB29E3E9CE94EF71051F38A28E82AEC73F90_inline (float ___0_x, float ___1_y, float ___2_z, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void Transform_set_rotation_m61340DE74726CF0F9946743A727C4D444397331D (Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* __this, Quaternion_tDA59F214EF07D7700B26E40E562F267AF7306974 ___0_value, const RuntimeMethod* method) ;
+inline Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7 InputValue_Get_TisVector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7_mBA56AD2906D3B6F2B87F3DE248CB62E1AA4D2293 (InputValue_t4F053958518BDF6FD85C55F31B0597C9521B4231* __this, const RuntimeMethod* method)
+{
+	return ((  Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7 (*) (InputValue_t4F053958518BDF6FD85C55F31B0597C9521B4231*, const RuntimeMethod*))InputValue_Get_TisVector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7_mBA56AD2906D3B6F2B87F3DE248CB62E1AA4D2293_gshared)(__this, method);
+}
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7 Vector2_get_normalized_mF6722883AEFB5027690A778DF8ACC20F0FA65297_inline (Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7* __this, const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void ToggleDoorEvt_Invoke_mF81798196C518135B86C2FA02286952D3A20B36B_inline (ToggleDoorEvt_tFE20427E5BADD68E7E1BE9380F1D78CFC33DDA40* __this, const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Mouse_t9A9CC4636FA9CDBAD7FB7A02DB0D6395EDCC338F* Mouse_get_current_m410C1F9ABC5AA77353574E8815F7E63289707986_inline (const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR ButtonControl_t85949109B98AAF5B7ADC0285F0EC98A61EC88ECF* Mouse_get_rightButton_mFA0FD700624C0DE1B858F9516426414767F09D98_inline (Mouse_t9A9CC4636FA9CDBAD7FB7A02DB0D6395EDCC338F* __this, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR bool ButtonControl_get_isPressed_m947621402F6EC1B957C2DE984806A6500D422EA6 (ButtonControl_t85949109B98AAF5B7ADC0285F0EC98A61EC88ECF* __this, const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7 Vector2_get_zero_m32506C40EC2EE7D5D4410BF40D3EE683A3D5F32C_inline (const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR bool Vector2_op_Inequality_mBEA93B5A0E954FEFB863DC61CB209119980EC713_inline (Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7 ___0_lhs, Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7 ___1_rhs, const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR float Mathf_Clamp_mEB9AEA827D27D20FCC787F7375156AF46BB12BBF_inline (float ___0_value, float ___1_min, float ___2_max, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 Quaternion_op_Multiply_mE1EBA73F9173432B50F8F17CE8190C5A7986FB8C (Quaternion_tDA59F214EF07D7700B26E40E562F267AF7306974 ___0_rotation, Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___1_point, const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 Vector3_get_up_m128AF3FDC820BF59D5DE86D973E7DE3F20C3AEBA_inline (const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR bool Vector3_op_Inequality_m9F170CDFBF1E490E559DA5D06D6547501A402BBF_inline (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___0_lhs, Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___1_rhs, const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 Vector3_SmoothDamp_mF673AC30464B7DF671A0556140EB6E9DD75827ED_inline (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___0_current, Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___1_target, Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* ___2_currentVelocity, float ___3_smoothTime, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void Transform_set_position_mA1A817124BB41B685043DED2A9BA48CDF37C4156 (Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* __this, Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___0_value, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void Transform_LookAt_mFEF7353E4CAEB85D5F7CEEF9276C3B8D6E314C6C (Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* __this, Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___0_worldPosition, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 Transform_get_forward_mFCFACF7165FDAB21E80E384C494DF278386CEE2F (Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* __this, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 Transform_get_right_mC6DC057C23313802E2186A9E0DB760D795A758A4 (Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* __this, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR int32_t CharacterController_Move_mE3F7AC1B4A2D6955980811C088B68ED3A31D2DA4 (CharacterController_t847C1A2719F60547D7D6077B648D6CE2D1EF3A6A* __this, Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___0_motion, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR Quaternion_tDA59F214EF07D7700B26E40E562F267AF7306974 Quaternion_Internal_FromEulerRad_mD0C4C0EFE1D70EC0EA4A92B11F1A4D5B0A134E49 (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* ___0_euler, const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 Bounds_get_min_m465AC9BBE1DE5D8E8AD95AC19B9899068FEEBB13_inline (Bounds_t367E830C64BBF235ED8C3B2F8CF6254FDCAD39C3* __this, const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 Bounds_get_max_m6446F2AB97C1E57CA89467B9DE52D4EB61F1CB09_inline (Bounds_t367E830C64BBF235ED8C3B2F8CF6254FDCAD39C3* __this, const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void Bounds_Encapsulate_m96221CB8E1B1226A2D066DF6F7F7B84CB5B9BF70_inline (Bounds_t367E830C64BBF235ED8C3B2F8CF6254FDCAD39C3* __this, Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* ___0_point, const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 Vector3_Normalize_m1DE89849FE2019B6AA0031306896F3B800849399_inline (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* ___0_value, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7 Vector2_Normalize_m52526AC1D25ED668DF8A5DE540769FA7D5671FC7 (Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7* ___0_value, const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR bool Vector2_op_Equality_m6F2E069A50E787D131261E5CB25FC9E03F95B5E1_inline (Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7 ___0_lhs, Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7 ___1_rhs, const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR bool Vector3_op_Equality_mCDCBB8D2EDC3D3BF20F31A25ACB34705D352B479_inline (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___0_lhs, Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___1_rhs, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 Vector3_SmoothDamp_m4A3D0EA27C95C3B8CF7DE5F91DEB6D9D1F2591DD (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* ___0_current, Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* ___1_target, Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* ___2_currentVelocity, float ___3_smoothTime, float ___4_maxSpeed, float ___5_deltaTime, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void Array_Clear_m50BAA3751899858B097D3FF2ED31F284703FE5CB (RuntimeArray* ___0_array, int32_t ___1_index, int32_t ___2_length, const RuntimeMethod* method) ;
+inline void List_1_AddWithResize_m79A9BF770BEF9C06BE40D5401E55E375F2726CC4 (List_1_tA239CB83DE5615F348BB0507E45F490F4F7C9A8D* __this, RuntimeObject* ___0_item, const RuntimeMethod* method)
+{
+	((  void (*) (List_1_tA239CB83DE5615F348BB0507E45F490F4F7C9A8D*, RuntimeObject*, const RuntimeMethod*))List_1_AddWithResize_m79A9BF770BEF9C06BE40D5401E55E375F2726CC4_gshared)(__this, ___0_item, method);
+}
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 Vector3_Min_m8E66B8A553166603505B72F5011ED9E0A2CB1413_inline (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* ___0_lhs, Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* ___1_rhs, const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 Vector3_Max_m60E53C4131016B84E7E592A8D950DADA96F526EC_inline (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* ___0_lhs, Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* ___1_rhs, const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void Bounds_SetMinMax_m42AF5C7723187A09BACEB4AF46292F8BDEFFDE56_inline (Bounds_t367E830C64BBF235ED8C3B2F8CF6254FDCAD39C3* __this, Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* ___0_min, Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* ___1_max, const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR float Vector3_get_magnitude_mF0D6017E90B345F1F52D1CC564C640F1A847AF2D_inline (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* __this, const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR float Mathf_Min_m747CA71A9483CDB394B13BD0AD048EE17E48FFE4_inline (float ___0_a, float ___1_b, const RuntimeMethod* method) ;
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR float Mathf_Max_mF5379E63D2BBAC76D090748695D833934F8AD051_inline (float ___0_a, float ___1_b, const RuntimeMethod* method) ;
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#pragma clang diagnostic ignored "-Wunused-variable"
+#endif
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#pragma clang diagnostic ignored "-Wunused-variable"
+#endif
+// Method Definition Index: 73989
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR MonoScriptData_t3405F29D573A6DFAAC547345A6BDBBE41CF54685 UnitySourceGeneratedAssemblyMonoScriptTypes_v1_Get_mC7CA174A23290C34424DF6D2733D5E64B92E5977 (const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&ByteU5BU5D_tA6237BF417AE52AD70CFB4EF24A7A82613DF9031_il2cpp_TypeInfo_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&U3CPrivateImplementationDetailsU3E_tDF76FE2002958A97429065AC028E0A0C70442121____8D78C950ED403FE2F565C96527DD837E1BA2543BC4B3AE1EEC90926A9F090706_FieldInfo_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&U3CPrivateImplementationDetailsU3E_tDF76FE2002958A97429065AC028E0A0C70442121____D9FA9CB11B2703EA6F85F329046B8D9E97CD82FC10BB88A764C96CD6C17F32C4_FieldInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	MonoScriptData_t3405F29D573A6DFAAC547345A6BDBBE41CF54685 V_0;
+	memset((&V_0), 0, sizeof(V_0));
+	{
+		il2cpp_codegen_initobj((&V_0), sizeof(MonoScriptData_t3405F29D573A6DFAAC547345A6BDBBE41CF54685));
+		ByteU5BU5D_tA6237BF417AE52AD70CFB4EF24A7A82613DF9031* L_0 = (ByteU5BU5D_tA6237BF417AE52AD70CFB4EF24A7A82613DF9031*)(ByteU5BU5D_tA6237BF417AE52AD70CFB4EF24A7A82613DF9031*)SZArrayNew(ByteU5BU5D_tA6237BF417AE52AD70CFB4EF24A7A82613DF9031_il2cpp_TypeInfo_var, (uint32_t)((int32_t)613));
+		ByteU5BU5D_tA6237BF417AE52AD70CFB4EF24A7A82613DF9031* L_1 = L_0;
+		RuntimeFieldHandle_t6E4C45B6D2EA12FC99185805A7E77527899B25C5 L_2 = { reinterpret_cast<intptr_t> (U3CPrivateImplementationDetailsU3E_tDF76FE2002958A97429065AC028E0A0C70442121____8D78C950ED403FE2F565C96527DD837E1BA2543BC4B3AE1EEC90926A9F090706_FieldInfo_var) };
+		RuntimeHelpers_InitializeArray_m751372AA3F24FBF6DA9B9D687CBFA2DE436CAB9B((RuntimeArray*)L_1, L_2, NULL);
+		(&V_0)->___FilePathsData = L_1;
+		Il2CppCodeGenWriteBarrier((void**)(&(&V_0)->___FilePathsData), (void*)L_1);
+		ByteU5BU5D_tA6237BF417AE52AD70CFB4EF24A7A82613DF9031* L_3 = (ByteU5BU5D_tA6237BF417AE52AD70CFB4EF24A7A82613DF9031*)(ByteU5BU5D_tA6237BF417AE52AD70CFB4EF24A7A82613DF9031*)SZArrayNew(ByteU5BU5D_tA6237BF417AE52AD70CFB4EF24A7A82613DF9031_il2cpp_TypeInfo_var, (uint32_t)((int32_t)562));
+		ByteU5BU5D_tA6237BF417AE52AD70CFB4EF24A7A82613DF9031* L_4 = L_3;
+		RuntimeFieldHandle_t6E4C45B6D2EA12FC99185805A7E77527899B25C5 L_5 = { reinterpret_cast<intptr_t> (U3CPrivateImplementationDetailsU3E_tDF76FE2002958A97429065AC028E0A0C70442121____D9FA9CB11B2703EA6F85F329046B8D9E97CD82FC10BB88A764C96CD6C17F32C4_FieldInfo_var) };
+		RuntimeHelpers_InitializeArray_m751372AA3F24FBF6DA9B9D687CBFA2DE436CAB9B((RuntimeArray*)L_4, L_5, NULL);
+		(&V_0)->___TypesData = L_4;
+		Il2CppCodeGenWriteBarrier((void**)(&(&V_0)->___TypesData), (void*)L_4);
+		(&V_0)->___TotalFiles = ((int32_t)9);
+		(&V_0)->___TotalTypes = ((int32_t)14);
+		(&V_0)->___IsEditorOnly = (bool)0;
+		MonoScriptData_t3405F29D573A6DFAAC547345A6BDBBE41CF54685 L_6 = V_0;
+		return L_6;
+	}
+}
+// Method Definition Index: 73990
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void UnitySourceGeneratedAssemblyMonoScriptTypes_v1__ctor_m3C9D09F94200334DD5FA29A465481C7848AF4549 (UnitySourceGeneratedAssemblyMonoScriptTypes_v1_tC4249931E82CEBAEC1968B680E9E9A0DF4A946C6* __this, const RuntimeMethod* method) 
+{
+	{
+		Object__ctor_mE837C6B9FA8C6D5D109F4B2EC885D79919AC0EA2(__this, NULL);
+		return;
+	}
+}
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#pragma clang diagnostic ignored "-Wunused-variable"
+#endif
+IL2CPP_EXTERN_C void MonoScriptData_t3405F29D573A6DFAAC547345A6BDBBE41CF54685_marshal_pinvoke(const MonoScriptData_t3405F29D573A6DFAAC547345A6BDBBE41CF54685& unmarshaled, MonoScriptData_t3405F29D573A6DFAAC547345A6BDBBE41CF54685_marshaled_pinvoke& marshaled)
+{
+	marshaled.___FilePathsData = il2cpp_codegen_com_marshal_safe_array(IL2CPP_VT_I1, unmarshaled.___FilePathsData);
+	marshaled.___TypesData = il2cpp_codegen_com_marshal_safe_array(IL2CPP_VT_I1, unmarshaled.___TypesData);
+	marshaled.___TotalTypes = unmarshaled.___TotalTypes;
+	marshaled.___TotalFiles = unmarshaled.___TotalFiles;
+	marshaled.___IsEditorOnly = static_cast<int32_t>(unmarshaled.___IsEditorOnly);
+}
+IL2CPP_EXTERN_C void MonoScriptData_t3405F29D573A6DFAAC547345A6BDBBE41CF54685_marshal_pinvoke_back(const MonoScriptData_t3405F29D573A6DFAAC547345A6BDBBE41CF54685_marshaled_pinvoke& marshaled, MonoScriptData_t3405F29D573A6DFAAC547345A6BDBBE41CF54685& unmarshaled)
+{
+	unmarshaled.___FilePathsData = (ByteU5BU5D_tA6237BF417AE52AD70CFB4EF24A7A82613DF9031*)il2cpp_codegen_com_marshal_safe_array_result(IL2CPP_VT_I1, il2cpp_defaults.byte_class, marshaled.___FilePathsData);
+	Il2CppCodeGenWriteBarrier((void**)(&unmarshaled.___FilePathsData), (void*)(ByteU5BU5D_tA6237BF417AE52AD70CFB4EF24A7A82613DF9031*)il2cpp_codegen_com_marshal_safe_array_result(IL2CPP_VT_I1, il2cpp_defaults.byte_class, marshaled.___FilePathsData));
+	unmarshaled.___TypesData = (ByteU5BU5D_tA6237BF417AE52AD70CFB4EF24A7A82613DF9031*)il2cpp_codegen_com_marshal_safe_array_result(IL2CPP_VT_I1, il2cpp_defaults.byte_class, marshaled.___TypesData);
+	Il2CppCodeGenWriteBarrier((void**)(&unmarshaled.___TypesData), (void*)(ByteU5BU5D_tA6237BF417AE52AD70CFB4EF24A7A82613DF9031*)il2cpp_codegen_com_marshal_safe_array_result(IL2CPP_VT_I1, il2cpp_defaults.byte_class, marshaled.___TypesData));
+	int32_t unmarshaledTotalTypes_temp_2 = 0;
+	unmarshaledTotalTypes_temp_2 = marshaled.___TotalTypes;
+	unmarshaled.___TotalTypes = unmarshaledTotalTypes_temp_2;
+	int32_t unmarshaledTotalFiles_temp_3 = 0;
+	unmarshaledTotalFiles_temp_3 = marshaled.___TotalFiles;
+	unmarshaled.___TotalFiles = unmarshaledTotalFiles_temp_3;
+	bool unmarshaledIsEditorOnly_temp_4 = false;
+	unmarshaledIsEditorOnly_temp_4 = static_cast<bool>(marshaled.___IsEditorOnly);
+	unmarshaled.___IsEditorOnly = unmarshaledIsEditorOnly_temp_4;
+}
+IL2CPP_EXTERN_C void MonoScriptData_t3405F29D573A6DFAAC547345A6BDBBE41CF54685_marshal_pinvoke_cleanup(MonoScriptData_t3405F29D573A6DFAAC547345A6BDBBE41CF54685_marshaled_pinvoke& marshaled)
+{
+	il2cpp_codegen_com_destroy_safe_array(marshaled.___FilePathsData);
+	marshaled.___FilePathsData = NULL;
+	il2cpp_codegen_com_destroy_safe_array(marshaled.___TypesData);
+	marshaled.___TypesData = NULL;
+}
+IL2CPP_EXTERN_C void MonoScriptData_t3405F29D573A6DFAAC547345A6BDBBE41CF54685_marshal_com(const MonoScriptData_t3405F29D573A6DFAAC547345A6BDBBE41CF54685& unmarshaled, MonoScriptData_t3405F29D573A6DFAAC547345A6BDBBE41CF54685_marshaled_com& marshaled)
+{
+	marshaled.___FilePathsData = il2cpp_codegen_com_marshal_safe_array(IL2CPP_VT_I1, unmarshaled.___FilePathsData);
+	marshaled.___TypesData = il2cpp_codegen_com_marshal_safe_array(IL2CPP_VT_I1, unmarshaled.___TypesData);
+	marshaled.___TotalTypes = unmarshaled.___TotalTypes;
+	marshaled.___TotalFiles = unmarshaled.___TotalFiles;
+	marshaled.___IsEditorOnly = static_cast<int32_t>(unmarshaled.___IsEditorOnly);
+}
+IL2CPP_EXTERN_C void MonoScriptData_t3405F29D573A6DFAAC547345A6BDBBE41CF54685_marshal_com_back(const MonoScriptData_t3405F29D573A6DFAAC547345A6BDBBE41CF54685_marshaled_com& marshaled, MonoScriptData_t3405F29D573A6DFAAC547345A6BDBBE41CF54685& unmarshaled)
+{
+	unmarshaled.___FilePathsData = (ByteU5BU5D_tA6237BF417AE52AD70CFB4EF24A7A82613DF9031*)il2cpp_codegen_com_marshal_safe_array_result(IL2CPP_VT_I1, il2cpp_defaults.byte_class, marshaled.___FilePathsData);
+	Il2CppCodeGenWriteBarrier((void**)(&unmarshaled.___FilePathsData), (void*)(ByteU5BU5D_tA6237BF417AE52AD70CFB4EF24A7A82613DF9031*)il2cpp_codegen_com_marshal_safe_array_result(IL2CPP_VT_I1, il2cpp_defaults.byte_class, marshaled.___FilePathsData));
+	unmarshaled.___TypesData = (ByteU5BU5D_tA6237BF417AE52AD70CFB4EF24A7A82613DF9031*)il2cpp_codegen_com_marshal_safe_array_result(IL2CPP_VT_I1, il2cpp_defaults.byte_class, marshaled.___TypesData);
+	Il2CppCodeGenWriteBarrier((void**)(&unmarshaled.___TypesData), (void*)(ByteU5BU5D_tA6237BF417AE52AD70CFB4EF24A7A82613DF9031*)il2cpp_codegen_com_marshal_safe_array_result(IL2CPP_VT_I1, il2cpp_defaults.byte_class, marshaled.___TypesData));
+	int32_t unmarshaledTotalTypes_temp_2 = 0;
+	unmarshaledTotalTypes_temp_2 = marshaled.___TotalTypes;
+	unmarshaled.___TotalTypes = unmarshaledTotalTypes_temp_2;
+	int32_t unmarshaledTotalFiles_temp_3 = 0;
+	unmarshaledTotalFiles_temp_3 = marshaled.___TotalFiles;
+	unmarshaled.___TotalFiles = unmarshaledTotalFiles_temp_3;
+	bool unmarshaledIsEditorOnly_temp_4 = false;
+	unmarshaledIsEditorOnly_temp_4 = static_cast<bool>(marshaled.___IsEditorOnly);
+	unmarshaled.___IsEditorOnly = unmarshaledIsEditorOnly_temp_4;
+}
+IL2CPP_EXTERN_C void MonoScriptData_t3405F29D573A6DFAAC547345A6BDBBE41CF54685_marshal_com_cleanup(MonoScriptData_t3405F29D573A6DFAAC547345A6BDBBE41CF54685_marshaled_com& marshaled)
+{
+	il2cpp_codegen_com_destroy_safe_array(marshaled.___FilePathsData);
+	marshaled.___FilePathsData = NULL;
+	il2cpp_codegen_com_destroy_safe_array(marshaled.___TypesData);
+	marshaled.___TypesData = NULL;
+}
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#pragma clang diagnostic ignored "-Wunused-variable"
+#endif
+// Method Definition Index: 73991
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR bool OmniDoor3D_get_needClose_mA8C427131EBA052EE262833A830ECF878CE737C2 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
+{
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:50>
+		bool L_0 = __this->____needClose;
+		return L_0;
+	}
+}
+// Method Definition Index: 73992
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_set_needClose_mBDACD3FCE99D25E9508221B8EDC1A77593E44020 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, bool ___0_value, const RuntimeMethod* method) 
+{
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:50>
+		bool L_0 = ___0_value;
+		__this->____needClose = L_0;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:50>
+		return;
+	}
+}
+// Method Definition Index: 73993
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR int32_t OmniDoor3D_get_lastDoorKind_m51F4B3E7181D6BDE506A483FAE00E8E5B6936114 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
+{
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:51>
+		int32_t L_0 = __this->____lastDoorKind;
+		return L_0;
+	}
+}
+// Method Definition Index: 73994
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_set_lastDoorKind_m3FE6051176EAB143A57F9AE8AECEE33C2EE9F0F5 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, int32_t ___0_value, const RuntimeMethod* method) 
+{
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:51>
+		int32_t L_0 = ___0_value;
+		__this->____lastDoorKind = L_0;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:51>
+		return;
+	}
+}
+// Method Definition Index: 73995
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_Start_m3430AEA3F03DF5918402EDAC3DD7676A1FD5B88A (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&CloseDoorEvt_t0FA9DD6BBFED77AF496D88825BE7100D2C05E507_il2cpp_TypeInfo_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Component_GetComponent_TisAudioSource_t871AC2272F896738252F04EE949AEF5B241D3299_m42DA4DEA19EB60D80CBED7413ADEB27FA033C77B_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&DoorOpenedEvt_t000102A9D09036B3D64BB710FE11FD7FE05AD585_il2cpp_TypeInfo_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&LockDoorEvt_t15338F49A7805255093B5E4DE5994C05EC2FEC84_il2cpp_TypeInfo_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_il2cpp_TypeInfo_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&OmniDoor3D_OnControllerClose_m480918131D4363CF79EB2CA45E24517D9F319F6B_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&OmniDoor3D_OnControllerLock_m97D4C8914E92DAC5F83BFD80292DE0DC8EFA8C44_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&OmniDoor3D_OnControllerOpen_mA1A637000670A15FAAB35E7E8BA72038C0FD9432_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&OmniDoor3D_OnControllerToggle_mA63C59658D5ACC4C4BE1982D9B5A9E66C4EC115A_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&OmniDoor3D_OnControllerUnlock_m4D825D706D046AFA2A946466D937913C2C89DCFE_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&OmniDoor3D_OnDoorOpened_m0B23CFFE2802695D62EC4DC06BB58333C12231BF_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&OpenDoorEvt_t53FDC500F958704C0041B93E83B01FD1685D2A98_il2cpp_TypeInfo_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&ToggleDoorEvt_tFE20427E5BADD68E7E1BE9380F1D78CFC33DDA40_il2cpp_TypeInfo_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&UnlockDoorEvt_t6006D394CC44175581D7140CCCC65A71B68F20CF_il2cpp_TypeInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	OmniDoor3DControllerU5BU5D_tA2C650B4032DEB60C68BABE13C51185BCF96CE31* V_0 = NULL;
+	int32_t V_1 = 0;
+	OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* V_2 = NULL;
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:172>
+		OmniDoor3DControllerU5BU5D_tA2C650B4032DEB60C68BABE13C51185BCF96CE31* L_0 = __this->___controllingObjects;
+		V_0 = L_0;
+		V_1 = 0;
+		goto IL_00cc;
+	}
+
+IL_000e:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:172>
+		OmniDoor3DControllerU5BU5D_tA2C650B4032DEB60C68BABE13C51185BCF96CE31* L_1 = V_0;
+		int32_t L_2 = V_1;
+		NullCheck(L_1);
+		int32_t L_3 = L_2;
+		OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* L_4 = (L_1)->GetAt(static_cast<il2cpp_array_size_t>(L_3));
+		V_2 = L_4;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:174>
+		OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* L_5 = V_2;
+		il2cpp_codegen_runtime_class_init_inline(Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_il2cpp_TypeInfo_var);
+		bool L_6;
+		L_6 = Object_op_Inequality_mD0BE578448EAA61948F25C32F8DD55AB1F778602(L_5, (Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C*)NULL, NULL);
+		if (!L_6)
+		{
+			goto IL_00c8;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:176>
+		OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* L_7 = V_2;
+		OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* L_8 = L_7;
+		NullCheck(L_8);
+		OpenDoorEvt_t53FDC500F958704C0041B93E83B01FD1685D2A98* L_9 = L_8->___OpenDoor;
+		OpenDoorEvt_t53FDC500F958704C0041B93E83B01FD1685D2A98* L_10 = (OpenDoorEvt_t53FDC500F958704C0041B93E83B01FD1685D2A98*)il2cpp_codegen_object_new(OpenDoorEvt_t53FDC500F958704C0041B93E83B01FD1685D2A98_il2cpp_TypeInfo_var);
+		OpenDoorEvt__ctor_m93EE2C0EAFD8330FB5935959ECA507EAACE67773(L_10, __this, (intptr_t)((void*)OmniDoor3D_OnControllerOpen_mA1A637000670A15FAAB35E7E8BA72038C0FD9432_RuntimeMethod_var), NULL);
+		Delegate_t* L_11;
+		L_11 = Delegate_Combine_m1F725AEF318BE6F0426863490691A6F4606E7D00(L_9, L_10, NULL);
+		NullCheck(L_8);
+		L_8->___OpenDoor = ((OpenDoorEvt_t53FDC500F958704C0041B93E83B01FD1685D2A98*)CastclassSealed((RuntimeObject*)L_11, OpenDoorEvt_t53FDC500F958704C0041B93E83B01FD1685D2A98_il2cpp_TypeInfo_var));
+		Il2CppCodeGenWriteBarrier((void**)(&L_8->___OpenDoor), (void*)((OpenDoorEvt_t53FDC500F958704C0041B93E83B01FD1685D2A98*)CastclassSealed((RuntimeObject*)L_11, OpenDoorEvt_t53FDC500F958704C0041B93E83B01FD1685D2A98_il2cpp_TypeInfo_var)));
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:177>
+		OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* L_12 = V_2;
+		OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* L_13 = L_12;
+		NullCheck(L_13);
+		CloseDoorEvt_t0FA9DD6BBFED77AF496D88825BE7100D2C05E507* L_14 = L_13->___CloseDoor;
+		CloseDoorEvt_t0FA9DD6BBFED77AF496D88825BE7100D2C05E507* L_15 = (CloseDoorEvt_t0FA9DD6BBFED77AF496D88825BE7100D2C05E507*)il2cpp_codegen_object_new(CloseDoorEvt_t0FA9DD6BBFED77AF496D88825BE7100D2C05E507_il2cpp_TypeInfo_var);
+		CloseDoorEvt__ctor_m135334B7D8C2D13F0CA3CA1B302150B8F3EA5FB8(L_15, __this, (intptr_t)((void*)OmniDoor3D_OnControllerClose_m480918131D4363CF79EB2CA45E24517D9F319F6B_RuntimeMethod_var), NULL);
+		Delegate_t* L_16;
+		L_16 = Delegate_Combine_m1F725AEF318BE6F0426863490691A6F4606E7D00(L_14, L_15, NULL);
+		NullCheck(L_13);
+		L_13->___CloseDoor = ((CloseDoorEvt_t0FA9DD6BBFED77AF496D88825BE7100D2C05E507*)CastclassSealed((RuntimeObject*)L_16, CloseDoorEvt_t0FA9DD6BBFED77AF496D88825BE7100D2C05E507_il2cpp_TypeInfo_var));
+		Il2CppCodeGenWriteBarrier((void**)(&L_13->___CloseDoor), (void*)((CloseDoorEvt_t0FA9DD6BBFED77AF496D88825BE7100D2C05E507*)CastclassSealed((RuntimeObject*)L_16, CloseDoorEvt_t0FA9DD6BBFED77AF496D88825BE7100D2C05E507_il2cpp_TypeInfo_var)));
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:178>
+		OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* L_17 = V_2;
+		OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* L_18 = L_17;
+		NullCheck(L_18);
+		ToggleDoorEvt_tFE20427E5BADD68E7E1BE9380F1D78CFC33DDA40* L_19 = L_18->___ToggleDoor;
+		ToggleDoorEvt_tFE20427E5BADD68E7E1BE9380F1D78CFC33DDA40* L_20 = (ToggleDoorEvt_tFE20427E5BADD68E7E1BE9380F1D78CFC33DDA40*)il2cpp_codegen_object_new(ToggleDoorEvt_tFE20427E5BADD68E7E1BE9380F1D78CFC33DDA40_il2cpp_TypeInfo_var);
+		ToggleDoorEvt__ctor_mCE9D795B7E5C415C8FBBB9967D78D0AC9B890297(L_20, __this, (intptr_t)((void*)OmniDoor3D_OnControllerToggle_mA63C59658D5ACC4C4BE1982D9B5A9E66C4EC115A_RuntimeMethod_var), NULL);
+		Delegate_t* L_21;
+		L_21 = Delegate_Combine_m1F725AEF318BE6F0426863490691A6F4606E7D00(L_19, L_20, NULL);
+		NullCheck(L_18);
+		L_18->___ToggleDoor = ((ToggleDoorEvt_tFE20427E5BADD68E7E1BE9380F1D78CFC33DDA40*)CastclassSealed((RuntimeObject*)L_21, ToggleDoorEvt_tFE20427E5BADD68E7E1BE9380F1D78CFC33DDA40_il2cpp_TypeInfo_var));
+		Il2CppCodeGenWriteBarrier((void**)(&L_18->___ToggleDoor), (void*)((ToggleDoorEvt_tFE20427E5BADD68E7E1BE9380F1D78CFC33DDA40*)CastclassSealed((RuntimeObject*)L_21, ToggleDoorEvt_tFE20427E5BADD68E7E1BE9380F1D78CFC33DDA40_il2cpp_TypeInfo_var)));
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:179>
+		OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* L_22 = V_2;
+		OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* L_23 = L_22;
+		NullCheck(L_23);
+		UnlockDoorEvt_t6006D394CC44175581D7140CCCC65A71B68F20CF* L_24 = L_23->___UnlockDoor;
+		UnlockDoorEvt_t6006D394CC44175581D7140CCCC65A71B68F20CF* L_25 = (UnlockDoorEvt_t6006D394CC44175581D7140CCCC65A71B68F20CF*)il2cpp_codegen_object_new(UnlockDoorEvt_t6006D394CC44175581D7140CCCC65A71B68F20CF_il2cpp_TypeInfo_var);
+		UnlockDoorEvt__ctor_mBED67DC21D06E11BB16218C6B27020F5DB951574(L_25, __this, (intptr_t)((void*)OmniDoor3D_OnControllerUnlock_m4D825D706D046AFA2A946466D937913C2C89DCFE_RuntimeMethod_var), NULL);
+		Delegate_t* L_26;
+		L_26 = Delegate_Combine_m1F725AEF318BE6F0426863490691A6F4606E7D00(L_24, L_25, NULL);
+		NullCheck(L_23);
+		L_23->___UnlockDoor = ((UnlockDoorEvt_t6006D394CC44175581D7140CCCC65A71B68F20CF*)CastclassSealed((RuntimeObject*)L_26, UnlockDoorEvt_t6006D394CC44175581D7140CCCC65A71B68F20CF_il2cpp_TypeInfo_var));
+		Il2CppCodeGenWriteBarrier((void**)(&L_23->___UnlockDoor), (void*)((UnlockDoorEvt_t6006D394CC44175581D7140CCCC65A71B68F20CF*)CastclassSealed((RuntimeObject*)L_26, UnlockDoorEvt_t6006D394CC44175581D7140CCCC65A71B68F20CF_il2cpp_TypeInfo_var)));
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:180>
+		OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* L_27 = V_2;
+		OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* L_28 = L_27;
+		NullCheck(L_28);
+		LockDoorEvt_t15338F49A7805255093B5E4DE5994C05EC2FEC84* L_29 = L_28->___LockDoor;
+		LockDoorEvt_t15338F49A7805255093B5E4DE5994C05EC2FEC84* L_30 = (LockDoorEvt_t15338F49A7805255093B5E4DE5994C05EC2FEC84*)il2cpp_codegen_object_new(LockDoorEvt_t15338F49A7805255093B5E4DE5994C05EC2FEC84_il2cpp_TypeInfo_var);
+		LockDoorEvt__ctor_mFEC79ED10859BA028795E11E320CE2F0B3AA762A(L_30, __this, (intptr_t)((void*)OmniDoor3D_OnControllerLock_m97D4C8914E92DAC5F83BFD80292DE0DC8EFA8C44_RuntimeMethod_var), NULL);
+		Delegate_t* L_31;
+		L_31 = Delegate_Combine_m1F725AEF318BE6F0426863490691A6F4606E7D00(L_29, L_30, NULL);
+		NullCheck(L_28);
+		L_28->___LockDoor = ((LockDoorEvt_t15338F49A7805255093B5E4DE5994C05EC2FEC84*)CastclassSealed((RuntimeObject*)L_31, LockDoorEvt_t15338F49A7805255093B5E4DE5994C05EC2FEC84_il2cpp_TypeInfo_var));
+		Il2CppCodeGenWriteBarrier((void**)(&L_28->___LockDoor), (void*)((LockDoorEvt_t15338F49A7805255093B5E4DE5994C05EC2FEC84*)CastclassSealed((RuntimeObject*)L_31, LockDoorEvt_t15338F49A7805255093B5E4DE5994C05EC2FEC84_il2cpp_TypeInfo_var)));
+	}
+
+IL_00c8:
+	{
+		int32_t L_32 = V_1;
+		V_1 = ((int32_t)il2cpp_codegen_add(L_32, 1));
+	}
+
+IL_00cc:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:172>
+		int32_t L_33 = V_1;
+		OmniDoor3DControllerU5BU5D_tA2C650B4032DEB60C68BABE13C51185BCF96CE31* L_34 = V_0;
+		NullCheck(L_34);
+		if ((((int32_t)L_33) < ((int32_t)((int32_t)(((RuntimeArray*)L_34)->max_length)))))
+		{
+			goto IL_000e;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:184>
+		DoorOpenedEvt_t000102A9D09036B3D64BB710FE11FD7FE05AD585* L_35 = __this->___DoorOpened;
+		DoorOpenedEvt_t000102A9D09036B3D64BB710FE11FD7FE05AD585* L_36 = (DoorOpenedEvt_t000102A9D09036B3D64BB710FE11FD7FE05AD585*)il2cpp_codegen_object_new(DoorOpenedEvt_t000102A9D09036B3D64BB710FE11FD7FE05AD585_il2cpp_TypeInfo_var);
+		DoorOpenedEvt__ctor_m9C9C2897DD8A03B93EED264776517091A4E0C2C1(L_36, __this, (intptr_t)((void*)OmniDoor3D_OnDoorOpened_m0B23CFFE2802695D62EC4DC06BB58333C12231BF_RuntimeMethod_var), NULL);
+		Delegate_t* L_37;
+		L_37 = Delegate_Combine_m1F725AEF318BE6F0426863490691A6F4606E7D00(L_35, L_36, NULL);
+		__this->___DoorOpened = ((DoorOpenedEvt_t000102A9D09036B3D64BB710FE11FD7FE05AD585*)CastclassSealed((RuntimeObject*)L_37, DoorOpenedEvt_t000102A9D09036B3D64BB710FE11FD7FE05AD585_il2cpp_TypeInfo_var));
+		Il2CppCodeGenWriteBarrier((void**)(&__this->___DoorOpened), (void*)((DoorOpenedEvt_t000102A9D09036B3D64BB710FE11FD7FE05AD585*)CastclassSealed((RuntimeObject*)L_37, DoorOpenedEvt_t000102A9D09036B3D64BB710FE11FD7FE05AD585_il2cpp_TypeInfo_var)));
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:185>
+		AudioSource_t871AC2272F896738252F04EE949AEF5B241D3299* L_38;
+		L_38 = Component_GetComponent_TisAudioSource_t871AC2272F896738252F04EE949AEF5B241D3299_m42DA4DEA19EB60D80CBED7413ADEB27FA033C77B(__this, Component_GetComponent_TisAudioSource_t871AC2272F896738252F04EE949AEF5B241D3299_m42DA4DEA19EB60D80CBED7413ADEB27FA033C77B_RuntimeMethod_var);
+		__this->___aSrc = L_38;
+		Il2CppCodeGenWriteBarrier((void**)(&__this->___aSrc), (void*)L_38);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:186>
+		bool L_39 = __this->___startLocked;
+		__this->___isLocked = L_39;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:187>
+		int32_t L_40 = __this->___doorKind;
+		__this->____lastDoorKind = L_40;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:188>
+		int32_t L_41 = __this->___handleKind;
+		__this->___lastHandleKind = L_41;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:189>
+		OmniDoor3D_UpdateDoorVisuals_mEBA99E72ACCAAAF610B9AF31DFBDAFAC9D3FD633(__this, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:190>
+		return;
+	}
+}
+// Method Definition Index: 73996
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_Cleanup_mC7A5ADA775F5215013B70E4A8B6786C50FA1D35D (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Application_tDB03BE91CDF0ACA614A5E0B67CFB77C44EB19B21_il2cpp_TypeInfo_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_il2cpp_TypeInfo_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&_stringLiteral2ACCC949FA3E4FD2BE1482B94739DB47175BABA3);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&_stringLiteral96DD569462D53E469E4E232A7AB66FD32C4F5E87);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&_stringLiteralA8C5CDA1FD0D841FE50F3DDFA1912303224B5621);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&_stringLiteralB8315863F071CDBFB1D74861031F66B4CD14F6A5);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&_stringLiteralC0CFCC6EB910B96A817F56A875DA75AA71D7C32B);
+		s_Il2CppMethodInitialized = true;
+	}
+	int32_t V_0 = 0;
+	Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* V_1 = NULL;
+	int32_t V_2 = 0;
+	Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* V_3 = NULL;
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:197>
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_0;
+		L_0 = Component_get_transform_m2919A1D81931E6932C7F06D4C2F0AB8DDA9A5371(__this, NULL);
+		NullCheck(L_0);
+		int32_t L_1;
+		L_1 = Transform_get_childCount_mE9C29C702AB662CC540CA053EDE48BDAFA35B4B0(L_0, NULL);
+		V_0 = ((int32_t)il2cpp_codegen_subtract(L_1, 1));
+		goto IL_0088;
+	}
+
+IL_0010:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:199>
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_2;
+		L_2 = Component_get_transform_m2919A1D81931E6932C7F06D4C2F0AB8DDA9A5371(__this, NULL);
+		int32_t L_3 = V_0;
+		NullCheck(L_2);
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_4;
+		L_4 = Transform_GetChild_mE686DF0C7AAC1F7AEF356967B1C04D8B8E240EAF(L_2, L_3, NULL);
+		V_1 = L_4;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:201>
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_5 = V_1;
+		NullCheck(L_5);
+		String_t* L_6;
+		L_6 = Object_get_name_mAC2F6B897CF1303BA4249B4CB55271AFACBB6392(L_5, NULL);
+		bool L_7;
+		L_7 = String_op_Equality_m030E1B219352228970A076136E455C4E568C02C1(L_6, _stringLiteralB8315863F071CDBFB1D74861031F66B4CD14F6A5, NULL);
+		if (L_7)
+		{
+			goto IL_0065;
+		}
+	}
+	{
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_8 = V_1;
+		NullCheck(L_8);
+		String_t* L_9;
+		L_9 = Object_get_name_mAC2F6B897CF1303BA4249B4CB55271AFACBB6392(L_8, NULL);
+		bool L_10;
+		L_10 = String_op_Equality_m030E1B219352228970A076136E455C4E568C02C1(L_9, _stringLiteral96DD569462D53E469E4E232A7AB66FD32C4F5E87, NULL);
+		if (L_10)
+		{
+			goto IL_0065;
+		}
+	}
+	{
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_11 = V_1;
+		NullCheck(L_11);
+		String_t* L_12;
+		L_12 = Object_get_name_mAC2F6B897CF1303BA4249B4CB55271AFACBB6392(L_11, NULL);
+		bool L_13;
+		L_13 = String_op_Equality_m030E1B219352228970A076136E455C4E568C02C1(L_12, _stringLiteral2ACCC949FA3E4FD2BE1482B94739DB47175BABA3, NULL);
+		if (L_13)
+		{
+			goto IL_0065;
+		}
+	}
+	{
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_14 = V_1;
+		NullCheck(L_14);
+		String_t* L_15;
+		L_15 = Object_get_name_mAC2F6B897CF1303BA4249B4CB55271AFACBB6392(L_14, NULL);
+		bool L_16;
+		L_16 = String_op_Equality_m030E1B219352228970A076136E455C4E568C02C1(L_15, _stringLiteralA8C5CDA1FD0D841FE50F3DDFA1912303224B5621, NULL);
+		if (!L_16)
+		{
+			goto IL_0084;
+		}
+	}
+
+IL_0065:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:203>
+		il2cpp_codegen_runtime_class_init_inline(Application_tDB03BE91CDF0ACA614A5E0B67CFB77C44EB19B21_il2cpp_TypeInfo_var);
+		bool L_17;
+		L_17 = Application_get_isPlaying_m25B0ABDFEF54F5370CD3F263A813540843D00F34(NULL);
+		if (!L_17)
+		{
+			goto IL_0079;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:204>
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_18 = V_1;
+		NullCheck(L_18);
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_19;
+		L_19 = Component_get_gameObject_m57AEFBB14DB39EC476F740BA000E170355DE691B(L_18, NULL);
+		il2cpp_codegen_runtime_class_init_inline(Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_il2cpp_TypeInfo_var);
+		Object_Destroy_mE97D0A766419A81296E8D4E5C23D01D3FE91ACBB(L_19, NULL);
+		goto IL_0084;
+	}
+
+IL_0079:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:206>
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_20 = V_1;
+		NullCheck(L_20);
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_21;
+		L_21 = Component_get_gameObject_m57AEFBB14DB39EC476F740BA000E170355DE691B(L_20, NULL);
+		il2cpp_codegen_runtime_class_init_inline(Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_il2cpp_TypeInfo_var);
+		Object_DestroyImmediate_m6336EBC83591A5DB64EC70C92132824C6E258705(L_21, NULL);
+	}
+
+IL_0084:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:197>
+		int32_t L_22 = V_0;
+		V_0 = ((int32_t)il2cpp_codegen_subtract(L_22, 1));
+	}
+
+IL_0088:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:197>
+		int32_t L_23 = V_0;
+		if ((((int32_t)L_23) >= ((int32_t)0)))
+		{
+			goto IL_0010;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:211>
+		MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE* L_24 = __this->___theDoor;
+		NullCheck(L_24);
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_25;
+		L_25 = Component_get_transform_m2919A1D81931E6932C7F06D4C2F0AB8DDA9A5371(L_24, NULL);
+		NullCheck(L_25);
+		int32_t L_26;
+		L_26 = Transform_get_childCount_mE9C29C702AB662CC540CA053EDE48BDAFA35B4B0(L_25, NULL);
+		V_2 = ((int32_t)il2cpp_codegen_subtract(L_26, 1));
+		goto IL_00e8;
+	}
+
+IL_00a1:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:213>
+		MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE* L_27 = __this->___theDoor;
+		NullCheck(L_27);
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_28;
+		L_28 = Component_get_transform_m2919A1D81931E6932C7F06D4C2F0AB8DDA9A5371(L_27, NULL);
+		int32_t L_29 = V_2;
+		NullCheck(L_28);
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_30;
+		L_30 = Transform_GetChild_mE686DF0C7AAC1F7AEF356967B1C04D8B8E240EAF(L_28, L_29, NULL);
+		V_3 = L_30;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:215>
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_31 = V_3;
+		NullCheck(L_31);
+		String_t* L_32;
+		L_32 = Object_get_name_mAC2F6B897CF1303BA4249B4CB55271AFACBB6392(L_31, NULL);
+		bool L_33;
+		L_33 = String_op_Equality_m030E1B219352228970A076136E455C4E568C02C1(L_32, _stringLiteralC0CFCC6EB910B96A817F56A875DA75AA71D7C32B, NULL);
+		if (!L_33)
+		{
+			goto IL_00e4;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:217>
+		il2cpp_codegen_runtime_class_init_inline(Application_tDB03BE91CDF0ACA614A5E0B67CFB77C44EB19B21_il2cpp_TypeInfo_var);
+		bool L_34;
+		L_34 = Application_get_isPlaying_m25B0ABDFEF54F5370CD3F263A813540843D00F34(NULL);
+		if (!L_34)
+		{
+			goto IL_00d9;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:218>
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_35 = V_3;
+		NullCheck(L_35);
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_36;
+		L_36 = Component_get_gameObject_m57AEFBB14DB39EC476F740BA000E170355DE691B(L_35, NULL);
+		il2cpp_codegen_runtime_class_init_inline(Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_il2cpp_TypeInfo_var);
+		Object_Destroy_mE97D0A766419A81296E8D4E5C23D01D3FE91ACBB(L_36, NULL);
+		goto IL_00e4;
+	}
+
+IL_00d9:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:220>
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_37 = V_3;
+		NullCheck(L_37);
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_38;
+		L_38 = Component_get_gameObject_m57AEFBB14DB39EC476F740BA000E170355DE691B(L_37, NULL);
+		il2cpp_codegen_runtime_class_init_inline(Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_il2cpp_TypeInfo_var);
+		Object_DestroyImmediate_m6336EBC83591A5DB64EC70C92132824C6E258705(L_38, NULL);
+	}
+
+IL_00e4:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:211>
+		int32_t L_39 = V_2;
+		V_2 = ((int32_t)il2cpp_codegen_subtract(L_39, 1));
+	}
+
+IL_00e8:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:211>
+		int32_t L_40 = V_2;
+		if ((((int32_t)L_40) >= ((int32_t)0)))
+		{
+			goto IL_00a1;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:223>
+		return;
+	}
+}
+// Method Definition Index: 73997
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_UpdateDoorVisuals_mEBA99E72ACCAAAF610B9AF31DFBDAFAC9D3FD633 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Component_GetComponentInChildren_TisMeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE_m36EDCB3A47ABF63F0F0630998380AA7635920535_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Component_GetComponent_TisMeshCollider_tB525E4DDE383252364ED0BDD32CF2B53914EE455_mFC0F02CCD26A6A186031CF43E92D7B60EA1CC370_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Component_GetComponent_TisMeshFilter_t6D1CE2473A1E45AC73013400585A1163BF66B2F5_mB82F66059DFB5715DD85BDED1D90BC03A6C9E623_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&GameObject_GetComponent_TisMeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE_m7FF948365C38BC39333D82B235A7C4EAD219960D_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&List_1_Add_m43FBF207375C6E06B8C45ECE614F9B8008FB686E_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&List_1_Add_m5F62EE992DBCC5323267265794235C9EEE07997B_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&List_1_Clear_m32D399BDD753B5BD6CE27560249096418F3F0867_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&List_1_RemoveAt_mD461DC585ED2CF965C6FABF04A941287186E0354_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&List_1__ctor_mE6AD85B1B839B7A36AC76E52A884895705D95638_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&List_1_get_Item_m70F5CFC2DEA9332B78C5ADC0EE1CE1B7465B1456_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&List_1_t386E09F4F22DDE4D2AC41A8567FFF283C254537B_il2cpp_TypeInfo_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D_il2cpp_TypeInfo_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Object_Instantiate_TisGameObject_t76FEDD663AB33C991A9C9A23129337651094216F_m58C654F1134533E29502629CA67645682B404811_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_il2cpp_TypeInfo_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&OmniDoor3DData_tC2F25EE7B9156401B8B1CC7164E74372B6F83F45_il2cpp_TypeInfo_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&_stringLiteral1976730B9E9AF01F35EECF7EDED9FF885AE7F511);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&_stringLiteral2ACCC949FA3E4FD2BE1482B94739DB47175BABA3);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&_stringLiteral83634C9AB1A7C33744BD4CB251B887C74A4FA50E);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&_stringLiteral96DD569462D53E469E4E232A7AB66FD32C4F5E87);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&_stringLiteralB241E1218D39693961E9E6B5F23F3A5EBEF1F6FF);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&_stringLiteralB8315863F071CDBFB1D74861031F66B4CD14F6A5);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&_stringLiteralC0CFCC6EB910B96A817F56A875DA75AA71D7C32B);
+		s_Il2CppMethodInitialized = true;
+	}
+	DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81 V_0;
+	memset((&V_0), 0, sizeof(V_0));
+	MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE* V_1 = NULL;
+	List_1_t386E09F4F22DDE4D2AC41A8567FFF283C254537B* V_2 = NULL;
+	List_1_t386E09F4F22DDE4D2AC41A8567FFF283C254537B* V_3 = NULL;
+	HandlePlacement_t501AE58E56D7614CD5583DECA99405B710D41907 V_4;
+	memset((&V_4), 0, sizeof(V_4));
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:227>
+		MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE* L_0 = __this->___theDoor;
+		il2cpp_codegen_runtime_class_init_inline(Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_il2cpp_TypeInfo_var);
+		bool L_1;
+		L_1 = Object_op_Equality_mB6120F782D83091EF56A198FCEBCF066DB4A9605(L_0, (Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C*)NULL, NULL);
+		if (!L_1)
+		{
+			goto IL_001a;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:228>
+		MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE* L_2;
+		L_2 = Component_GetComponentInChildren_TisMeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE_m36EDCB3A47ABF63F0F0630998380AA7635920535(__this, Component_GetComponentInChildren_TisMeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE_m36EDCB3A47ABF63F0F0630998380AA7635920535_RuntimeMethod_var);
+		__this->___theDoor = L_2;
+		Il2CppCodeGenWriteBarrier((void**)(&__this->___theDoor), (void*)L_2);
+	}
+
+IL_001a:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:230>
+		int32_t L_3 = __this->___doorKind;
+		DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81 L_4;
+		L_4 = OmniDoor3D_GetDoorInfo_mFF70B2FB604F8340C486A06275694998B42FD654(__this, L_3, NULL);
+		V_0 = L_4;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:232>
+		int32_t L_5 = __this->____lastDoorKind;
+		int32_t L_6 = __this->___doorKind;
+		if ((((int32_t)L_5) == ((int32_t)L_6)))
+		{
+			goto IL_006f;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:234>
+		DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81 L_7 = V_0;
+		MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D* L_8 = L_7.___doorMaterials;
+		NullCheck(L_8);
+		MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D* L_9 = (MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D*)(MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D*)SZArrayNew(MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D_il2cpp_TypeInfo_var, (uint32_t)((int32_t)(((RuntimeArray*)L_8)->max_length)));
+		__this->___customMaterials = L_9;
+		Il2CppCodeGenWriteBarrier((void**)(&__this->___customMaterials), (void*)L_9);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:235>
+		DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81 L_10 = V_0;
+		MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D* L_11 = L_10.___doorMaterials;
+		MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D* L_12 = __this->___customMaterials;
+		DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81 L_13 = V_0;
+		MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D* L_14 = L_13.___doorMaterials;
+		NullCheck(L_14);
+		Array_Copy_m4233828B4E6288B6D815F539AAA38575DE627900((RuntimeArray*)L_11, (RuntimeArray*)L_12, ((int32_t)(((RuntimeArray*)L_14)->max_length)), NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:236>
+		__this->___handleKind = 0;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:237>
+		__this->___postLayout = 0;
+	}
+
+IL_006f:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:241>
+		List_1_tB951CE80B58D1BF9650862451D8DAD8C231F207B* L_15 = __this->___internalPivots;
+		NullCheck(L_15);
+		List_1_Clear_m32D399BDD753B5BD6CE27560249096418F3F0867_inline(L_15, List_1_Clear_m32D399BDD753B5BD6CE27560249096418F3F0867_RuntimeMethod_var);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:242>
+		List_1_tB951CE80B58D1BF9650862451D8DAD8C231F207B* L_16 = __this->___internalPivots;
+		MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE* L_17 = __this->___theDoor;
+		NullCheck(L_17);
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_18;
+		L_18 = Component_get_transform_m2919A1D81931E6932C7F06D4C2F0AB8DDA9A5371(L_17, NULL);
+		NullCheck(L_18);
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_19;
+		L_19 = Transform_get_parent_m65354E28A4C94EC00EBCF03532F7B0718380791E(L_18, NULL);
+		NullCheck(L_19);
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_20;
+		L_20 = Component_get_gameObject_m57AEFBB14DB39EC476F740BA000E170355DE691B(L_19, NULL);
+		NullCheck(L_16);
+		List_1_Add_m43FBF207375C6E06B8C45ECE614F9B8008FB686E_inline(L_16, L_20, List_1_Add_m43FBF207375C6E06B8C45ECE614F9B8008FB686E_RuntimeMethod_var);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:243>
+		MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE* L_21 = __this->___theDoor;
+		NullCheck(L_21);
+		MeshFilter_t6D1CE2473A1E45AC73013400585A1163BF66B2F5* L_22;
+		L_22 = Component_GetComponent_TisMeshFilter_t6D1CE2473A1E45AC73013400585A1163BF66B2F5_mB82F66059DFB5715DD85BDED1D90BC03A6C9E623(L_21, Component_GetComponent_TisMeshFilter_t6D1CE2473A1E45AC73013400585A1163BF66B2F5_mB82F66059DFB5715DD85BDED1D90BC03A6C9E623_RuntimeMethod_var);
+		DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81 L_23 = V_0;
+		Mesh_t6D9C539763A09BC2B12AEAEF36F6DFFC98AE63D4* L_24 = L_23.___doorMesh;
+		NullCheck(L_22);
+		MeshFilter_set_mesh_mD2988E2D835205FD6B6CD35A61E1592844D971F8(L_22, L_24, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:244>
+		MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE* L_25 = __this->___theDoor;
+		NullCheck(L_25);
+		MeshCollider_tB525E4DDE383252364ED0BDD32CF2B53914EE455* L_26;
+		L_26 = Component_GetComponent_TisMeshCollider_tB525E4DDE383252364ED0BDD32CF2B53914EE455_mFC0F02CCD26A6A186031CF43E92D7B60EA1CC370(L_25, Component_GetComponent_TisMeshCollider_tB525E4DDE383252364ED0BDD32CF2B53914EE455_mFC0F02CCD26A6A186031CF43E92D7B60EA1CC370_RuntimeMethod_var);
+		DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81 L_27 = V_0;
+		Mesh_t6D9C539763A09BC2B12AEAEF36F6DFFC98AE63D4* L_28 = L_27.___doorMesh;
+		NullCheck(L_26);
+		MeshCollider_set_sharedMesh_m05F87B9AC04139285EBBCC159F77B51C6940E79C(L_26, L_28, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:245>
+		MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE* L_29 = __this->___theDoor;
+		MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D* L_30 = __this->___customMaterials;
+		List_1_t386E09F4F22DDE4D2AC41A8567FFF283C254537B* L_31 = (List_1_t386E09F4F22DDE4D2AC41A8567FFF283C254537B*)il2cpp_codegen_object_new(List_1_t386E09F4F22DDE4D2AC41A8567FFF283C254537B_il2cpp_TypeInfo_var);
+		List_1__ctor_mE6AD85B1B839B7A36AC76E52A884895705D95638(L_31, (RuntimeObject*)L_30, List_1__ctor_mE6AD85B1B839B7A36AC76E52A884895705D95638_RuntimeMethod_var);
+		NullCheck(L_29);
+		Renderer_SetSharedMaterials_m15D1C285831E553476B7432D97537CC5DF34C55D(L_29, L_31, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:246>
+		MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE* L_32 = __this->___theDoor;
+		NullCheck(L_32);
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_33;
+		L_33 = Component_get_transform_m2919A1D81931E6932C7F06D4C2F0AB8DDA9A5371(L_32, NULL);
+		DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81 L_34 = V_0;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_35 = L_34.___localPosition;
+		NullCheck(L_33);
+		Transform_set_localPosition_mDE1C997F7D79C0885210B7732B4BA50EE7D73134(L_33, L_35, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:247>
+		MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE* L_36 = __this->___theDoor;
+		NullCheck(L_36);
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_37;
+		L_37 = Component_get_transform_m2919A1D81931E6932C7F06D4C2F0AB8DDA9A5371(L_36, NULL);
+		DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81 L_38 = V_0;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_39 = L_38.___localRotation;
+		Quaternion_tDA59F214EF07D7700B26E40E562F267AF7306974 L_40;
+		L_40 = Quaternion_Euler_m5BCCC19216CFAD2426F15BC51A30421880D27B73_inline(L_39, NULL);
+		NullCheck(L_37);
+		Transform_set_localRotation_mAB4A011D134BA58AB780BECC0025CA65F16185FA(L_37, L_40, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:248>
+		MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE* L_41 = __this->___theDoor;
+		NullCheck(L_41);
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_42;
+		L_42 = Component_get_transform_m2919A1D81931E6932C7F06D4C2F0AB8DDA9A5371(L_41, NULL);
+		DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81 L_43 = V_0;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_44 = L_43.___localScale;
+		NullCheck(L_42);
+		Transform_set_localScale_mBA79E811BAF6C47B80FF76414C12B47B3CD03633(L_42, L_44, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:249>
+		MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE* L_45 = __this->___theDoor;
+		NullCheck(L_45);
+		Bounds_t367E830C64BBF235ED8C3B2F8CF6254FDCAD39C3 L_46;
+		L_46 = Renderer_get_bounds_m390CF334730C3C34E45CE59F1D08C3B9F3109C7C(L_45, NULL);
+		__this->___doorBounds = L_46;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:250>
+		OmniDoor3D_Cleanup_mC7A5ADA775F5215013B70E4A8B6786C50FA1D35D(__this, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:253>
+		DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81 L_47 = V_0;
+		AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20* L_48 = L_47.___defaultOpenSound;
+		__this->___openClip = L_48;
+		Il2CppCodeGenWriteBarrier((void**)(&__this->___openClip), (void*)L_48);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:254>
+		DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81 L_49 = V_0;
+		AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20* L_50 = L_49.___defaultCloseSound;
+		__this->___closeClip = L_50;
+		Il2CppCodeGenWriteBarrier((void**)(&__this->___closeClip), (void*)L_50);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:255>
+		DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81 L_51 = V_0;
+		AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20* L_52 = L_51.___defaultLockedSound;
+		__this->___lockedClip = L_52;
+		Il2CppCodeGenWriteBarrier((void**)(&__this->___lockedClip), (void*)L_52);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:256>
+		DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81 L_53 = V_0;
+		AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20* L_54 = L_53.___defaultLockingSound;
+		__this->___lockingClip = L_54;
+		Il2CppCodeGenWriteBarrier((void**)(&__this->___lockingClip), (void*)L_54);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:257>
+		DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81 L_55 = V_0;
+		AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20* L_56 = L_55.___defaultUnlockingSound;
+		__this->___unlockingClip = L_56;
+		Il2CppCodeGenWriteBarrier((void**)(&__this->___unlockingClip), (void*)L_56);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:259>
+		int32_t L_57 = __this->___doorKind;
+		if ((!(((uint32_t)L_57) == ((uint32_t)5))))
+		{
+			goto IL_0207;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:261>
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_58;
+		memset((&L_58), 0, sizeof(L_58));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_58), (0.0f), (0.540000021f), (0.0f), NULL);
+		MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE* L_59;
+		L_59 = OmniDoor3D_MakeNewSection_mFEFB2A66DA1D55B4F9A61D7E28CC6DF1AC3C36DA(__this, _stringLiteralB8315863F071CDBFB1D74861031F66B4CD14F6A5, _stringLiteral83634C9AB1A7C33744BD4CB251B887C74A4FA50E, L_58, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:262>
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_60;
+		memset((&L_60), 0, sizeof(L_60));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_60), (0.0f), (1.08000004f), (0.0f), NULL);
+		MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE* L_61;
+		L_61 = OmniDoor3D_MakeNewSection_mFEFB2A66DA1D55B4F9A61D7E28CC6DF1AC3C36DA(__this, _stringLiteral96DD569462D53E469E4E232A7AB66FD32C4F5E87, _stringLiteralB241E1218D39693961E9E6B5F23F3A5EBEF1F6FF, L_60, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:263>
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_62;
+		memset((&L_62), 0, sizeof(L_62));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_62), (0.0f), (1.62f), (0.0f), NULL);
+		MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE* L_63;
+		L_63 = OmniDoor3D_MakeNewSection_mFEFB2A66DA1D55B4F9A61D7E28CC6DF1AC3C36DA(__this, _stringLiteral2ACCC949FA3E4FD2BE1482B94739DB47175BABA3, _stringLiteral1976730B9E9AF01F35EECF7EDED9FF885AE7F511, L_62, NULL);
+		V_1 = L_63;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:264>
+		Bounds_t367E830C64BBF235ED8C3B2F8CF6254FDCAD39C3* L_64 = (Bounds_t367E830C64BBF235ED8C3B2F8CF6254FDCAD39C3*)(&__this->___doorBounds);
+		MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE* L_65 = V_1;
+		NullCheck(L_65);
+		Bounds_t367E830C64BBF235ED8C3B2F8CF6254FDCAD39C3 L_66;
+		L_66 = Renderer_get_bounds_m390CF334730C3C34E45CE59F1D08C3B9F3109C7C(L_65, NULL);
+		Bounds_Encapsulate_m7C70C382B9380A8C962074C78E189B53CE8F7A22_inline(L_64, L_66, NULL);
+		goto IL_028a;
+	}
+
+IL_0207:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:266>
+		int32_t L_67 = __this->___doorKind;
+		il2cpp_codegen_runtime_class_init_inline(OmniDoor3DData_tC2F25EE7B9156401B8B1CC7164E74372B6F83F45_il2cpp_TypeInfo_var);
+		bool L_68;
+		L_68 = OmniDoor3DData_IsStandard_mAC537037B236421107762A3388E7DB74E127D43E(L_67, NULL);
+		if (!L_68)
+		{
+			goto IL_028a;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:268>
+		bool L_69 = __this->___windowed;
+		if (L_69)
+		{
+			goto IL_0253;
+		}
+	}
+	{
+		MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE* L_70 = __this->___theDoor;
+		NullCheck(L_70);
+		MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D* L_71;
+		L_71 = Renderer_get_sharedMaterials_m0B61AFD8EDA35A70C796FFB2F28BB62380051ABF(L_70, NULL);
+		NullCheck(L_71);
+		if ((((int32_t)((int32_t)(((RuntimeArray*)L_71)->max_length))) >= ((int32_t)4)))
+		{
+			goto IL_0253;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:270>
+		MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D* L_72 = __this->___customMaterials;
+		List_1_t386E09F4F22DDE4D2AC41A8567FFF283C254537B* L_73 = (List_1_t386E09F4F22DDE4D2AC41A8567FFF283C254537B*)il2cpp_codegen_object_new(List_1_t386E09F4F22DDE4D2AC41A8567FFF283C254537B_il2cpp_TypeInfo_var);
+		List_1__ctor_mE6AD85B1B839B7A36AC76E52A884895705D95638(L_73, (RuntimeObject*)L_72, List_1__ctor_mE6AD85B1B839B7A36AC76E52A884895705D95638_RuntimeMethod_var);
+		V_2 = L_73;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:271>
+		List_1_t386E09F4F22DDE4D2AC41A8567FFF283C254537B* L_74 = V_2;
+		List_1_t386E09F4F22DDE4D2AC41A8567FFF283C254537B* L_75 = V_2;
+		NullCheck(L_75);
+		Material_t18053F08F347D0DCA5E1140EC7EC4533DD8A14E3* L_76;
+		L_76 = List_1_get_Item_m70F5CFC2DEA9332B78C5ADC0EE1CE1B7465B1456(L_75, 0, List_1_get_Item_m70F5CFC2DEA9332B78C5ADC0EE1CE1B7465B1456_RuntimeMethod_var);
+		NullCheck(L_74);
+		List_1_Add_m5F62EE992DBCC5323267265794235C9EEE07997B_inline(L_74, L_76, List_1_Add_m5F62EE992DBCC5323267265794235C9EEE07997B_RuntimeMethod_var);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:272>
+		MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE* L_77 = __this->___theDoor;
+		List_1_t386E09F4F22DDE4D2AC41A8567FFF283C254537B* L_78 = V_2;
+		NullCheck(L_77);
+		Renderer_SetSharedMaterials_m15D1C285831E553476B7432D97537CC5DF34C55D(L_77, L_78, NULL);
+		goto IL_028a;
+	}
+
+IL_0253:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:274>
+		bool L_79 = __this->___windowed;
+		if (!L_79)
+		{
+			goto IL_028a;
+		}
+	}
+	{
+		MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE* L_80 = __this->___theDoor;
+		NullCheck(L_80);
+		MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D* L_81;
+		L_81 = Renderer_get_sharedMaterials_m0B61AFD8EDA35A70C796FFB2F28BB62380051ABF(L_80, NULL);
+		NullCheck(L_81);
+		if ((((int32_t)((int32_t)(((RuntimeArray*)L_81)->max_length))) <= ((int32_t)3)))
+		{
+			goto IL_028a;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:276>
+		MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D* L_82 = __this->___customMaterials;
+		List_1_t386E09F4F22DDE4D2AC41A8567FFF283C254537B* L_83 = (List_1_t386E09F4F22DDE4D2AC41A8567FFF283C254537B*)il2cpp_codegen_object_new(List_1_t386E09F4F22DDE4D2AC41A8567FFF283C254537B_il2cpp_TypeInfo_var);
+		List_1__ctor_mE6AD85B1B839B7A36AC76E52A884895705D95638(L_83, (RuntimeObject*)L_82, List_1__ctor_mE6AD85B1B839B7A36AC76E52A884895705D95638_RuntimeMethod_var);
+		V_3 = L_83;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:277>
+		List_1_t386E09F4F22DDE4D2AC41A8567FFF283C254537B* L_84 = V_3;
+		NullCheck(L_84);
+		List_1_RemoveAt_mD461DC585ED2CF965C6FABF04A941287186E0354(L_84, 3, List_1_RemoveAt_mD461DC585ED2CF965C6FABF04A941287186E0354_RuntimeMethod_var);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:278>
+		MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE* L_85 = __this->___theDoor;
+		List_1_t386E09F4F22DDE4D2AC41A8567FFF283C254537B* L_86 = V_3;
+		NullCheck(L_85);
+		Renderer_SetSharedMaterials_m15D1C285831E553476B7432D97537CC5DF34C55D(L_85, L_86, NULL);
+	}
+
+IL_028a:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:283>
+		int32_t L_87 = __this->___handleKind;
+		if (!L_87)
+		{
+			goto IL_0344;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:285>
+		int32_t L_88 = __this->___lastHandleKind;
+		int32_t L_89 = __this->___handleKind;
+		if ((((int32_t)L_88) == ((int32_t)L_89)))
+		{
+			goto IL_02b5;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:286>
+		int32_t L_90 = __this->___handleKind;
+		MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D* L_91;
+		L_91 = OmniDoor3D_GetHandleMaterials_mB0B774D925ED6F8F3CFA1AA6B2B84828DAB7C6D2(__this, L_90, NULL);
+		__this->___handleMaterials = L_91;
+		Il2CppCodeGenWriteBarrier((void**)(&__this->___handleMaterials), (void*)L_91);
+	}
+
+IL_02b5:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:289>
+		DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81 L_92 = V_0;
+		int32_t L_93 = __this->___handleKind;
+		bool L_94;
+		L_94 = OmniDoor3D_GetHandlePlacement_mBE88C2D24B123D0566FEF1E5658FDFCAAECA9012(__this, L_92, L_93, (&V_4), NULL);
+		if (!L_94)
+		{
+			goto IL_0344;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:291>
+		int32_t L_95 = __this->___handleKind;
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_96;
+		L_96 = OmniDoor3D_GetHandlePrefab_m54B1EE39320C4B237AE0E08BB809FB76AC210176(__this, L_95, NULL);
+		MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE* L_97 = __this->___theDoor;
+		NullCheck(L_97);
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_98;
+		L_98 = Component_get_transform_m2919A1D81931E6932C7F06D4C2F0AB8DDA9A5371(L_97, NULL);
+		il2cpp_codegen_runtime_class_init_inline(Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_il2cpp_TypeInfo_var);
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_99;
+		L_99 = Object_Instantiate_TisGameObject_t76FEDD663AB33C991A9C9A23129337651094216F_m58C654F1134533E29502629CA67645682B404811(L_96, L_98, Object_Instantiate_TisGameObject_t76FEDD663AB33C991A9C9A23129337651094216F_m58C654F1134533E29502629CA67645682B404811_RuntimeMethod_var);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:292>
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_100 = L_99;
+		NullCheck(L_100);
+		Object_set_name_mC79E6DC8FFD72479C90F0C4CC7F42A0FEAF5AE47(L_100, _stringLiteralC0CFCC6EB910B96A817F56A875DA75AA71D7C32B, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:293>
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_101 = L_100;
+		NullCheck(L_101);
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_102;
+		L_102 = GameObject_get_transform_m0BC10ADFA1632166AE5544BDF9038A2650C2AE56(L_101, NULL);
+		HandlePlacement_t501AE58E56D7614CD5583DECA99405B710D41907 L_103 = V_4;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_104 = L_103.___handlePosition;
+		NullCheck(L_102);
+		Transform_set_localPosition_mDE1C997F7D79C0885210B7732B4BA50EE7D73134(L_102, L_104, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:294>
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_105 = L_101;
+		NullCheck(L_105);
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_106;
+		L_106 = GameObject_get_transform_m0BC10ADFA1632166AE5544BDF9038A2650C2AE56(L_105, NULL);
+		HandlePlacement_t501AE58E56D7614CD5583DECA99405B710D41907 L_107 = V_4;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_108 = L_107.___handleRotation;
+		Quaternion_tDA59F214EF07D7700B26E40E562F267AF7306974 L_109;
+		L_109 = Quaternion_Euler_m5BCCC19216CFAD2426F15BC51A30421880D27B73_inline(L_108, NULL);
+		NullCheck(L_106);
+		Transform_set_localRotation_mAB4A011D134BA58AB780BECC0025CA65F16185FA(L_106, L_109, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:295>
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_110 = L_105;
+		NullCheck(L_110);
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_111;
+		L_111 = GameObject_get_transform_m0BC10ADFA1632166AE5544BDF9038A2650C2AE56(L_110, NULL);
+		HandlePlacement_t501AE58E56D7614CD5583DECA99405B710D41907 L_112 = V_4;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_113 = L_112.___handleScale;
+		NullCheck(L_111);
+		Transform_set_localScale_mBA79E811BAF6C47B80FF76414C12B47B3CD03633(L_111, L_113, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:296>
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_114 = L_110;
+		NullCheck(L_114);
+		MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE* L_115;
+		L_115 = GameObject_GetComponent_TisMeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE_m7FF948365C38BC39333D82B235A7C4EAD219960D(L_114, GameObject_GetComponent_TisMeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE_m7FF948365C38BC39333D82B235A7C4EAD219960D_RuntimeMethod_var);
+		MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D* L_116 = __this->___handleMaterials;
+		List_1_t386E09F4F22DDE4D2AC41A8567FFF283C254537B* L_117 = (List_1_t386E09F4F22DDE4D2AC41A8567FFF283C254537B*)il2cpp_codegen_object_new(List_1_t386E09F4F22DDE4D2AC41A8567FFF283C254537B_il2cpp_TypeInfo_var);
+		List_1__ctor_mE6AD85B1B839B7A36AC76E52A884895705D95638(L_117, (RuntimeObject*)L_116, List_1__ctor_mE6AD85B1B839B7A36AC76E52A884895705D95638_RuntimeMethod_var);
+		NullCheck(L_115);
+		Renderer_SetSharedMaterials_m15D1C285831E553476B7432D97537CC5DF34C55D(L_115, L_117, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:297>
+		NullCheck(L_114);
+		GameObject_set_isStatic_m0468F0E4553F5B3DDBE03F3788BE0A1A3736839C(L_114, (bool)1, NULL);
+	}
+
+IL_0344:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:302>
+		int32_t L_118 = __this->___postLayout;
+		if (!L_118)
+		{
+			goto IL_0396;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:304>
+		int32_t L_119 = __this->___postLayout;
+		if ((((int32_t)L_119) == ((int32_t)3)))
+		{
+			goto IL_035e;
+		}
+	}
+	{
+		int32_t L_120 = __this->___postLayout;
+		if ((!(((uint32_t)L_120) == ((uint32_t)1))))
+		{
+			goto IL_0370;
+		}
+	}
+
+IL_035e:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:305>
+		int32_t L_121 = __this->___doorKind;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_122;
+		L_122 = OmniDoor3D_GetRightPostPos_mD9A808E1BEF9F19E1BEA091444B449840F3BD564(__this, L_121, NULL);
+		OmniDoor3D_MakeFencePost_m2F573714C43AB5663E533421546EFF42BCFA1DA5(__this, L_122, NULL);
+	}
+
+IL_0370:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:307>
+		int32_t L_123 = __this->___postLayout;
+		if ((((int32_t)L_123) == ((int32_t)2)))
+		{
+			goto IL_0382;
+		}
+	}
+	{
+		int32_t L_124 = __this->___postLayout;
+		if ((!(((uint32_t)L_124) == ((uint32_t)1))))
+		{
+			goto IL_03a8;
+		}
+	}
+
+IL_0382:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:308>
+		int32_t L_125 = __this->___doorKind;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_126;
+		L_126 = OmniDoor3D_GetLeftPostPos_mB1C40BF2872290615E81173D11DE9B51E3A865C6(__this, L_125, NULL);
+		OmniDoor3D_MakeFencePost_m2F573714C43AB5663E533421546EFF42BCFA1DA5(__this, L_126, NULL);
+		goto IL_03a8;
+	}
+
+IL_0396:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:311>
+		int32_t L_127 = __this->___doorKind;
+		MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D* L_128;
+		L_128 = OmniDoor3D_GetPostMaterials_m76B030C398B25123393DEECBAAD8F5A94361DA57(__this, L_127, NULL);
+		__this->___postMaterials = L_128;
+		Il2CppCodeGenWriteBarrier((void**)(&__this->___postMaterials), (void*)L_128);
+	}
+
+IL_03a8:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:313>
+		OmniDoor3D_UpdateTriggerShapeAndSize_m23401190A3A1C0F86E3953ED580E99BEE5726C9C(__this, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:314>
+		OmniDoor3D_UpdateMeshLayers_m93DF5BE8E2B965ACE18F6A7BEE1FB9D9D164F494(__this, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:315>
+		int32_t L_129 = __this->___doorKind;
+		__this->____lastDoorKind = L_129;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:316>
+		int32_t L_130 = __this->___handleKind;
+		__this->___lastHandleKind = L_130;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:317>
+		return;
+	}
+}
+// Method Definition Index: 73998
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_UpdateMeshLayers_m93DF5BE8E2B965ACE18F6A7BEE1FB9D9D164F494 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Component_GetComponentsInChildren_TisMeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE_m820D038F52BDC71ECDEAE04ED05D98CCF63E9243_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Enumerator_Dispose_m07D362A07C19B36C2FD1B4DC79DD99903D4DA95D_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Enumerator_MoveNext_m96F4B0BD0A5485C8E8CC57D961DF6F1FA256AF27_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Enumerator_get_Current_m7236EBE1CFCB6533F96E030500D322B13D0CA5A4_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&List_1_GetEnumerator_mA843D26C63E5963415DFCA6E49DFA27AFD9C75E8_RuntimeMethod_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	MeshRendererU5BU5D_tDF429EF168050A5CE085D0B51909A6AE2067E446* V_0 = NULL;
+	int32_t V_1 = 0;
+	MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE* V_2 = NULL;
+	Enumerator_t88BD1282EF117E59AACFC9EC55B89F0B9EDACE60 V_3;
+	memset((&V_3), 0, sizeof(V_3));
+	GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* V_4 = NULL;
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:322>
+		MeshRendererU5BU5D_tDF429EF168050A5CE085D0B51909A6AE2067E446* L_0;
+		L_0 = Component_GetComponentsInChildren_TisMeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE_m820D038F52BDC71ECDEAE04ED05D98CCF63E9243(__this, Component_GetComponentsInChildren_TisMeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE_m820D038F52BDC71ECDEAE04ED05D98CCF63E9243_RuntimeMethod_var);
+		V_0 = L_0;
+		V_1 = 0;
+		goto IL_0037;
+	}
+
+IL_000b:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:322>
+		MeshRendererU5BU5D_tDF429EF168050A5CE085D0B51909A6AE2067E446* L_1 = V_0;
+		int32_t L_2 = V_1;
+		NullCheck(L_1);
+		int32_t L_3 = L_2;
+		MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE* L_4 = (L_1)->GetAt(static_cast<il2cpp_array_size_t>(L_3));
+		V_2 = L_4;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:324>
+		MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE* L_5 = V_2;
+		NullCheck(L_5);
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_6;
+		L_6 = Component_get_gameObject_m57AEFBB14DB39EC476F740BA000E170355DE691B(L_5, NULL);
+		NullCheck(L_6);
+		int32_t L_7;
+		L_7 = GameObject_get_layer_m108902B9C89E9F837CE06B9942AA42307450FEAF(L_6, NULL);
+		int32_t L_8 = __this->___doorLayer;
+		if ((((int32_t)L_7) == ((int32_t)L_8)))
+		{
+			goto IL_0033;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:325>
+		MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE* L_9 = V_2;
+		NullCheck(L_9);
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_10;
+		L_10 = Component_get_gameObject_m57AEFBB14DB39EC476F740BA000E170355DE691B(L_9, NULL);
+		int32_t L_11 = __this->___doorLayer;
+		NullCheck(L_10);
+		GameObject_set_layer_m6E1AF478A2CC86BD222B96317BEB78B7D89B18D0(L_10, L_11, NULL);
+	}
+
+IL_0033:
+	{
+		int32_t L_12 = V_1;
+		V_1 = ((int32_t)il2cpp_codegen_add(L_12, 1));
+	}
+
+IL_0037:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:322>
+		int32_t L_13 = V_1;
+		MeshRendererU5BU5D_tDF429EF168050A5CE085D0B51909A6AE2067E446* L_14 = V_0;
+		NullCheck(L_14);
+		if ((((int32_t)L_13) < ((int32_t)((int32_t)(((RuntimeArray*)L_14)->max_length)))))
+		{
+			goto IL_000b;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:328>
+		List_1_tB951CE80B58D1BF9650862451D8DAD8C231F207B* L_15 = __this->___internalPivots;
+		NullCheck(L_15);
+		Enumerator_t88BD1282EF117E59AACFC9EC55B89F0B9EDACE60 L_16;
+		L_16 = List_1_GetEnumerator_mA843D26C63E5963415DFCA6E49DFA27AFD9C75E8(L_15, List_1_GetEnumerator_mA843D26C63E5963415DFCA6E49DFA27AFD9C75E8_RuntimeMethod_var);
+		V_3 = L_16;
+	}
+	{
+		auto __finallyBlock = il2cpp::utils::Finally([&]
+		{
+
+FINALLY_00b5:
+			{
+				Enumerator_Dispose_m07D362A07C19B36C2FD1B4DC79DD99903D4DA95D((&V_3), Enumerator_Dispose_m07D362A07C19B36C2FD1B4DC79DD99903D4DA95D_RuntimeMethod_var);
+				return;
+			}
+		});
+		try
+		{
+			{
+				goto IL_00aa_1;
+			}
+
+IL_004b_1:
+			{
+				//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:328>
+				GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_17;
+				L_17 = Enumerator_get_Current_m7236EBE1CFCB6533F96E030500D322B13D0CA5A4_inline((&V_3), Enumerator_get_Current_m7236EBE1CFCB6533F96E030500D322B13D0CA5A4_RuntimeMethod_var);
+				V_4 = L_17;
+				//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:330>
+				GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_18 = V_4;
+				NullCheck(L_18);
+				int32_t L_19;
+				L_19 = GameObject_get_layer_m108902B9C89E9F837CE06B9942AA42307450FEAF(L_18, NULL);
+				int32_t L_20 = __this->___doorLayer;
+				if ((((int32_t)L_19) == ((int32_t)L_20)))
+				{
+					goto IL_0070_1;
+				}
+			}
+			{
+				//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:331>
+				GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_21 = V_4;
+				int32_t L_22 = __this->___doorLayer;
+				NullCheck(L_21);
+				GameObject_set_layer_m6E1AF478A2CC86BD222B96317BEB78B7D89B18D0(L_21, L_22, NULL);
+			}
+
+IL_0070_1:
+			{
+				//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:333>
+				GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_23 = V_4;
+				NullCheck(L_23);
+				Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_24;
+				L_24 = GameObject_get_transform_m0BC10ADFA1632166AE5544BDF9038A2650C2AE56(L_23, NULL);
+				NullCheck(L_24);
+				Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_25;
+				L_25 = Transform_get_parent_m65354E28A4C94EC00EBCF03532F7B0718380791E(L_24, NULL);
+				NullCheck(L_25);
+				GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_26;
+				L_26 = Component_get_gameObject_m57AEFBB14DB39EC476F740BA000E170355DE691B(L_25, NULL);
+				NullCheck(L_26);
+				int32_t L_27;
+				L_27 = GameObject_get_layer_m108902B9C89E9F837CE06B9942AA42307450FEAF(L_26, NULL);
+				int32_t L_28 = __this->___doorLayer;
+				if ((((int32_t)L_27) == ((int32_t)L_28)))
+				{
+					goto IL_00aa_1;
+				}
+			}
+			{
+				//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:334>
+				GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_29 = V_4;
+				NullCheck(L_29);
+				Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_30;
+				L_30 = GameObject_get_transform_m0BC10ADFA1632166AE5544BDF9038A2650C2AE56(L_29, NULL);
+				NullCheck(L_30);
+				Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_31;
+				L_31 = Transform_get_parent_m65354E28A4C94EC00EBCF03532F7B0718380791E(L_30, NULL);
+				NullCheck(L_31);
+				GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_32;
+				L_32 = Component_get_gameObject_m57AEFBB14DB39EC476F740BA000E170355DE691B(L_31, NULL);
+				int32_t L_33 = __this->___doorLayer;
+				NullCheck(L_32);
+				GameObject_set_layer_m6E1AF478A2CC86BD222B96317BEB78B7D89B18D0(L_32, L_33, NULL);
+			}
+
+IL_00aa_1:
+			{
+				//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:328>
+				bool L_34;
+				L_34 = Enumerator_MoveNext_m96F4B0BD0A5485C8E8CC57D961DF6F1FA256AF27((&V_3), Enumerator_MoveNext_m96F4B0BD0A5485C8E8CC57D961DF6F1FA256AF27_RuntimeMethod_var);
+				if (L_34)
+				{
+					goto IL_004b_1;
+				}
+			}
+			{
+				goto IL_00c3;
+			}
+		}
+		catch(Il2CppExceptionWrapper& e)
+		{
+			__finallyBlock.StoreException(e.ex);
+		}
+	}
+
+IL_00c3:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:336>
+		return;
+	}
+}
+// Method Definition Index: 73999
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_UpdateTriggerShapeAndSize_m23401190A3A1C0F86E3953ED580E99BEE5726C9C (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Component_GetComponent_TisCollider_t1CC3163924FCD6C4CC2E816373A929C1E3D55E76_m820398EDBF1D3766C3166A0C323A127662A29A14_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Component_TryGetComponent_TisBoxCollider_tFA5D239388334D6DE0B8FFDAD6825C5B03786E23_m011E26A4DB9D56A12F8CFF26FB9E086B662BF89F_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Component_TryGetComponent_TisSphereCollider_tBA111C542CE97F6873DE742757213D6265C7D275_mF1BA0B87B30EBE200D611A6CA17BBC8C8A2AD79E_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&GameObject_AddComponent_TisBoxCollider_tFA5D239388334D6DE0B8FFDAD6825C5B03786E23_m655518C8454E418FE8CF0E4770881B7A2B12BB23_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&GameObject_AddComponent_TisSphereCollider_tBA111C542CE97F6873DE742757213D6265C7D275_m3D05F19667844A2949840753F7A3287115BE029E_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_il2cpp_TypeInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	BoxCollider_tFA5D239388334D6DE0B8FFDAD6825C5B03786E23* V_0 = NULL;
+	Matrix4x4_tDB70CF134A14BA38190C59AA700BCE10E2AED3E6 V_1;
+	memset((&V_1), 0, sizeof(V_1));
+	SphereCollider_tBA111C542CE97F6873DE742757213D6265C7D275* V_2 = NULL;
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:341>
+		int32_t L_0 = __this->___triggerShape;
+		if (L_0)
+		{
+			goto IL_0082;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:343>
+		bool L_1;
+		L_1 = Component_TryGetComponent_TisBoxCollider_tFA5D239388334D6DE0B8FFDAD6825C5B03786E23_m011E26A4DB9D56A12F8CFF26FB9E086B662BF89F(__this, (&V_0), Component_TryGetComponent_TisBoxCollider_tFA5D239388334D6DE0B8FFDAD6825C5B03786E23_m011E26A4DB9D56A12F8CFF26FB9E086B662BF89F_RuntimeMethod_var);
+		if (L_1)
+		{
+			goto IL_003c;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:345>
+		Collider_t1CC3163924FCD6C4CC2E816373A929C1E3D55E76* L_2;
+		L_2 = Component_GetComponent_TisCollider_t1CC3163924FCD6C4CC2E816373A929C1E3D55E76_m820398EDBF1D3766C3166A0C323A127662A29A14(__this, Component_GetComponent_TisCollider_t1CC3163924FCD6C4CC2E816373A929C1E3D55E76_m820398EDBF1D3766C3166A0C323A127662A29A14_RuntimeMethod_var);
+		il2cpp_codegen_runtime_class_init_inline(Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_il2cpp_TypeInfo_var);
+		Object_DestroyImmediate_m6336EBC83591A5DB64EC70C92132824C6E258705(L_2, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:346>
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_3;
+		L_3 = Component_get_gameObject_m57AEFBB14DB39EC476F740BA000E170355DE691B(__this, NULL);
+		NullCheck(L_3);
+		BoxCollider_tFA5D239388334D6DE0B8FFDAD6825C5B03786E23* L_4;
+		L_4 = GameObject_AddComponent_TisBoxCollider_tFA5D239388334D6DE0B8FFDAD6825C5B03786E23_m655518C8454E418FE8CF0E4770881B7A2B12BB23(L_3, GameObject_AddComponent_TisBoxCollider_tFA5D239388334D6DE0B8FFDAD6825C5B03786E23_m655518C8454E418FE8CF0E4770881B7A2B12BB23_RuntimeMethod_var);
+		V_0 = L_4;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:347>
+		BoxCollider_tFA5D239388334D6DE0B8FFDAD6825C5B03786E23* L_5 = V_0;
+		NullCheck(L_5);
+		Collider_set_isTrigger_mFCD22F3EB5E28C97863956AB725D53F7F4B7CA78(L_5, (bool)1, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:348>
+		BoxCollider_tFA5D239388334D6DE0B8FFDAD6825C5B03786E23* L_6 = V_0;
+		LayerMask_t97CB6BDADEDC3D6423C7BCFEA7F86DA2EC6241DB L_7 = __this->___openingLayers;
+		NullCheck(L_6);
+		Collider_set_includeLayers_m48BF564FEE364CA2AD7FBDC98A584977F5140AC1(L_6, L_7, NULL);
+	}
+
+IL_003c:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:351>
+		BoxCollider_tFA5D239388334D6DE0B8FFDAD6825C5B03786E23* L_8 = V_0;
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_9;
+		L_9 = Component_get_transform_m2919A1D81931E6932C7F06D4C2F0AB8DDA9A5371(__this, NULL);
+		NullCheck(L_9);
+		Matrix4x4_tDB70CF134A14BA38190C59AA700BCE10E2AED3E6 L_10;
+		L_10 = Transform_get_worldToLocalMatrix_mB633C122A01BCE8E51B10B8B8CB95F580750B3F1(L_9, NULL);
+		V_1 = L_10;
+		Bounds_t367E830C64BBF235ED8C3B2F8CF6254FDCAD39C3* L_11 = (Bounds_t367E830C64BBF235ED8C3B2F8CF6254FDCAD39C3*)(&__this->___doorBounds);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_12;
+		L_12 = Bounds_get_center_m5B05F81CB835EB6DD8628FDA24B638F477984DC3_inline(L_11, NULL);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_13;
+		L_13 = Matrix4x4_MultiplyPoint3x4_mACCBD70AFA82C63DA88555780B7B6B01281AB814_inline((&V_1), L_12, NULL);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_14 = __this->___triggerOffset;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_15;
+		L_15 = Vector3_op_Addition_m78C0EC70CB66E8DCAC225743D82B268DAEE92067_inline(L_13, L_14, NULL);
+		NullCheck(L_8);
+		BoxCollider_set_center_m0AB0482699735FEE8306A7FCAAE66A76C479F0F0(L_8, L_15, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:352>
+		BoxCollider_tFA5D239388334D6DE0B8FFDAD6825C5B03786E23* L_16 = V_0;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_17 = __this->___triggerExtents;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_18;
+		L_18 = Vector3_op_Multiply_m87BA7C578F96C8E49BB07088DAAC4649F83B0353_inline(L_17, (2.0f), NULL);
+		NullCheck(L_16);
+		BoxCollider_set_size_m8374267FDE5DD628973E0E5E1331E781552B855A(L_16, L_18, NULL);
+		return;
+	}
+
+IL_0082:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:354>
+		int32_t L_19 = __this->___triggerShape;
+		if ((!(((uint32_t)L_19) == ((uint32_t)1))))
+		{
+			goto IL_00fa;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:356>
+		bool L_20;
+		L_20 = Component_TryGetComponent_TisSphereCollider_tBA111C542CE97F6873DE742757213D6265C7D275_mF1BA0B87B30EBE200D611A6CA17BBC8C8A2AD79E(__this, (&V_2), Component_TryGetComponent_TisSphereCollider_tBA111C542CE97F6873DE742757213D6265C7D275_mF1BA0B87B30EBE200D611A6CA17BBC8C8A2AD79E_RuntimeMethod_var);
+		if (L_20)
+		{
+			goto IL_00bf;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:358>
+		Collider_t1CC3163924FCD6C4CC2E816373A929C1E3D55E76* L_21;
+		L_21 = Component_GetComponent_TisCollider_t1CC3163924FCD6C4CC2E816373A929C1E3D55E76_m820398EDBF1D3766C3166A0C323A127662A29A14(__this, Component_GetComponent_TisCollider_t1CC3163924FCD6C4CC2E816373A929C1E3D55E76_m820398EDBF1D3766C3166A0C323A127662A29A14_RuntimeMethod_var);
+		il2cpp_codegen_runtime_class_init_inline(Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_il2cpp_TypeInfo_var);
+		Object_DestroyImmediate_m6336EBC83591A5DB64EC70C92132824C6E258705(L_21, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:359>
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_22;
+		L_22 = Component_get_gameObject_m57AEFBB14DB39EC476F740BA000E170355DE691B(__this, NULL);
+		NullCheck(L_22);
+		SphereCollider_tBA111C542CE97F6873DE742757213D6265C7D275* L_23;
+		L_23 = GameObject_AddComponent_TisSphereCollider_tBA111C542CE97F6873DE742757213D6265C7D275_m3D05F19667844A2949840753F7A3287115BE029E(L_22, GameObject_AddComponent_TisSphereCollider_tBA111C542CE97F6873DE742757213D6265C7D275_m3D05F19667844A2949840753F7A3287115BE029E_RuntimeMethod_var);
+		V_2 = L_23;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:360>
+		SphereCollider_tBA111C542CE97F6873DE742757213D6265C7D275* L_24 = V_2;
+		NullCheck(L_24);
+		Collider_set_isTrigger_mFCD22F3EB5E28C97863956AB725D53F7F4B7CA78(L_24, (bool)1, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:361>
+		SphereCollider_tBA111C542CE97F6873DE742757213D6265C7D275* L_25 = V_2;
+		LayerMask_t97CB6BDADEDC3D6423C7BCFEA7F86DA2EC6241DB L_26 = __this->___openingLayers;
+		NullCheck(L_25);
+		Collider_set_includeLayers_m48BF564FEE364CA2AD7FBDC98A584977F5140AC1(L_25, L_26, NULL);
+	}
+
+IL_00bf:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:364>
+		SphereCollider_tBA111C542CE97F6873DE742757213D6265C7D275* L_27 = V_2;
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_28;
+		L_28 = Component_get_transform_m2919A1D81931E6932C7F06D4C2F0AB8DDA9A5371(__this, NULL);
+		NullCheck(L_28);
+		Matrix4x4_tDB70CF134A14BA38190C59AA700BCE10E2AED3E6 L_29;
+		L_29 = Transform_get_worldToLocalMatrix_mB633C122A01BCE8E51B10B8B8CB95F580750B3F1(L_28, NULL);
+		V_1 = L_29;
+		Bounds_t367E830C64BBF235ED8C3B2F8CF6254FDCAD39C3* L_30 = (Bounds_t367E830C64BBF235ED8C3B2F8CF6254FDCAD39C3*)(&__this->___doorBounds);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_31;
+		L_31 = Bounds_get_center_m5B05F81CB835EB6DD8628FDA24B638F477984DC3_inline(L_30, NULL);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_32;
+		L_32 = Matrix4x4_MultiplyPoint3x4_mACCBD70AFA82C63DA88555780B7B6B01281AB814_inline((&V_1), L_31, NULL);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_33 = __this->___triggerOffset;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_34;
+		L_34 = Vector3_op_Addition_m78C0EC70CB66E8DCAC225743D82B268DAEE92067_inline(L_32, L_33, NULL);
+		NullCheck(L_27);
+		SphereCollider_set_center_m83F6CC0056B491CD577B9AC08FA1E331074203D4(L_27, L_34, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:365>
+		SphereCollider_tBA111C542CE97F6873DE742757213D6265C7D275* L_35 = V_2;
+		float L_36 = __this->___triggerRadius;
+		NullCheck(L_35);
+		SphereCollider_set_radius_m6119FE18C6739B077AB17334B1B53984911017FF(L_35, L_36, NULL);
+	}
+
+IL_00fa:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:367>
+		return;
+	}
+}
+// Method Definition Index: 74000
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_MakeFencePost_m2F573714C43AB5663E533421546EFF42BCFA1DA5 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___0_pos, const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&GameObject_GetComponent_TisMeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE_m7FF948365C38BC39333D82B235A7C4EAD219960D_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&List_1__ctor_mE6AD85B1B839B7A36AC76E52A884895705D95638_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&List_1_t386E09F4F22DDE4D2AC41A8567FFF283C254537B_il2cpp_TypeInfo_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Object_Instantiate_TisGameObject_t76FEDD663AB33C991A9C9A23129337651094216F_m58C654F1134533E29502629CA67645682B404811_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_il2cpp_TypeInfo_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&_stringLiteralA8C5CDA1FD0D841FE50F3DDFA1912303224B5621);
+		s_Il2CppMethodInitialized = true;
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:372>
+		int32_t L_0 = __this->___doorKind;
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_1;
+		L_1 = OmniDoor3D_GetPostPrefab_mCA6BD64DC4AF8EC77B370F5E0A7A16F014F55380(__this, L_0, NULL);
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_2;
+		L_2 = Component_get_transform_m2919A1D81931E6932C7F06D4C2F0AB8DDA9A5371(__this, NULL);
+		il2cpp_codegen_runtime_class_init_inline(Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_il2cpp_TypeInfo_var);
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_3;
+		L_3 = Object_Instantiate_TisGameObject_t76FEDD663AB33C991A9C9A23129337651094216F_m58C654F1134533E29502629CA67645682B404811(L_1, L_2, Object_Instantiate_TisGameObject_t76FEDD663AB33C991A9C9A23129337651094216F_m58C654F1134533E29502629CA67645682B404811_RuntimeMethod_var);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:373>
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_4 = L_3;
+		NullCheck(L_4);
+		Object_set_name_mC79E6DC8FFD72479C90F0C4CC7F42A0FEAF5AE47(L_4, _stringLiteralA8C5CDA1FD0D841FE50F3DDFA1912303224B5621, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:374>
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_5 = L_4;
+		NullCheck(L_5);
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_6;
+		L_6 = GameObject_get_transform_m0BC10ADFA1632166AE5544BDF9038A2650C2AE56(L_5, NULL);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_7 = ___0_pos;
+		NullCheck(L_6);
+		Transform_set_localPosition_mDE1C997F7D79C0885210B7732B4BA50EE7D73134(L_6, L_7, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:375>
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_8 = L_5;
+		NullCheck(L_8);
+		MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE* L_9;
+		L_9 = GameObject_GetComponent_TisMeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE_m7FF948365C38BC39333D82B235A7C4EAD219960D(L_8, GameObject_GetComponent_TisMeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE_m7FF948365C38BC39333D82B235A7C4EAD219960D_RuntimeMethod_var);
+		MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D* L_10 = __this->___postMaterials;
+		List_1_t386E09F4F22DDE4D2AC41A8567FFF283C254537B* L_11 = (List_1_t386E09F4F22DDE4D2AC41A8567FFF283C254537B*)il2cpp_codegen_object_new(List_1_t386E09F4F22DDE4D2AC41A8567FFF283C254537B_il2cpp_TypeInfo_var);
+		List_1__ctor_mE6AD85B1B839B7A36AC76E52A884895705D95638(L_11, (RuntimeObject*)L_10, List_1__ctor_mE6AD85B1B839B7A36AC76E52A884895705D95638_RuntimeMethod_var);
+		NullCheck(L_9);
+		Renderer_SetSharedMaterials_m15D1C285831E553476B7432D97537CC5DF34C55D(L_9, L_11, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:376>
+		NullCheck(L_8);
+		GameObject_set_isStatic_m0468F0E4553F5B3DDBE03F3788BE0A1A3736839C(L_8, (bool)1, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:377>
+		return;
+	}
+}
+// Method Definition Index: 74001
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE* OmniDoor3D_MakeNewSection_mFEFB2A66DA1D55B4F9A61D7E28CC6DF1AC3C36DA (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, String_t* ___0_sPivot, String_t* ___1_sSection, Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___2_localPos, const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Component_GetComponent_TisMeshFilter_t6D1CE2473A1E45AC73013400585A1163BF66B2F5_mB82F66059DFB5715DD85BDED1D90BC03A6C9E623_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&GameObject_GetComponent_TisMeshCollider_tB525E4DDE383252364ED0BDD32CF2B53914EE455_m21E4C15ED89B2D1A80F393D96CF4464B16E9F1F9_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&GameObject_GetComponent_TisMeshFilter_t6D1CE2473A1E45AC73013400585A1163BF66B2F5_mDF6525BCE37B444313BE0AA2305BDF4EB8B92FE8_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&GameObject_GetComponent_TisMeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE_m7FF948365C38BC39333D82B235A7C4EAD219960D_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&GameObject_t76FEDD663AB33C991A9C9A23129337651094216F_il2cpp_TypeInfo_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&List_1_Add_m43FBF207375C6E06B8C45ECE614F9B8008FB686E_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&List_1__ctor_mE6AD85B1B839B7A36AC76E52A884895705D95638_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&List_1_t386E09F4F22DDE4D2AC41A8567FFF283C254537B_il2cpp_TypeInfo_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&MeshCollider_tB525E4DDE383252364ED0BDD32CF2B53914EE455_0_0_0_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&MeshFilter_t6D1CE2473A1E45AC73013400585A1163BF66B2F5_0_0_0_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE_0_0_0_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&TypeU5BU5D_t97234E1129B564EB38B8D85CAC2AD8B5B9522FFB_il2cpp_TypeInfo_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&_stringLiteral1088082BDF4892857924E9BAA9F3EE95EF6015FA);
+		s_Il2CppMethodInitialized = true;
+	}
+	GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* V_0 = NULL;
+	GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* V_1 = NULL;
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:382>
+		String_t* L_0 = ___0_sPivot;
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_1 = (GameObject_t76FEDD663AB33C991A9C9A23129337651094216F*)il2cpp_codegen_object_new(GameObject_t76FEDD663AB33C991A9C9A23129337651094216F_il2cpp_TypeInfo_var);
+		GameObject__ctor_m37D512B05D292F954792225E6C6EEE95293A9B88(L_1, L_0, NULL);
+		V_0 = L_1;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:383>
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_2 = V_0;
+		NullCheck(L_2);
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_3;
+		L_3 = GameObject_get_transform_m0BC10ADFA1632166AE5544BDF9038A2650C2AE56(L_2, NULL);
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_4;
+		L_4 = Component_get_transform_m2919A1D81931E6932C7F06D4C2F0AB8DDA9A5371(__this, NULL);
+		NullCheck(L_3);
+		Transform_SetParent_m6677538B60246D958DD91F931C50F969CCBB5250(L_3, L_4, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:384>
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_5 = V_0;
+		NullCheck(L_5);
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_6;
+		L_6 = GameObject_get_transform_m0BC10ADFA1632166AE5544BDF9038A2650C2AE56(L_5, NULL);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_7 = ___2_localPos;
+		NullCheck(L_6);
+		Transform_set_localPosition_mDE1C997F7D79C0885210B7732B4BA50EE7D73134(L_6, L_7, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:385>
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_8 = V_0;
+		NullCheck(L_8);
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_9;
+		L_9 = GameObject_get_transform_m0BC10ADFA1632166AE5544BDF9038A2650C2AE56(L_8, NULL);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_10;
+		L_10 = Vector3_get_one_mC9B289F1E15C42C597180C9FE6FB492495B51D02_inline(NULL);
+		NullCheck(L_9);
+		Transform_set_localScale_mBA79E811BAF6C47B80FF76414C12B47B3CD03633(L_9, L_10, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:386>
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_11 = V_0;
+		NullCheck(L_11);
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_12;
+		L_12 = GameObject_get_transform_m0BC10ADFA1632166AE5544BDF9038A2650C2AE56(L_11, NULL);
+		Quaternion_tDA59F214EF07D7700B26E40E562F267AF7306974 L_13;
+		L_13 = Quaternion_get_identity_m7E701AE095ED10FD5EA0B50ABCFDE2EEFF2173A5_inline(NULL);
+		NullCheck(L_12);
+		Transform_set_localRotation_mAB4A011D134BA58AB780BECC0025CA65F16185FA(L_12, L_13, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:387>
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_14 = V_0;
+		NullCheck(L_14);
+		GameObject_set_isStatic_m0468F0E4553F5B3DDBE03F3788BE0A1A3736839C(L_14, (bool)1, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:389>
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_15 = (GameObject_t76FEDD663AB33C991A9C9A23129337651094216F*)il2cpp_codegen_object_new(GameObject_t76FEDD663AB33C991A9C9A23129337651094216F_il2cpp_TypeInfo_var);
+		GameObject__ctor_m37D512B05D292F954792225E6C6EEE95293A9B88(L_15, _stringLiteral1088082BDF4892857924E9BAA9F3EE95EF6015FA, NULL);
+		V_1 = L_15;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:390>
+		List_1_tB951CE80B58D1BF9650862451D8DAD8C231F207B* L_16 = __this->___internalPivots;
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_17 = V_1;
+		NullCheck(L_16);
+		List_1_Add_m43FBF207375C6E06B8C45ECE614F9B8008FB686E_inline(L_16, L_17, List_1_Add_m43FBF207375C6E06B8C45ECE614F9B8008FB686E_RuntimeMethod_var);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:391>
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_18 = V_1;
+		NullCheck(L_18);
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_19;
+		L_19 = GameObject_get_transform_m0BC10ADFA1632166AE5544BDF9038A2650C2AE56(L_18, NULL);
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_20 = V_0;
+		NullCheck(L_20);
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_21;
+		L_21 = GameObject_get_transform_m0BC10ADFA1632166AE5544BDF9038A2650C2AE56(L_20, NULL);
+		NullCheck(L_19);
+		Transform_SetParent_m6677538B60246D958DD91F931C50F969CCBB5250(L_19, L_21, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:392>
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_22 = V_1;
+		NullCheck(L_22);
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_23;
+		L_23 = GameObject_get_transform_m0BC10ADFA1632166AE5544BDF9038A2650C2AE56(L_22, NULL);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_24;
+		L_24 = Vector3_get_zero_m0C1249C3F25B1C70EAD3CC8B31259975A457AE39_inline(NULL);
+		NullCheck(L_23);
+		Transform_set_localPosition_mDE1C997F7D79C0885210B7732B4BA50EE7D73134(L_23, L_24, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:393>
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_25 = V_1;
+		NullCheck(L_25);
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_26;
+		L_26 = GameObject_get_transform_m0BC10ADFA1632166AE5544BDF9038A2650C2AE56(L_25, NULL);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_27;
+		L_27 = Vector3_get_one_mC9B289F1E15C42C597180C9FE6FB492495B51D02_inline(NULL);
+		NullCheck(L_26);
+		Transform_set_localScale_mBA79E811BAF6C47B80FF76414C12B47B3CD03633(L_26, L_27, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:394>
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_28 = V_1;
+		NullCheck(L_28);
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_29;
+		L_29 = GameObject_get_transform_m0BC10ADFA1632166AE5544BDF9038A2650C2AE56(L_28, NULL);
+		Quaternion_tDA59F214EF07D7700B26E40E562F267AF7306974 L_30;
+		L_30 = Quaternion_get_identity_m7E701AE095ED10FD5EA0B50ABCFDE2EEFF2173A5_inline(NULL);
+		NullCheck(L_29);
+		Transform_set_localRotation_mAB4A011D134BA58AB780BECC0025CA65F16185FA(L_29, L_30, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:396>
+		String_t* L_31 = ___1_sSection;
+		TypeU5BU5D_t97234E1129B564EB38B8D85CAC2AD8B5B9522FFB* L_32 = (TypeU5BU5D_t97234E1129B564EB38B8D85CAC2AD8B5B9522FFB*)(TypeU5BU5D_t97234E1129B564EB38B8D85CAC2AD8B5B9522FFB*)SZArrayNew(TypeU5BU5D_t97234E1129B564EB38B8D85CAC2AD8B5B9522FFB_il2cpp_TypeInfo_var, (uint32_t)3);
+		TypeU5BU5D_t97234E1129B564EB38B8D85CAC2AD8B5B9522FFB* L_33 = L_32;
+		RuntimeTypeHandle_t332A452B8B6179E4469B69525D0FE82A88030F7B L_34 = { reinterpret_cast<intptr_t> (MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE_0_0_0_var) };
+		il2cpp_codegen_runtime_class_init_inline(il2cpp_defaults.systemtype_class);
+		Type_t* L_35;
+		L_35 = Type_GetTypeFromHandle_m6062B81682F79A4D6DF2640692EE6D9987858C57(L_34, NULL);
+		NullCheck(L_33);
+		ArrayElementTypeCheck (L_33, L_35);
+		(L_33)->SetAt(static_cast<il2cpp_array_size_t>(0), (Type_t*)L_35);
+		TypeU5BU5D_t97234E1129B564EB38B8D85CAC2AD8B5B9522FFB* L_36 = L_33;
+		RuntimeTypeHandle_t332A452B8B6179E4469B69525D0FE82A88030F7B L_37 = { reinterpret_cast<intptr_t> (MeshFilter_t6D1CE2473A1E45AC73013400585A1163BF66B2F5_0_0_0_var) };
+		Type_t* L_38;
+		L_38 = Type_GetTypeFromHandle_m6062B81682F79A4D6DF2640692EE6D9987858C57(L_37, NULL);
+		NullCheck(L_36);
+		ArrayElementTypeCheck (L_36, L_38);
+		(L_36)->SetAt(static_cast<il2cpp_array_size_t>(1), (Type_t*)L_38);
+		TypeU5BU5D_t97234E1129B564EB38B8D85CAC2AD8B5B9522FFB* L_39 = L_36;
+		RuntimeTypeHandle_t332A452B8B6179E4469B69525D0FE82A88030F7B L_40 = { reinterpret_cast<intptr_t> (MeshCollider_tB525E4DDE383252364ED0BDD32CF2B53914EE455_0_0_0_var) };
+		Type_t* L_41;
+		L_41 = Type_GetTypeFromHandle_m6062B81682F79A4D6DF2640692EE6D9987858C57(L_40, NULL);
+		NullCheck(L_39);
+		ArrayElementTypeCheck (L_39, L_41);
+		(L_39)->SetAt(static_cast<il2cpp_array_size_t>(2), (Type_t*)L_41);
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_42 = (GameObject_t76FEDD663AB33C991A9C9A23129337651094216F*)il2cpp_codegen_object_new(GameObject_t76FEDD663AB33C991A9C9A23129337651094216F_il2cpp_TypeInfo_var);
+		GameObject__ctor_m721D643351E55308EA4F5F41B67D5446D11C61F0(L_42, L_31, L_39, NULL);
+		V_0 = L_42;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:397>
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_43 = V_0;
+		NullCheck(L_43);
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_44;
+		L_44 = GameObject_get_transform_m0BC10ADFA1632166AE5544BDF9038A2650C2AE56(L_43, NULL);
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_45 = V_1;
+		NullCheck(L_45);
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_46;
+		L_46 = GameObject_get_transform_m0BC10ADFA1632166AE5544BDF9038A2650C2AE56(L_45, NULL);
+		NullCheck(L_44);
+		Transform_SetParent_m6677538B60246D958DD91F931C50F969CCBB5250(L_44, L_46, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:398>
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_47 = V_0;
+		NullCheck(L_47);
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_48;
+		L_48 = GameObject_get_transform_m0BC10ADFA1632166AE5544BDF9038A2650C2AE56(L_47, NULL);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_49;
+		L_49 = Vector3_get_zero_m0C1249C3F25B1C70EAD3CC8B31259975A457AE39_inline(NULL);
+		NullCheck(L_48);
+		Transform_set_localPosition_mDE1C997F7D79C0885210B7732B4BA50EE7D73134(L_48, L_49, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:399>
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_50 = V_0;
+		NullCheck(L_50);
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_51;
+		L_51 = GameObject_get_transform_m0BC10ADFA1632166AE5544BDF9038A2650C2AE56(L_50, NULL);
+		MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE* L_52 = __this->___theDoor;
+		NullCheck(L_52);
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_53;
+		L_53 = Component_get_transform_m2919A1D81931E6932C7F06D4C2F0AB8DDA9A5371(L_52, NULL);
+		NullCheck(L_53);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_54;
+		L_54 = Transform_get_localScale_m804A002A53A645CDFCD15BB0F37209162720363F(L_53, NULL);
+		NullCheck(L_51);
+		Transform_set_localScale_mBA79E811BAF6C47B80FF76414C12B47B3CD03633(L_51, L_54, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:400>
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_55 = V_0;
+		NullCheck(L_55);
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_56;
+		L_56 = GameObject_get_transform_m0BC10ADFA1632166AE5544BDF9038A2650C2AE56(L_55, NULL);
+		Quaternion_tDA59F214EF07D7700B26E40E562F267AF7306974 L_57;
+		L_57 = Quaternion_get_identity_m7E701AE095ED10FD5EA0B50ABCFDE2EEFF2173A5_inline(NULL);
+		NullCheck(L_56);
+		Transform_set_localRotation_mAB4A011D134BA58AB780BECC0025CA65F16185FA(L_56, L_57, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:401>
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_58 = V_0;
+		NullCheck(L_58);
+		MeshFilter_t6D1CE2473A1E45AC73013400585A1163BF66B2F5* L_59;
+		L_59 = GameObject_GetComponent_TisMeshFilter_t6D1CE2473A1E45AC73013400585A1163BF66B2F5_mDF6525BCE37B444313BE0AA2305BDF4EB8B92FE8(L_58, GameObject_GetComponent_TisMeshFilter_t6D1CE2473A1E45AC73013400585A1163BF66B2F5_mDF6525BCE37B444313BE0AA2305BDF4EB8B92FE8_RuntimeMethod_var);
+		MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE* L_60 = __this->___theDoor;
+		NullCheck(L_60);
+		MeshFilter_t6D1CE2473A1E45AC73013400585A1163BF66B2F5* L_61;
+		L_61 = Component_GetComponent_TisMeshFilter_t6D1CE2473A1E45AC73013400585A1163BF66B2F5_mB82F66059DFB5715DD85BDED1D90BC03A6C9E623(L_60, Component_GetComponent_TisMeshFilter_t6D1CE2473A1E45AC73013400585A1163BF66B2F5_mB82F66059DFB5715DD85BDED1D90BC03A6C9E623_RuntimeMethod_var);
+		NullCheck(L_61);
+		Mesh_t6D9C539763A09BC2B12AEAEF36F6DFFC98AE63D4* L_62;
+		L_62 = MeshFilter_get_sharedMesh_mE4ED3E7E31C1DE5097E4980DA996E620F7D7CB8C(L_61, NULL);
+		NullCheck(L_59);
+		MeshFilter_set_sharedMesh_m946F7E3F583761982642BDA4753784AF1DF6E16F(L_59, L_62, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:402>
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_63 = V_0;
+		NullCheck(L_63);
+		MeshCollider_tB525E4DDE383252364ED0BDD32CF2B53914EE455* L_64;
+		L_64 = GameObject_GetComponent_TisMeshCollider_tB525E4DDE383252364ED0BDD32CF2B53914EE455_m21E4C15ED89B2D1A80F393D96CF4464B16E9F1F9(L_63, GameObject_GetComponent_TisMeshCollider_tB525E4DDE383252364ED0BDD32CF2B53914EE455_m21E4C15ED89B2D1A80F393D96CF4464B16E9F1F9_RuntimeMethod_var);
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_65 = V_0;
+		NullCheck(L_65);
+		MeshFilter_t6D1CE2473A1E45AC73013400585A1163BF66B2F5* L_66;
+		L_66 = GameObject_GetComponent_TisMeshFilter_t6D1CE2473A1E45AC73013400585A1163BF66B2F5_mDF6525BCE37B444313BE0AA2305BDF4EB8B92FE8(L_65, GameObject_GetComponent_TisMeshFilter_t6D1CE2473A1E45AC73013400585A1163BF66B2F5_mDF6525BCE37B444313BE0AA2305BDF4EB8B92FE8_RuntimeMethod_var);
+		NullCheck(L_66);
+		Mesh_t6D9C539763A09BC2B12AEAEF36F6DFFC98AE63D4* L_67;
+		L_67 = MeshFilter_get_sharedMesh_mE4ED3E7E31C1DE5097E4980DA996E620F7D7CB8C(L_66, NULL);
+		NullCheck(L_64);
+		MeshCollider_set_sharedMesh_m05F87B9AC04139285EBBCC159F77B51C6940E79C(L_64, L_67, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:403>
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_68 = V_0;
+		NullCheck(L_68);
+		GameObject_set_isStatic_m0468F0E4553F5B3DDBE03F3788BE0A1A3736839C(L_68, (bool)1, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:404>
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_69 = V_0;
+		NullCheck(L_69);
+		MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE* L_70;
+		L_70 = GameObject_GetComponent_TisMeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE_m7FF948365C38BC39333D82B235A7C4EAD219960D(L_69, GameObject_GetComponent_TisMeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE_m7FF948365C38BC39333D82B235A7C4EAD219960D_RuntimeMethod_var);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:405>
+		MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE* L_71 = L_70;
+		MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE* L_72 = __this->___theDoor;
+		NullCheck(L_72);
+		MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D* L_73;
+		L_73 = Renderer_get_sharedMaterials_m0B61AFD8EDA35A70C796FFB2F28BB62380051ABF(L_72, NULL);
+		List_1_t386E09F4F22DDE4D2AC41A8567FFF283C254537B* L_74 = (List_1_t386E09F4F22DDE4D2AC41A8567FFF283C254537B*)il2cpp_codegen_object_new(List_1_t386E09F4F22DDE4D2AC41A8567FFF283C254537B_il2cpp_TypeInfo_var);
+		List_1__ctor_mE6AD85B1B839B7A36AC76E52A884895705D95638(L_74, (RuntimeObject*)L_73, List_1__ctor_mE6AD85B1B839B7A36AC76E52A884895705D95638_RuntimeMethod_var);
+		NullCheck(L_71);
+		Renderer_SetSharedMaterials_m15D1C285831E553476B7432D97537CC5DF34C55D(L_71, L_74, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:406>
+		return L_71;
+	}
+}
+// Method Definition Index: 74002
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_OnWindowedChanged_mF58D06F8AE6654435C55694AF178FAA4AD133943 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&OmniDoor3DData_tC2F25EE7B9156401B8B1CC7164E74372B6F83F45_il2cpp_TypeInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:416>
+		int32_t L_0 = __this->___doorKind;
+		il2cpp_codegen_runtime_class_init_inline(OmniDoor3DData_tC2F25EE7B9156401B8B1CC7164E74372B6F83F45_il2cpp_TypeInfo_var);
+		bool L_1;
+		L_1 = OmniDoor3DData_IsStandard_mAC537037B236421107762A3388E7DB74E127D43E(L_0, NULL);
+		if (L_1)
+		{
+			goto IL_000e;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:417>
+		return;
+	}
+
+IL_000e:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:419>
+		OmniDoor3D_UpdateDoorVisuals_mEBA99E72ACCAAAF610B9AF31DFBDAFAC9D3FD633(__this, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:420>
+		return;
+	}
+}
+// Method Definition Index: 74003
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_OnDoorVisChanged_m7ADA369CF03B6D9B1ACC82900CB5129CC5AF70F1 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
+{
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:429>
+		OmniDoor3D_UpdateDoorVisuals_mEBA99E72ACCAAAF610B9AF31DFBDAFAC9D3FD633(__this, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:430>
+		return;
+	}
+}
+// Method Definition Index: 74004
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_OnLayerChanged_mFC1F5FB36C578DC1C0DA5F93BB5511C9A5138C6A (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
+{
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:435>
+		OmniDoor3D_UpdateMeshLayers_m93DF5BE8E2B965ACE18F6A7BEE1FB9D9D164F494(__this, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:436>
+		return;
+	}
+}
+// Method Definition Index: 74005
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_OnTriggerEnter_m29ABFDDE5DADF5BA40A319210F8FBB1B0C4AD25D (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, Collider_t1CC3163924FCD6C4CC2E816373A929C1E3D55E76* ___0_other, const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&List_1_Add_m67ADCB698F31486B35CF5DB4CFB1E97EB807FEFD_RuntimeMethod_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:441>
+		bool L_0 = __this->___autoOpen;
+		if (!L_0)
+		{
+			goto IL_0050;
+		}
+	}
+	{
+		Collider_t1CC3163924FCD6C4CC2E816373A929C1E3D55E76* L_1 = ___0_other;
+		NullCheck(L_1);
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_2;
+		L_2 = Component_get_gameObject_m57AEFBB14DB39EC476F740BA000E170355DE691B(L_1, NULL);
+		bool L_3;
+		L_3 = OmniDoor3D_InOpeningLayers_m8936F6D9C0B8017700E33401BC44B7D807DFDF62(__this, L_2, NULL);
+		if (!L_3)
+		{
+			goto IL_0050;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:443>
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_4;
+		L_4 = Component_get_transform_m2919A1D81931E6932C7F06D4C2F0AB8DDA9A5371(__this, NULL);
+		Collider_t1CC3163924FCD6C4CC2E816373A929C1E3D55E76* L_5 = ___0_other;
+		NullCheck(L_5);
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_6;
+		L_6 = Component_get_transform_m2919A1D81931E6932C7F06D4C2F0AB8DDA9A5371(L_5, NULL);
+		NullCheck(L_6);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_7;
+		L_7 = Transform_get_position_m69CD5FA214FDAE7BB701552943674846C220FDE1(L_6, NULL);
+		NullCheck(L_4);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_8;
+		L_8 = Transform_InverseTransformPoint_m18CD395144D9C78F30E15A5B82B6670E792DBA5D(L_4, L_7, NULL);
+		float L_9 = L_8.___z;
+		__this->___negZ = (bool)((((float)L_9) < ((float)(0.0f)))? 1 : 0);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:444>
+		List_1_t58F89DEDCD7DABB0CFB009AAD9C0CFE061592252* L_10 = __this->___openColliders;
+		Collider_t1CC3163924FCD6C4CC2E816373A929C1E3D55E76* L_11 = ___0_other;
+		NullCheck(L_10);
+		List_1_Add_m67ADCB698F31486B35CF5DB4CFB1E97EB807FEFD_inline(L_10, L_11, List_1_Add_m67ADCB698F31486B35CF5DB4CFB1E97EB807FEFD_RuntimeMethod_var);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:445>
+		OmniDoor3D_TryOpen_m0E0088365BF5206AC2C7525807DA3CBB4C3888EC(__this, NULL);
+	}
+
+IL_0050:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:447>
+		return;
+	}
+}
+// Method Definition Index: 74006
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_OnTriggerExit_m752B29C38F12FD2280D025E74EF216BCF8621B64 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, Collider_t1CC3163924FCD6C4CC2E816373A929C1E3D55E76* ___0_other, const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&List_1_Remove_m033842E17A41459D42A3E0F26F50C4541AE57BFC_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&List_1_get_Count_m8D408B57AE7C2D791BB61817BBC93B84537AB617_RuntimeMethod_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:452>
+		bool L_0 = __this->___autoClose;
+		if (!L_0)
+		{
+			goto IL_004c;
+		}
+	}
+	{
+		Collider_t1CC3163924FCD6C4CC2E816373A929C1E3D55E76* L_1 = ___0_other;
+		NullCheck(L_1);
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_2;
+		L_2 = Component_get_gameObject_m57AEFBB14DB39EC476F740BA000E170355DE691B(L_1, NULL);
+		bool L_3;
+		L_3 = OmniDoor3D_InOpeningLayers_m8936F6D9C0B8017700E33401BC44B7D807DFDF62(__this, L_2, NULL);
+		if (!L_3)
+		{
+			goto IL_004c;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:454>
+		List_1_t58F89DEDCD7DABB0CFB009AAD9C0CFE061592252* L_4 = __this->___openColliders;
+		Collider_t1CC3163924FCD6C4CC2E816373A929C1E3D55E76* L_5 = ___0_other;
+		NullCheck(L_4);
+		bool L_6;
+		L_6 = List_1_Remove_m033842E17A41459D42A3E0F26F50C4541AE57BFC(L_4, L_5, List_1_Remove_m033842E17A41459D42A3E0F26F50C4541AE57BFC_RuntimeMethod_var);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:456>
+		List_1_t58F89DEDCD7DABB0CFB009AAD9C0CFE061592252* L_7 = __this->___openColliders;
+		NullCheck(L_7);
+		int32_t L_8;
+		L_8 = List_1_get_Count_m8D408B57AE7C2D791BB61817BBC93B84537AB617_inline(L_7, List_1_get_Count_m8D408B57AE7C2D791BB61817BBC93B84537AB617_RuntimeMethod_var);
+		if (L_8)
+		{
+			goto IL_004c;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:458>
+		OmniDoor3D_CloseLinkedDoors_mED6AD9FCD60C5242DA62085DCA76BB384409AED1(__this, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:460>
+		bool L_9 = __this->___isOpen;
+		if (!L_9)
+		{
+			goto IL_004c;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:462>
+		__this->___isOpen = (bool)0;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:463>
+		OmniDoor3D_set_needClose_mBDACD3FCE99D25E9508221B8EDC1A77593E44020_inline(__this, (bool)1, NULL);
+	}
+
+IL_004c:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:467>
+		return;
+	}
+}
+// Method Definition Index: 74007
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_OnControllerToggle_mA63C59658D5ACC4C4BE1982D9B5A9E66C4EC115A (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
+{
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:473>
+		bool L_0 = __this->___isOpen;
+		if (!L_0)
+		{
+			goto IL_0017;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:475>
+		__this->___isOpen = (bool)0;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:476>
+		OmniDoor3D_set_needClose_mBDACD3FCE99D25E9508221B8EDC1A77593E44020_inline(__this, (bool)1, NULL);
+		return;
+	}
+
+IL_0017:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:479>
+		OmniDoor3D_TryOpen_m0E0088365BF5206AC2C7525807DA3CBB4C3888EC(__this, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:480>
+		return;
+	}
+}
+// Method Definition Index: 74008
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_OnControllerOpen_mA1A637000670A15FAAB35E7E8BA72038C0FD9432 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
+{
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:484>
+		OmniDoor3D_TryOpen_m0E0088365BF5206AC2C7525807DA3CBB4C3888EC(__this, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:485>
+		return;
+	}
+}
+// Method Definition Index: 74009
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_OnControllerClose_m480918131D4363CF79EB2CA45E24517D9F319F6B (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
+{
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:489>
+		OmniDoor3D_CloseLinkedDoors_mED6AD9FCD60C5242DA62085DCA76BB384409AED1(__this, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:491>
+		bool L_0 = __this->___isOpen;
+		if (!L_0)
+		{
+			goto IL_001c;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:493>
+		__this->___isOpen = (bool)0;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:494>
+		OmniDoor3D_set_needClose_mBDACD3FCE99D25E9508221B8EDC1A77593E44020_inline(__this, (bool)1, NULL);
+	}
+
+IL_001c:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:496>
+		return;
+	}
+}
+// Method Definition Index: 74010
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_OnControllerLock_m97D4C8914E92DAC5F83BFD80292DE0DC8EFA8C44 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
+{
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:500>
+		OmniDoor3D_TryLock_mD91BBAA1ABF2F7E9F8AD7DA670700178BAB97DB3(__this, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:501>
+		OmniDoor3D_LockLinkedDoors_m4FB164275A6B7528B42CB0B19351B89A5C621808(__this, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:502>
+		return;
+	}
+}
+// Method Definition Index: 74011
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_TryLock_mD91BBAA1ABF2F7E9F8AD7DA670700178BAB97DB3 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_il2cpp_TypeInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	AudioSource_t871AC2272F896738252F04EE949AEF5B241D3299* G_B4_0 = NULL;
+	AudioSource_t871AC2272F896738252F04EE949AEF5B241D3299* G_B3_0 = NULL;
+	AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20* G_B5_0 = NULL;
+	AudioSource_t871AC2272F896738252F04EE949AEF5B241D3299* G_B5_1 = NULL;
+	DoorLockedEvt_t24FA80C7BCDB52586B684991ECB99317F4F4F8AA* G_B8_0 = NULL;
+	DoorLockedEvt_t24FA80C7BCDB52586B684991ECB99317F4F4F8AA* G_B7_0 = NULL;
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:506>
+		bool L_0 = __this->___isLocked;
+		if (L_0)
+		{
+			goto IL_005b;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:508>
+		bool L_1 = __this->___playAudio;
+		if (!L_1)
+		{
+			goto IL_0042;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:510>
+		AudioSource_t871AC2272F896738252F04EE949AEF5B241D3299* L_2 = __this->___aSrc;
+		AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20* L_3 = __this->___lockingOvrSound;
+		il2cpp_codegen_runtime_class_init_inline(Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_il2cpp_TypeInfo_var);
+		bool L_4;
+		L_4 = Object_op_Equality_mB6120F782D83091EF56A198FCEBCF066DB4A9605(L_3, (Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C*)NULL, NULL);
+		if (L_4)
+		{
+			G_B4_0 = L_2;
+			goto IL_002c;
+		}
+		G_B3_0 = L_2;
+	}
+	{
+		AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20* L_5 = __this->___lockingOvrSound;
+		G_B5_0 = L_5;
+		G_B5_1 = G_B3_0;
+		goto IL_0032;
+	}
+
+IL_002c:
+	{
+		AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20* L_6 = __this->___lockingClip;
+		G_B5_0 = L_6;
+		G_B5_1 = G_B4_0;
+	}
+
+IL_0032:
+	{
+		NullCheck(G_B5_1);
+		AudioSource_set_clip_mFF441895E274286C88D9C75ED5CA1B1B39528D70(G_B5_1, G_B5_0, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:511>
+		AudioSource_t871AC2272F896738252F04EE949AEF5B241D3299* L_7 = __this->___aSrc;
+		NullCheck(L_7);
+		AudioSource_Play_m95DF07111C61D0E0F00257A00384D31531D590C3(L_7, NULL);
+	}
+
+IL_0042:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:514>
+		DoorLockedEvt_t24FA80C7BCDB52586B684991ECB99317F4F4F8AA* L_8 = __this->___DoorLocked;
+		DoorLockedEvt_t24FA80C7BCDB52586B684991ECB99317F4F4F8AA* L_9 = L_8;
+		if (L_9)
+		{
+			G_B8_0 = L_9;
+			goto IL_004e;
+		}
+		G_B7_0 = L_9;
+	}
+	{
+		goto IL_0054;
+	}
+
+IL_004e:
+	{
+		NullCheck(G_B8_0);
+		DoorLockedEvt_Invoke_m0336C43427A49DB8930EB24C0811C4F59FFAE7AD_inline(G_B8_0, __this, NULL);
+	}
+
+IL_0054:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:515>
+		__this->___isLocked = (bool)1;
+	}
+
+IL_005b:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:517>
+		return;
+	}
+}
+// Method Definition Index: 74012
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_OnControllerUnlock_m4D825D706D046AFA2A946466D937913C2C89DCFE (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
+{
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:521>
+		OmniDoor3D_TryUnlock_mCD6C6F3F02F034D30C1310EB37987E66C5FA67DE(__this, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:522>
+		OmniDoor3D_UnlockLinkedDoors_m40A8D9BF50CF7407CCF29D4754E1DFDE261B53A5(__this, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:523>
+		return;
+	}
+}
+// Method Definition Index: 74013
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_TryUnlock_mCD6C6F3F02F034D30C1310EB37987E66C5FA67DE (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_il2cpp_TypeInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	AudioSource_t871AC2272F896738252F04EE949AEF5B241D3299* G_B4_0 = NULL;
+	AudioSource_t871AC2272F896738252F04EE949AEF5B241D3299* G_B3_0 = NULL;
+	AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20* G_B5_0 = NULL;
+	AudioSource_t871AC2272F896738252F04EE949AEF5B241D3299* G_B5_1 = NULL;
+	DoorUnlockedEvt_t1E6D58AC4C10BE4C2135F3580DBAEE0D87024854* G_B8_0 = NULL;
+	DoorUnlockedEvt_t1E6D58AC4C10BE4C2135F3580DBAEE0D87024854* G_B7_0 = NULL;
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:527>
+		bool L_0 = __this->___isLocked;
+		if (!L_0)
+		{
+			goto IL_005b;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:529>
+		bool L_1 = __this->___playAudio;
+		if (!L_1)
+		{
+			goto IL_0042;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:531>
+		AudioSource_t871AC2272F896738252F04EE949AEF5B241D3299* L_2 = __this->___aSrc;
+		AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20* L_3 = __this->___unlockingOvrSound;
+		il2cpp_codegen_runtime_class_init_inline(Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_il2cpp_TypeInfo_var);
+		bool L_4;
+		L_4 = Object_op_Equality_mB6120F782D83091EF56A198FCEBCF066DB4A9605(L_3, (Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C*)NULL, NULL);
+		if (L_4)
+		{
+			G_B4_0 = L_2;
+			goto IL_002c;
+		}
+		G_B3_0 = L_2;
+	}
+	{
+		AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20* L_5 = __this->___unlockingOvrSound;
+		G_B5_0 = L_5;
+		G_B5_1 = G_B3_0;
+		goto IL_0032;
+	}
+
+IL_002c:
+	{
+		AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20* L_6 = __this->___unlockingClip;
+		G_B5_0 = L_6;
+		G_B5_1 = G_B4_0;
+	}
+
+IL_0032:
+	{
+		NullCheck(G_B5_1);
+		AudioSource_set_clip_mFF441895E274286C88D9C75ED5CA1B1B39528D70(G_B5_1, G_B5_0, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:532>
+		AudioSource_t871AC2272F896738252F04EE949AEF5B241D3299* L_7 = __this->___aSrc;
+		NullCheck(L_7);
+		AudioSource_Play_m95DF07111C61D0E0F00257A00384D31531D590C3(L_7, NULL);
+	}
+
+IL_0042:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:535>
+		DoorUnlockedEvt_t1E6D58AC4C10BE4C2135F3580DBAEE0D87024854* L_8 = __this->___DoorUnlocked;
+		DoorUnlockedEvt_t1E6D58AC4C10BE4C2135F3580DBAEE0D87024854* L_9 = L_8;
+		if (L_9)
+		{
+			G_B8_0 = L_9;
+			goto IL_004e;
+		}
+		G_B7_0 = L_9;
+	}
+	{
+		goto IL_0054;
+	}
+
+IL_004e:
+	{
+		NullCheck(G_B8_0);
+		DoorUnlockedEvt_Invoke_m0946810F4DE203283827D39345B8A3AA528B4E17_inline(G_B8_0, __this, NULL);
+	}
+
+IL_0054:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:536>
+		__this->___isLocked = (bool)0;
+	}
+
+IL_005b:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:538>
+		return;
+	}
+}
+// Method Definition Index: 74014
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* OmniDoor3D_Open_mCCEFA0F50C377A2CB50B3B1C519B6CE12F236819 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&U3COpenU3Ed__126_t07F27A92AAC04A17C76494E8AEE7086DAEAD36F3_il2cpp_TypeInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	{
+		U3COpenU3Ed__126_t07F27A92AAC04A17C76494E8AEE7086DAEAD36F3* L_0 = (U3COpenU3Ed__126_t07F27A92AAC04A17C76494E8AEE7086DAEAD36F3*)il2cpp_codegen_object_new(U3COpenU3Ed__126_t07F27A92AAC04A17C76494E8AEE7086DAEAD36F3_il2cpp_TypeInfo_var);
+		U3COpenU3Ed__126__ctor_mD82276CE05291B1D8086F73DA5D162D2F9B56F42(L_0, 0, NULL);
+		U3COpenU3Ed__126_t07F27A92AAC04A17C76494E8AEE7086DAEAD36F3* L_1 = L_0;
+		NullCheck(L_1);
+		L_1->___U3CU3E4__this = __this;
+		Il2CppCodeGenWriteBarrier((void**)(&L_1->___U3CU3E4__this), (void*)__this);
+		return L_1;
+	}
+}
+// Method Definition Index: 74015
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* OmniDoor3D_Close_m68052BB2E99899B1F23C5074200578D7AB862D48 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&U3CCloseU3Ed__127_tE6E46BD2B6269348B940DAB4E07CCD62BC6053BC_il2cpp_TypeInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	{
+		U3CCloseU3Ed__127_tE6E46BD2B6269348B940DAB4E07CCD62BC6053BC* L_0 = (U3CCloseU3Ed__127_tE6E46BD2B6269348B940DAB4E07CCD62BC6053BC*)il2cpp_codegen_object_new(U3CCloseU3Ed__127_tE6E46BD2B6269348B940DAB4E07CCD62BC6053BC_il2cpp_TypeInfo_var);
+		U3CCloseU3Ed__127__ctor_m77782AC05F4445B5BA758504B3A85CE4DA937B4F(L_0, 0, NULL);
+		U3CCloseU3Ed__127_tE6E46BD2B6269348B940DAB4E07CCD62BC6053BC* L_1 = L_0;
+		NullCheck(L_1);
+		L_1->___U3CU3E4__this = __this;
+		Il2CppCodeGenWriteBarrier((void**)(&L_1->___U3CU3E4__this), (void*)__this);
+		return L_1;
+	}
+}
+// Method Definition Index: 74016
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR OmniDoor3DConfig_t190977036D4995316F7EBBC5305FE39D88914957* OmniDoor3D_GetConfig_mEA289FF8960B4B268671B5C8A87107C5A979982B (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_il2cpp_TypeInfo_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Resources_Load_TisOmniDoor3DConfig_t190977036D4995316F7EBBC5305FE39D88914957_m174F7175E5FACC8828B2E91AEFEA8AED29E6DA57_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&_stringLiteral9958C957F2B324EAB987DDB06C0B29843D42B18D);
+		s_Il2CppMethodInitialized = true;
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:659>
+		OmniDoor3DConfig_t190977036D4995316F7EBBC5305FE39D88914957* L_0 = __this->___config;
+		il2cpp_codegen_runtime_class_init_inline(Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_il2cpp_TypeInfo_var);
+		bool L_1;
+		L_1 = Object_op_Equality_mB6120F782D83091EF56A198FCEBCF066DB4A9605(L_0, (Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C*)NULL, NULL);
+		if (!L_1)
+		{
+			goto IL_001e;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:660>
+		OmniDoor3DConfig_t190977036D4995316F7EBBC5305FE39D88914957* L_2;
+		L_2 = Resources_Load_TisOmniDoor3DConfig_t190977036D4995316F7EBBC5305FE39D88914957_m174F7175E5FACC8828B2E91AEFEA8AED29E6DA57(_stringLiteral9958C957F2B324EAB987DDB06C0B29843D42B18D, Resources_Load_TisOmniDoor3DConfig_t190977036D4995316F7EBBC5305FE39D88914957_m174F7175E5FACC8828B2E91AEFEA8AED29E6DA57_RuntimeMethod_var);
+		__this->___config = L_2;
+		Il2CppCodeGenWriteBarrier((void**)(&__this->___config), (void*)L_2);
+	}
+
+IL_001e:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:662>
+		OmniDoor3DConfig_t190977036D4995316F7EBBC5305FE39D88914957* L_3 = __this->___config;
+		return L_3;
+	}
+}
+// Method Definition Index: 74017
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_TryOpen_m0E0088365BF5206AC2C7525807DA3CBB4C3888EC (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_il2cpp_TypeInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	OmniDoor3DU5BU5D_t3B0E16839B27AC359BFE5E3F32ACDC141098E966* V_0 = NULL;
+	int32_t V_1 = 0;
+	OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* V_2 = NULL;
+	DoorOpenFailedEvt_t1032FDEE75EB91423C95DF2155669047463F16C8* G_B4_0 = NULL;
+	DoorOpenFailedEvt_t1032FDEE75EB91423C95DF2155669047463F16C8* G_B3_0 = NULL;
+	AudioSource_t871AC2272F896738252F04EE949AEF5B241D3299* G_B8_0 = NULL;
+	AudioSource_t871AC2272F896738252F04EE949AEF5B241D3299* G_B7_0 = NULL;
+	AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20* G_B9_0 = NULL;
+	AudioSource_t871AC2272F896738252F04EE949AEF5B241D3299* G_B9_1 = NULL;
+	OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* G_B18_0 = NULL;
+	OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* G_B15_0 = NULL;
+	OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* G_B17_0 = NULL;
+	OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* G_B16_0 = NULL;
+	int32_t G_B19_0 = 0;
+	OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* G_B19_1 = NULL;
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:668>
+		bool L_0 = __this->___isOpen;
+		if (L_0)
+		{
+			goto IL_0101;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:670>
+		bool L_1 = __this->___isLocked;
+		if (!L_1)
+		{
+			goto IL_0067;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:672>
+		DoorOpenFailedEvt_t1032FDEE75EB91423C95DF2155669047463F16C8* L_2 = __this->___DoorOpenFailed;
+		DoorOpenFailedEvt_t1032FDEE75EB91423C95DF2155669047463F16C8* L_3 = L_2;
+		if (L_3)
+		{
+			G_B4_0 = L_3;
+			goto IL_001f;
+		}
+		G_B3_0 = L_3;
+	}
+	{
+		goto IL_0025;
+	}
+
+IL_001f:
+	{
+		NullCheck(G_B4_0);
+		DoorOpenFailedEvt_Invoke_mEB611B296A59578C322CF8D16385203BB26E8BA4_inline(G_B4_0, __this, NULL);
+	}
+
+IL_0025:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:674>
+		bool L_4 = __this->___playAudio;
+		if (!L_4)
+		{
+			goto IL_0101;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:676>
+		AudioSource_t871AC2272F896738252F04EE949AEF5B241D3299* L_5 = __this->___aSrc;
+		AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20* L_6 = __this->___lockedOvrSound;
+		il2cpp_codegen_runtime_class_init_inline(Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_il2cpp_TypeInfo_var);
+		bool L_7;
+		L_7 = Object_op_Equality_mB6120F782D83091EF56A198FCEBCF066DB4A9605(L_6, (Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C*)NULL, NULL);
+		if (L_7)
+		{
+			G_B8_0 = L_5;
+			goto IL_004c;
+		}
+		G_B7_0 = L_5;
+	}
+	{
+		AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20* L_8 = __this->___lockedOvrSound;
+		G_B9_0 = L_8;
+		G_B9_1 = G_B7_0;
+		goto IL_0052;
+	}
+
+IL_004c:
+	{
+		AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20* L_9 = __this->___lockedClip;
+		G_B9_0 = L_9;
+		G_B9_1 = G_B8_0;
+	}
+
+IL_0052:
+	{
+		NullCheck(G_B9_1);
+		AudioSource_set_clip_mFF441895E274286C88D9C75ED5CA1B1B39528D70(G_B9_1, G_B9_0, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:677>
+		AudioSource_t871AC2272F896738252F04EE949AEF5B241D3299* L_10 = __this->___aSrc;
+		NullCheck(L_10);
+		AudioSource_Play_m95DF07111C61D0E0F00257A00384D31531D590C3(L_10, NULL);
+		goto IL_0101;
+	}
+
+IL_0067:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:682>
+		Coroutine_t85EA685566A254C23F3FD77AB5BDFFFF8799596B* L_11 = __this->___closeRoutine;
+		if (!L_11)
+		{
+			goto IL_0082;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:684>
+		Coroutine_t85EA685566A254C23F3FD77AB5BDFFFF8799596B* L_12 = __this->___closeRoutine;
+		MonoBehaviour_StopCoroutine_mB0FC91BE84203BD8E360B3FBAE5B958B4C5ED22A(__this, L_12, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:685>
+		__this->___closeRoutine = (Coroutine_t85EA685566A254C23F3FD77AB5BDFFFF8799596B*)NULL;
+		Il2CppCodeGenWriteBarrier((void**)(&__this->___closeRoutine), (void*)(Coroutine_t85EA685566A254C23F3FD77AB5BDFFFF8799596B*)NULL);
+	}
+
+IL_0082:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:688>
+		int32_t L_13 = __this->___motionKind;
+		if ((!(((uint32_t)L_13) == ((uint32_t)1))))
+		{
+			goto IL_00e1;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:690>
+		bool L_14 = __this->___autoOpen;
+		if (!L_14)
+		{
+			goto IL_00cf;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:692>
+		int32_t L_15 = __this->___swingDirection;
+		if ((((int32_t)L_15) == ((int32_t)1)))
+		{
+			G_B18_0 = __this;
+			goto IL_00b0;
+		}
+		G_B15_0 = __this;
+	}
+	{
+		int32_t L_16 = __this->___swingDirection;
+		if (L_16)
+		{
+			G_B17_0 = G_B15_0;
+			goto IL_00ad;
+		}
+		G_B16_0 = G_B15_0;
+	}
+	{
+		bool L_17 = __this->___negZ;
+		G_B19_0 = ((int32_t)(L_17));
+		G_B19_1 = G_B16_0;
+		goto IL_00b1;
+	}
+
+IL_00ad:
+	{
+		G_B19_0 = 0;
+		G_B19_1 = G_B17_0;
+		goto IL_00b1;
+	}
+
+IL_00b0:
+	{
+		G_B19_0 = 1;
+		G_B19_1 = G_B18_0;
+	}
+
+IL_00b1:
+	{
+		NullCheck(G_B19_1);
+		G_B19_1->___openFwd = (bool)G_B19_0;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:694>
+		bool L_18 = __this->___reverseSwing;
+		if (!L_18)
+		{
+			goto IL_00e1;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:695>
+		bool L_19 = __this->___openFwd;
+		__this->___openFwd = (bool)((((int32_t)L_19) == ((int32_t)0))? 1 : 0);
+		goto IL_00e1;
+	}
+
+IL_00cf:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:698>
+		int32_t L_20 = __this->___swingDirection;
+		__this->___openFwd = (bool)((((int32_t)((((int32_t)L_20) == ((int32_t)2))? 1 : 0)) == ((int32_t)0))? 1 : 0);
+	}
+
+IL_00e1:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:701>
+		__this->___isOpen = (bool)1;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:702>
+		OmniDoor3D_set_needClose_mBDACD3FCE99D25E9508221B8EDC1A77593E44020_inline(__this, (bool)0, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:703>
+		RuntimeObject* L_21;
+		L_21 = OmniDoor3D_Open_mCCEFA0F50C377A2CB50B3B1C519B6CE12F236819(__this, NULL);
+		Coroutine_t85EA685566A254C23F3FD77AB5BDFFFF8799596B* L_22;
+		L_22 = MonoBehaviour_StartCoroutine_m4CAFF732AA28CD3BDC5363B44A863575530EC812(__this, L_21, NULL);
+		__this->___openRoutine = L_22;
+		Il2CppCodeGenWriteBarrier((void**)(&__this->___openRoutine), (void*)L_22);
+	}
+
+IL_0101:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:708>
+		OmniDoor3DU5BU5D_t3B0E16839B27AC359BFE5E3F32ACDC141098E966* L_23 = __this->___linkedDoors;
+		V_0 = L_23;
+		V_1 = 0;
+		goto IL_0123;
+	}
+
+IL_010c:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:708>
+		OmniDoor3DU5BU5D_t3B0E16839B27AC359BFE5E3F32ACDC141098E966* L_24 = V_0;
+		int32_t L_25 = V_1;
+		NullCheck(L_24);
+		int32_t L_26 = L_25;
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_27 = (L_24)->GetAt(static_cast<il2cpp_array_size_t>(L_26));
+		V_2 = L_27;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:710>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_28 = V_2;
+		il2cpp_codegen_runtime_class_init_inline(Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_il2cpp_TypeInfo_var);
+		bool L_29;
+		L_29 = Object_op_Inequality_mD0BE578448EAA61948F25C32F8DD55AB1F778602(L_28, (Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C*)NULL, NULL);
+		if (!L_29)
+		{
+			goto IL_011f;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:711>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_30 = V_2;
+		NullCheck(L_30);
+		OmniDoor3D_TryOpen_m0E0088365BF5206AC2C7525807DA3CBB4C3888EC(L_30, NULL);
+	}
+
+IL_011f:
+	{
+		int32_t L_31 = V_1;
+		V_1 = ((int32_t)il2cpp_codegen_add(L_31, 1));
+	}
+
+IL_0123:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:708>
+		int32_t L_32 = V_1;
+		OmniDoor3DU5BU5D_t3B0E16839B27AC359BFE5E3F32ACDC141098E966* L_33 = V_0;
+		NullCheck(L_33);
+		if ((((int32_t)L_32) < ((int32_t)((int32_t)(((RuntimeArray*)L_33)->max_length)))))
+		{
+			goto IL_010c;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:713>
+		return;
+	}
+}
+// Method Definition Index: 74018
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR bool OmniDoor3D_InOpeningLayers_m8936F6D9C0B8017700E33401BC44B7D807DFDF62 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* ___0_go, const RuntimeMethod* method) 
+{
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:718>
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_0 = ___0_go;
+		NullCheck(L_0);
+		int32_t L_1;
+		L_1 = GameObject_get_layer_m108902B9C89E9F837CE06B9942AA42307450FEAF(L_0, NULL);
+		LayerMask_t97CB6BDADEDC3D6423C7BCFEA7F86DA2EC6241DB L_2 = __this->___openingLayers;
+		int32_t L_3;
+		L_3 = LayerMask_op_Implicit_m7F5A5B9D079281AC445ED39DEE1FCFA9D795810D(L_2, NULL);
+		return (bool)((!(((uint32_t)((int32_t)(((int32_t)(1<<((int32_t)(L_1&((int32_t)31)))))&L_3))) <= ((uint32_t)0)))? 1 : 0);
+	}
+}
+// Method Definition Index: 74019
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_CloseLinkedDoors_mED6AD9FCD60C5242DA62085DCA76BB384409AED1 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_il2cpp_TypeInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	OmniDoor3DU5BU5D_t3B0E16839B27AC359BFE5E3F32ACDC141098E966* V_0 = NULL;
+	int32_t V_1 = 0;
+	OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* V_2 = NULL;
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:724>
+		OmniDoor3DU5BU5D_t3B0E16839B27AC359BFE5E3F32ACDC141098E966* L_0 = __this->___linkedDoors;
+		V_0 = L_0;
+		V_1 = 0;
+		goto IL_002a;
+	}
+
+IL_000b:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:724>
+		OmniDoor3DU5BU5D_t3B0E16839B27AC359BFE5E3F32ACDC141098E966* L_1 = V_0;
+		int32_t L_2 = V_1;
+		NullCheck(L_1);
+		int32_t L_3 = L_2;
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_4 = (L_1)->GetAt(static_cast<il2cpp_array_size_t>(L_3));
+		V_2 = L_4;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:726>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_5 = V_2;
+		il2cpp_codegen_runtime_class_init_inline(Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_il2cpp_TypeInfo_var);
+		bool L_6;
+		L_6 = Object_op_Inequality_mD0BE578448EAA61948F25C32F8DD55AB1F778602(L_5, (Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C*)NULL, NULL);
+		if (!L_6)
+		{
+			goto IL_0026;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:728>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_7 = V_2;
+		NullCheck(L_7);
+		L_7->___isOpen = (bool)0;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:729>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_8 = V_2;
+		NullCheck(L_8);
+		OmniDoor3D_set_needClose_mBDACD3FCE99D25E9508221B8EDC1A77593E44020_inline(L_8, (bool)1, NULL);
+	}
+
+IL_0026:
+	{
+		int32_t L_9 = V_1;
+		V_1 = ((int32_t)il2cpp_codegen_add(L_9, 1));
+	}
+
+IL_002a:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:724>
+		int32_t L_10 = V_1;
+		OmniDoor3DU5BU5D_t3B0E16839B27AC359BFE5E3F32ACDC141098E966* L_11 = V_0;
+		NullCheck(L_11);
+		if ((((int32_t)L_10) < ((int32_t)((int32_t)(((RuntimeArray*)L_11)->max_length)))))
+		{
+			goto IL_000b;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:732>
+		return;
+	}
+}
+// Method Definition Index: 74020
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_LockLinkedDoors_m4FB164275A6B7528B42CB0B19351B89A5C621808 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_il2cpp_TypeInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	OmniDoor3DU5BU5D_t3B0E16839B27AC359BFE5E3F32ACDC141098E966* V_0 = NULL;
+	int32_t V_1 = 0;
+	OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* V_2 = NULL;
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:737>
+		OmniDoor3DU5BU5D_t3B0E16839B27AC359BFE5E3F32ACDC141098E966* L_0 = __this->___linkedDoors;
+		V_0 = L_0;
+		V_1 = 0;
+		goto IL_0022;
+	}
+
+IL_000b:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:737>
+		OmniDoor3DU5BU5D_t3B0E16839B27AC359BFE5E3F32ACDC141098E966* L_1 = V_0;
+		int32_t L_2 = V_1;
+		NullCheck(L_1);
+		int32_t L_3 = L_2;
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_4 = (L_1)->GetAt(static_cast<il2cpp_array_size_t>(L_3));
+		V_2 = L_4;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:739>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_5 = V_2;
+		il2cpp_codegen_runtime_class_init_inline(Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_il2cpp_TypeInfo_var);
+		bool L_6;
+		L_6 = Object_op_Inequality_mD0BE578448EAA61948F25C32F8DD55AB1F778602(L_5, (Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C*)NULL, NULL);
+		if (!L_6)
+		{
+			goto IL_001e;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:740>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_7 = V_2;
+		NullCheck(L_7);
+		OmniDoor3D_TryLock_mD91BBAA1ABF2F7E9F8AD7DA670700178BAB97DB3(L_7, NULL);
+	}
+
+IL_001e:
+	{
+		int32_t L_8 = V_1;
+		V_1 = ((int32_t)il2cpp_codegen_add(L_8, 1));
+	}
+
+IL_0022:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:737>
+		int32_t L_9 = V_1;
+		OmniDoor3DU5BU5D_t3B0E16839B27AC359BFE5E3F32ACDC141098E966* L_10 = V_0;
+		NullCheck(L_10);
+		if ((((int32_t)L_9) < ((int32_t)((int32_t)(((RuntimeArray*)L_10)->max_length)))))
+		{
+			goto IL_000b;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:742>
+		return;
+	}
+}
+// Method Definition Index: 74021
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_UnlockLinkedDoors_m40A8D9BF50CF7407CCF29D4754E1DFDE261B53A5 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_il2cpp_TypeInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	OmniDoor3DU5BU5D_t3B0E16839B27AC359BFE5E3F32ACDC141098E966* V_0 = NULL;
+	int32_t V_1 = 0;
+	OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* V_2 = NULL;
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:747>
+		OmniDoor3DU5BU5D_t3B0E16839B27AC359BFE5E3F32ACDC141098E966* L_0 = __this->___linkedDoors;
+		V_0 = L_0;
+		V_1 = 0;
+		goto IL_0022;
+	}
+
+IL_000b:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:747>
+		OmniDoor3DU5BU5D_t3B0E16839B27AC359BFE5E3F32ACDC141098E966* L_1 = V_0;
+		int32_t L_2 = V_1;
+		NullCheck(L_1);
+		int32_t L_3 = L_2;
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_4 = (L_1)->GetAt(static_cast<il2cpp_array_size_t>(L_3));
+		V_2 = L_4;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:749>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_5 = V_2;
+		il2cpp_codegen_runtime_class_init_inline(Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_il2cpp_TypeInfo_var);
+		bool L_6;
+		L_6 = Object_op_Inequality_mD0BE578448EAA61948F25C32F8DD55AB1F778602(L_5, (Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C*)NULL, NULL);
+		if (!L_6)
+		{
+			goto IL_001e;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:750>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_7 = V_2;
+		NullCheck(L_7);
+		OmniDoor3D_TryUnlock_mCD6C6F3F02F034D30C1310EB37987E66C5FA67DE(L_7, NULL);
+	}
+
+IL_001e:
+	{
+		int32_t L_8 = V_1;
+		V_1 = ((int32_t)il2cpp_codegen_add(L_8, 1));
+	}
+
+IL_0022:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:747>
+		int32_t L_9 = V_1;
+		OmniDoor3DU5BU5D_t3B0E16839B27AC359BFE5E3F32ACDC141098E966* L_10 = V_0;
+		NullCheck(L_10);
+		if ((((int32_t)L_9) < ((int32_t)((int32_t)(((RuntimeArray*)L_10)->max_length)))))
+		{
+			goto IL_000b;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:752>
+		return;
+	}
+}
+// Method Definition Index: 74022
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_Update_m447FAE76F9C5D64223370B3F5577E94D4425FFFF (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Enumerator_Dispose_m07D362A07C19B36C2FD1B4DC79DD99903D4DA95D_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Enumerator_MoveNext_m96F4B0BD0A5485C8E8CC57D961DF6F1FA256AF27_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Enumerator_get_Current_m7236EBE1CFCB6533F96E030500D322B13D0CA5A4_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&List_1_GetEnumerator_mA843D26C63E5963415DFCA6E49DFA27AFD9C75E8_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&List_1_get_Count_m4C37ED2D928D63B80F55AF434730C2D64EEB9F22_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC_il2cpp_TypeInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	float V_0 = 0.0f;
+	float V_1 = 0.0f;
+	int32_t V_2 = 0;
+	int32_t V_3 = 0;
+	float V_4 = 0.0f;
+	int32_t V_5 = 0;
+	float V_6 = 0.0f;
+	float V_7 = 0.0f;
+	Enumerator_t88BD1282EF117E59AACFC9EC55B89F0B9EDACE60 V_8;
+	memset((&V_8), 0, sizeof(V_8));
+	GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* V_9 = NULL;
+	float G_B10_0 = 0.0f;
+	DoorOpenedEvt_t000102A9D09036B3D64BB710FE11FD7FE05AD585* G_B17_0 = NULL;
+	DoorOpenedEvt_t000102A9D09036B3D64BB710FE11FD7FE05AD585* G_B16_0 = NULL;
+	DoorClosedEvt_t3512971C2165EA9C9D0F0A489E03B04EEE894C5C* G_B20_0 = NULL;
+	DoorClosedEvt_t3512971C2165EA9C9D0F0A489E03B04EEE894C5C* G_B19_0 = NULL;
+	float G_B24_0 = 0.0f;
+	float G_B30_0 = 0.0f;
+	float G_B29_0 = 0.0f;
+	float G_B31_0 = 0.0f;
+	float G_B31_1 = 0.0f;
+	DoorOpenedEvt_t000102A9D09036B3D64BB710FE11FD7FE05AD585* G_B35_0 = NULL;
+	DoorOpenedEvt_t000102A9D09036B3D64BB710FE11FD7FE05AD585* G_B34_0 = NULL;
+	DoorClosedEvt_t3512971C2165EA9C9D0F0A489E03B04EEE894C5C* G_B38_0 = NULL;
+	DoorClosedEvt_t3512971C2165EA9C9D0F0A489E03B04EEE894C5C* G_B37_0 = NULL;
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:756>
+		float L_0 = __this->___timeElapsed;
+		float L_1;
+		L_1 = Time_get_deltaTime_mC3195000401F0FD167DD2F948FD2BC58330D0865(NULL);
+		__this->___timeElapsed = ((float)il2cpp_codegen_add(L_0, L_1));
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:758>
+		float L_2 = __this->___timeElapsed;
+		OmniDoor3DConfig_t190977036D4995316F7EBBC5305FE39D88914957* L_3;
+		L_3 = OmniDoor3D_GetConfig_mEA289FF8960B4B268671B5C8A87107C5A979982B(__this, NULL);
+		NullCheck(L_3);
+		float L_4 = L_3->___checkTime;
+		if ((!(((float)L_2) > ((float)L_4))))
+		{
+			goto IL_006d;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:760>
+		__this->___timeElapsed = (0.0f);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:762>
+		bool L_5;
+		L_5 = OmniDoor3D_get_needClose_mA8C427131EBA052EE262833A830ECF878CE737C2_inline(__this, NULL);
+		if (!L_5)
+		{
+			goto IL_006d;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:764>
+		Coroutine_t85EA685566A254C23F3FD77AB5BDFFFF8799596B* L_6 = __this->___openRoutine;
+		if (!L_6)
+		{
+			goto IL_0053;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:766>
+		Coroutine_t85EA685566A254C23F3FD77AB5BDFFFF8799596B* L_7 = __this->___openRoutine;
+		MonoBehaviour_StopCoroutine_mB0FC91BE84203BD8E360B3FBAE5B958B4C5ED22A(__this, L_7, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:767>
+		__this->___openRoutine = (Coroutine_t85EA685566A254C23F3FD77AB5BDFFFF8799596B*)NULL;
+		Il2CppCodeGenWriteBarrier((void**)(&__this->___openRoutine), (void*)(Coroutine_t85EA685566A254C23F3FD77AB5BDFFFF8799596B*)NULL);
+	}
+
+IL_0053:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:770>
+		OmniDoor3D_set_needClose_mBDACD3FCE99D25E9508221B8EDC1A77593E44020_inline(__this, (bool)0, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:771>
+		RuntimeObject* L_8;
+		L_8 = OmniDoor3D_Close_m68052BB2E99899B1F23C5074200578D7AB862D48(__this, NULL);
+		Coroutine_t85EA685566A254C23F3FD77AB5BDFFFF8799596B* L_9;
+		L_9 = MonoBehaviour_StartCoroutine_m4CAFF732AA28CD3BDC5363B44A863575530EC812(__this, L_8, NULL);
+		__this->___closeRoutine = L_9;
+		Il2CppCodeGenWriteBarrier((void**)(&__this->___closeRoutine), (void*)L_9);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:772>
+		return;
+	}
+
+IL_006d:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:777>
+		bool L_10 = __this->___isMoving;
+		if (!L_10)
+		{
+			goto IL_043c;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:779>
+		int32_t L_11 = __this->___motionKind;
+		if ((!(((uint32_t)L_11) == ((uint32_t)3))))
+		{
+			goto IL_0191;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:781>
+		bool L_12 = __this->___motionOpen;
+		if (L_12)
+		{
+			goto IL_0094;
+		}
+	}
+	{
+		float L_13 = __this->___secondsToClose;
+		G_B10_0 = L_13;
+		goto IL_009a;
+	}
+
+IL_0094:
+	{
+		float L_14 = __this->___secondsToOpen;
+		G_B10_0 = L_14;
+	}
+
+IL_009a:
+	{
+		V_0 = G_B10_0;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:782>
+		float L_15;
+		L_15 = Time_get_deltaTime_mC3195000401F0FD167DD2F948FD2BC58330D0865(NULL);
+		float L_16 = V_0;
+		V_1 = ((float)(L_15/L_16));
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:784>
+		bool L_17 = __this->___motionOpen;
+		if (!L_17)
+		{
+			goto IL_00bb;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:785>
+		float L_18 = __this->___rollUpPosition;
+		float L_19 = V_1;
+		__this->___rollUpPosition = ((float)il2cpp_codegen_add(L_18, L_19));
+		goto IL_00c9;
+	}
+
+IL_00bb:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:787>
+		float L_20 = __this->___rollUpPosition;
+		float L_21 = V_1;
+		__this->___rollUpPosition = ((float)il2cpp_codegen_add(L_20, L_21));
+	}
+
+IL_00c9:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:789>
+		float L_22 = __this->___rollUpPosition;
+		float L_23;
+		L_23 = Mathf_Clamp01_mA7E048DBDA832D399A581BE4D6DED9FA44CE0F14_inline(L_22, NULL);
+		__this->___rollUpPosition = L_23;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:791>
+		float L_24 = __this->___rollUpPosition;
+		if ((!(((float)L_24) >= ((float)(1.0f)))))
+		{
+			goto IL_0127;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:793>
+		__this->___rollUpPosition = (1.0f);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:794>
+		__this->___isMoving = (bool)0;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:796>
+		bool L_25 = __this->___motionOpen;
+		if (!L_25)
+		{
+			goto IL_0115;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:797>
+		DoorOpenedEvt_t000102A9D09036B3D64BB710FE11FD7FE05AD585* L_26 = __this->___DoorOpened;
+		DoorOpenedEvt_t000102A9D09036B3D64BB710FE11FD7FE05AD585* L_27 = L_26;
+		if (L_27)
+		{
+			G_B17_0 = L_27;
+			goto IL_010d;
+		}
+		G_B16_0 = L_27;
+	}
+	{
+		goto IL_0127;
+	}
+
+IL_010d:
+	{
+		NullCheck(G_B17_0);
+		DoorOpenedEvt_Invoke_m25A787A473AE4D2FAA71159238C4E729C1AB59B5_inline(G_B17_0, __this, NULL);
+		goto IL_0127;
+	}
+
+IL_0115:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:799>
+		DoorClosedEvt_t3512971C2165EA9C9D0F0A489E03B04EEE894C5C* L_28 = __this->___DoorClosed;
+		DoorClosedEvt_t3512971C2165EA9C9D0F0A489E03B04EEE894C5C* L_29 = L_28;
+		if (L_29)
+		{
+			G_B20_0 = L_29;
+			goto IL_0121;
+		}
+		G_B19_0 = L_29;
+	}
+	{
+		goto IL_0127;
+	}
+
+IL_0121:
+	{
+		NullCheck(G_B20_0);
+		DoorClosedEvt_Invoke_mB5F245C3A2B92B56DBB9B92FE3878F7FAB5353AA_inline(G_B20_0, __this, NULL);
+	}
+
+IL_0127:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:802>
+		il2cpp_codegen_runtime_class_init_inline(OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC_il2cpp_TypeInfo_var);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_30 = ((OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC_StaticFields*)il2cpp_codegen_static_fields_for(OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC_il2cpp_TypeInfo_var))->___section0Waypoints;
+		NullCheck((RuntimeArray*)L_30);
+		int32_t L_31;
+		L_31 = Array_GetLength_mFE7A9FE891DE1E07795230BE09854441CDD0E935((RuntimeArray*)L_30, 0, NULL);
+		V_2 = L_31;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:803>
+		bool L_32 = __this->___motionOpen;
+		if (L_32)
+		{
+			goto IL_0149;
+		}
+	}
+	{
+		float L_33 = __this->___rollUpPosition;
+		G_B24_0 = ((float)il2cpp_codegen_subtract((1.0f), L_33));
+		goto IL_014f;
+	}
+
+IL_0149:
+	{
+		float L_34 = __this->___rollUpPosition;
+		G_B24_0 = L_34;
+	}
+
+IL_014f:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:804>
+		int32_t L_35 = V_2;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:805>
+		float L_36 = ((float)il2cpp_codegen_multiply(G_B24_0, ((float)((int32_t)il2cpp_codegen_subtract(L_35, 1)))));
+		int32_t L_37;
+		L_37 = Mathf_FloorToInt_m2A39AE881CAEE6B6A4B3BFEF9CA1ED40625F5AB7_inline(L_36, NULL);
+		V_3 = L_37;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:806>
+		int32_t L_38 = V_3;
+		V_4 = ((float)il2cpp_codegen_subtract(L_36, ((float)L_38)));
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:807>
+		int32_t L_39 = V_3;
+		int32_t L_40 = V_2;
+		int32_t L_41;
+		L_41 = Mathf_Clamp_m4DC36EEFDBE5F07C16249DA568023C5ECCFF0E7B_inline(L_39, 0, ((int32_t)il2cpp_codegen_subtract(L_40, 2)), NULL);
+		V_3 = L_41;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:810>
+		V_5 = 0;
+		goto IL_0181;
+	}
+
+IL_0170:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:811>
+		int32_t L_42 = V_5;
+		int32_t L_43 = V_3;
+		float L_44 = V_4;
+		OmniDoor3D_ApplyGarageDoorWaypoint_m7BA4AB457647FCF366364E6E9A7F1EB25F6ACFC4(__this, L_42, L_43, L_44, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:810>
+		int32_t L_45 = V_5;
+		V_5 = ((int32_t)il2cpp_codegen_add(L_45, 1));
+	}
+
+IL_0181:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:810>
+		int32_t L_46 = V_5;
+		List_1_tB951CE80B58D1BF9650862451D8DAD8C231F207B* L_47 = __this->___internalPivots;
+		NullCheck(L_47);
+		int32_t L_48;
+		L_48 = List_1_get_Count_m4C37ED2D928D63B80F55AF434730C2D64EEB9F22_inline(L_47, List_1_get_Count_m4C37ED2D928D63B80F55AF434730C2D64EEB9F22_RuntimeMethod_var);
+		if ((((int32_t)L_46) < ((int32_t)L_48)))
+		{
+			goto IL_0170;
+		}
+	}
+	{
+		return;
+	}
+
+IL_0191:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:815>
+		float L_49 = __this->___motionStartPct;
+		bool L_50 = __this->___motionOpen;
+		if (L_50)
+		{
+			G_B30_0 = L_49;
+			goto IL_01a7;
+		}
+		G_B29_0 = L_49;
+	}
+	{
+		float L_51 = __this->___secondsToClose;
+		G_B31_0 = L_51;
+		G_B31_1 = G_B29_0;
+		goto IL_01ad;
+	}
+
+IL_01a7:
+	{
+		float L_52 = __this->___secondsToOpen;
+		G_B31_0 = L_52;
+		G_B31_1 = G_B30_0;
+	}
+
+IL_01ad:
+	{
+		V_6 = ((float)il2cpp_codegen_multiply(G_B31_1, G_B31_0));
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:816>
+		float L_53;
+		L_53 = Time_get_time_m3A271BB1B20041144AC5B7863B71AB1F0150374B(NULL);
+		float L_54 = __this->___motionStartTime;
+		V_7 = ((float)il2cpp_codegen_subtract(L_53, L_54));
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:817>
+		float L_55 = V_7;
+		float L_56 = V_6;
+		__this->___percentComplete = ((float)(L_55/L_56));
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:819>
+		float L_57 = __this->___percentComplete;
+		if ((!(((float)L_57) >= ((float)(1.0f)))))
+		{
+			goto IL_0216;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:821>
+		__this->___percentComplete = (1.0f);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:822>
+		__this->___isMoving = (bool)0;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:824>
+		bool L_58 = __this->___motionOpen;
+		if (!L_58)
+		{
+			goto IL_0204;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:825>
+		DoorOpenedEvt_t000102A9D09036B3D64BB710FE11FD7FE05AD585* L_59 = __this->___DoorOpened;
+		DoorOpenedEvt_t000102A9D09036B3D64BB710FE11FD7FE05AD585* L_60 = L_59;
+		if (L_60)
+		{
+			G_B35_0 = L_60;
+			goto IL_01fc;
+		}
+		G_B34_0 = L_60;
+	}
+	{
+		goto IL_0216;
+	}
+
+IL_01fc:
+	{
+		NullCheck(G_B35_0);
+		DoorOpenedEvt_Invoke_m25A787A473AE4D2FAA71159238C4E729C1AB59B5_inline(G_B35_0, __this, NULL);
+		goto IL_0216;
+	}
+
+IL_0204:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:827>
+		DoorClosedEvt_t3512971C2165EA9C9D0F0A489E03B04EEE894C5C* L_61 = __this->___DoorClosed;
+		DoorClosedEvt_t3512971C2165EA9C9D0F0A489E03B04EEE894C5C* L_62 = L_61;
+		if (L_62)
+		{
+			G_B38_0 = L_62;
+			goto IL_0210;
+		}
+		G_B37_0 = L_62;
+	}
+	{
+		goto IL_0216;
+	}
+
+IL_0210:
+	{
+		NullCheck(G_B38_0);
+		DoorClosedEvt_Invoke_mB5F245C3A2B92B56DBB9B92FE3878F7FAB5353AA_inline(G_B38_0, __this, NULL);
+	}
+
+IL_0216:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:830>
+		List_1_tB951CE80B58D1BF9650862451D8DAD8C231F207B* L_63 = __this->___internalPivots;
+		NullCheck(L_63);
+		Enumerator_t88BD1282EF117E59AACFC9EC55B89F0B9EDACE60 L_64;
+		L_64 = List_1_GetEnumerator_mA843D26C63E5963415DFCA6E49DFA27AFD9C75E8(L_63, List_1_GetEnumerator_mA843D26C63E5963415DFCA6E49DFA27AFD9C75E8_RuntimeMethod_var);
+		V_8 = L_64;
+	}
+	{
+		auto __finallyBlock = il2cpp::utils::Finally([&]
+		{
+
+FINALLY_042e:
+			{
+				Enumerator_Dispose_m07D362A07C19B36C2FD1B4DC79DD99903D4DA95D((&V_8), Enumerator_Dispose_m07D362A07C19B36C2FD1B4DC79DD99903D4DA95D_RuntimeMethod_var);
+				return;
+			}
+		});
+		try
+		{
+			{
+				goto IL_0420_1;
+			}
+
+IL_0228_1:
+			{
+				//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:830>
+				GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_65;
+				L_65 = Enumerator_get_Current_m7236EBE1CFCB6533F96E030500D322B13D0CA5A4_inline((&V_8), Enumerator_get_Current_m7236EBE1CFCB6533F96E030500D322B13D0CA5A4_RuntimeMethod_var);
+				V_9 = L_65;
+				//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:832>
+				int32_t L_66 = __this->___motionKind;
+				if ((!(((uint32_t)L_66) == ((uint32_t)2))))
+				{
+					goto IL_03cd_1;
+				}
+			}
+			{
+				//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:834>
+				bool L_67 = __this->___offsetSlide;
+				if (!L_67)
+				{
+					goto IL_03a8_1;
+				}
+			}
+			{
+				//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:836>
+				bool L_68 = __this->___motionOpen;
+				if (!L_68)
+				{
+					goto IL_02f9_1;
+				}
+			}
+			{
+				//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:838>
+				float L_69 = __this->___percentComplete;
+				float L_70 = __this->___offsetPortion;
+				if ((!(((float)L_69) < ((float)L_70))))
+				{
+					goto IL_02a1_1;
+				}
+			}
+			{
+				//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:839>
+				GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_71 = V_9;
+				NullCheck(L_71);
+				Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_72;
+				L_72 = GameObject_get_transform_m0BC10ADFA1632166AE5544BDF9038A2650C2AE56(L_71, NULL);
+				Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_73 = __this->___slideStartPos;
+				Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_74 = __this->___slideStartPos;
+				Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_75 = __this->___slideOffset;
+				Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_76;
+				L_76 = Vector3_op_Addition_m78C0EC70CB66E8DCAC225743D82B268DAEE92067_inline(L_74, L_75, NULL);
+				float L_77 = __this->___percentComplete;
+				float L_78 = __this->___offsetPortion;
+				Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_79;
+				L_79 = Vector3_Lerp_m3A906D0530A94FAABB94F0F905E84D99BE85C3F8_inline(L_73, L_76, ((float)il2cpp_codegen_multiply(L_77, ((float)((1.0f)/L_78)))), NULL);
+				NullCheck(L_72);
+				Transform_set_localPosition_mDE1C997F7D79C0885210B7732B4BA50EE7D73134(L_72, L_79, NULL);
+				goto IL_0420_1;
+			}
+
+IL_02a1_1:
+			{
+				//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:841>
+				//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:842>
+				GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_80 = V_9;
+				NullCheck(L_80);
+				Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_81;
+				L_81 = GameObject_get_transform_m0BC10ADFA1632166AE5544BDF9038A2650C2AE56(L_80, NULL);
+				Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_82 = __this->___slideStartPos;
+				Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_83 = __this->___slideOffset;
+				Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_84;
+				L_84 = Vector3_op_Addition_m78C0EC70CB66E8DCAC225743D82B268DAEE92067_inline(L_82, L_83, NULL);
+				Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_85 = __this->___targetPos;
+				Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_86 = __this->___slideOffset;
+				Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_87;
+				L_87 = Vector3_op_Addition_m78C0EC70CB66E8DCAC225743D82B268DAEE92067_inline(L_85, L_86, NULL);
+				float L_88 = __this->___percentComplete;
+				float L_89 = __this->___offsetPortion;
+				float L_90 = __this->___offsetPortion;
+				Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_91;
+				L_91 = Vector3_Lerp_m3A906D0530A94FAABB94F0F905E84D99BE85C3F8_inline(L_84, L_87, ((float)il2cpp_codegen_multiply(((float)il2cpp_codegen_subtract(L_88, L_89)), ((float)((1.0f)/((float)il2cpp_codegen_subtract((1.0f), L_90)))))), NULL);
+				NullCheck(L_81);
+				Transform_set_localPosition_mDE1C997F7D79C0885210B7732B4BA50EE7D73134(L_81, L_91, NULL);
+				goto IL_0420_1;
+			}
+
+IL_02f9_1:
+			{
+				//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:846>
+				float L_92 = __this->___percentComplete;
+				float L_93 = __this->___offsetPortion;
+				if ((!(((float)L_92) < ((float)((float)il2cpp_codegen_subtract((1.0f), L_93))))))
+				{
+					goto IL_035e_1;
+				}
+			}
+			{
+				//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:847>
+				GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_94 = V_9;
+				NullCheck(L_94);
+				Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_95;
+				L_95 = GameObject_get_transform_m0BC10ADFA1632166AE5544BDF9038A2650C2AE56(L_94, NULL);
+				Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_96 = __this->___slideStartPos;
+				Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_97 = __this->___slideOffset;
+				Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_98;
+				L_98 = Vector3_op_Addition_m78C0EC70CB66E8DCAC225743D82B268DAEE92067_inline(L_96, L_97, NULL);
+				Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_99 = __this->___targetPos;
+				Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_100 = __this->___slideOffset;
+				Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_101;
+				L_101 = Vector3_op_Addition_m78C0EC70CB66E8DCAC225743D82B268DAEE92067_inline(L_99, L_100, NULL);
+				float L_102 = __this->___percentComplete;
+				float L_103 = __this->___offsetPortion;
+				Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_104;
+				L_104 = Vector3_Lerp_m3A906D0530A94FAABB94F0F905E84D99BE85C3F8_inline(L_98, L_101, ((float)il2cpp_codegen_multiply(L_102, ((float)((1.0f)/((float)il2cpp_codegen_subtract((1.0f), L_103)))))), NULL);
+				NullCheck(L_95);
+				Transform_set_localPosition_mDE1C997F7D79C0885210B7732B4BA50EE7D73134(L_95, L_104, NULL);
+				goto IL_0420_1;
+			}
+
+IL_035e_1:
+			{
+				//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:849>
+				GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_105 = V_9;
+				NullCheck(L_105);
+				Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_106;
+				L_106 = GameObject_get_transform_m0BC10ADFA1632166AE5544BDF9038A2650C2AE56(L_105, NULL);
+				Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_107 = __this->___targetPos;
+				Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_108 = __this->___slideOffset;
+				Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_109;
+				L_109 = Vector3_op_Addition_m78C0EC70CB66E8DCAC225743D82B268DAEE92067_inline(L_107, L_108, NULL);
+				Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_110 = __this->___targetPos;
+				float L_111 = __this->___percentComplete;
+				float L_112 = __this->___offsetPortion;
+				float L_113 = __this->___offsetPortion;
+				Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_114;
+				L_114 = Vector3_Lerp_m3A906D0530A94FAABB94F0F905E84D99BE85C3F8_inline(L_109, L_110, ((float)il2cpp_codegen_multiply(((float)il2cpp_codegen_subtract(L_111, ((float)il2cpp_codegen_subtract((1.0f), L_112)))), ((float)((1.0f)/L_113)))), NULL);
+				NullCheck(L_106);
+				Transform_set_localPosition_mDE1C997F7D79C0885210B7732B4BA50EE7D73134(L_106, L_114, NULL);
+				goto IL_0420_1;
+			}
+
+IL_03a8_1:
+			{
+				//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:853>
+				GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_115 = V_9;
+				NullCheck(L_115);
+				Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_116;
+				L_116 = GameObject_get_transform_m0BC10ADFA1632166AE5544BDF9038A2650C2AE56(L_115, NULL);
+				Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_117 = __this->___slideStartPos;
+				Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_118 = __this->___targetPos;
+				float L_119 = __this->___percentComplete;
+				Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_120;
+				L_120 = Vector3_Lerp_m3A906D0530A94FAABB94F0F905E84D99BE85C3F8_inline(L_117, L_118, L_119, NULL);
+				NullCheck(L_116);
+				Transform_set_localPosition_mDE1C997F7D79C0885210B7732B4BA50EE7D73134(L_116, L_120, NULL);
+				goto IL_0420_1;
+			}
+
+IL_03cd_1:
+			{
+				//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:855>
+				int32_t L_121 = __this->___motionKind;
+				if ((!(((uint32_t)L_121) == ((uint32_t)1))))
+				{
+					goto IL_0420_1;
+				}
+			}
+			{
+				//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:856>
+				//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:857>
+				GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_122 = V_9;
+				NullCheck(L_122);
+				Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_123;
+				L_123 = GameObject_get_transform_m0BC10ADFA1632166AE5544BDF9038A2650C2AE56(L_122, NULL);
+				float L_124 = __this->___swingStartAngleX;
+				float L_125 = __this->___swingStartAngleY;
+				float L_126 = __this->___swingStartAngleZ;
+				Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_127;
+				memset((&L_127), 0, sizeof(L_127));
+				Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_127), L_124, L_125, L_126, NULL);
+				float L_128 = __this->___targetAngleX;
+				float L_129 = __this->___targetAngleY;
+				float L_130 = __this->___targetAngleZ;
+				Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_131;
+				memset((&L_131), 0, sizeof(L_131));
+				Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_131), L_128, L_129, L_130, NULL);
+				float L_132 = __this->___percentComplete;
+				Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_133;
+				L_133 = Vector3_Lerp_m3A906D0530A94FAABB94F0F905E84D99BE85C3F8_inline(L_127, L_131, L_132, NULL);
+				Quaternion_tDA59F214EF07D7700B26E40E562F267AF7306974 L_134;
+				L_134 = Quaternion_Euler_m5BCCC19216CFAD2426F15BC51A30421880D27B73_inline(L_133, NULL);
+				NullCheck(L_123);
+				Transform_set_localRotation_mAB4A011D134BA58AB780BECC0025CA65F16185FA(L_123, L_134, NULL);
+			}
+
+IL_0420_1:
+			{
+				//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:830>
+				bool L_135;
+				L_135 = Enumerator_MoveNext_m96F4B0BD0A5485C8E8CC57D961DF6F1FA256AF27((&V_8), Enumerator_MoveNext_m96F4B0BD0A5485C8E8CC57D961DF6F1FA256AF27_RuntimeMethod_var);
+				if (L_135)
+				{
+					goto IL_0228_1;
+				}
+			}
+			{
+				goto IL_043c;
+			}
+		}
+		catch(Il2CppExceptionWrapper& e)
+		{
+			__finallyBlock.StoreException(e.ex);
+		}
+	}
+
+IL_043c:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:861>
+		return;
+	}
+}
+// Method Definition Index: 74023
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_ApplyGarageDoorWaypoint_m7BA4AB457647FCF366364E6E9A7F1EB25F6ACFC4 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, int32_t ___0_sectionIndex, int32_t ___1_waypointIndex, float ___2_lerpFactor, const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&List_1_get_Count_m4C37ED2D928D63B80F55AF434730C2D64EEB9F22_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&List_1_get_Item_mE8DBE527F24D9CFED839C34216C475B716169979_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_il2cpp_TypeInfo_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC_il2cpp_TypeInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* V_0 = NULL;
+	Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* V_1 = NULL;
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 V_2;
+	memset((&V_2), 0, sizeof(V_2));
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 V_3;
+	memset((&V_3), 0, sizeof(V_3));
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 V_4;
+	memset((&V_4), 0, sizeof(V_4));
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 V_5;
+	memset((&V_5), 0, sizeof(V_5));
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:866>
+		int32_t L_0 = ___0_sectionIndex;
+		if ((((int32_t)L_0) < ((int32_t)0)))
+		{
+			goto IL_00ba;
+		}
+	}
+	{
+		int32_t L_1 = ___0_sectionIndex;
+		List_1_tB951CE80B58D1BF9650862451D8DAD8C231F207B* L_2 = __this->___internalPivots;
+		NullCheck(L_2);
+		int32_t L_3;
+		L_3 = List_1_get_Count_m4C37ED2D928D63B80F55AF434730C2D64EEB9F22_inline(L_2, List_1_get_Count_m4C37ED2D928D63B80F55AF434730C2D64EEB9F22_RuntimeMethod_var);
+		if ((((int32_t)L_1) >= ((int32_t)L_3)))
+		{
+			goto IL_00ba;
+		}
+	}
+	{
+		int32_t L_4 = ___0_sectionIndex;
+		switch (L_4)
+		{
+			case 0:
+			{
+				goto IL_002f;
+			}
+			case 1:
+			{
+				goto IL_0037;
+			}
+			case 2:
+			{
+				goto IL_003f;
+			}
+			case 3:
+			{
+				goto IL_0047;
+			}
+		}
+	}
+	{
+		return;
+	}
+
+IL_002f:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:872>
+		il2cpp_codegen_runtime_class_init_inline(OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC_il2cpp_TypeInfo_var);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_5 = ((OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC_StaticFields*)il2cpp_codegen_static_fields_for(OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC_il2cpp_TypeInfo_var))->___section0Waypoints;
+		V_0 = L_5;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:872>
+		goto IL_004d;
+	}
+
+IL_0037:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:873>
+		il2cpp_codegen_runtime_class_init_inline(OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC_il2cpp_TypeInfo_var);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_6 = ((OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC_StaticFields*)il2cpp_codegen_static_fields_for(OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC_il2cpp_TypeInfo_var))->___section1Waypoints;
+		V_0 = L_6;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:873>
+		goto IL_004d;
+	}
+
+IL_003f:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:874>
+		il2cpp_codegen_runtime_class_init_inline(OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC_il2cpp_TypeInfo_var);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_7 = ((OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC_StaticFields*)il2cpp_codegen_static_fields_for(OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC_il2cpp_TypeInfo_var))->___section2Waypoints;
+		V_0 = L_7;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:874>
+		goto IL_004d;
+	}
+
+IL_0047:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:875>
+		il2cpp_codegen_runtime_class_init_inline(OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC_il2cpp_TypeInfo_var);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_8 = ((OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC_StaticFields*)il2cpp_codegen_static_fields_for(OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC_il2cpp_TypeInfo_var))->___section3Waypoints;
+		V_0 = L_8;
+	}
+
+IL_004d:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:879>
+		List_1_tB951CE80B58D1BF9650862451D8DAD8C231F207B* L_9 = __this->___internalPivots;
+		int32_t L_10 = ___0_sectionIndex;
+		NullCheck(L_9);
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_11;
+		L_11 = List_1_get_Item_mE8DBE527F24D9CFED839C34216C475B716169979(L_9, L_10, List_1_get_Item_mE8DBE527F24D9CFED839C34216C475B716169979_RuntimeMethod_var);
+		NullCheck(L_11);
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_12;
+		L_12 = GameObject_get_transform_m0BC10ADFA1632166AE5544BDF9038A2650C2AE56(L_11, NULL);
+		NullCheck(L_12);
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_13;
+		L_13 = Transform_get_parent_m65354E28A4C94EC00EBCF03532F7B0718380791E(L_12, NULL);
+		V_1 = L_13;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:881>
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_14 = V_1;
+		il2cpp_codegen_runtime_class_init_inline(Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_il2cpp_TypeInfo_var);
+		bool L_15;
+		L_15 = Object_op_Inequality_mD0BE578448EAA61948F25C32F8DD55AB1F778602(L_14, (Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C*)NULL, NULL);
+		if (!L_15)
+		{
+			goto IL_00ba;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:883>
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_16 = V_0;
+		int32_t L_17 = ___1_waypointIndex;
+		NullCheck(L_16);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_18;
+		L_18 = (L_16)->GetAt(L_17, 0);
+		V_2 = L_18;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:884>
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_19 = V_0;
+		int32_t L_20 = ___1_waypointIndex;
+		NullCheck(L_19);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_21;
+		L_21 = (L_19)->GetAt(((int32_t)il2cpp_codegen_add(L_20, 1)), 0);
+		V_3 = L_21;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:885>
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_22 = V_1;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_23 = V_2;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_24 = V_3;
+		float L_25 = ___2_lerpFactor;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_26;
+		L_26 = Vector3_Lerp_m3A906D0530A94FAABB94F0F905E84D99BE85C3F8_inline(L_23, L_24, L_25, NULL);
+		NullCheck(L_22);
+		Transform_set_localPosition_mDE1C997F7D79C0885210B7732B4BA50EE7D73134(L_22, L_26, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:887>
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_27 = V_0;
+		int32_t L_28 = ___1_waypointIndex;
+		NullCheck(L_27);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_29;
+		L_29 = (L_27)->GetAt(L_28, 1);
+		V_4 = L_29;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:888>
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_30 = V_0;
+		int32_t L_31 = ___1_waypointIndex;
+		NullCheck(L_30);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_32;
+		L_32 = (L_30)->GetAt(((int32_t)il2cpp_codegen_add(L_31, 1)), 1);
+		V_5 = L_32;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:889>
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_33 = V_1;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_34 = V_4;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_35 = V_5;
+		float L_36 = ___2_lerpFactor;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_37;
+		L_37 = Vector3_Lerp_m3A906D0530A94FAABB94F0F905E84D99BE85C3F8_inline(L_34, L_35, L_36, NULL);
+		Quaternion_tDA59F214EF07D7700B26E40E562F267AF7306974 L_38;
+		L_38 = Quaternion_Euler_m5BCCC19216CFAD2426F15BC51A30421880D27B73_inline(L_37, NULL);
+		NullCheck(L_33);
+		Transform_set_localRotation_mAB4A011D134BA58AB780BECC0025CA65F16185FA(L_33, L_38, NULL);
+	}
+
+IL_00ba:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:892>
+		return;
+	}
+}
+// Method Definition Index: 74024
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_OnDoorOpened_m0B23CFFE2802695D62EC4DC06BB58333C12231BF (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_il2cpp_TypeInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:898>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_0 = ___0_door;
+		il2cpp_codegen_runtime_class_init_inline(Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_il2cpp_TypeInfo_var);
+		bool L_1;
+		L_1 = Object_op_Inequality_mD0BE578448EAA61948F25C32F8DD55AB1F778602(L_0, __this, NULL);
+		if (!L_1)
+		{
+			goto IL_000a;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:899>
+		return;
+	}
+
+IL_000a:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:901>
+		bool L_2 = __this->___timedClose;
+		if (!L_2)
+		{
+			goto IL_002a;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:902>
+		float L_3 = __this->___closeAfter;
+		RuntimeObject* L_4;
+		L_4 = OmniDoor3D_CloseAfter_mBAED5404B74F32957AFFFB62B0BB65CF5FF685D0(__this, L_3, NULL);
+		Coroutine_t85EA685566A254C23F3FD77AB5BDFFFF8799596B* L_5;
+		L_5 = MonoBehaviour_StartCoroutine_m4CAFF732AA28CD3BDC5363B44A863575530EC812(__this, L_4, NULL);
+		__this->___closeAfterRoutine = L_5;
+		Il2CppCodeGenWriteBarrier((void**)(&__this->___closeAfterRoutine), (void*)L_5);
+	}
+
+IL_002a:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:903>
+		return;
+	}
+}
+// Method Definition Index: 74025
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* OmniDoor3D_CloseAfter_mBAED5404B74F32957AFFFB62B0BB65CF5FF685D0 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, float ___0_fSec, const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&U3CCloseAfterU3Ed__137_t584913F7212C26F25FC8D9229420A68194CB6B51_il2cpp_TypeInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	{
+		U3CCloseAfterU3Ed__137_t584913F7212C26F25FC8D9229420A68194CB6B51* L_0 = (U3CCloseAfterU3Ed__137_t584913F7212C26F25FC8D9229420A68194CB6B51*)il2cpp_codegen_object_new(U3CCloseAfterU3Ed__137_t584913F7212C26F25FC8D9229420A68194CB6B51_il2cpp_TypeInfo_var);
+		U3CCloseAfterU3Ed__137__ctor_m29F51D3EDB7FFB4140938C795D156C39718E0655(L_0, 0, NULL);
+		U3CCloseAfterU3Ed__137_t584913F7212C26F25FC8D9229420A68194CB6B51* L_1 = L_0;
+		NullCheck(L_1);
+		L_1->___U3CU3E4__this = __this;
+		Il2CppCodeGenWriteBarrier((void**)(&L_1->___U3CU3E4__this), (void*)__this);
+		U3CCloseAfterU3Ed__137_t584913F7212C26F25FC8D9229420A68194CB6B51* L_2 = L_1;
+		float L_3 = ___0_fSec;
+		NullCheck(L_2);
+		L_2->___fSec = L_3;
+		return L_2;
+	}
+}
+// Method Definition Index: 74026
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_OnDestroy_m7BDAF3FBB5897D3F6A9FF591E097AA79835660ED (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&CloseDoorEvt_t0FA9DD6BBFED77AF496D88825BE7100D2C05E507_il2cpp_TypeInfo_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&LockDoorEvt_t15338F49A7805255093B5E4DE5994C05EC2FEC84_il2cpp_TypeInfo_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_il2cpp_TypeInfo_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&OmniDoor3D_OnControllerClose_m480918131D4363CF79EB2CA45E24517D9F319F6B_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&OmniDoor3D_OnControllerLock_m97D4C8914E92DAC5F83BFD80292DE0DC8EFA8C44_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&OmniDoor3D_OnControllerOpen_mA1A637000670A15FAAB35E7E8BA72038C0FD9432_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&OmniDoor3D_OnControllerToggle_mA63C59658D5ACC4C4BE1982D9B5A9E66C4EC115A_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&OmniDoor3D_OnControllerUnlock_m4D825D706D046AFA2A946466D937913C2C89DCFE_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&OpenDoorEvt_t53FDC500F958704C0041B93E83B01FD1685D2A98_il2cpp_TypeInfo_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&ToggleDoorEvt_tFE20427E5BADD68E7E1BE9380F1D78CFC33DDA40_il2cpp_TypeInfo_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&UnlockDoorEvt_t6006D394CC44175581D7140CCCC65A71B68F20CF_il2cpp_TypeInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	OmniDoor3DControllerU5BU5D_tA2C650B4032DEB60C68BABE13C51185BCF96CE31* V_0 = NULL;
+	int32_t V_1 = 0;
+	OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* V_2 = NULL;
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:920>
+		MonoBehaviour_StopAllCoroutines_m872033451D42013A99867D09337490017E9ED318(__this, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:922>
+		OmniDoor3DControllerU5BU5D_tA2C650B4032DEB60C68BABE13C51185BCF96CE31* L_0 = __this->___controllingObjects;
+		V_0 = L_0;
+		V_1 = 0;
+		goto IL_00d2;
+	}
+
+IL_0014:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:922>
+		OmniDoor3DControllerU5BU5D_tA2C650B4032DEB60C68BABE13C51185BCF96CE31* L_1 = V_0;
+		int32_t L_2 = V_1;
+		NullCheck(L_1);
+		int32_t L_3 = L_2;
+		OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* L_4 = (L_1)->GetAt(static_cast<il2cpp_array_size_t>(L_3));
+		V_2 = L_4;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:924>
+		OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* L_5 = V_2;
+		il2cpp_codegen_runtime_class_init_inline(Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_il2cpp_TypeInfo_var);
+		bool L_6;
+		L_6 = Object_op_Inequality_mD0BE578448EAA61948F25C32F8DD55AB1F778602(L_5, (Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C*)NULL, NULL);
+		if (!L_6)
+		{
+			goto IL_00ce;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:926>
+		OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* L_7 = V_2;
+		OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* L_8 = L_7;
+		NullCheck(L_8);
+		OpenDoorEvt_t53FDC500F958704C0041B93E83B01FD1685D2A98* L_9 = L_8->___OpenDoor;
+		OpenDoorEvt_t53FDC500F958704C0041B93E83B01FD1685D2A98* L_10 = (OpenDoorEvt_t53FDC500F958704C0041B93E83B01FD1685D2A98*)il2cpp_codegen_object_new(OpenDoorEvt_t53FDC500F958704C0041B93E83B01FD1685D2A98_il2cpp_TypeInfo_var);
+		OpenDoorEvt__ctor_m93EE2C0EAFD8330FB5935959ECA507EAACE67773(L_10, __this, (intptr_t)((void*)OmniDoor3D_OnControllerOpen_mA1A637000670A15FAAB35E7E8BA72038C0FD9432_RuntimeMethod_var), NULL);
+		Delegate_t* L_11;
+		L_11 = Delegate_Remove_m8B7DD5661308FA972E23CA1CC3FC9CEB355504E3(L_9, L_10, NULL);
+		NullCheck(L_8);
+		L_8->___OpenDoor = ((OpenDoorEvt_t53FDC500F958704C0041B93E83B01FD1685D2A98*)CastclassSealed((RuntimeObject*)L_11, OpenDoorEvt_t53FDC500F958704C0041B93E83B01FD1685D2A98_il2cpp_TypeInfo_var));
+		Il2CppCodeGenWriteBarrier((void**)(&L_8->___OpenDoor), (void*)((OpenDoorEvt_t53FDC500F958704C0041B93E83B01FD1685D2A98*)CastclassSealed((RuntimeObject*)L_11, OpenDoorEvt_t53FDC500F958704C0041B93E83B01FD1685D2A98_il2cpp_TypeInfo_var)));
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:927>
+		OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* L_12 = V_2;
+		OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* L_13 = L_12;
+		NullCheck(L_13);
+		CloseDoorEvt_t0FA9DD6BBFED77AF496D88825BE7100D2C05E507* L_14 = L_13->___CloseDoor;
+		CloseDoorEvt_t0FA9DD6BBFED77AF496D88825BE7100D2C05E507* L_15 = (CloseDoorEvt_t0FA9DD6BBFED77AF496D88825BE7100D2C05E507*)il2cpp_codegen_object_new(CloseDoorEvt_t0FA9DD6BBFED77AF496D88825BE7100D2C05E507_il2cpp_TypeInfo_var);
+		CloseDoorEvt__ctor_m135334B7D8C2D13F0CA3CA1B302150B8F3EA5FB8(L_15, __this, (intptr_t)((void*)OmniDoor3D_OnControllerClose_m480918131D4363CF79EB2CA45E24517D9F319F6B_RuntimeMethod_var), NULL);
+		Delegate_t* L_16;
+		L_16 = Delegate_Remove_m8B7DD5661308FA972E23CA1CC3FC9CEB355504E3(L_14, L_15, NULL);
+		NullCheck(L_13);
+		L_13->___CloseDoor = ((CloseDoorEvt_t0FA9DD6BBFED77AF496D88825BE7100D2C05E507*)CastclassSealed((RuntimeObject*)L_16, CloseDoorEvt_t0FA9DD6BBFED77AF496D88825BE7100D2C05E507_il2cpp_TypeInfo_var));
+		Il2CppCodeGenWriteBarrier((void**)(&L_13->___CloseDoor), (void*)((CloseDoorEvt_t0FA9DD6BBFED77AF496D88825BE7100D2C05E507*)CastclassSealed((RuntimeObject*)L_16, CloseDoorEvt_t0FA9DD6BBFED77AF496D88825BE7100D2C05E507_il2cpp_TypeInfo_var)));
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:928>
+		OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* L_17 = V_2;
+		OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* L_18 = L_17;
+		NullCheck(L_18);
+		ToggleDoorEvt_tFE20427E5BADD68E7E1BE9380F1D78CFC33DDA40* L_19 = L_18->___ToggleDoor;
+		ToggleDoorEvt_tFE20427E5BADD68E7E1BE9380F1D78CFC33DDA40* L_20 = (ToggleDoorEvt_tFE20427E5BADD68E7E1BE9380F1D78CFC33DDA40*)il2cpp_codegen_object_new(ToggleDoorEvt_tFE20427E5BADD68E7E1BE9380F1D78CFC33DDA40_il2cpp_TypeInfo_var);
+		ToggleDoorEvt__ctor_mCE9D795B7E5C415C8FBBB9967D78D0AC9B890297(L_20, __this, (intptr_t)((void*)OmniDoor3D_OnControllerToggle_mA63C59658D5ACC4C4BE1982D9B5A9E66C4EC115A_RuntimeMethod_var), NULL);
+		Delegate_t* L_21;
+		L_21 = Delegate_Remove_m8B7DD5661308FA972E23CA1CC3FC9CEB355504E3(L_19, L_20, NULL);
+		NullCheck(L_18);
+		L_18->___ToggleDoor = ((ToggleDoorEvt_tFE20427E5BADD68E7E1BE9380F1D78CFC33DDA40*)CastclassSealed((RuntimeObject*)L_21, ToggleDoorEvt_tFE20427E5BADD68E7E1BE9380F1D78CFC33DDA40_il2cpp_TypeInfo_var));
+		Il2CppCodeGenWriteBarrier((void**)(&L_18->___ToggleDoor), (void*)((ToggleDoorEvt_tFE20427E5BADD68E7E1BE9380F1D78CFC33DDA40*)CastclassSealed((RuntimeObject*)L_21, ToggleDoorEvt_tFE20427E5BADD68E7E1BE9380F1D78CFC33DDA40_il2cpp_TypeInfo_var)));
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:929>
+		OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* L_22 = V_2;
+		OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* L_23 = L_22;
+		NullCheck(L_23);
+		UnlockDoorEvt_t6006D394CC44175581D7140CCCC65A71B68F20CF* L_24 = L_23->___UnlockDoor;
+		UnlockDoorEvt_t6006D394CC44175581D7140CCCC65A71B68F20CF* L_25 = (UnlockDoorEvt_t6006D394CC44175581D7140CCCC65A71B68F20CF*)il2cpp_codegen_object_new(UnlockDoorEvt_t6006D394CC44175581D7140CCCC65A71B68F20CF_il2cpp_TypeInfo_var);
+		UnlockDoorEvt__ctor_mBED67DC21D06E11BB16218C6B27020F5DB951574(L_25, __this, (intptr_t)((void*)OmniDoor3D_OnControllerUnlock_m4D825D706D046AFA2A946466D937913C2C89DCFE_RuntimeMethod_var), NULL);
+		Delegate_t* L_26;
+		L_26 = Delegate_Remove_m8B7DD5661308FA972E23CA1CC3FC9CEB355504E3(L_24, L_25, NULL);
+		NullCheck(L_23);
+		L_23->___UnlockDoor = ((UnlockDoorEvt_t6006D394CC44175581D7140CCCC65A71B68F20CF*)CastclassSealed((RuntimeObject*)L_26, UnlockDoorEvt_t6006D394CC44175581D7140CCCC65A71B68F20CF_il2cpp_TypeInfo_var));
+		Il2CppCodeGenWriteBarrier((void**)(&L_23->___UnlockDoor), (void*)((UnlockDoorEvt_t6006D394CC44175581D7140CCCC65A71B68F20CF*)CastclassSealed((RuntimeObject*)L_26, UnlockDoorEvt_t6006D394CC44175581D7140CCCC65A71B68F20CF_il2cpp_TypeInfo_var)));
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:930>
+		OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* L_27 = V_2;
+		OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* L_28 = L_27;
+		NullCheck(L_28);
+		LockDoorEvt_t15338F49A7805255093B5E4DE5994C05EC2FEC84* L_29 = L_28->___LockDoor;
+		LockDoorEvt_t15338F49A7805255093B5E4DE5994C05EC2FEC84* L_30 = (LockDoorEvt_t15338F49A7805255093B5E4DE5994C05EC2FEC84*)il2cpp_codegen_object_new(LockDoorEvt_t15338F49A7805255093B5E4DE5994C05EC2FEC84_il2cpp_TypeInfo_var);
+		LockDoorEvt__ctor_mFEC79ED10859BA028795E11E320CE2F0B3AA762A(L_30, __this, (intptr_t)((void*)OmniDoor3D_OnControllerLock_m97D4C8914E92DAC5F83BFD80292DE0DC8EFA8C44_RuntimeMethod_var), NULL);
+		Delegate_t* L_31;
+		L_31 = Delegate_Remove_m8B7DD5661308FA972E23CA1CC3FC9CEB355504E3(L_29, L_30, NULL);
+		NullCheck(L_28);
+		L_28->___LockDoor = ((LockDoorEvt_t15338F49A7805255093B5E4DE5994C05EC2FEC84*)CastclassSealed((RuntimeObject*)L_31, LockDoorEvt_t15338F49A7805255093B5E4DE5994C05EC2FEC84_il2cpp_TypeInfo_var));
+		Il2CppCodeGenWriteBarrier((void**)(&L_28->___LockDoor), (void*)((LockDoorEvt_t15338F49A7805255093B5E4DE5994C05EC2FEC84*)CastclassSealed((RuntimeObject*)L_31, LockDoorEvt_t15338F49A7805255093B5E4DE5994C05EC2FEC84_il2cpp_TypeInfo_var)));
+	}
+
+IL_00ce:
+	{
+		int32_t L_32 = V_1;
+		V_1 = ((int32_t)il2cpp_codegen_add(L_32, 1));
+	}
+
+IL_00d2:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:922>
+		int32_t L_33 = V_1;
+		OmniDoor3DControllerU5BU5D_tA2C650B4032DEB60C68BABE13C51185BCF96CE31* L_34 = V_0;
+		NullCheck(L_34);
+		if ((((int32_t)L_33) < ((int32_t)((int32_t)(((RuntimeArray*)L_34)->max_length)))))
+		{
+			goto IL_0014;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:933>
+		return;
+	}
+}
+// Method Definition Index: 74027
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81 OmniDoor3D_GetDoorInfo_mFF70B2FB604F8340C486A06275694998B42FD654 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, int32_t ___0_doorKind, const RuntimeMethod* method) 
+{
+	OmniDoorDBU5BU5D_tF16DAEC8020B9DA8CD6C22B6CB4F6D60EE25D502* V_0 = NULL;
+	int32_t V_1 = 0;
+	DoorInfoU5BU5D_tE7DC1312989605285BB3C891E8CA89FD1A4605E2* V_2 = NULL;
+	int32_t V_3 = 0;
+	DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81 V_4;
+	memset((&V_4), 0, sizeof(V_4));
+	DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81 V_5;
+	memset((&V_5), 0, sizeof(V_5));
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:940>
+		OmniDoor3DConfig_t190977036D4995316F7EBBC5305FE39D88914957* L_0;
+		L_0 = OmniDoor3D_GetConfig_mEA289FF8960B4B268671B5C8A87107C5A979982B(__this, NULL);
+		NullCheck(L_0);
+		OmniDoorDBU5BU5D_tF16DAEC8020B9DA8CD6C22B6CB4F6D60EE25D502* L_1 = L_0->___DBList;
+		V_0 = L_1;
+		V_1 = 0;
+		goto IL_0041;
+	}
+
+IL_0010:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:940>
+		OmniDoorDBU5BU5D_tF16DAEC8020B9DA8CD6C22B6CB4F6D60EE25D502* L_2 = V_0;
+		int32_t L_3 = V_1;
+		NullCheck(L_2);
+		int32_t L_4 = L_3;
+		OmniDoorDB_t370225F36C9C4B0D70F59485EC3D8ABB4B1DCB46* L_5 = (L_2)->GetAt(static_cast<il2cpp_array_size_t>(L_4));
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:942>
+		NullCheck(L_5);
+		DoorInfoU5BU5D_tE7DC1312989605285BB3C891E8CA89FD1A4605E2* L_6 = L_5->___DoorList;
+		V_2 = L_6;
+		V_3 = 0;
+		goto IL_0037;
+	}
+
+IL_001d:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:942>
+		DoorInfoU5BU5D_tE7DC1312989605285BB3C891E8CA89FD1A4605E2* L_7 = V_2;
+		int32_t L_8 = V_3;
+		NullCheck(L_7);
+		int32_t L_9 = L_8;
+		DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81 L_10 = (L_7)->GetAt(static_cast<il2cpp_array_size_t>(L_9));
+		V_4 = L_10;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:944>
+		DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81 L_11 = V_4;
+		int32_t L_12 = L_11.___doorKind;
+		int32_t L_13 = ___0_doorKind;
+		if ((!(((uint32_t)L_12) == ((uint32_t)L_13))))
+		{
+			goto IL_0033;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:945>
+		DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81 L_14 = V_4;
+		return L_14;
+	}
+
+IL_0033:
+	{
+		int32_t L_15 = V_3;
+		V_3 = ((int32_t)il2cpp_codegen_add(L_15, 1));
+	}
+
+IL_0037:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:942>
+		int32_t L_16 = V_3;
+		DoorInfoU5BU5D_tE7DC1312989605285BB3C891E8CA89FD1A4605E2* L_17 = V_2;
+		NullCheck(L_17);
+		if ((((int32_t)L_16) < ((int32_t)((int32_t)(((RuntimeArray*)L_17)->max_length)))))
+		{
+			goto IL_001d;
+		}
+	}
+	{
+		int32_t L_18 = V_1;
+		V_1 = ((int32_t)il2cpp_codegen_add(L_18, 1));
+	}
+
+IL_0041:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:940>
+		int32_t L_19 = V_1;
+		OmniDoorDBU5BU5D_tF16DAEC8020B9DA8CD6C22B6CB4F6D60EE25D502* L_20 = V_0;
+		NullCheck(L_20);
+		if ((((int32_t)L_19) < ((int32_t)((int32_t)(((RuntimeArray*)L_20)->max_length)))))
+		{
+			goto IL_0010;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:949>
+		il2cpp_codegen_initobj((&V_5), sizeof(DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81));
+		DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81 L_21 = V_5;
+		return L_21;
+	}
+}
+// Method Definition Index: 74028
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* OmniDoor3D_GetHandlePrefab_m54B1EE39320C4B237AE0E08BB809FB76AC210176 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, int32_t ___0_handleKind, const RuntimeMethod* method) 
+{
+	OmniDoorDBU5BU5D_tF16DAEC8020B9DA8CD6C22B6CB4F6D60EE25D502* V_0 = NULL;
+	int32_t V_1 = 0;
+	HandleInfoU5BU5D_tDCDA16399E2E608D56F4CD046723B56801671A1E* V_2 = NULL;
+	int32_t V_3 = 0;
+	HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE V_4;
+	memset((&V_4), 0, sizeof(V_4));
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:955>
+		OmniDoor3DConfig_t190977036D4995316F7EBBC5305FE39D88914957* L_0;
+		L_0 = OmniDoor3D_GetConfig_mEA289FF8960B4B268671B5C8A87107C5A979982B(__this, NULL);
+		NullCheck(L_0);
+		OmniDoorDBU5BU5D_tF16DAEC8020B9DA8CD6C22B6CB4F6D60EE25D502* L_1 = L_0->___DBList;
+		V_0 = L_1;
+		V_1 = 0;
+		goto IL_0046;
+	}
+
+IL_0010:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:955>
+		OmniDoorDBU5BU5D_tF16DAEC8020B9DA8CD6C22B6CB4F6D60EE25D502* L_2 = V_0;
+		int32_t L_3 = V_1;
+		NullCheck(L_2);
+		int32_t L_4 = L_3;
+		OmniDoorDB_t370225F36C9C4B0D70F59485EC3D8ABB4B1DCB46* L_5 = (L_2)->GetAt(static_cast<il2cpp_array_size_t>(L_4));
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:957>
+		NullCheck(L_5);
+		HandleInfoU5BU5D_tDCDA16399E2E608D56F4CD046723B56801671A1E* L_6 = L_5->___HandleList;
+		V_2 = L_6;
+		V_3 = 0;
+		goto IL_003c;
+	}
+
+IL_001d:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:957>
+		HandleInfoU5BU5D_tDCDA16399E2E608D56F4CD046723B56801671A1E* L_7 = V_2;
+		int32_t L_8 = V_3;
+		NullCheck(L_7);
+		int32_t L_9 = L_8;
+		HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE L_10 = (L_7)->GetAt(static_cast<il2cpp_array_size_t>(L_9));
+		V_4 = L_10;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:959>
+		HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE L_11 = V_4;
+		int32_t L_12 = L_11.___handleKind;
+		int32_t L_13 = ___0_handleKind;
+		if ((!(((uint32_t)L_12) == ((uint32_t)L_13))))
+		{
+			goto IL_0038;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:960>
+		HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE L_14 = V_4;
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_15 = L_14.___handlePrefab;
+		return L_15;
+	}
+
+IL_0038:
+	{
+		int32_t L_16 = V_3;
+		V_3 = ((int32_t)il2cpp_codegen_add(L_16, 1));
+	}
+
+IL_003c:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:957>
+		int32_t L_17 = V_3;
+		HandleInfoU5BU5D_tDCDA16399E2E608D56F4CD046723B56801671A1E* L_18 = V_2;
+		NullCheck(L_18);
+		if ((((int32_t)L_17) < ((int32_t)((int32_t)(((RuntimeArray*)L_18)->max_length)))))
+		{
+			goto IL_001d;
+		}
+	}
+	{
+		int32_t L_19 = V_1;
+		V_1 = ((int32_t)il2cpp_codegen_add(L_19, 1));
+	}
+
+IL_0046:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:955>
+		int32_t L_20 = V_1;
+		OmniDoorDBU5BU5D_tF16DAEC8020B9DA8CD6C22B6CB4F6D60EE25D502* L_21 = V_0;
+		NullCheck(L_21);
+		if ((((int32_t)L_20) < ((int32_t)((int32_t)(((RuntimeArray*)L_21)->max_length)))))
+		{
+			goto IL_0010;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:964>
+		return (GameObject_t76FEDD663AB33C991A9C9A23129337651094216F*)NULL;
+	}
+}
+// Method Definition Index: 74029
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* OmniDoor3D_GetPostPrefab_mCA6BD64DC4AF8EC77B370F5E0A7A16F014F55380 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, int32_t ___0_dk, const RuntimeMethod* method) 
+{
+	OmniDoorDBU5BU5D_tF16DAEC8020B9DA8CD6C22B6CB4F6D60EE25D502* V_0 = NULL;
+	int32_t V_1 = 0;
+	PostInfoU5BU5D_t40BB55D73F43C6AA09CFBC0D1B7A9D4118E31227* V_2 = NULL;
+	int32_t V_3 = 0;
+	PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900 V_4;
+	memset((&V_4), 0, sizeof(V_4));
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:970>
+		OmniDoor3DConfig_t190977036D4995316F7EBBC5305FE39D88914957* L_0;
+		L_0 = OmniDoor3D_GetConfig_mEA289FF8960B4B268671B5C8A87107C5A979982B(__this, NULL);
+		NullCheck(L_0);
+		OmniDoorDBU5BU5D_tF16DAEC8020B9DA8CD6C22B6CB4F6D60EE25D502* L_1 = L_0->___DBList;
+		V_0 = L_1;
+		V_1 = 0;
+		goto IL_0046;
+	}
+
+IL_0010:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:970>
+		OmniDoorDBU5BU5D_tF16DAEC8020B9DA8CD6C22B6CB4F6D60EE25D502* L_2 = V_0;
+		int32_t L_3 = V_1;
+		NullCheck(L_2);
+		int32_t L_4 = L_3;
+		OmniDoorDB_t370225F36C9C4B0D70F59485EC3D8ABB4B1DCB46* L_5 = (L_2)->GetAt(static_cast<il2cpp_array_size_t>(L_4));
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:972>
+		NullCheck(L_5);
+		PostInfoU5BU5D_t40BB55D73F43C6AA09CFBC0D1B7A9D4118E31227* L_6 = L_5->___PostList;
+		V_2 = L_6;
+		V_3 = 0;
+		goto IL_003c;
+	}
+
+IL_001d:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:972>
+		PostInfoU5BU5D_t40BB55D73F43C6AA09CFBC0D1B7A9D4118E31227* L_7 = V_2;
+		int32_t L_8 = V_3;
+		NullCheck(L_7);
+		int32_t L_9 = L_8;
+		PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900 L_10 = (L_7)->GetAt(static_cast<il2cpp_array_size_t>(L_9));
+		V_4 = L_10;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:974>
+		PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900 L_11 = V_4;
+		int32_t L_12 = L_11.___doorKind;
+		int32_t L_13 = ___0_dk;
+		if ((!(((uint32_t)L_12) == ((uint32_t)L_13))))
+		{
+			goto IL_0038;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:975>
+		PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900 L_14 = V_4;
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_15 = L_14.___postPrefab;
+		return L_15;
+	}
+
+IL_0038:
+	{
+		int32_t L_16 = V_3;
+		V_3 = ((int32_t)il2cpp_codegen_add(L_16, 1));
+	}
+
+IL_003c:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:972>
+		int32_t L_17 = V_3;
+		PostInfoU5BU5D_t40BB55D73F43C6AA09CFBC0D1B7A9D4118E31227* L_18 = V_2;
+		NullCheck(L_18);
+		if ((((int32_t)L_17) < ((int32_t)((int32_t)(((RuntimeArray*)L_18)->max_length)))))
+		{
+			goto IL_001d;
+		}
+	}
+	{
+		int32_t L_19 = V_1;
+		V_1 = ((int32_t)il2cpp_codegen_add(L_19, 1));
+	}
+
+IL_0046:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:970>
+		int32_t L_20 = V_1;
+		OmniDoorDBU5BU5D_tF16DAEC8020B9DA8CD6C22B6CB4F6D60EE25D502* L_21 = V_0;
+		NullCheck(L_21);
+		if ((((int32_t)L_20) < ((int32_t)((int32_t)(((RuntimeArray*)L_21)->max_length)))))
+		{
+			goto IL_0010;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:979>
+		return (GameObject_t76FEDD663AB33C991A9C9A23129337651094216F*)NULL;
+	}
+}
+// Method Definition Index: 74030
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR bool OmniDoor3D_GetHandlePlacement_mBE88C2D24B123D0566FEF1E5658FDFCAAECA9012 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81 ___0_di, int32_t ___1_hk, HandlePlacement_t501AE58E56D7614CD5583DECA99405B710D41907* ___2_hpOut, const RuntimeMethod* method) 
+{
+	HandlePlacementU5BU5D_tDD9B6C149E365F0A8655F2F8FB0D1AE8693E362C* V_0 = NULL;
+	int32_t V_1 = 0;
+	HandlePlacement_t501AE58E56D7614CD5583DECA99405B710D41907 V_2;
+	memset((&V_2), 0, sizeof(V_2));
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:985>
+		DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81 L_0 = ___0_di;
+		HandlePlacementU5BU5D_tDD9B6C149E365F0A8655F2F8FB0D1AE8693E362C* L_1 = L_0.___handles;
+		V_0 = L_1;
+		V_1 = 0;
+		goto IL_0029;
+	}
+
+IL_000b:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:985>
+		HandlePlacementU5BU5D_tDD9B6C149E365F0A8655F2F8FB0D1AE8693E362C* L_2 = V_0;
+		int32_t L_3 = V_1;
+		NullCheck(L_2);
+		int32_t L_4 = L_3;
+		HandlePlacement_t501AE58E56D7614CD5583DECA99405B710D41907 L_5 = (L_2)->GetAt(static_cast<il2cpp_array_size_t>(L_4));
+		V_2 = L_5;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:987>
+		HandlePlacement_t501AE58E56D7614CD5583DECA99405B710D41907 L_6 = V_2;
+		int32_t L_7 = L_6.___handleKind;
+		int32_t L_8 = ___1_hk;
+		if ((!(((uint32_t)L_7) == ((uint32_t)L_8))))
+		{
+			goto IL_0025;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:989>
+		HandlePlacement_t501AE58E56D7614CD5583DECA99405B710D41907* L_9 = ___2_hpOut;
+		HandlePlacement_t501AE58E56D7614CD5583DECA99405B710D41907 L_10 = V_2;
+		*(HandlePlacement_t501AE58E56D7614CD5583DECA99405B710D41907*)L_9 = L_10;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:990>
+		return (bool)1;
+	}
+
+IL_0025:
+	{
+		int32_t L_11 = V_1;
+		V_1 = ((int32_t)il2cpp_codegen_add(L_11, 1));
+	}
+
+IL_0029:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:985>
+		int32_t L_12 = V_1;
+		HandlePlacementU5BU5D_tDD9B6C149E365F0A8655F2F8FB0D1AE8693E362C* L_13 = V_0;
+		NullCheck(L_13);
+		if ((((int32_t)L_12) < ((int32_t)((int32_t)(((RuntimeArray*)L_13)->max_length)))))
+		{
+			goto IL_000b;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:994>
+		HandlePlacement_t501AE58E56D7614CD5583DECA99405B710D41907* L_14 = ___2_hpOut;
+		il2cpp_codegen_initobj(L_14, sizeof(HandlePlacement_t501AE58E56D7614CD5583DECA99405B710D41907));
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:995>
+		return (bool)0;
+	}
+}
+// Method Definition Index: 74031
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D* OmniDoor3D_GetHandleMaterials_mB0B774D925ED6F8F3CFA1AA6B2B84828DAB7C6D2 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, int32_t ___0_hk, const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&GameObject_GetComponent_TisMeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE_m7FF948365C38BC39333D82B235A7C4EAD219960D_RuntimeMethod_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	OmniDoorDBU5BU5D_tF16DAEC8020B9DA8CD6C22B6CB4F6D60EE25D502* V_0 = NULL;
+	int32_t V_1 = 0;
+	HandleInfoU5BU5D_tDCDA16399E2E608D56F4CD046723B56801671A1E* V_2 = NULL;
+	int32_t V_3 = 0;
+	HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE V_4;
+	memset((&V_4), 0, sizeof(V_4));
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:1001>
+		OmniDoor3DConfig_t190977036D4995316F7EBBC5305FE39D88914957* L_0;
+		L_0 = OmniDoor3D_GetConfig_mEA289FF8960B4B268671B5C8A87107C5A979982B(__this, NULL);
+		NullCheck(L_0);
+		OmniDoorDBU5BU5D_tF16DAEC8020B9DA8CD6C22B6CB4F6D60EE25D502* L_1 = L_0->___DBList;
+		V_0 = L_1;
+		V_1 = 0;
+		goto IL_0050;
+	}
+
+IL_0010:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:1001>
+		OmniDoorDBU5BU5D_tF16DAEC8020B9DA8CD6C22B6CB4F6D60EE25D502* L_2 = V_0;
+		int32_t L_3 = V_1;
+		NullCheck(L_2);
+		int32_t L_4 = L_3;
+		OmniDoorDB_t370225F36C9C4B0D70F59485EC3D8ABB4B1DCB46* L_5 = (L_2)->GetAt(static_cast<il2cpp_array_size_t>(L_4));
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:1003>
+		NullCheck(L_5);
+		HandleInfoU5BU5D_tDCDA16399E2E608D56F4CD046723B56801671A1E* L_6 = L_5->___HandleList;
+		V_2 = L_6;
+		V_3 = 0;
+		goto IL_0046;
+	}
+
+IL_001d:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:1003>
+		HandleInfoU5BU5D_tDCDA16399E2E608D56F4CD046723B56801671A1E* L_7 = V_2;
+		int32_t L_8 = V_3;
+		NullCheck(L_7);
+		int32_t L_9 = L_8;
+		HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE L_10 = (L_7)->GetAt(static_cast<il2cpp_array_size_t>(L_9));
+		V_4 = L_10;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:1005>
+		HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE L_11 = V_4;
+		int32_t L_12 = L_11.___handleKind;
+		int32_t L_13 = ___0_hk;
+		if ((!(((uint32_t)L_12) == ((uint32_t)L_13))))
+		{
+			goto IL_0042;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:1006>
+		HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE L_14 = V_4;
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_15 = L_14.___handlePrefab;
+		NullCheck(L_15);
+		MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE* L_16;
+		L_16 = GameObject_GetComponent_TisMeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE_m7FF948365C38BC39333D82B235A7C4EAD219960D(L_15, GameObject_GetComponent_TisMeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE_m7FF948365C38BC39333D82B235A7C4EAD219960D_RuntimeMethod_var);
+		NullCheck(L_16);
+		MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D* L_17;
+		L_17 = Renderer_get_sharedMaterials_m0B61AFD8EDA35A70C796FFB2F28BB62380051ABF(L_16, NULL);
+		return L_17;
+	}
+
+IL_0042:
+	{
+		int32_t L_18 = V_3;
+		V_3 = ((int32_t)il2cpp_codegen_add(L_18, 1));
+	}
+
+IL_0046:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:1003>
+		int32_t L_19 = V_3;
+		HandleInfoU5BU5D_tDCDA16399E2E608D56F4CD046723B56801671A1E* L_20 = V_2;
+		NullCheck(L_20);
+		if ((((int32_t)L_19) < ((int32_t)((int32_t)(((RuntimeArray*)L_20)->max_length)))))
+		{
+			goto IL_001d;
+		}
+	}
+	{
+		int32_t L_21 = V_1;
+		V_1 = ((int32_t)il2cpp_codegen_add(L_21, 1));
+	}
+
+IL_0050:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:1001>
+		int32_t L_22 = V_1;
+		OmniDoorDBU5BU5D_tF16DAEC8020B9DA8CD6C22B6CB4F6D60EE25D502* L_23 = V_0;
+		NullCheck(L_23);
+		if ((((int32_t)L_22) < ((int32_t)((int32_t)(((RuntimeArray*)L_23)->max_length)))))
+		{
+			goto IL_0010;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:1010>
+		return (MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D*)NULL;
+	}
+}
+// Method Definition Index: 74032
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D* OmniDoor3D_GetPostMaterials_m76B030C398B25123393DEECBAAD8F5A94361DA57 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, int32_t ___0_dk, const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&GameObject_GetComponent_TisMeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE_m7FF948365C38BC39333D82B235A7C4EAD219960D_RuntimeMethod_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	OmniDoorDBU5BU5D_tF16DAEC8020B9DA8CD6C22B6CB4F6D60EE25D502* V_0 = NULL;
+	int32_t V_1 = 0;
+	PostInfoU5BU5D_t40BB55D73F43C6AA09CFBC0D1B7A9D4118E31227* V_2 = NULL;
+	int32_t V_3 = 0;
+	PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900 V_4;
+	memset((&V_4), 0, sizeof(V_4));
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:1016>
+		OmniDoor3DConfig_t190977036D4995316F7EBBC5305FE39D88914957* L_0;
+		L_0 = OmniDoor3D_GetConfig_mEA289FF8960B4B268671B5C8A87107C5A979982B(__this, NULL);
+		NullCheck(L_0);
+		OmniDoorDBU5BU5D_tF16DAEC8020B9DA8CD6C22B6CB4F6D60EE25D502* L_1 = L_0->___DBList;
+		V_0 = L_1;
+		V_1 = 0;
+		goto IL_0050;
+	}
+
+IL_0010:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:1016>
+		OmniDoorDBU5BU5D_tF16DAEC8020B9DA8CD6C22B6CB4F6D60EE25D502* L_2 = V_0;
+		int32_t L_3 = V_1;
+		NullCheck(L_2);
+		int32_t L_4 = L_3;
+		OmniDoorDB_t370225F36C9C4B0D70F59485EC3D8ABB4B1DCB46* L_5 = (L_2)->GetAt(static_cast<il2cpp_array_size_t>(L_4));
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:1018>
+		NullCheck(L_5);
+		PostInfoU5BU5D_t40BB55D73F43C6AA09CFBC0D1B7A9D4118E31227* L_6 = L_5->___PostList;
+		V_2 = L_6;
+		V_3 = 0;
+		goto IL_0046;
+	}
+
+IL_001d:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:1018>
+		PostInfoU5BU5D_t40BB55D73F43C6AA09CFBC0D1B7A9D4118E31227* L_7 = V_2;
+		int32_t L_8 = V_3;
+		NullCheck(L_7);
+		int32_t L_9 = L_8;
+		PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900 L_10 = (L_7)->GetAt(static_cast<il2cpp_array_size_t>(L_9));
+		V_4 = L_10;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:1020>
+		PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900 L_11 = V_4;
+		int32_t L_12 = L_11.___doorKind;
+		int32_t L_13 = ___0_dk;
+		if ((!(((uint32_t)L_12) == ((uint32_t)L_13))))
+		{
+			goto IL_0042;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:1021>
+		PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900 L_14 = V_4;
+		GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* L_15 = L_14.___postPrefab;
+		NullCheck(L_15);
+		MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE* L_16;
+		L_16 = GameObject_GetComponent_TisMeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE_m7FF948365C38BC39333D82B235A7C4EAD219960D(L_15, GameObject_GetComponent_TisMeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE_m7FF948365C38BC39333D82B235A7C4EAD219960D_RuntimeMethod_var);
+		NullCheck(L_16);
+		MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D* L_17;
+		L_17 = Renderer_get_sharedMaterials_m0B61AFD8EDA35A70C796FFB2F28BB62380051ABF(L_16, NULL);
+		return L_17;
+	}
+
+IL_0042:
+	{
+		int32_t L_18 = V_3;
+		V_3 = ((int32_t)il2cpp_codegen_add(L_18, 1));
+	}
+
+IL_0046:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:1018>
+		int32_t L_19 = V_3;
+		PostInfoU5BU5D_t40BB55D73F43C6AA09CFBC0D1B7A9D4118E31227* L_20 = V_2;
+		NullCheck(L_20);
+		if ((((int32_t)L_19) < ((int32_t)((int32_t)(((RuntimeArray*)L_20)->max_length)))))
+		{
+			goto IL_001d;
+		}
+	}
+	{
+		int32_t L_21 = V_1;
+		V_1 = ((int32_t)il2cpp_codegen_add(L_21, 1));
+	}
+
+IL_0050:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:1016>
+		int32_t L_22 = V_1;
+		OmniDoorDBU5BU5D_tF16DAEC8020B9DA8CD6C22B6CB4F6D60EE25D502* L_23 = V_0;
+		NullCheck(L_23);
+		if ((((int32_t)L_22) < ((int32_t)((int32_t)(((RuntimeArray*)L_23)->max_length)))))
+		{
+			goto IL_0010;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:1025>
+		return (MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D*)NULL;
+	}
+}
+// Method Definition Index: 74033
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 OmniDoor3D_GetRightPostPos_mD9A808E1BEF9F19E1BEA091444B449840F3BD564 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, int32_t ___0_dk, const RuntimeMethod* method) 
+{
+	OmniDoorDBU5BU5D_tF16DAEC8020B9DA8CD6C22B6CB4F6D60EE25D502* V_0 = NULL;
+	int32_t V_1 = 0;
+	PostInfoU5BU5D_t40BB55D73F43C6AA09CFBC0D1B7A9D4118E31227* V_2 = NULL;
+	int32_t V_3 = 0;
+	PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900 V_4;
+	memset((&V_4), 0, sizeof(V_4));
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:1031>
+		OmniDoor3DConfig_t190977036D4995316F7EBBC5305FE39D88914957* L_0;
+		L_0 = OmniDoor3D_GetConfig_mEA289FF8960B4B268671B5C8A87107C5A979982B(__this, NULL);
+		NullCheck(L_0);
+		OmniDoorDBU5BU5D_tF16DAEC8020B9DA8CD6C22B6CB4F6D60EE25D502* L_1 = L_0->___DBList;
+		V_0 = L_1;
+		V_1 = 0;
+		goto IL_0046;
+	}
+
+IL_0010:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:1031>
+		OmniDoorDBU5BU5D_tF16DAEC8020B9DA8CD6C22B6CB4F6D60EE25D502* L_2 = V_0;
+		int32_t L_3 = V_1;
+		NullCheck(L_2);
+		int32_t L_4 = L_3;
+		OmniDoorDB_t370225F36C9C4B0D70F59485EC3D8ABB4B1DCB46* L_5 = (L_2)->GetAt(static_cast<il2cpp_array_size_t>(L_4));
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:1033>
+		NullCheck(L_5);
+		PostInfoU5BU5D_t40BB55D73F43C6AA09CFBC0D1B7A9D4118E31227* L_6 = L_5->___PostList;
+		V_2 = L_6;
+		V_3 = 0;
+		goto IL_003c;
+	}
+
+IL_001d:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:1033>
+		PostInfoU5BU5D_t40BB55D73F43C6AA09CFBC0D1B7A9D4118E31227* L_7 = V_2;
+		int32_t L_8 = V_3;
+		NullCheck(L_7);
+		int32_t L_9 = L_8;
+		PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900 L_10 = (L_7)->GetAt(static_cast<il2cpp_array_size_t>(L_9));
+		V_4 = L_10;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:1035>
+		PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900 L_11 = V_4;
+		int32_t L_12 = L_11.___doorKind;
+		int32_t L_13 = ___0_dk;
+		if ((!(((uint32_t)L_12) == ((uint32_t)L_13))))
+		{
+			goto IL_0038;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:1036>
+		PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900 L_14 = V_4;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_15 = L_14.___rightPostPosition;
+		return L_15;
+	}
+
+IL_0038:
+	{
+		int32_t L_16 = V_3;
+		V_3 = ((int32_t)il2cpp_codegen_add(L_16, 1));
+	}
+
+IL_003c:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:1033>
+		int32_t L_17 = V_3;
+		PostInfoU5BU5D_t40BB55D73F43C6AA09CFBC0D1B7A9D4118E31227* L_18 = V_2;
+		NullCheck(L_18);
+		if ((((int32_t)L_17) < ((int32_t)((int32_t)(((RuntimeArray*)L_18)->max_length)))))
+		{
+			goto IL_001d;
+		}
+	}
+	{
+		int32_t L_19 = V_1;
+		V_1 = ((int32_t)il2cpp_codegen_add(L_19, 1));
+	}
+
+IL_0046:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:1031>
+		int32_t L_20 = V_1;
+		OmniDoorDBU5BU5D_tF16DAEC8020B9DA8CD6C22B6CB4F6D60EE25D502* L_21 = V_0;
+		NullCheck(L_21);
+		if ((((int32_t)L_20) < ((int32_t)((int32_t)(((RuntimeArray*)L_21)->max_length)))))
+		{
+			goto IL_0010;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:1040>
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_22;
+		L_22 = Vector3_get_zero_m0C1249C3F25B1C70EAD3CC8B31259975A457AE39_inline(NULL);
+		return L_22;
+	}
+}
+// Method Definition Index: 74034
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 OmniDoor3D_GetLeftPostPos_mB1C40BF2872290615E81173D11DE9B51E3A865C6 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, int32_t ___0_dk, const RuntimeMethod* method) 
+{
+	OmniDoorDBU5BU5D_tF16DAEC8020B9DA8CD6C22B6CB4F6D60EE25D502* V_0 = NULL;
+	int32_t V_1 = 0;
+	PostInfoU5BU5D_t40BB55D73F43C6AA09CFBC0D1B7A9D4118E31227* V_2 = NULL;
+	int32_t V_3 = 0;
+	PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900 V_4;
+	memset((&V_4), 0, sizeof(V_4));
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:1046>
+		OmniDoor3DConfig_t190977036D4995316F7EBBC5305FE39D88914957* L_0;
+		L_0 = OmniDoor3D_GetConfig_mEA289FF8960B4B268671B5C8A87107C5A979982B(__this, NULL);
+		NullCheck(L_0);
+		OmniDoorDBU5BU5D_tF16DAEC8020B9DA8CD6C22B6CB4F6D60EE25D502* L_1 = L_0->___DBList;
+		V_0 = L_1;
+		V_1 = 0;
+		goto IL_0046;
+	}
+
+IL_0010:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:1046>
+		OmniDoorDBU5BU5D_tF16DAEC8020B9DA8CD6C22B6CB4F6D60EE25D502* L_2 = V_0;
+		int32_t L_3 = V_1;
+		NullCheck(L_2);
+		int32_t L_4 = L_3;
+		OmniDoorDB_t370225F36C9C4B0D70F59485EC3D8ABB4B1DCB46* L_5 = (L_2)->GetAt(static_cast<il2cpp_array_size_t>(L_4));
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:1048>
+		NullCheck(L_5);
+		PostInfoU5BU5D_t40BB55D73F43C6AA09CFBC0D1B7A9D4118E31227* L_6 = L_5->___PostList;
+		V_2 = L_6;
+		V_3 = 0;
+		goto IL_003c;
+	}
+
+IL_001d:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:1048>
+		PostInfoU5BU5D_t40BB55D73F43C6AA09CFBC0D1B7A9D4118E31227* L_7 = V_2;
+		int32_t L_8 = V_3;
+		NullCheck(L_7);
+		int32_t L_9 = L_8;
+		PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900 L_10 = (L_7)->GetAt(static_cast<il2cpp_array_size_t>(L_9));
+		V_4 = L_10;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:1050>
+		PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900 L_11 = V_4;
+		int32_t L_12 = L_11.___doorKind;
+		int32_t L_13 = ___0_dk;
+		if ((!(((uint32_t)L_12) == ((uint32_t)L_13))))
+		{
+			goto IL_0038;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:1051>
+		PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900 L_14 = V_4;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_15 = L_14.___leftPostPosition;
+		return L_15;
+	}
+
+IL_0038:
+	{
+		int32_t L_16 = V_3;
+		V_3 = ((int32_t)il2cpp_codegen_add(L_16, 1));
+	}
+
+IL_003c:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:1048>
+		int32_t L_17 = V_3;
+		PostInfoU5BU5D_t40BB55D73F43C6AA09CFBC0D1B7A9D4118E31227* L_18 = V_2;
+		NullCheck(L_18);
+		if ((((int32_t)L_17) < ((int32_t)((int32_t)(((RuntimeArray*)L_18)->max_length)))))
+		{
+			goto IL_001d;
+		}
+	}
+	{
+		int32_t L_19 = V_1;
+		V_1 = ((int32_t)il2cpp_codegen_add(L_19, 1));
+	}
+
+IL_0046:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:1046>
+		int32_t L_20 = V_1;
+		OmniDoorDBU5BU5D_tF16DAEC8020B9DA8CD6C22B6CB4F6D60EE25D502* L_21 = V_0;
+		NullCheck(L_21);
+		if ((((int32_t)L_20) < ((int32_t)((int32_t)(((RuntimeArray*)L_21)->max_length)))))
+		{
+			goto IL_0010;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:1055>
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_22;
+		L_22 = Vector3_get_zero_m0C1249C3F25B1C70EAD3CC8B31259975A457AE39_inline(NULL);
+		return L_22;
+	}
+}
+// Method Definition Index: 74035
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR bool OmniDoor3D_MotionAllowed_m41E628C2DF895BD00259EFC86D7197E1F5027F16 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, int32_t ___0_mk, int32_t ___1_dk, const RuntimeMethod* method) 
+{
+	OmniDoorDBU5BU5D_tF16DAEC8020B9DA8CD6C22B6CB4F6D60EE25D502* V_0 = NULL;
+	int32_t V_1 = 0;
+	MotionInfoU5BU5D_t45427AD297C0AD583CA2F6315DA7E73698D3DDD5* V_2 = NULL;
+	int32_t V_3 = 0;
+	MotionInfo_tF0A4F63839720486FA5651B8A1CF8162CB22263C V_4;
+	memset((&V_4), 0, sizeof(V_4));
+	DoorKindU5BU5D_tE3A6220B579D8E30E313169232EDEFC0C71A7F28* V_5 = NULL;
+	int32_t V_6 = 0;
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:1061>
+		OmniDoor3DConfig_t190977036D4995316F7EBBC5305FE39D88914957* L_0;
+		L_0 = OmniDoor3D_GetConfig_mEA289FF8960B4B268671B5C8A87107C5A979982B(__this, NULL);
+		NullCheck(L_0);
+		OmniDoorDBU5BU5D_tF16DAEC8020B9DA8CD6C22B6CB4F6D60EE25D502* L_1 = L_0->___DBList;
+		V_0 = L_1;
+		V_1 = 0;
+		goto IL_0064;
+	}
+
+IL_0010:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:1061>
+		OmniDoorDBU5BU5D_tF16DAEC8020B9DA8CD6C22B6CB4F6D60EE25D502* L_2 = V_0;
+		int32_t L_3 = V_1;
+		NullCheck(L_2);
+		int32_t L_4 = L_3;
+		OmniDoorDB_t370225F36C9C4B0D70F59485EC3D8ABB4B1DCB46* L_5 = (L_2)->GetAt(static_cast<il2cpp_array_size_t>(L_4));
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:1063>
+		NullCheck(L_5);
+		MotionInfoU5BU5D_t45427AD297C0AD583CA2F6315DA7E73698D3DDD5* L_6 = L_5->___MotionList;
+		V_2 = L_6;
+		V_3 = 0;
+		goto IL_005a;
+	}
+
+IL_001d:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:1063>
+		MotionInfoU5BU5D_t45427AD297C0AD583CA2F6315DA7E73698D3DDD5* L_7 = V_2;
+		int32_t L_8 = V_3;
+		NullCheck(L_7);
+		int32_t L_9 = L_8;
+		MotionInfo_tF0A4F63839720486FA5651B8A1CF8162CB22263C L_10 = (L_7)->GetAt(static_cast<il2cpp_array_size_t>(L_9));
+		V_4 = L_10;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:1065>
+		MotionInfo_tF0A4F63839720486FA5651B8A1CF8162CB22263C L_11 = V_4;
+		int32_t L_12 = L_11.___motionKind;
+		int32_t L_13 = ___0_mk;
+		if ((!(((uint32_t)L_12) == ((uint32_t)L_13))))
+		{
+			goto IL_0056;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:1067>
+		MotionInfo_tF0A4F63839720486FA5651B8A1CF8162CB22263C L_14 = V_4;
+		DoorKindU5BU5D_tE3A6220B579D8E30E313169232EDEFC0C71A7F28* L_15 = L_14.___allowedDoorKinds;
+		V_5 = L_15;
+		V_6 = 0;
+		goto IL_004e;
+	}
+
+IL_003e:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:1067>
+		DoorKindU5BU5D_tE3A6220B579D8E30E313169232EDEFC0C71A7F28* L_16 = V_5;
+		int32_t L_17 = V_6;
+		NullCheck(L_16);
+		int32_t L_18 = L_17;
+		int32_t L_19 = (int32_t)(L_16)->GetAt(static_cast<il2cpp_array_size_t>(L_18));
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:1069>
+		int32_t L_20 = ___1_dk;
+		if ((!(((uint32_t)L_19) == ((uint32_t)L_20))))
+		{
+			goto IL_0048;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:1070>
+		return (bool)1;
+	}
+
+IL_0048:
+	{
+		int32_t L_21 = V_6;
+		V_6 = ((int32_t)il2cpp_codegen_add(L_21, 1));
+	}
+
+IL_004e:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:1067>
+		int32_t L_22 = V_6;
+		DoorKindU5BU5D_tE3A6220B579D8E30E313169232EDEFC0C71A7F28* L_23 = V_5;
+		NullCheck(L_23);
+		if ((((int32_t)L_22) < ((int32_t)((int32_t)(((RuntimeArray*)L_23)->max_length)))))
+		{
+			goto IL_003e;
+		}
+	}
+
+IL_0056:
+	{
+		int32_t L_24 = V_3;
+		V_3 = ((int32_t)il2cpp_codegen_add(L_24, 1));
+	}
+
+IL_005a:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:1063>
+		int32_t L_25 = V_3;
+		MotionInfoU5BU5D_t45427AD297C0AD583CA2F6315DA7E73698D3DDD5* L_26 = V_2;
+		NullCheck(L_26);
+		if ((((int32_t)L_25) < ((int32_t)((int32_t)(((RuntimeArray*)L_26)->max_length)))))
+		{
+			goto IL_001d;
+		}
+	}
+	{
+		int32_t L_27 = V_1;
+		V_1 = ((int32_t)il2cpp_codegen_add(L_27, 1));
+	}
+
+IL_0064:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:1061>
+		int32_t L_28 = V_1;
+		OmniDoorDBU5BU5D_tF16DAEC8020B9DA8CD6C22B6CB4F6D60EE25D502* L_29 = V_0;
+		NullCheck(L_29);
+		if ((((int32_t)L_28) < ((int32_t)((int32_t)(((RuntimeArray*)L_29)->max_length)))))
+		{
+			goto IL_0010;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:1076>
+		return (bool)0;
+	}
+}
+// Method Definition Index: 74036
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D__ctor_mE842D84C603F9BDB8B573CB2ED8E2BB3F4B5F60B (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&List_1__ctor_m0CDD6F02F45026B4267E7117C5DDC188F87EE7BE_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&List_1__ctor_m447372C1EF7141193B93090A77395B786C72C7BC_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&List_1_t58F89DEDCD7DABB0CFB009AAD9C0CFE061592252_il2cpp_TypeInfo_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&List_1_tB951CE80B58D1BF9650862451D8DAD8C231F207B_il2cpp_TypeInfo_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D_il2cpp_TypeInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:31>
+		__this->___playAudio = (bool)1;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:31>
+		__this->___windowed = (bool)1;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:34>
+		__this->___swingAmountY = (0.25f);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:35>
+		__this->___secondsToClose = (0.5f);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:35>
+		__this->___secondsToOpen = (0.5f);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:35>
+		__this->___setOffsetDistance = (0.25f);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:35>
+		__this->___setTravelDistance = (1.0f);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:35>
+		__this->___triggerRadius = (1.0f);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:36>
+		__this->___offsetPortion = (0.200000003f);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:40>
+		__this->___handleKind = 3;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:46>
+		MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D* L_0 = (MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D*)(MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D*)SZArrayNew(MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D_il2cpp_TypeInfo_var, (uint32_t)0);
+		__this->___customMaterials = L_0;
+		Il2CppCodeGenWriteBarrier((void**)(&__this->___customMaterials), (void*)L_0);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:46>
+		MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D* L_1 = (MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D*)(MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D*)SZArrayNew(MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D_il2cpp_TypeInfo_var, (uint32_t)0);
+		__this->___handleMaterials = L_1;
+		Il2CppCodeGenWriteBarrier((void**)(&__this->___handleMaterials), (void*)L_1);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:46>
+		MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D* L_2 = (MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D*)(MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D*)SZArrayNew(MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D_il2cpp_TypeInfo_var, (uint32_t)0);
+		__this->___postMaterials = L_2;
+		Il2CppCodeGenWriteBarrier((void**)(&__this->___postMaterials), (void*)L_2);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:47>
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_3;
+		L_3 = Vector3_get_back_mCA5A84170E8DE5CE38C0551B4CCAD647BF215E57_inline(NULL);
+		__this->___offsetDirection = L_3;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:47>
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_4;
+		L_4 = Vector3_get_right_mFF573AFBBB2186E7AFA1BA7CA271A78DF67E4EA0_inline(NULL);
+		__this->___slideDirection = L_4;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:47>
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_5;
+		L_5 = Vector3_get_one_mC9B289F1E15C42C597180C9FE6FB492495B51D02_inline(NULL);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_6;
+		L_6 = Vector3_op_Multiply_m7F3B0FA9256CE368D7636558EFEFC4AB0E1A0F41_inline((2.0f), L_5, NULL);
+		__this->___triggerExtents = L_6;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:47>
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_7;
+		L_7 = Vector3_get_zero_m0C1249C3F25B1C70EAD3CC8B31259975A457AE39_inline(NULL);
+		__this->___triggerOffset = L_7;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:56>
+		__this->___closeDelayComplete = (bool)1;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:59>
+		__this->___percentComplete = (1.0f);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:61>
+		List_1_t58F89DEDCD7DABB0CFB009AAD9C0CFE061592252* L_8 = (List_1_t58F89DEDCD7DABB0CFB009AAD9C0CFE061592252*)il2cpp_codegen_object_new(List_1_t58F89DEDCD7DABB0CFB009AAD9C0CFE061592252_il2cpp_TypeInfo_var);
+		List_1__ctor_m0CDD6F02F45026B4267E7117C5DDC188F87EE7BE(L_8, List_1__ctor_m0CDD6F02F45026B4267E7117C5DDC188F87EE7BE_RuntimeMethod_var);
+		__this->___openColliders = L_8;
+		Il2CppCodeGenWriteBarrier((void**)(&__this->___openColliders), (void*)L_8);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:69>
+		List_1_tB951CE80B58D1BF9650862451D8DAD8C231F207B* L_9 = (List_1_tB951CE80B58D1BF9650862451D8DAD8C231F207B*)il2cpp_codegen_object_new(List_1_tB951CE80B58D1BF9650862451D8DAD8C231F207B_il2cpp_TypeInfo_var);
+		List_1__ctor_m447372C1EF7141193B93090A77395B786C72C7BC(L_9, List_1__ctor_m447372C1EF7141193B93090A77395B786C72C7BC_RuntimeMethod_var);
+		__this->___internalPivots = L_9;
+		Il2CppCodeGenWriteBarrier((void**)(&__this->___internalPivots), (void*)L_9);
+		MonoBehaviour__ctor_m592DB0105CA0BC97AA1C5F4AD27B12D68A3B7C1E(__this, NULL);
+		return;
+	}
+}
+// Method Definition Index: 74037
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D__cctor_m234A24377941710F2A6F51B90124D494124681F1 (const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC_il2cpp_TypeInfo_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4_il2cpp_TypeInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:73>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:74>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:75>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:76>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:77>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:78>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:79>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:80>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:81>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:82>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:83>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:84>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:85>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:86>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:87>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:88>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:89>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:90>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:91>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:92>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:93>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:94>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:95>
+		il2cpp_array_size_t L_1[] = { (il2cpp_array_size_t)((int32_t)21), (il2cpp_array_size_t)2 };
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_0 = (Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4*)GenArrayNew(Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4_il2cpp_TypeInfo_var, L_1);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_2 = L_0;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_3;
+		memset((&L_3), 0, sizeof(L_3));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_3), (0.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_2);
+		(L_2)->SetAt(0, 0, L_3);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_4 = L_2;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_5;
+		memset((&L_5), 0, sizeof(L_5));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_5), (0.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_4);
+		(L_4)->SetAt(0, 1, L_5);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_6 = L_4;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_7;
+		memset((&L_7), 0, sizeof(L_7));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_7), (0.0f), (0.150000006f), (0.0f), NULL);
+		NullCheck(L_6);
+		(L_6)->SetAt(1, 0, L_7);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_8 = L_6;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_9;
+		memset((&L_9), 0, sizeof(L_9));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_9), (0.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_8);
+		(L_8)->SetAt(1, 1, L_9);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_10 = L_8;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_11;
+		memset((&L_11), 0, sizeof(L_11));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_11), (0.0f), (0.300000012f), (0.0f), NULL);
+		NullCheck(L_10);
+		(L_10)->SetAt(2, 0, L_11);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_12 = L_10;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_13;
+		memset((&L_13), 0, sizeof(L_13));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_13), (0.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_12);
+		(L_12)->SetAt(2, 1, L_13);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_14 = L_12;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_15;
+		memset((&L_15), 0, sizeof(L_15));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_15), (0.0f), (0.449999988f), (0.0f), NULL);
+		NullCheck(L_14);
+		(L_14)->SetAt(3, 0, L_15);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_16 = L_14;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_17;
+		memset((&L_17), 0, sizeof(L_17));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_17), (0.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_16);
+		(L_16)->SetAt(3, 1, L_17);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_18 = L_16;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_19;
+		memset((&L_19), 0, sizeof(L_19));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_19), (0.0f), (0.600000024f), (0.0f), NULL);
+		NullCheck(L_18);
+		(L_18)->SetAt(4, 0, L_19);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_20 = L_18;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_21;
+		memset((&L_21), 0, sizeof(L_21));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_21), (0.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_20);
+		(L_20)->SetAt(4, 1, L_21);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_22 = L_20;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_23;
+		memset((&L_23), 0, sizeof(L_23));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_23), (0.0f), (0.75f), (0.0f), NULL);
+		NullCheck(L_22);
+		(L_22)->SetAt(5, 0, L_23);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_24 = L_22;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_25;
+		memset((&L_25), 0, sizeof(L_25));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_25), (0.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_24);
+		(L_24)->SetAt(5, 1, L_25);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_26 = L_24;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_27;
+		memset((&L_27), 0, sizeof(L_27));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_27), (0.0f), (0.899999976f), (0.0f), NULL);
+		NullCheck(L_26);
+		(L_26)->SetAt(6, 0, L_27);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_28 = L_26;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_29;
+		memset((&L_29), 0, sizeof(L_29));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_29), (0.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_28);
+		(L_28)->SetAt(6, 1, L_29);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_30 = L_28;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_31;
+		memset((&L_31), 0, sizeof(L_31));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_31), (0.0f), (1.04999995f), (0.0f), NULL);
+		NullCheck(L_30);
+		(L_30)->SetAt(7, 0, L_31);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_32 = L_30;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_33;
+		memset((&L_33), 0, sizeof(L_33));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_33), (0.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_32);
+		(L_32)->SetAt(7, 1, L_33);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_34 = L_32;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_35;
+		memset((&L_35), 0, sizeof(L_35));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_35), (0.0f), (1.20000005f), (0.0f), NULL);
+		NullCheck(L_34);
+		(L_34)->SetAt(8, 0, L_35);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_36 = L_34;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_37;
+		memset((&L_37), 0, sizeof(L_37));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_37), (0.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_36);
+		(L_36)->SetAt(8, 1, L_37);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_38 = L_36;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_39;
+		memset((&L_39), 0, sizeof(L_39));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_39), (0.0f), (1.35000002f), (0.0f), NULL);
+		NullCheck(L_38);
+		(L_38)->SetAt(((int32_t)9), 0, L_39);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_40 = L_38;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_41;
+		memset((&L_41), 0, sizeof(L_41));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_41), (0.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_40);
+		(L_40)->SetAt(((int32_t)9), 1, L_41);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_42 = L_40;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_43;
+		memset((&L_43), 0, sizeof(L_43));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_43), (0.0f), (1.5f), (0.0f), NULL);
+		NullCheck(L_42);
+		(L_42)->SetAt(((int32_t)10), 0, L_43);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_44 = L_42;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_45;
+		memset((&L_45), 0, sizeof(L_45));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_45), (0.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_44);
+		(L_44)->SetAt(((int32_t)10), 1, L_45);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_46 = L_44;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_47;
+		memset((&L_47), 0, sizeof(L_47));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_47), (0.0f), (1.64999998f), (0.0f), NULL);
+		NullCheck(L_46);
+		(L_46)->SetAt(((int32_t)11), 0, L_47);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_48 = L_46;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_49;
+		memset((&L_49), 0, sizeof(L_49));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_49), (0.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_48);
+		(L_48)->SetAt(((int32_t)11), 1, L_49);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_50 = L_48;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_51;
+		memset((&L_51), 0, sizeof(L_51));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_51), (0.0f), (1.79999995f), (0.0f), NULL);
+		NullCheck(L_50);
+		(L_50)->SetAt(((int32_t)12), 0, L_51);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_52 = L_50;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_53;
+		memset((&L_53), 0, sizeof(L_53));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_53), (5.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_52);
+		(L_52)->SetAt(((int32_t)12), 1, L_53);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_54 = L_52;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_55;
+		memset((&L_55), 0, sizeof(L_55));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_55), (0.0f), (1.89999998f), (0.00999999978f), NULL);
+		NullCheck(L_54);
+		(L_54)->SetAt(((int32_t)13), 0, L_55);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_56 = L_54;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_57;
+		memset((&L_57), 0, sizeof(L_57));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_57), (15.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_56);
+		(L_56)->SetAt(((int32_t)13), 1, L_57);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_58 = L_56;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_59;
+		memset((&L_59), 0, sizeof(L_59));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_59), (0.0f), (1.98000002f), (0.0299999993f), NULL);
+		NullCheck(L_58);
+		(L_58)->SetAt(((int32_t)14), 0, L_59);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_60 = L_58;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_61;
+		memset((&L_61), 0, sizeof(L_61));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_61), (30.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_60);
+		(L_60)->SetAt(((int32_t)14), 1, L_61);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_62 = L_60;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_63;
+		memset((&L_63), 0, sizeof(L_63));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_63), (0.0f), (2.04999995f), (0.100000001f), NULL);
+		NullCheck(L_62);
+		(L_62)->SetAt(((int32_t)15), 0, L_63);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_64 = L_62;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_65;
+		memset((&L_65), 0, sizeof(L_65));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_65), (45.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_64);
+		(L_64)->SetAt(((int32_t)15), 1, L_65);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_66 = L_64;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_67;
+		memset((&L_67), 0, sizeof(L_67));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_67), (0.0f), (2.0999999f), (0.200000003f), NULL);
+		NullCheck(L_66);
+		(L_66)->SetAt(((int32_t)16), 0, L_67);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_68 = L_66;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_69;
+		memset((&L_69), 0, sizeof(L_69));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_69), (60.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_68);
+		(L_68)->SetAt(((int32_t)16), 1, L_69);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_70 = L_68;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_71;
+		memset((&L_71), 0, sizeof(L_71));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_71), (0.0f), (2.1400001f), (0.319999993f), NULL);
+		NullCheck(L_70);
+		(L_70)->SetAt(((int32_t)17), 0, L_71);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_72 = L_70;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_73;
+		memset((&L_73), 0, sizeof(L_73));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_73), (75.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_72);
+		(L_72)->SetAt(((int32_t)17), 1, L_73);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_74 = L_72;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_75;
+		memset((&L_75), 0, sizeof(L_75));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_75), (0.0f), (2.16000009f), (0.479999989f), NULL);
+		NullCheck(L_74);
+		(L_74)->SetAt(((int32_t)18), 0, L_75);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_76 = L_74;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_77;
+		memset((&L_77), 0, sizeof(L_77));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_77), (85.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_76);
+		(L_76)->SetAt(((int32_t)18), 1, L_77);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_78 = L_76;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_79;
+		memset((&L_79), 0, sizeof(L_79));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_79), (0.0f), (2.16000009f), (0.560000002f), NULL);
+		NullCheck(L_78);
+		(L_78)->SetAt(((int32_t)19), 0, L_79);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_80 = L_78;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_81;
+		memset((&L_81), 0, sizeof(L_81));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_81), (88.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_80);
+		(L_80)->SetAt(((int32_t)19), 1, L_81);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_82 = L_80;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_83;
+		memset((&L_83), 0, sizeof(L_83));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_83), (0.0f), (2.16000009f), (0.639999986f), NULL);
+		NullCheck(L_82);
+		(L_82)->SetAt(((int32_t)20), 0, L_83);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_84 = L_82;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_85;
+		memset((&L_85), 0, sizeof(L_85));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_85), (90.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_84);
+		(L_84)->SetAt(((int32_t)20), 1, L_85);
+		((OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC_StaticFields*)il2cpp_codegen_static_fields_for(OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC_il2cpp_TypeInfo_var))->___section0Waypoints = L_84;
+		Il2CppCodeGenWriteBarrier((void**)(&((OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC_StaticFields*)il2cpp_codegen_static_fields_for(OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC_il2cpp_TypeInfo_var))->___section0Waypoints), (void*)L_84);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:97>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:98>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:99>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:100>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:101>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:102>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:103>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:104>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:105>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:106>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:107>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:108>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:109>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:110>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:111>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:112>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:113>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:114>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:115>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:116>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:117>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:118>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:119>
+		il2cpp_array_size_t L_87[] = { (il2cpp_array_size_t)((int32_t)21), (il2cpp_array_size_t)2 };
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_86 = (Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4*)GenArrayNew(Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4_il2cpp_TypeInfo_var, L_87);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_88 = L_86;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_89;
+		memset((&L_89), 0, sizeof(L_89));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_89), (0.0f), (0.540000021f), (0.0f), NULL);
+		NullCheck(L_88);
+		(L_88)->SetAt(0, 0, L_89);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_90 = L_88;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_91;
+		memset((&L_91), 0, sizeof(L_91));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_91), (0.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_90);
+		(L_90)->SetAt(0, 1, L_91);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_92 = L_90;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_93;
+		memset((&L_93), 0, sizeof(L_93));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_93), (0.0f), (0.689999998f), (0.0f), NULL);
+		NullCheck(L_92);
+		(L_92)->SetAt(1, 0, L_93);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_94 = L_92;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_95;
+		memset((&L_95), 0, sizeof(L_95));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_95), (0.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_94);
+		(L_94)->SetAt(1, 1, L_95);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_96 = L_94;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_97;
+		memset((&L_97), 0, sizeof(L_97));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_97), (0.0f), (0.839999974f), (0.0f), NULL);
+		NullCheck(L_96);
+		(L_96)->SetAt(2, 0, L_97);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_98 = L_96;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_99;
+		memset((&L_99), 0, sizeof(L_99));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_99), (0.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_98);
+		(L_98)->SetAt(2, 1, L_99);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_100 = L_98;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_101;
+		memset((&L_101), 0, sizeof(L_101));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_101), (0.0f), (0.99000001f), (0.0f), NULL);
+		NullCheck(L_100);
+		(L_100)->SetAt(3, 0, L_101);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_102 = L_100;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_103;
+		memset((&L_103), 0, sizeof(L_103));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_103), (0.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_102);
+		(L_102)->SetAt(3, 1, L_103);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_104 = L_102;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_105;
+		memset((&L_105), 0, sizeof(L_105));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_105), (0.0f), (1.13999999f), (0.0f), NULL);
+		NullCheck(L_104);
+		(L_104)->SetAt(4, 0, L_105);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_106 = L_104;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_107;
+		memset((&L_107), 0, sizeof(L_107));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_107), (0.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_106);
+		(L_106)->SetAt(4, 1, L_107);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_108 = L_106;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_109;
+		memset((&L_109), 0, sizeof(L_109));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_109), (0.0f), (1.28999996f), (0.0f), NULL);
+		NullCheck(L_108);
+		(L_108)->SetAt(5, 0, L_109);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_110 = L_108;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_111;
+		memset((&L_111), 0, sizeof(L_111));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_111), (0.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_110);
+		(L_110)->SetAt(5, 1, L_111);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_112 = L_110;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_113;
+		memset((&L_113), 0, sizeof(L_113));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_113), (0.0f), (1.44000006f), (0.0f), NULL);
+		NullCheck(L_112);
+		(L_112)->SetAt(6, 0, L_113);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_114 = L_112;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_115;
+		memset((&L_115), 0, sizeof(L_115));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_115), (0.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_114);
+		(L_114)->SetAt(6, 1, L_115);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_116 = L_114;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_117;
+		memset((&L_117), 0, sizeof(L_117));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_117), (0.0f), (1.59000003f), (0.0f), NULL);
+		NullCheck(L_116);
+		(L_116)->SetAt(7, 0, L_117);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_118 = L_116;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_119;
+		memset((&L_119), 0, sizeof(L_119));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_119), (0.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_118);
+		(L_118)->SetAt(7, 1, L_119);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_120 = L_118;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_121;
+		memset((&L_121), 0, sizeof(L_121));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_121), (0.0f), (1.74000001f), (0.0f), NULL);
+		NullCheck(L_120);
+		(L_120)->SetAt(8, 0, L_121);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_122 = L_120;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_123;
+		memset((&L_123), 0, sizeof(L_123));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_123), (0.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_122);
+		(L_122)->SetAt(8, 1, L_123);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_124 = L_122;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_125;
+		memset((&L_125), 0, sizeof(L_125));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_125), (0.0f), (1.88999999f), (0.0f), NULL);
+		NullCheck(L_124);
+		(L_124)->SetAt(((int32_t)9), 0, L_125);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_126 = L_124;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_127;
+		memset((&L_127), 0, sizeof(L_127));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_127), (5.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_126);
+		(L_126)->SetAt(((int32_t)9), 1, L_127);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_128 = L_126;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_129;
+		memset((&L_129), 0, sizeof(L_129));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_129), (0.0f), (1.98000002f), (0.00999999978f), NULL);
+		NullCheck(L_128);
+		(L_128)->SetAt(((int32_t)10), 0, L_129);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_130 = L_128;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_131;
+		memset((&L_131), 0, sizeof(L_131));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_131), (15.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_130);
+		(L_130)->SetAt(((int32_t)10), 1, L_131);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_132 = L_130;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_133;
+		memset((&L_133), 0, sizeof(L_133));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_133), (0.0f), (2.04999995f), (0.0299999993f), NULL);
+		NullCheck(L_132);
+		(L_132)->SetAt(((int32_t)11), 0, L_133);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_134 = L_132;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_135;
+		memset((&L_135), 0, sizeof(L_135));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_135), (30.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_134);
+		(L_134)->SetAt(((int32_t)11), 1, L_135);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_136 = L_134;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_137;
+		memset((&L_137), 0, sizeof(L_137));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_137), (0.0f), (2.0999999f), (0.100000001f), NULL);
+		NullCheck(L_136);
+		(L_136)->SetAt(((int32_t)12), 0, L_137);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_138 = L_136;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_139;
+		memset((&L_139), 0, sizeof(L_139));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_139), (45.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_138);
+		(L_138)->SetAt(((int32_t)12), 1, L_139);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_140 = L_138;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_141;
+		memset((&L_141), 0, sizeof(L_141));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_141), (0.0f), (2.1400001f), (0.200000003f), NULL);
+		NullCheck(L_140);
+		(L_140)->SetAt(((int32_t)13), 0, L_141);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_142 = L_140;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_143;
+		memset((&L_143), 0, sizeof(L_143));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_143), (60.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_142);
+		(L_142)->SetAt(((int32_t)13), 1, L_143);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_144 = L_142;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_145;
+		memset((&L_145), 0, sizeof(L_145));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_145), (0.0f), (2.16000009f), (0.319999993f), NULL);
+		NullCheck(L_144);
+		(L_144)->SetAt(((int32_t)14), 0, L_145);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_146 = L_144;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_147;
+		memset((&L_147), 0, sizeof(L_147));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_147), (75.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_146);
+		(L_146)->SetAt(((int32_t)14), 1, L_147);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_148 = L_146;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_149;
+		memset((&L_149), 0, sizeof(L_149));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_149), (0.0f), (2.16000009f), (0.479999989f), NULL);
+		NullCheck(L_148);
+		(L_148)->SetAt(((int32_t)15), 0, L_149);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_150 = L_148;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_151;
+		memset((&L_151), 0, sizeof(L_151));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_151), (85.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_150);
+		(L_150)->SetAt(((int32_t)15), 1, L_151);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_152 = L_150;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_153;
+		memset((&L_153), 0, sizeof(L_153));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_153), (0.0f), (2.16000009f), (0.639999986f), NULL);
+		NullCheck(L_152);
+		(L_152)->SetAt(((int32_t)16), 0, L_153);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_154 = L_152;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_155;
+		memset((&L_155), 0, sizeof(L_155));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_155), (90.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_154);
+		(L_154)->SetAt(((int32_t)16), 1, L_155);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_156 = L_154;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_157;
+		memset((&L_157), 0, sizeof(L_157));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_157), (0.0f), (2.16000009f), (0.819999993f), NULL);
+		NullCheck(L_156);
+		(L_156)->SetAt(((int32_t)17), 0, L_157);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_158 = L_156;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_159;
+		memset((&L_159), 0, sizeof(L_159));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_159), (90.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_158);
+		(L_158)->SetAt(((int32_t)17), 1, L_159);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_160 = L_158;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_161;
+		memset((&L_161), 0, sizeof(L_161));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_161), (0.0f), (2.16000009f), (1.0f), NULL);
+		NullCheck(L_160);
+		(L_160)->SetAt(((int32_t)18), 0, L_161);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_162 = L_160;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_163;
+		memset((&L_163), 0, sizeof(L_163));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_163), (90.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_162);
+		(L_162)->SetAt(((int32_t)18), 1, L_163);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_164 = L_162;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_165;
+		memset((&L_165), 0, sizeof(L_165));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_165), (0.0f), (2.16000009f), (1.10000002f), NULL);
+		NullCheck(L_164);
+		(L_164)->SetAt(((int32_t)19), 0, L_165);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_166 = L_164;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_167;
+		memset((&L_167), 0, sizeof(L_167));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_167), (90.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_166);
+		(L_166)->SetAt(((int32_t)19), 1, L_167);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_168 = L_166;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_169;
+		memset((&L_169), 0, sizeof(L_169));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_169), (0.0f), (2.16000009f), (1.17999995f), NULL);
+		NullCheck(L_168);
+		(L_168)->SetAt(((int32_t)20), 0, L_169);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_170 = L_168;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_171;
+		memset((&L_171), 0, sizeof(L_171));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_171), (90.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_170);
+		(L_170)->SetAt(((int32_t)20), 1, L_171);
+		((OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC_StaticFields*)il2cpp_codegen_static_fields_for(OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC_il2cpp_TypeInfo_var))->___section1Waypoints = L_170;
+		Il2CppCodeGenWriteBarrier((void**)(&((OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC_StaticFields*)il2cpp_codegen_static_fields_for(OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC_il2cpp_TypeInfo_var))->___section1Waypoints), (void*)L_170);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:121>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:122>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:123>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:124>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:125>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:126>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:127>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:128>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:129>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:130>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:131>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:132>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:133>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:134>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:135>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:136>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:137>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:138>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:139>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:140>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:141>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:142>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:143>
+		il2cpp_array_size_t L_173[] = { (il2cpp_array_size_t)((int32_t)21), (il2cpp_array_size_t)2 };
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_172 = (Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4*)GenArrayNew(Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4_il2cpp_TypeInfo_var, L_173);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_174 = L_172;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_175;
+		memset((&L_175), 0, sizeof(L_175));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_175), (0.0f), (1.08000004f), (0.0f), NULL);
+		NullCheck(L_174);
+		(L_174)->SetAt(0, 0, L_175);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_176 = L_174;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_177;
+		memset((&L_177), 0, sizeof(L_177));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_177), (0.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_176);
+		(L_176)->SetAt(0, 1, L_177);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_178 = L_176;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_179;
+		memset((&L_179), 0, sizeof(L_179));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_179), (0.0f), (1.23000002f), (0.0f), NULL);
+		NullCheck(L_178);
+		(L_178)->SetAt(1, 0, L_179);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_180 = L_178;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_181;
+		memset((&L_181), 0, sizeof(L_181));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_181), (0.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_180);
+		(L_180)->SetAt(1, 1, L_181);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_182 = L_180;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_183;
+		memset((&L_183), 0, sizeof(L_183));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_183), (0.0f), (1.38f), (0.0f), NULL);
+		NullCheck(L_182);
+		(L_182)->SetAt(2, 0, L_183);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_184 = L_182;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_185;
+		memset((&L_185), 0, sizeof(L_185));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_185), (0.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_184);
+		(L_184)->SetAt(2, 1, L_185);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_186 = L_184;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_187;
+		memset((&L_187), 0, sizeof(L_187));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_187), (0.0f), (1.52999997f), (0.0f), NULL);
+		NullCheck(L_186);
+		(L_186)->SetAt(3, 0, L_187);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_188 = L_186;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_189;
+		memset((&L_189), 0, sizeof(L_189));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_189), (0.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_188);
+		(L_188)->SetAt(3, 1, L_189);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_190 = L_188;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_191;
+		memset((&L_191), 0, sizeof(L_191));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_191), (0.0f), (1.67999995f), (0.0f), NULL);
+		NullCheck(L_190);
+		(L_190)->SetAt(4, 0, L_191);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_192 = L_190;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_193;
+		memset((&L_193), 0, sizeof(L_193));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_193), (0.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_192);
+		(L_192)->SetAt(4, 1, L_193);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_194 = L_192;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_195;
+		memset((&L_195), 0, sizeof(L_195));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_195), (0.0f), (1.83000004f), (0.0f), NULL);
+		NullCheck(L_194);
+		(L_194)->SetAt(5, 0, L_195);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_196 = L_194;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_197;
+		memset((&L_197), 0, sizeof(L_197));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_197), (0.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_196);
+		(L_196)->SetAt(5, 1, L_197);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_198 = L_196;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_199;
+		memset((&L_199), 0, sizeof(L_199));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_199), (0.0f), (1.98000002f), (0.0f), NULL);
+		NullCheck(L_198);
+		(L_198)->SetAt(6, 0, L_199);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_200 = L_198;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_201;
+		memset((&L_201), 0, sizeof(L_201));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_201), (5.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_200);
+		(L_200)->SetAt(6, 1, L_201);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_202 = L_200;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_203;
+		memset((&L_203), 0, sizeof(L_203));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_203), (0.0f), (2.04999995f), (0.00999999978f), NULL);
+		NullCheck(L_202);
+		(L_202)->SetAt(7, 0, L_203);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_204 = L_202;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_205;
+		memset((&L_205), 0, sizeof(L_205));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_205), (15.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_204);
+		(L_204)->SetAt(7, 1, L_205);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_206 = L_204;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_207;
+		memset((&L_207), 0, sizeof(L_207));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_207), (0.0f), (2.0999999f), (0.0299999993f), NULL);
+		NullCheck(L_206);
+		(L_206)->SetAt(8, 0, L_207);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_208 = L_206;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_209;
+		memset((&L_209), 0, sizeof(L_209));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_209), (30.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_208);
+		(L_208)->SetAt(8, 1, L_209);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_210 = L_208;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_211;
+		memset((&L_211), 0, sizeof(L_211));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_211), (0.0f), (2.1400001f), (0.100000001f), NULL);
+		NullCheck(L_210);
+		(L_210)->SetAt(((int32_t)9), 0, L_211);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_212 = L_210;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_213;
+		memset((&L_213), 0, sizeof(L_213));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_213), (45.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_212);
+		(L_212)->SetAt(((int32_t)9), 1, L_213);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_214 = L_212;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_215;
+		memset((&L_215), 0, sizeof(L_215));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_215), (0.0f), (2.16000009f), (0.200000003f), NULL);
+		NullCheck(L_214);
+		(L_214)->SetAt(((int32_t)10), 0, L_215);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_216 = L_214;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_217;
+		memset((&L_217), 0, sizeof(L_217));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_217), (60.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_216);
+		(L_216)->SetAt(((int32_t)10), 1, L_217);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_218 = L_216;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_219;
+		memset((&L_219), 0, sizeof(L_219));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_219), (0.0f), (2.16000009f), (0.319999993f), NULL);
+		NullCheck(L_218);
+		(L_218)->SetAt(((int32_t)11), 0, L_219);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_220 = L_218;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_221;
+		memset((&L_221), 0, sizeof(L_221));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_221), (75.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_220);
+		(L_220)->SetAt(((int32_t)11), 1, L_221);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_222 = L_220;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_223;
+		memset((&L_223), 0, sizeof(L_223));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_223), (0.0f), (2.16000009f), (0.479999989f), NULL);
+		NullCheck(L_222);
+		(L_222)->SetAt(((int32_t)12), 0, L_223);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_224 = L_222;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_225;
+		memset((&L_225), 0, sizeof(L_225));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_225), (85.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_224);
+		(L_224)->SetAt(((int32_t)12), 1, L_225);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_226 = L_224;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_227;
+		memset((&L_227), 0, sizeof(L_227));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_227), (0.0f), (2.16000009f), (0.639999986f), NULL);
+		NullCheck(L_226);
+		(L_226)->SetAt(((int32_t)13), 0, L_227);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_228 = L_226;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_229;
+		memset((&L_229), 0, sizeof(L_229));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_229), (90.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_228);
+		(L_228)->SetAt(((int32_t)13), 1, L_229);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_230 = L_228;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_231;
+		memset((&L_231), 0, sizeof(L_231));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_231), (0.0f), (2.16000009f), (0.819999993f), NULL);
+		NullCheck(L_230);
+		(L_230)->SetAt(((int32_t)14), 0, L_231);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_232 = L_230;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_233;
+		memset((&L_233), 0, sizeof(L_233));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_233), (90.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_232);
+		(L_232)->SetAt(((int32_t)14), 1, L_233);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_234 = L_232;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_235;
+		memset((&L_235), 0, sizeof(L_235));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_235), (0.0f), (2.16000009f), (1.0f), NULL);
+		NullCheck(L_234);
+		(L_234)->SetAt(((int32_t)15), 0, L_235);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_236 = L_234;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_237;
+		memset((&L_237), 0, sizeof(L_237));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_237), (90.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_236);
+		(L_236)->SetAt(((int32_t)15), 1, L_237);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_238 = L_236;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_239;
+		memset((&L_239), 0, sizeof(L_239));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_239), (0.0f), (2.16000009f), (1.17999995f), NULL);
+		NullCheck(L_238);
+		(L_238)->SetAt(((int32_t)16), 0, L_239);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_240 = L_238;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_241;
+		memset((&L_241), 0, sizeof(L_241));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_241), (90.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_240);
+		(L_240)->SetAt(((int32_t)16), 1, L_241);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_242 = L_240;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_243;
+		memset((&L_243), 0, sizeof(L_243));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_243), (0.0f), (2.16000009f), (1.36000001f), NULL);
+		NullCheck(L_242);
+		(L_242)->SetAt(((int32_t)17), 0, L_243);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_244 = L_242;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_245;
+		memset((&L_245), 0, sizeof(L_245));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_245), (90.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_244);
+		(L_244)->SetAt(((int32_t)17), 1, L_245);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_246 = L_244;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_247;
+		memset((&L_247), 0, sizeof(L_247));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_247), (0.0f), (2.16000009f), (1.53999996f), NULL);
+		NullCheck(L_246);
+		(L_246)->SetAt(((int32_t)18), 0, L_247);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_248 = L_246;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_249;
+		memset((&L_249), 0, sizeof(L_249));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_249), (90.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_248);
+		(L_248)->SetAt(((int32_t)18), 1, L_249);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_250 = L_248;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_251;
+		memset((&L_251), 0, sizeof(L_251));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_251), (0.0f), (2.16000009f), (1.63999999f), NULL);
+		NullCheck(L_250);
+		(L_250)->SetAt(((int32_t)19), 0, L_251);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_252 = L_250;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_253;
+		memset((&L_253), 0, sizeof(L_253));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_253), (90.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_252);
+		(L_252)->SetAt(((int32_t)19), 1, L_253);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_254 = L_252;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_255;
+		memset((&L_255), 0, sizeof(L_255));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_255), (0.0f), (2.16000009f), (1.72000003f), NULL);
+		NullCheck(L_254);
+		(L_254)->SetAt(((int32_t)20), 0, L_255);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_256 = L_254;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_257;
+		memset((&L_257), 0, sizeof(L_257));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_257), (90.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_256);
+		(L_256)->SetAt(((int32_t)20), 1, L_257);
+		((OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC_StaticFields*)il2cpp_codegen_static_fields_for(OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC_il2cpp_TypeInfo_var))->___section2Waypoints = L_256;
+		Il2CppCodeGenWriteBarrier((void**)(&((OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC_StaticFields*)il2cpp_codegen_static_fields_for(OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC_il2cpp_TypeInfo_var))->___section2Waypoints), (void*)L_256);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:145>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:146>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:147>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:148>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:149>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:150>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:151>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:152>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:153>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:154>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:155>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:156>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:157>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:158>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:159>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:160>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:161>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:162>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:163>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:164>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:165>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:166>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:167>
+		il2cpp_array_size_t L_259[] = { (il2cpp_array_size_t)((int32_t)21), (il2cpp_array_size_t)2 };
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_258 = (Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4*)GenArrayNew(Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4_il2cpp_TypeInfo_var, L_259);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_260 = L_258;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_261;
+		memset((&L_261), 0, sizeof(L_261));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_261), (0.0f), (1.62f), (0.0f), NULL);
+		NullCheck(L_260);
+		(L_260)->SetAt(0, 0, L_261);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_262 = L_260;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_263;
+		memset((&L_263), 0, sizeof(L_263));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_263), (0.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_262);
+		(L_262)->SetAt(0, 1, L_263);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_264 = L_262;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_265;
+		memset((&L_265), 0, sizeof(L_265));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_265), (0.0f), (1.76999998f), (0.0f), NULL);
+		NullCheck(L_264);
+		(L_264)->SetAt(1, 0, L_265);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_266 = L_264;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_267;
+		memset((&L_267), 0, sizeof(L_267));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_267), (0.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_266);
+		(L_266)->SetAt(1, 1, L_267);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_268 = L_266;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_269;
+		memset((&L_269), 0, sizeof(L_269));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_269), (0.0f), (1.91999996f), (0.0f), NULL);
+		NullCheck(L_268);
+		(L_268)->SetAt(2, 0, L_269);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_270 = L_268;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_271;
+		memset((&L_271), 0, sizeof(L_271));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_271), (5.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_270);
+		(L_270)->SetAt(2, 1, L_271);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_272 = L_270;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_273;
+		memset((&L_273), 0, sizeof(L_273));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_273), (0.0f), (2.01999998f), (0.00999999978f), NULL);
+		NullCheck(L_272);
+		(L_272)->SetAt(3, 0, L_273);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_274 = L_272;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_275;
+		memset((&L_275), 0, sizeof(L_275));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_275), (15.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_274);
+		(L_274)->SetAt(3, 1, L_275);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_276 = L_274;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_277;
+		memset((&L_277), 0, sizeof(L_277));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_277), (0.0f), (2.08999991f), (0.0299999993f), NULL);
+		NullCheck(L_276);
+		(L_276)->SetAt(4, 0, L_277);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_278 = L_276;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_279;
+		memset((&L_279), 0, sizeof(L_279));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_279), (30.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_278);
+		(L_278)->SetAt(4, 1, L_279);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_280 = L_278;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_281;
+		memset((&L_281), 0, sizeof(L_281));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_281), (0.0f), (2.1400001f), (0.100000001f), NULL);
+		NullCheck(L_280);
+		(L_280)->SetAt(5, 0, L_281);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_282 = L_280;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_283;
+		memset((&L_283), 0, sizeof(L_283));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_283), (45.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_282);
+		(L_282)->SetAt(5, 1, L_283);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_284 = L_282;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_285;
+		memset((&L_285), 0, sizeof(L_285));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_285), (0.0f), (2.16000009f), (0.200000003f), NULL);
+		NullCheck(L_284);
+		(L_284)->SetAt(6, 0, L_285);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_286 = L_284;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_287;
+		memset((&L_287), 0, sizeof(L_287));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_287), (60.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_286);
+		(L_286)->SetAt(6, 1, L_287);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_288 = L_286;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_289;
+		memset((&L_289), 0, sizeof(L_289));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_289), (0.0f), (2.16000009f), (0.319999993f), NULL);
+		NullCheck(L_288);
+		(L_288)->SetAt(7, 0, L_289);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_290 = L_288;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_291;
+		memset((&L_291), 0, sizeof(L_291));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_291), (75.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_290);
+		(L_290)->SetAt(7, 1, L_291);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_292 = L_290;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_293;
+		memset((&L_293), 0, sizeof(L_293));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_293), (0.0f), (2.16000009f), (0.479999989f), NULL);
+		NullCheck(L_292);
+		(L_292)->SetAt(8, 0, L_293);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_294 = L_292;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_295;
+		memset((&L_295), 0, sizeof(L_295));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_295), (85.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_294);
+		(L_294)->SetAt(8, 1, L_295);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_296 = L_294;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_297;
+		memset((&L_297), 0, sizeof(L_297));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_297), (0.0f), (2.16000009f), (0.639999986f), NULL);
+		NullCheck(L_296);
+		(L_296)->SetAt(((int32_t)9), 0, L_297);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_298 = L_296;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_299;
+		memset((&L_299), 0, sizeof(L_299));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_299), (90.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_298);
+		(L_298)->SetAt(((int32_t)9), 1, L_299);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_300 = L_298;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_301;
+		memset((&L_301), 0, sizeof(L_301));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_301), (0.0f), (2.16000009f), (0.819999993f), NULL);
+		NullCheck(L_300);
+		(L_300)->SetAt(((int32_t)10), 0, L_301);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_302 = L_300;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_303;
+		memset((&L_303), 0, sizeof(L_303));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_303), (90.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_302);
+		(L_302)->SetAt(((int32_t)10), 1, L_303);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_304 = L_302;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_305;
+		memset((&L_305), 0, sizeof(L_305));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_305), (0.0f), (2.16000009f), (1.0f), NULL);
+		NullCheck(L_304);
+		(L_304)->SetAt(((int32_t)11), 0, L_305);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_306 = L_304;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_307;
+		memset((&L_307), 0, sizeof(L_307));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_307), (90.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_306);
+		(L_306)->SetAt(((int32_t)11), 1, L_307);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_308 = L_306;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_309;
+		memset((&L_309), 0, sizeof(L_309));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_309), (0.0f), (2.16000009f), (1.17999995f), NULL);
+		NullCheck(L_308);
+		(L_308)->SetAt(((int32_t)12), 0, L_309);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_310 = L_308;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_311;
+		memset((&L_311), 0, sizeof(L_311));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_311), (90.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_310);
+		(L_310)->SetAt(((int32_t)12), 1, L_311);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_312 = L_310;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_313;
+		memset((&L_313), 0, sizeof(L_313));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_313), (0.0f), (2.16000009f), (1.36000001f), NULL);
+		NullCheck(L_312);
+		(L_312)->SetAt(((int32_t)13), 0, L_313);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_314 = L_312;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_315;
+		memset((&L_315), 0, sizeof(L_315));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_315), (90.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_314);
+		(L_314)->SetAt(((int32_t)13), 1, L_315);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_316 = L_314;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_317;
+		memset((&L_317), 0, sizeof(L_317));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_317), (0.0f), (2.16000009f), (1.53999996f), NULL);
+		NullCheck(L_316);
+		(L_316)->SetAt(((int32_t)14), 0, L_317);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_318 = L_316;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_319;
+		memset((&L_319), 0, sizeof(L_319));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_319), (90.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_318);
+		(L_318)->SetAt(((int32_t)14), 1, L_319);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_320 = L_318;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_321;
+		memset((&L_321), 0, sizeof(L_321));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_321), (0.0f), (2.16000009f), (1.72000003f), NULL);
+		NullCheck(L_320);
+		(L_320)->SetAt(((int32_t)15), 0, L_321);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_322 = L_320;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_323;
+		memset((&L_323), 0, sizeof(L_323));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_323), (90.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_322);
+		(L_322)->SetAt(((int32_t)15), 1, L_323);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_324 = L_322;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_325;
+		memset((&L_325), 0, sizeof(L_325));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_325), (0.0f), (2.16000009f), (1.89999998f), NULL);
+		NullCheck(L_324);
+		(L_324)->SetAt(((int32_t)16), 0, L_325);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_326 = L_324;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_327;
+		memset((&L_327), 0, sizeof(L_327));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_327), (90.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_326);
+		(L_326)->SetAt(((int32_t)16), 1, L_327);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_328 = L_326;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_329;
+		memset((&L_329), 0, sizeof(L_329));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_329), (0.0f), (2.16000009f), (2.07999992f), NULL);
+		NullCheck(L_328);
+		(L_328)->SetAt(((int32_t)17), 0, L_329);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_330 = L_328;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_331;
+		memset((&L_331), 0, sizeof(L_331));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_331), (90.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_330);
+		(L_330)->SetAt(((int32_t)17), 1, L_331);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_332 = L_330;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_333;
+		memset((&L_333), 0, sizeof(L_333));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_333), (0.0f), (2.16000009f), (2.18000007f), NULL);
+		NullCheck(L_332);
+		(L_332)->SetAt(((int32_t)18), 0, L_333);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_334 = L_332;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_335;
+		memset((&L_335), 0, sizeof(L_335));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_335), (90.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_334);
+		(L_334)->SetAt(((int32_t)18), 1, L_335);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_336 = L_334;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_337;
+		memset((&L_337), 0, sizeof(L_337));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_337), (0.0f), (2.16000009f), (2.22000003f), NULL);
+		NullCheck(L_336);
+		(L_336)->SetAt(((int32_t)19), 0, L_337);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_338 = L_336;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_339;
+		memset((&L_339), 0, sizeof(L_339));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_339), (90.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_338);
+		(L_338)->SetAt(((int32_t)19), 1, L_339);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_340 = L_338;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_341;
+		memset((&L_341), 0, sizeof(L_341));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_341), (0.0f), (2.16000009f), (2.25999999f), NULL);
+		NullCheck(L_340);
+		(L_340)->SetAt(((int32_t)20), 0, L_341);
+		Vector3U5BU2CU5D_tCF0A54F4B5143C8BF0F998ECD98E52AFBB4E73C4* L_342 = L_340;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_343;
+		memset((&L_343), 0, sizeof(L_343));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_343), (90.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_342);
+		(L_342)->SetAt(((int32_t)20), 1, L_343);
+		((OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC_StaticFields*)il2cpp_codegen_static_fields_for(OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC_il2cpp_TypeInfo_var))->___section3Waypoints = L_342;
+		Il2CppCodeGenWriteBarrier((void**)(&((OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC_StaticFields*)il2cpp_codegen_static_fields_for(OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC_il2cpp_TypeInfo_var))->___section3Waypoints), (void*)L_342);
+		return;
+	}
+}
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#pragma clang diagnostic ignored "-Wunused-variable"
+#endif
+void DoorOpenedEvt_Invoke_m25A787A473AE4D2FAA71159238C4E729C1AB59B5_Multicast(DoorOpenedEvt_t000102A9D09036B3D64BB710FE11FD7FE05AD585* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method)
+{
+	il2cpp_array_size_t length = __this->___delegates->max_length;
+	Delegate_t** delegatesToInvoke = reinterpret_cast<Delegate_t**>(__this->___delegates->GetAddressAtUnchecked(0));
+	for (il2cpp_array_size_t i = 0; i < length; i++)
+	{
+		DoorOpenedEvt_t000102A9D09036B3D64BB710FE11FD7FE05AD585* currentDelegate = reinterpret_cast<DoorOpenedEvt_t000102A9D09036B3D64BB710FE11FD7FE05AD585*>(delegatesToInvoke[i]);
+		typedef void (*FunctionPointerType) (RuntimeObject*, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC*, const RuntimeMethod*);
+		((FunctionPointerType)currentDelegate->___invoke_impl)((Il2CppObject*)currentDelegate->___method_code, ___0_door, reinterpret_cast<RuntimeMethod*>(currentDelegate->___method));
+	}
+}
+void DoorOpenedEvt_Invoke_m25A787A473AE4D2FAA71159238C4E729C1AB59B5_OpenInst(DoorOpenedEvt_t000102A9D09036B3D64BB710FE11FD7FE05AD585* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method)
+{
+	NullCheck(___0_door);
+	typedef void (*FunctionPointerType) (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC*, const RuntimeMethod*);
+	((FunctionPointerType)__this->___method_ptr)(___0_door, method);
+}
+void DoorOpenedEvt_Invoke_m25A787A473AE4D2FAA71159238C4E729C1AB59B5_OpenStatic(DoorOpenedEvt_t000102A9D09036B3D64BB710FE11FD7FE05AD585* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method)
+{
+	typedef void (*FunctionPointerType) (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC*, const RuntimeMethod*);
+	((FunctionPointerType)__this->___method_ptr)(___0_door, method);
+}
+void DoorOpenedEvt_Invoke_m25A787A473AE4D2FAA71159238C4E729C1AB59B5_OpenVirtual(DoorOpenedEvt_t000102A9D09036B3D64BB710FE11FD7FE05AD585* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method)
+{
+	NullCheck(___0_door);
+	VirtualActionInvoker0::Invoke(il2cpp_codegen_method_get_slot(method), ___0_door);
+}
+void DoorOpenedEvt_Invoke_m25A787A473AE4D2FAA71159238C4E729C1AB59B5_OpenInterface(DoorOpenedEvt_t000102A9D09036B3D64BB710FE11FD7FE05AD585* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method)
+{
+	NullCheck(___0_door);
+	InterfaceActionInvoker0::Invoke(il2cpp_codegen_method_get_slot(method), il2cpp_codegen_method_get_declaring_type(method), ___0_door);
+}
+void DoorOpenedEvt_Invoke_m25A787A473AE4D2FAA71159238C4E729C1AB59B5_OpenGenericVirtual(DoorOpenedEvt_t000102A9D09036B3D64BB710FE11FD7FE05AD585* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method)
+{
+	NullCheck(___0_door);
+	GenericVirtualActionInvoker0::Invoke(method, ___0_door);
+}
+void DoorOpenedEvt_Invoke_m25A787A473AE4D2FAA71159238C4E729C1AB59B5_OpenGenericInterface(DoorOpenedEvt_t000102A9D09036B3D64BB710FE11FD7FE05AD585* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method)
+{
+	NullCheck(___0_door);
+	GenericInterfaceActionInvoker0::Invoke(method, ___0_door);
+}
+// Method Definition Index: 74038
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorOpenedEvt__ctor_m9C9C2897DD8A03B93EED264776517091A4E0C2C1 (DoorOpenedEvt_t000102A9D09036B3D64BB710FE11FD7FE05AD585* __this, RuntimeObject* ___0_object, intptr_t ___1_method, const RuntimeMethod* method) 
+{
+	__this->___method_ptr = (intptr_t)il2cpp_codegen_get_method_pointer((RuntimeMethod*)___1_method);
+	__this->___method = ___1_method;
+	__this->___m_target = ___0_object;
+	Il2CppCodeGenWriteBarrier((void**)(&__this->___m_target), (void*)___0_object);
+	int parameterCount = il2cpp_codegen_method_parameter_count((RuntimeMethod*)___1_method);
+	__this->___method_code = (intptr_t)__this;
+	if (MethodIsStatic((RuntimeMethod*)___1_method))
+	{
+		bool isOpen = parameterCount == 1;
+		if (isOpen)
+			__this->___invoke_impl = (intptr_t)&DoorOpenedEvt_Invoke_m25A787A473AE4D2FAA71159238C4E729C1AB59B5_OpenStatic;
+		else
+			{
+				__this->___invoke_impl = __this->___method_ptr;
+				__this->___method_code = (intptr_t)__this->___m_target;
+			}
+	}
+	else
+	{
+		bool isOpen = parameterCount == 0;
+		if (isOpen)
+		{
+			if (__this->___method_is_virtual)
+			{
+				if (il2cpp_codegen_method_is_generic_instance_method((RuntimeMethod*)___1_method))
+					if (il2cpp_codegen_method_is_interface_method((RuntimeMethod*)___1_method))
+						__this->___invoke_impl = (intptr_t)&DoorOpenedEvt_Invoke_m25A787A473AE4D2FAA71159238C4E729C1AB59B5_OpenGenericInterface;
+					else
+						__this->___invoke_impl = (intptr_t)&DoorOpenedEvt_Invoke_m25A787A473AE4D2FAA71159238C4E729C1AB59B5_OpenGenericVirtual;
+				else
+					if (il2cpp_codegen_method_is_interface_method((RuntimeMethod*)___1_method))
+						__this->___invoke_impl = (intptr_t)&DoorOpenedEvt_Invoke_m25A787A473AE4D2FAA71159238C4E729C1AB59B5_OpenInterface;
+					else
+						__this->___invoke_impl = (intptr_t)&DoorOpenedEvt_Invoke_m25A787A473AE4D2FAA71159238C4E729C1AB59B5_OpenVirtual;
+			}
+			else
+			{
+				__this->___invoke_impl = (intptr_t)&DoorOpenedEvt_Invoke_m25A787A473AE4D2FAA71159238C4E729C1AB59B5_OpenInst;
+			}
+		}
+		else
+		{
+			if (___0_object == NULL)
+				il2cpp_codegen_raise_exception(il2cpp_codegen_get_argument_exception(NULL, "Delegate to an instance method cannot have null 'this'."), NULL);
+			__this->___invoke_impl = __this->___method_ptr;
+			__this->___method_code = (intptr_t)__this->___m_target;
+		}
+	}
+	__this->___extra_arg = (intptr_t)&DoorOpenedEvt_Invoke_m25A787A473AE4D2FAA71159238C4E729C1AB59B5_Multicast;
+}
+// Method Definition Index: 74039
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorOpenedEvt_Invoke_m25A787A473AE4D2FAA71159238C4E729C1AB59B5 (DoorOpenedEvt_t000102A9D09036B3D64BB710FE11FD7FE05AD585* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method) 
+{
+	typedef void (*FunctionPointerType) (RuntimeObject*, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC*, const RuntimeMethod*);
+	((FunctionPointerType)__this->___invoke_impl)((Il2CppObject*)__this->___method_code, ___0_door, reinterpret_cast<RuntimeMethod*>(__this->___method));
+}
+// Method Definition Index: 74040
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* DoorOpenedEvt_BeginInvoke_mCB7397DB2FA5FF638B38A52CAE28BC856AFB4A74 (DoorOpenedEvt_t000102A9D09036B3D64BB710FE11FD7FE05AD585* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, AsyncCallback_t7FEF460CBDCFB9C5FA2EF776984778B9A4145F4C* ___1_callback, RuntimeObject* ___2_object, const RuntimeMethod* method) 
+{
+	void *__d_args[2] = {0};
+	__d_args[0] = ___0_door;
+	return (RuntimeObject*)il2cpp_codegen_delegate_begin_invoke((RuntimeDelegate*)__this, __d_args, (RuntimeDelegate*)___1_callback, (RuntimeObject*)___2_object);
+}
+// Method Definition Index: 74041
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorOpenedEvt_EndInvoke_m587FC092307B208D212B25E29DEC93D8B44136D5 (DoorOpenedEvt_t000102A9D09036B3D64BB710FE11FD7FE05AD585* __this, RuntimeObject* ___0_result, const RuntimeMethod* method) 
+{
+	il2cpp_codegen_delegate_end_invoke((Il2CppAsyncResult*) ___0_result, 0);
+}
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#pragma clang diagnostic ignored "-Wunused-variable"
+#endif
+void DoorOpenFailedEvt_Invoke_mEB611B296A59578C322CF8D16385203BB26E8BA4_Multicast(DoorOpenFailedEvt_t1032FDEE75EB91423C95DF2155669047463F16C8* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method)
+{
+	il2cpp_array_size_t length = __this->___delegates->max_length;
+	Delegate_t** delegatesToInvoke = reinterpret_cast<Delegate_t**>(__this->___delegates->GetAddressAtUnchecked(0));
+	for (il2cpp_array_size_t i = 0; i < length; i++)
+	{
+		DoorOpenFailedEvt_t1032FDEE75EB91423C95DF2155669047463F16C8* currentDelegate = reinterpret_cast<DoorOpenFailedEvt_t1032FDEE75EB91423C95DF2155669047463F16C8*>(delegatesToInvoke[i]);
+		typedef void (*FunctionPointerType) (RuntimeObject*, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC*, const RuntimeMethod*);
+		((FunctionPointerType)currentDelegate->___invoke_impl)((Il2CppObject*)currentDelegate->___method_code, ___0_door, reinterpret_cast<RuntimeMethod*>(currentDelegate->___method));
+	}
+}
+void DoorOpenFailedEvt_Invoke_mEB611B296A59578C322CF8D16385203BB26E8BA4_OpenInst(DoorOpenFailedEvt_t1032FDEE75EB91423C95DF2155669047463F16C8* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method)
+{
+	NullCheck(___0_door);
+	typedef void (*FunctionPointerType) (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC*, const RuntimeMethod*);
+	((FunctionPointerType)__this->___method_ptr)(___0_door, method);
+}
+void DoorOpenFailedEvt_Invoke_mEB611B296A59578C322CF8D16385203BB26E8BA4_OpenStatic(DoorOpenFailedEvt_t1032FDEE75EB91423C95DF2155669047463F16C8* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method)
+{
+	typedef void (*FunctionPointerType) (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC*, const RuntimeMethod*);
+	((FunctionPointerType)__this->___method_ptr)(___0_door, method);
+}
+void DoorOpenFailedEvt_Invoke_mEB611B296A59578C322CF8D16385203BB26E8BA4_OpenVirtual(DoorOpenFailedEvt_t1032FDEE75EB91423C95DF2155669047463F16C8* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method)
+{
+	NullCheck(___0_door);
+	VirtualActionInvoker0::Invoke(il2cpp_codegen_method_get_slot(method), ___0_door);
+}
+void DoorOpenFailedEvt_Invoke_mEB611B296A59578C322CF8D16385203BB26E8BA4_OpenInterface(DoorOpenFailedEvt_t1032FDEE75EB91423C95DF2155669047463F16C8* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method)
+{
+	NullCheck(___0_door);
+	InterfaceActionInvoker0::Invoke(il2cpp_codegen_method_get_slot(method), il2cpp_codegen_method_get_declaring_type(method), ___0_door);
+}
+void DoorOpenFailedEvt_Invoke_mEB611B296A59578C322CF8D16385203BB26E8BA4_OpenGenericVirtual(DoorOpenFailedEvt_t1032FDEE75EB91423C95DF2155669047463F16C8* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method)
+{
+	NullCheck(___0_door);
+	GenericVirtualActionInvoker0::Invoke(method, ___0_door);
+}
+void DoorOpenFailedEvt_Invoke_mEB611B296A59578C322CF8D16385203BB26E8BA4_OpenGenericInterface(DoorOpenFailedEvt_t1032FDEE75EB91423C95DF2155669047463F16C8* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method)
+{
+	NullCheck(___0_door);
+	GenericInterfaceActionInvoker0::Invoke(method, ___0_door);
+}
+// Method Definition Index: 74042
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorOpenFailedEvt__ctor_mEC8DDD242C47E1508C4DDFEC673B731F643D3E01 (DoorOpenFailedEvt_t1032FDEE75EB91423C95DF2155669047463F16C8* __this, RuntimeObject* ___0_object, intptr_t ___1_method, const RuntimeMethod* method) 
+{
+	__this->___method_ptr = (intptr_t)il2cpp_codegen_get_method_pointer((RuntimeMethod*)___1_method);
+	__this->___method = ___1_method;
+	__this->___m_target = ___0_object;
+	Il2CppCodeGenWriteBarrier((void**)(&__this->___m_target), (void*)___0_object);
+	int parameterCount = il2cpp_codegen_method_parameter_count((RuntimeMethod*)___1_method);
+	__this->___method_code = (intptr_t)__this;
+	if (MethodIsStatic((RuntimeMethod*)___1_method))
+	{
+		bool isOpen = parameterCount == 1;
+		if (isOpen)
+			__this->___invoke_impl = (intptr_t)&DoorOpenFailedEvt_Invoke_mEB611B296A59578C322CF8D16385203BB26E8BA4_OpenStatic;
+		else
+			{
+				__this->___invoke_impl = __this->___method_ptr;
+				__this->___method_code = (intptr_t)__this->___m_target;
+			}
+	}
+	else
+	{
+		bool isOpen = parameterCount == 0;
+		if (isOpen)
+		{
+			if (__this->___method_is_virtual)
+			{
+				if (il2cpp_codegen_method_is_generic_instance_method((RuntimeMethod*)___1_method))
+					if (il2cpp_codegen_method_is_interface_method((RuntimeMethod*)___1_method))
+						__this->___invoke_impl = (intptr_t)&DoorOpenFailedEvt_Invoke_mEB611B296A59578C322CF8D16385203BB26E8BA4_OpenGenericInterface;
+					else
+						__this->___invoke_impl = (intptr_t)&DoorOpenFailedEvt_Invoke_mEB611B296A59578C322CF8D16385203BB26E8BA4_OpenGenericVirtual;
+				else
+					if (il2cpp_codegen_method_is_interface_method((RuntimeMethod*)___1_method))
+						__this->___invoke_impl = (intptr_t)&DoorOpenFailedEvt_Invoke_mEB611B296A59578C322CF8D16385203BB26E8BA4_OpenInterface;
+					else
+						__this->___invoke_impl = (intptr_t)&DoorOpenFailedEvt_Invoke_mEB611B296A59578C322CF8D16385203BB26E8BA4_OpenVirtual;
+			}
+			else
+			{
+				__this->___invoke_impl = (intptr_t)&DoorOpenFailedEvt_Invoke_mEB611B296A59578C322CF8D16385203BB26E8BA4_OpenInst;
+			}
+		}
+		else
+		{
+			if (___0_object == NULL)
+				il2cpp_codegen_raise_exception(il2cpp_codegen_get_argument_exception(NULL, "Delegate to an instance method cannot have null 'this'."), NULL);
+			__this->___invoke_impl = __this->___method_ptr;
+			__this->___method_code = (intptr_t)__this->___m_target;
+		}
+	}
+	__this->___extra_arg = (intptr_t)&DoorOpenFailedEvt_Invoke_mEB611B296A59578C322CF8D16385203BB26E8BA4_Multicast;
+}
+// Method Definition Index: 74043
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorOpenFailedEvt_Invoke_mEB611B296A59578C322CF8D16385203BB26E8BA4 (DoorOpenFailedEvt_t1032FDEE75EB91423C95DF2155669047463F16C8* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method) 
+{
+	typedef void (*FunctionPointerType) (RuntimeObject*, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC*, const RuntimeMethod*);
+	((FunctionPointerType)__this->___invoke_impl)((Il2CppObject*)__this->___method_code, ___0_door, reinterpret_cast<RuntimeMethod*>(__this->___method));
+}
+// Method Definition Index: 74044
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* DoorOpenFailedEvt_BeginInvoke_mDB4BFBE6C9AD931333B2E180E3363650D9A700B0 (DoorOpenFailedEvt_t1032FDEE75EB91423C95DF2155669047463F16C8* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, AsyncCallback_t7FEF460CBDCFB9C5FA2EF776984778B9A4145F4C* ___1_callback, RuntimeObject* ___2_object, const RuntimeMethod* method) 
+{
+	void *__d_args[2] = {0};
+	__d_args[0] = ___0_door;
+	return (RuntimeObject*)il2cpp_codegen_delegate_begin_invoke((RuntimeDelegate*)__this, __d_args, (RuntimeDelegate*)___1_callback, (RuntimeObject*)___2_object);
+}
+// Method Definition Index: 74045
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorOpenFailedEvt_EndInvoke_m14B5B9DBC18BA7A21D401A762273D36D7BBBC550 (DoorOpenFailedEvt_t1032FDEE75EB91423C95DF2155669047463F16C8* __this, RuntimeObject* ___0_result, const RuntimeMethod* method) 
+{
+	il2cpp_codegen_delegate_end_invoke((Il2CppAsyncResult*) ___0_result, 0);
+}
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#pragma clang diagnostic ignored "-Wunused-variable"
+#endif
+void DoorClosedEvt_Invoke_mB5F245C3A2B92B56DBB9B92FE3878F7FAB5353AA_Multicast(DoorClosedEvt_t3512971C2165EA9C9D0F0A489E03B04EEE894C5C* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method)
+{
+	il2cpp_array_size_t length = __this->___delegates->max_length;
+	Delegate_t** delegatesToInvoke = reinterpret_cast<Delegate_t**>(__this->___delegates->GetAddressAtUnchecked(0));
+	for (il2cpp_array_size_t i = 0; i < length; i++)
+	{
+		DoorClosedEvt_t3512971C2165EA9C9D0F0A489E03B04EEE894C5C* currentDelegate = reinterpret_cast<DoorClosedEvt_t3512971C2165EA9C9D0F0A489E03B04EEE894C5C*>(delegatesToInvoke[i]);
+		typedef void (*FunctionPointerType) (RuntimeObject*, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC*, const RuntimeMethod*);
+		((FunctionPointerType)currentDelegate->___invoke_impl)((Il2CppObject*)currentDelegate->___method_code, ___0_door, reinterpret_cast<RuntimeMethod*>(currentDelegate->___method));
+	}
+}
+void DoorClosedEvt_Invoke_mB5F245C3A2B92B56DBB9B92FE3878F7FAB5353AA_OpenInst(DoorClosedEvt_t3512971C2165EA9C9D0F0A489E03B04EEE894C5C* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method)
+{
+	NullCheck(___0_door);
+	typedef void (*FunctionPointerType) (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC*, const RuntimeMethod*);
+	((FunctionPointerType)__this->___method_ptr)(___0_door, method);
+}
+void DoorClosedEvt_Invoke_mB5F245C3A2B92B56DBB9B92FE3878F7FAB5353AA_OpenStatic(DoorClosedEvt_t3512971C2165EA9C9D0F0A489E03B04EEE894C5C* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method)
+{
+	typedef void (*FunctionPointerType) (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC*, const RuntimeMethod*);
+	((FunctionPointerType)__this->___method_ptr)(___0_door, method);
+}
+void DoorClosedEvt_Invoke_mB5F245C3A2B92B56DBB9B92FE3878F7FAB5353AA_OpenVirtual(DoorClosedEvt_t3512971C2165EA9C9D0F0A489E03B04EEE894C5C* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method)
+{
+	NullCheck(___0_door);
+	VirtualActionInvoker0::Invoke(il2cpp_codegen_method_get_slot(method), ___0_door);
+}
+void DoorClosedEvt_Invoke_mB5F245C3A2B92B56DBB9B92FE3878F7FAB5353AA_OpenInterface(DoorClosedEvt_t3512971C2165EA9C9D0F0A489E03B04EEE894C5C* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method)
+{
+	NullCheck(___0_door);
+	InterfaceActionInvoker0::Invoke(il2cpp_codegen_method_get_slot(method), il2cpp_codegen_method_get_declaring_type(method), ___0_door);
+}
+void DoorClosedEvt_Invoke_mB5F245C3A2B92B56DBB9B92FE3878F7FAB5353AA_OpenGenericVirtual(DoorClosedEvt_t3512971C2165EA9C9D0F0A489E03B04EEE894C5C* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method)
+{
+	NullCheck(___0_door);
+	GenericVirtualActionInvoker0::Invoke(method, ___0_door);
+}
+void DoorClosedEvt_Invoke_mB5F245C3A2B92B56DBB9B92FE3878F7FAB5353AA_OpenGenericInterface(DoorClosedEvt_t3512971C2165EA9C9D0F0A489E03B04EEE894C5C* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method)
+{
+	NullCheck(___0_door);
+	GenericInterfaceActionInvoker0::Invoke(method, ___0_door);
+}
+// Method Definition Index: 74046
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorClosedEvt__ctor_mE8FE1B4B5A884191406A10D46660D01DFA7AA41B (DoorClosedEvt_t3512971C2165EA9C9D0F0A489E03B04EEE894C5C* __this, RuntimeObject* ___0_object, intptr_t ___1_method, const RuntimeMethod* method) 
+{
+	__this->___method_ptr = (intptr_t)il2cpp_codegen_get_method_pointer((RuntimeMethod*)___1_method);
+	__this->___method = ___1_method;
+	__this->___m_target = ___0_object;
+	Il2CppCodeGenWriteBarrier((void**)(&__this->___m_target), (void*)___0_object);
+	int parameterCount = il2cpp_codegen_method_parameter_count((RuntimeMethod*)___1_method);
+	__this->___method_code = (intptr_t)__this;
+	if (MethodIsStatic((RuntimeMethod*)___1_method))
+	{
+		bool isOpen = parameterCount == 1;
+		if (isOpen)
+			__this->___invoke_impl = (intptr_t)&DoorClosedEvt_Invoke_mB5F245C3A2B92B56DBB9B92FE3878F7FAB5353AA_OpenStatic;
+		else
+			{
+				__this->___invoke_impl = __this->___method_ptr;
+				__this->___method_code = (intptr_t)__this->___m_target;
+			}
+	}
+	else
+	{
+		bool isOpen = parameterCount == 0;
+		if (isOpen)
+		{
+			if (__this->___method_is_virtual)
+			{
+				if (il2cpp_codegen_method_is_generic_instance_method((RuntimeMethod*)___1_method))
+					if (il2cpp_codegen_method_is_interface_method((RuntimeMethod*)___1_method))
+						__this->___invoke_impl = (intptr_t)&DoorClosedEvt_Invoke_mB5F245C3A2B92B56DBB9B92FE3878F7FAB5353AA_OpenGenericInterface;
+					else
+						__this->___invoke_impl = (intptr_t)&DoorClosedEvt_Invoke_mB5F245C3A2B92B56DBB9B92FE3878F7FAB5353AA_OpenGenericVirtual;
+				else
+					if (il2cpp_codegen_method_is_interface_method((RuntimeMethod*)___1_method))
+						__this->___invoke_impl = (intptr_t)&DoorClosedEvt_Invoke_mB5F245C3A2B92B56DBB9B92FE3878F7FAB5353AA_OpenInterface;
+					else
+						__this->___invoke_impl = (intptr_t)&DoorClosedEvt_Invoke_mB5F245C3A2B92B56DBB9B92FE3878F7FAB5353AA_OpenVirtual;
+			}
+			else
+			{
+				__this->___invoke_impl = (intptr_t)&DoorClosedEvt_Invoke_mB5F245C3A2B92B56DBB9B92FE3878F7FAB5353AA_OpenInst;
+			}
+		}
+		else
+		{
+			if (___0_object == NULL)
+				il2cpp_codegen_raise_exception(il2cpp_codegen_get_argument_exception(NULL, "Delegate to an instance method cannot have null 'this'."), NULL);
+			__this->___invoke_impl = __this->___method_ptr;
+			__this->___method_code = (intptr_t)__this->___m_target;
+		}
+	}
+	__this->___extra_arg = (intptr_t)&DoorClosedEvt_Invoke_mB5F245C3A2B92B56DBB9B92FE3878F7FAB5353AA_Multicast;
+}
+// Method Definition Index: 74047
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorClosedEvt_Invoke_mB5F245C3A2B92B56DBB9B92FE3878F7FAB5353AA (DoorClosedEvt_t3512971C2165EA9C9D0F0A489E03B04EEE894C5C* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method) 
+{
+	typedef void (*FunctionPointerType) (RuntimeObject*, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC*, const RuntimeMethod*);
+	((FunctionPointerType)__this->___invoke_impl)((Il2CppObject*)__this->___method_code, ___0_door, reinterpret_cast<RuntimeMethod*>(__this->___method));
+}
+// Method Definition Index: 74048
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* DoorClosedEvt_BeginInvoke_m622FAB3B42BE746F0E4ABB5A873571509CDFC1B3 (DoorClosedEvt_t3512971C2165EA9C9D0F0A489E03B04EEE894C5C* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, AsyncCallback_t7FEF460CBDCFB9C5FA2EF776984778B9A4145F4C* ___1_callback, RuntimeObject* ___2_object, const RuntimeMethod* method) 
+{
+	void *__d_args[2] = {0};
+	__d_args[0] = ___0_door;
+	return (RuntimeObject*)il2cpp_codegen_delegate_begin_invoke((RuntimeDelegate*)__this, __d_args, (RuntimeDelegate*)___1_callback, (RuntimeObject*)___2_object);
+}
+// Method Definition Index: 74049
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorClosedEvt_EndInvoke_m7AEB2130E03BA9C99A471BC1A2558DC9004FF271 (DoorClosedEvt_t3512971C2165EA9C9D0F0A489E03B04EEE894C5C* __this, RuntimeObject* ___0_result, const RuntimeMethod* method) 
+{
+	il2cpp_codegen_delegate_end_invoke((Il2CppAsyncResult*) ___0_result, 0);
+}
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#pragma clang diagnostic ignored "-Wunused-variable"
+#endif
+void DoorWillOpenEvt_Invoke_mD170B0E6804066068C1825C3E35BBB31D6472AE5_Multicast(DoorWillOpenEvt_t3A953E675BDD6E13F554E0BDDD07F831A039BE22* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method)
+{
+	il2cpp_array_size_t length = __this->___delegates->max_length;
+	Delegate_t** delegatesToInvoke = reinterpret_cast<Delegate_t**>(__this->___delegates->GetAddressAtUnchecked(0));
+	for (il2cpp_array_size_t i = 0; i < length; i++)
+	{
+		DoorWillOpenEvt_t3A953E675BDD6E13F554E0BDDD07F831A039BE22* currentDelegate = reinterpret_cast<DoorWillOpenEvt_t3A953E675BDD6E13F554E0BDDD07F831A039BE22*>(delegatesToInvoke[i]);
+		typedef void (*FunctionPointerType) (RuntimeObject*, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC*, const RuntimeMethod*);
+		((FunctionPointerType)currentDelegate->___invoke_impl)((Il2CppObject*)currentDelegate->___method_code, ___0_door, reinterpret_cast<RuntimeMethod*>(currentDelegate->___method));
+	}
+}
+void DoorWillOpenEvt_Invoke_mD170B0E6804066068C1825C3E35BBB31D6472AE5_OpenInst(DoorWillOpenEvt_t3A953E675BDD6E13F554E0BDDD07F831A039BE22* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method)
+{
+	NullCheck(___0_door);
+	typedef void (*FunctionPointerType) (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC*, const RuntimeMethod*);
+	((FunctionPointerType)__this->___method_ptr)(___0_door, method);
+}
+void DoorWillOpenEvt_Invoke_mD170B0E6804066068C1825C3E35BBB31D6472AE5_OpenStatic(DoorWillOpenEvt_t3A953E675BDD6E13F554E0BDDD07F831A039BE22* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method)
+{
+	typedef void (*FunctionPointerType) (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC*, const RuntimeMethod*);
+	((FunctionPointerType)__this->___method_ptr)(___0_door, method);
+}
+void DoorWillOpenEvt_Invoke_mD170B0E6804066068C1825C3E35BBB31D6472AE5_OpenVirtual(DoorWillOpenEvt_t3A953E675BDD6E13F554E0BDDD07F831A039BE22* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method)
+{
+	NullCheck(___0_door);
+	VirtualActionInvoker0::Invoke(il2cpp_codegen_method_get_slot(method), ___0_door);
+}
+void DoorWillOpenEvt_Invoke_mD170B0E6804066068C1825C3E35BBB31D6472AE5_OpenInterface(DoorWillOpenEvt_t3A953E675BDD6E13F554E0BDDD07F831A039BE22* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method)
+{
+	NullCheck(___0_door);
+	InterfaceActionInvoker0::Invoke(il2cpp_codegen_method_get_slot(method), il2cpp_codegen_method_get_declaring_type(method), ___0_door);
+}
+void DoorWillOpenEvt_Invoke_mD170B0E6804066068C1825C3E35BBB31D6472AE5_OpenGenericVirtual(DoorWillOpenEvt_t3A953E675BDD6E13F554E0BDDD07F831A039BE22* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method)
+{
+	NullCheck(___0_door);
+	GenericVirtualActionInvoker0::Invoke(method, ___0_door);
+}
+void DoorWillOpenEvt_Invoke_mD170B0E6804066068C1825C3E35BBB31D6472AE5_OpenGenericInterface(DoorWillOpenEvt_t3A953E675BDD6E13F554E0BDDD07F831A039BE22* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method)
+{
+	NullCheck(___0_door);
+	GenericInterfaceActionInvoker0::Invoke(method, ___0_door);
+}
+// Method Definition Index: 74050
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorWillOpenEvt__ctor_m839A1C2F446F5EA89FE3110B07742CE7886BCE46 (DoorWillOpenEvt_t3A953E675BDD6E13F554E0BDDD07F831A039BE22* __this, RuntimeObject* ___0_object, intptr_t ___1_method, const RuntimeMethod* method) 
+{
+	__this->___method_ptr = (intptr_t)il2cpp_codegen_get_method_pointer((RuntimeMethod*)___1_method);
+	__this->___method = ___1_method;
+	__this->___m_target = ___0_object;
+	Il2CppCodeGenWriteBarrier((void**)(&__this->___m_target), (void*)___0_object);
+	int parameterCount = il2cpp_codegen_method_parameter_count((RuntimeMethod*)___1_method);
+	__this->___method_code = (intptr_t)__this;
+	if (MethodIsStatic((RuntimeMethod*)___1_method))
+	{
+		bool isOpen = parameterCount == 1;
+		if (isOpen)
+			__this->___invoke_impl = (intptr_t)&DoorWillOpenEvt_Invoke_mD170B0E6804066068C1825C3E35BBB31D6472AE5_OpenStatic;
+		else
+			{
+				__this->___invoke_impl = __this->___method_ptr;
+				__this->___method_code = (intptr_t)__this->___m_target;
+			}
+	}
+	else
+	{
+		bool isOpen = parameterCount == 0;
+		if (isOpen)
+		{
+			if (__this->___method_is_virtual)
+			{
+				if (il2cpp_codegen_method_is_generic_instance_method((RuntimeMethod*)___1_method))
+					if (il2cpp_codegen_method_is_interface_method((RuntimeMethod*)___1_method))
+						__this->___invoke_impl = (intptr_t)&DoorWillOpenEvt_Invoke_mD170B0E6804066068C1825C3E35BBB31D6472AE5_OpenGenericInterface;
+					else
+						__this->___invoke_impl = (intptr_t)&DoorWillOpenEvt_Invoke_mD170B0E6804066068C1825C3E35BBB31D6472AE5_OpenGenericVirtual;
+				else
+					if (il2cpp_codegen_method_is_interface_method((RuntimeMethod*)___1_method))
+						__this->___invoke_impl = (intptr_t)&DoorWillOpenEvt_Invoke_mD170B0E6804066068C1825C3E35BBB31D6472AE5_OpenInterface;
+					else
+						__this->___invoke_impl = (intptr_t)&DoorWillOpenEvt_Invoke_mD170B0E6804066068C1825C3E35BBB31D6472AE5_OpenVirtual;
+			}
+			else
+			{
+				__this->___invoke_impl = (intptr_t)&DoorWillOpenEvt_Invoke_mD170B0E6804066068C1825C3E35BBB31D6472AE5_OpenInst;
+			}
+		}
+		else
+		{
+			if (___0_object == NULL)
+				il2cpp_codegen_raise_exception(il2cpp_codegen_get_argument_exception(NULL, "Delegate to an instance method cannot have null 'this'."), NULL);
+			__this->___invoke_impl = __this->___method_ptr;
+			__this->___method_code = (intptr_t)__this->___m_target;
+		}
+	}
+	__this->___extra_arg = (intptr_t)&DoorWillOpenEvt_Invoke_mD170B0E6804066068C1825C3E35BBB31D6472AE5_Multicast;
+}
+// Method Definition Index: 74051
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorWillOpenEvt_Invoke_mD170B0E6804066068C1825C3E35BBB31D6472AE5 (DoorWillOpenEvt_t3A953E675BDD6E13F554E0BDDD07F831A039BE22* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method) 
+{
+	typedef void (*FunctionPointerType) (RuntimeObject*, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC*, const RuntimeMethod*);
+	((FunctionPointerType)__this->___invoke_impl)((Il2CppObject*)__this->___method_code, ___0_door, reinterpret_cast<RuntimeMethod*>(__this->___method));
+}
+// Method Definition Index: 74052
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* DoorWillOpenEvt_BeginInvoke_m6CA5B5E76EDBD8138984098715CC08F7B5950C1F (DoorWillOpenEvt_t3A953E675BDD6E13F554E0BDDD07F831A039BE22* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, AsyncCallback_t7FEF460CBDCFB9C5FA2EF776984778B9A4145F4C* ___1_callback, RuntimeObject* ___2_object, const RuntimeMethod* method) 
+{
+	void *__d_args[2] = {0};
+	__d_args[0] = ___0_door;
+	return (RuntimeObject*)il2cpp_codegen_delegate_begin_invoke((RuntimeDelegate*)__this, __d_args, (RuntimeDelegate*)___1_callback, (RuntimeObject*)___2_object);
+}
+// Method Definition Index: 74053
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorWillOpenEvt_EndInvoke_m27976DFA6C156D0EA3C7D9FE333B343BA3803E33 (DoorWillOpenEvt_t3A953E675BDD6E13F554E0BDDD07F831A039BE22* __this, RuntimeObject* ___0_result, const RuntimeMethod* method) 
+{
+	il2cpp_codegen_delegate_end_invoke((Il2CppAsyncResult*) ___0_result, 0);
+}
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#pragma clang diagnostic ignored "-Wunused-variable"
+#endif
+void DoorWillCloseEvt_Invoke_m53BFA21E364CD48B295BC3ECAD5D32FAC66FCF4D_Multicast(DoorWillCloseEvt_tCF052CFCAD1F6F42971A6A7F50DB3F69766740B3* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method)
+{
+	il2cpp_array_size_t length = __this->___delegates->max_length;
+	Delegate_t** delegatesToInvoke = reinterpret_cast<Delegate_t**>(__this->___delegates->GetAddressAtUnchecked(0));
+	for (il2cpp_array_size_t i = 0; i < length; i++)
+	{
+		DoorWillCloseEvt_tCF052CFCAD1F6F42971A6A7F50DB3F69766740B3* currentDelegate = reinterpret_cast<DoorWillCloseEvt_tCF052CFCAD1F6F42971A6A7F50DB3F69766740B3*>(delegatesToInvoke[i]);
+		typedef void (*FunctionPointerType) (RuntimeObject*, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC*, const RuntimeMethod*);
+		((FunctionPointerType)currentDelegate->___invoke_impl)((Il2CppObject*)currentDelegate->___method_code, ___0_door, reinterpret_cast<RuntimeMethod*>(currentDelegate->___method));
+	}
+}
+void DoorWillCloseEvt_Invoke_m53BFA21E364CD48B295BC3ECAD5D32FAC66FCF4D_OpenInst(DoorWillCloseEvt_tCF052CFCAD1F6F42971A6A7F50DB3F69766740B3* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method)
+{
+	NullCheck(___0_door);
+	typedef void (*FunctionPointerType) (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC*, const RuntimeMethod*);
+	((FunctionPointerType)__this->___method_ptr)(___0_door, method);
+}
+void DoorWillCloseEvt_Invoke_m53BFA21E364CD48B295BC3ECAD5D32FAC66FCF4D_OpenStatic(DoorWillCloseEvt_tCF052CFCAD1F6F42971A6A7F50DB3F69766740B3* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method)
+{
+	typedef void (*FunctionPointerType) (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC*, const RuntimeMethod*);
+	((FunctionPointerType)__this->___method_ptr)(___0_door, method);
+}
+void DoorWillCloseEvt_Invoke_m53BFA21E364CD48B295BC3ECAD5D32FAC66FCF4D_OpenVirtual(DoorWillCloseEvt_tCF052CFCAD1F6F42971A6A7F50DB3F69766740B3* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method)
+{
+	NullCheck(___0_door);
+	VirtualActionInvoker0::Invoke(il2cpp_codegen_method_get_slot(method), ___0_door);
+}
+void DoorWillCloseEvt_Invoke_m53BFA21E364CD48B295BC3ECAD5D32FAC66FCF4D_OpenInterface(DoorWillCloseEvt_tCF052CFCAD1F6F42971A6A7F50DB3F69766740B3* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method)
+{
+	NullCheck(___0_door);
+	InterfaceActionInvoker0::Invoke(il2cpp_codegen_method_get_slot(method), il2cpp_codegen_method_get_declaring_type(method), ___0_door);
+}
+void DoorWillCloseEvt_Invoke_m53BFA21E364CD48B295BC3ECAD5D32FAC66FCF4D_OpenGenericVirtual(DoorWillCloseEvt_tCF052CFCAD1F6F42971A6A7F50DB3F69766740B3* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method)
+{
+	NullCheck(___0_door);
+	GenericVirtualActionInvoker0::Invoke(method, ___0_door);
+}
+void DoorWillCloseEvt_Invoke_m53BFA21E364CD48B295BC3ECAD5D32FAC66FCF4D_OpenGenericInterface(DoorWillCloseEvt_tCF052CFCAD1F6F42971A6A7F50DB3F69766740B3* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method)
+{
+	NullCheck(___0_door);
+	GenericInterfaceActionInvoker0::Invoke(method, ___0_door);
+}
+// Method Definition Index: 74054
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorWillCloseEvt__ctor_m67BC2C566C11C92D2A424336692E6082780A8E39 (DoorWillCloseEvt_tCF052CFCAD1F6F42971A6A7F50DB3F69766740B3* __this, RuntimeObject* ___0_object, intptr_t ___1_method, const RuntimeMethod* method) 
+{
+	__this->___method_ptr = (intptr_t)il2cpp_codegen_get_method_pointer((RuntimeMethod*)___1_method);
+	__this->___method = ___1_method;
+	__this->___m_target = ___0_object;
+	Il2CppCodeGenWriteBarrier((void**)(&__this->___m_target), (void*)___0_object);
+	int parameterCount = il2cpp_codegen_method_parameter_count((RuntimeMethod*)___1_method);
+	__this->___method_code = (intptr_t)__this;
+	if (MethodIsStatic((RuntimeMethod*)___1_method))
+	{
+		bool isOpen = parameterCount == 1;
+		if (isOpen)
+			__this->___invoke_impl = (intptr_t)&DoorWillCloseEvt_Invoke_m53BFA21E364CD48B295BC3ECAD5D32FAC66FCF4D_OpenStatic;
+		else
+			{
+				__this->___invoke_impl = __this->___method_ptr;
+				__this->___method_code = (intptr_t)__this->___m_target;
+			}
+	}
+	else
+	{
+		bool isOpen = parameterCount == 0;
+		if (isOpen)
+		{
+			if (__this->___method_is_virtual)
+			{
+				if (il2cpp_codegen_method_is_generic_instance_method((RuntimeMethod*)___1_method))
+					if (il2cpp_codegen_method_is_interface_method((RuntimeMethod*)___1_method))
+						__this->___invoke_impl = (intptr_t)&DoorWillCloseEvt_Invoke_m53BFA21E364CD48B295BC3ECAD5D32FAC66FCF4D_OpenGenericInterface;
+					else
+						__this->___invoke_impl = (intptr_t)&DoorWillCloseEvt_Invoke_m53BFA21E364CD48B295BC3ECAD5D32FAC66FCF4D_OpenGenericVirtual;
+				else
+					if (il2cpp_codegen_method_is_interface_method((RuntimeMethod*)___1_method))
+						__this->___invoke_impl = (intptr_t)&DoorWillCloseEvt_Invoke_m53BFA21E364CD48B295BC3ECAD5D32FAC66FCF4D_OpenInterface;
+					else
+						__this->___invoke_impl = (intptr_t)&DoorWillCloseEvt_Invoke_m53BFA21E364CD48B295BC3ECAD5D32FAC66FCF4D_OpenVirtual;
+			}
+			else
+			{
+				__this->___invoke_impl = (intptr_t)&DoorWillCloseEvt_Invoke_m53BFA21E364CD48B295BC3ECAD5D32FAC66FCF4D_OpenInst;
+			}
+		}
+		else
+		{
+			if (___0_object == NULL)
+				il2cpp_codegen_raise_exception(il2cpp_codegen_get_argument_exception(NULL, "Delegate to an instance method cannot have null 'this'."), NULL);
+			__this->___invoke_impl = __this->___method_ptr;
+			__this->___method_code = (intptr_t)__this->___m_target;
+		}
+	}
+	__this->___extra_arg = (intptr_t)&DoorWillCloseEvt_Invoke_m53BFA21E364CD48B295BC3ECAD5D32FAC66FCF4D_Multicast;
+}
+// Method Definition Index: 74055
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorWillCloseEvt_Invoke_m53BFA21E364CD48B295BC3ECAD5D32FAC66FCF4D (DoorWillCloseEvt_tCF052CFCAD1F6F42971A6A7F50DB3F69766740B3* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method) 
+{
+	typedef void (*FunctionPointerType) (RuntimeObject*, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC*, const RuntimeMethod*);
+	((FunctionPointerType)__this->___invoke_impl)((Il2CppObject*)__this->___method_code, ___0_door, reinterpret_cast<RuntimeMethod*>(__this->___method));
+}
+// Method Definition Index: 74056
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* DoorWillCloseEvt_BeginInvoke_m43422BF79BDCD824BEA9F19D85912F5839B6590A (DoorWillCloseEvt_tCF052CFCAD1F6F42971A6A7F50DB3F69766740B3* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, AsyncCallback_t7FEF460CBDCFB9C5FA2EF776984778B9A4145F4C* ___1_callback, RuntimeObject* ___2_object, const RuntimeMethod* method) 
+{
+	void *__d_args[2] = {0};
+	__d_args[0] = ___0_door;
+	return (RuntimeObject*)il2cpp_codegen_delegate_begin_invoke((RuntimeDelegate*)__this, __d_args, (RuntimeDelegate*)___1_callback, (RuntimeObject*)___2_object);
+}
+// Method Definition Index: 74057
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorWillCloseEvt_EndInvoke_m8726AC20AB67765DB41C68EF1B3211287A14FA42 (DoorWillCloseEvt_tCF052CFCAD1F6F42971A6A7F50DB3F69766740B3* __this, RuntimeObject* ___0_result, const RuntimeMethod* method) 
+{
+	il2cpp_codegen_delegate_end_invoke((Il2CppAsyncResult*) ___0_result, 0);
+}
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#pragma clang diagnostic ignored "-Wunused-variable"
+#endif
+void DoorLockedEvt_Invoke_m0336C43427A49DB8930EB24C0811C4F59FFAE7AD_Multicast(DoorLockedEvt_t24FA80C7BCDB52586B684991ECB99317F4F4F8AA* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method)
+{
+	il2cpp_array_size_t length = __this->___delegates->max_length;
+	Delegate_t** delegatesToInvoke = reinterpret_cast<Delegate_t**>(__this->___delegates->GetAddressAtUnchecked(0));
+	for (il2cpp_array_size_t i = 0; i < length; i++)
+	{
+		DoorLockedEvt_t24FA80C7BCDB52586B684991ECB99317F4F4F8AA* currentDelegate = reinterpret_cast<DoorLockedEvt_t24FA80C7BCDB52586B684991ECB99317F4F4F8AA*>(delegatesToInvoke[i]);
+		typedef void (*FunctionPointerType) (RuntimeObject*, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC*, const RuntimeMethod*);
+		((FunctionPointerType)currentDelegate->___invoke_impl)((Il2CppObject*)currentDelegate->___method_code, ___0_door, reinterpret_cast<RuntimeMethod*>(currentDelegate->___method));
+	}
+}
+void DoorLockedEvt_Invoke_m0336C43427A49DB8930EB24C0811C4F59FFAE7AD_OpenInst(DoorLockedEvt_t24FA80C7BCDB52586B684991ECB99317F4F4F8AA* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method)
+{
+	NullCheck(___0_door);
+	typedef void (*FunctionPointerType) (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC*, const RuntimeMethod*);
+	((FunctionPointerType)__this->___method_ptr)(___0_door, method);
+}
+void DoorLockedEvt_Invoke_m0336C43427A49DB8930EB24C0811C4F59FFAE7AD_OpenStatic(DoorLockedEvt_t24FA80C7BCDB52586B684991ECB99317F4F4F8AA* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method)
+{
+	typedef void (*FunctionPointerType) (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC*, const RuntimeMethod*);
+	((FunctionPointerType)__this->___method_ptr)(___0_door, method);
+}
+void DoorLockedEvt_Invoke_m0336C43427A49DB8930EB24C0811C4F59FFAE7AD_OpenVirtual(DoorLockedEvt_t24FA80C7BCDB52586B684991ECB99317F4F4F8AA* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method)
+{
+	NullCheck(___0_door);
+	VirtualActionInvoker0::Invoke(il2cpp_codegen_method_get_slot(method), ___0_door);
+}
+void DoorLockedEvt_Invoke_m0336C43427A49DB8930EB24C0811C4F59FFAE7AD_OpenInterface(DoorLockedEvt_t24FA80C7BCDB52586B684991ECB99317F4F4F8AA* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method)
+{
+	NullCheck(___0_door);
+	InterfaceActionInvoker0::Invoke(il2cpp_codegen_method_get_slot(method), il2cpp_codegen_method_get_declaring_type(method), ___0_door);
+}
+void DoorLockedEvt_Invoke_m0336C43427A49DB8930EB24C0811C4F59FFAE7AD_OpenGenericVirtual(DoorLockedEvt_t24FA80C7BCDB52586B684991ECB99317F4F4F8AA* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method)
+{
+	NullCheck(___0_door);
+	GenericVirtualActionInvoker0::Invoke(method, ___0_door);
+}
+void DoorLockedEvt_Invoke_m0336C43427A49DB8930EB24C0811C4F59FFAE7AD_OpenGenericInterface(DoorLockedEvt_t24FA80C7BCDB52586B684991ECB99317F4F4F8AA* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method)
+{
+	NullCheck(___0_door);
+	GenericInterfaceActionInvoker0::Invoke(method, ___0_door);
+}
+// Method Definition Index: 74058
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorLockedEvt__ctor_mE632055FBA7400EFDF37EACF7E3E27157740A91C (DoorLockedEvt_t24FA80C7BCDB52586B684991ECB99317F4F4F8AA* __this, RuntimeObject* ___0_object, intptr_t ___1_method, const RuntimeMethod* method) 
+{
+	__this->___method_ptr = (intptr_t)il2cpp_codegen_get_method_pointer((RuntimeMethod*)___1_method);
+	__this->___method = ___1_method;
+	__this->___m_target = ___0_object;
+	Il2CppCodeGenWriteBarrier((void**)(&__this->___m_target), (void*)___0_object);
+	int parameterCount = il2cpp_codegen_method_parameter_count((RuntimeMethod*)___1_method);
+	__this->___method_code = (intptr_t)__this;
+	if (MethodIsStatic((RuntimeMethod*)___1_method))
+	{
+		bool isOpen = parameterCount == 1;
+		if (isOpen)
+			__this->___invoke_impl = (intptr_t)&DoorLockedEvt_Invoke_m0336C43427A49DB8930EB24C0811C4F59FFAE7AD_OpenStatic;
+		else
+			{
+				__this->___invoke_impl = __this->___method_ptr;
+				__this->___method_code = (intptr_t)__this->___m_target;
+			}
+	}
+	else
+	{
+		bool isOpen = parameterCount == 0;
+		if (isOpen)
+		{
+			if (__this->___method_is_virtual)
+			{
+				if (il2cpp_codegen_method_is_generic_instance_method((RuntimeMethod*)___1_method))
+					if (il2cpp_codegen_method_is_interface_method((RuntimeMethod*)___1_method))
+						__this->___invoke_impl = (intptr_t)&DoorLockedEvt_Invoke_m0336C43427A49DB8930EB24C0811C4F59FFAE7AD_OpenGenericInterface;
+					else
+						__this->___invoke_impl = (intptr_t)&DoorLockedEvt_Invoke_m0336C43427A49DB8930EB24C0811C4F59FFAE7AD_OpenGenericVirtual;
+				else
+					if (il2cpp_codegen_method_is_interface_method((RuntimeMethod*)___1_method))
+						__this->___invoke_impl = (intptr_t)&DoorLockedEvt_Invoke_m0336C43427A49DB8930EB24C0811C4F59FFAE7AD_OpenInterface;
+					else
+						__this->___invoke_impl = (intptr_t)&DoorLockedEvt_Invoke_m0336C43427A49DB8930EB24C0811C4F59FFAE7AD_OpenVirtual;
+			}
+			else
+			{
+				__this->___invoke_impl = (intptr_t)&DoorLockedEvt_Invoke_m0336C43427A49DB8930EB24C0811C4F59FFAE7AD_OpenInst;
+			}
+		}
+		else
+		{
+			if (___0_object == NULL)
+				il2cpp_codegen_raise_exception(il2cpp_codegen_get_argument_exception(NULL, "Delegate to an instance method cannot have null 'this'."), NULL);
+			__this->___invoke_impl = __this->___method_ptr;
+			__this->___method_code = (intptr_t)__this->___m_target;
+		}
+	}
+	__this->___extra_arg = (intptr_t)&DoorLockedEvt_Invoke_m0336C43427A49DB8930EB24C0811C4F59FFAE7AD_Multicast;
+}
+// Method Definition Index: 74059
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorLockedEvt_Invoke_m0336C43427A49DB8930EB24C0811C4F59FFAE7AD (DoorLockedEvt_t24FA80C7BCDB52586B684991ECB99317F4F4F8AA* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method) 
+{
+	typedef void (*FunctionPointerType) (RuntimeObject*, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC*, const RuntimeMethod*);
+	((FunctionPointerType)__this->___invoke_impl)((Il2CppObject*)__this->___method_code, ___0_door, reinterpret_cast<RuntimeMethod*>(__this->___method));
+}
+// Method Definition Index: 74060
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* DoorLockedEvt_BeginInvoke_m1E166215513DF949B5C914878E9E59C7BC9B932A (DoorLockedEvt_t24FA80C7BCDB52586B684991ECB99317F4F4F8AA* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, AsyncCallback_t7FEF460CBDCFB9C5FA2EF776984778B9A4145F4C* ___1_callback, RuntimeObject* ___2_object, const RuntimeMethod* method) 
+{
+	void *__d_args[2] = {0};
+	__d_args[0] = ___0_door;
+	return (RuntimeObject*)il2cpp_codegen_delegate_begin_invoke((RuntimeDelegate*)__this, __d_args, (RuntimeDelegate*)___1_callback, (RuntimeObject*)___2_object);
+}
+// Method Definition Index: 74061
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorLockedEvt_EndInvoke_m98CB607D12544945FBB43489AEFC6E6889E40742 (DoorLockedEvt_t24FA80C7BCDB52586B684991ECB99317F4F4F8AA* __this, RuntimeObject* ___0_result, const RuntimeMethod* method) 
+{
+	il2cpp_codegen_delegate_end_invoke((Il2CppAsyncResult*) ___0_result, 0);
+}
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#pragma clang diagnostic ignored "-Wunused-variable"
+#endif
+void DoorUnlockedEvt_Invoke_m0946810F4DE203283827D39345B8A3AA528B4E17_Multicast(DoorUnlockedEvt_t1E6D58AC4C10BE4C2135F3580DBAEE0D87024854* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method)
+{
+	il2cpp_array_size_t length = __this->___delegates->max_length;
+	Delegate_t** delegatesToInvoke = reinterpret_cast<Delegate_t**>(__this->___delegates->GetAddressAtUnchecked(0));
+	for (il2cpp_array_size_t i = 0; i < length; i++)
+	{
+		DoorUnlockedEvt_t1E6D58AC4C10BE4C2135F3580DBAEE0D87024854* currentDelegate = reinterpret_cast<DoorUnlockedEvt_t1E6D58AC4C10BE4C2135F3580DBAEE0D87024854*>(delegatesToInvoke[i]);
+		typedef void (*FunctionPointerType) (RuntimeObject*, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC*, const RuntimeMethod*);
+		((FunctionPointerType)currentDelegate->___invoke_impl)((Il2CppObject*)currentDelegate->___method_code, ___0_door, reinterpret_cast<RuntimeMethod*>(currentDelegate->___method));
+	}
+}
+void DoorUnlockedEvt_Invoke_m0946810F4DE203283827D39345B8A3AA528B4E17_OpenInst(DoorUnlockedEvt_t1E6D58AC4C10BE4C2135F3580DBAEE0D87024854* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method)
+{
+	NullCheck(___0_door);
+	typedef void (*FunctionPointerType) (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC*, const RuntimeMethod*);
+	((FunctionPointerType)__this->___method_ptr)(___0_door, method);
+}
+void DoorUnlockedEvt_Invoke_m0946810F4DE203283827D39345B8A3AA528B4E17_OpenStatic(DoorUnlockedEvt_t1E6D58AC4C10BE4C2135F3580DBAEE0D87024854* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method)
+{
+	typedef void (*FunctionPointerType) (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC*, const RuntimeMethod*);
+	((FunctionPointerType)__this->___method_ptr)(___0_door, method);
+}
+void DoorUnlockedEvt_Invoke_m0946810F4DE203283827D39345B8A3AA528B4E17_OpenVirtual(DoorUnlockedEvt_t1E6D58AC4C10BE4C2135F3580DBAEE0D87024854* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method)
+{
+	NullCheck(___0_door);
+	VirtualActionInvoker0::Invoke(il2cpp_codegen_method_get_slot(method), ___0_door);
+}
+void DoorUnlockedEvt_Invoke_m0946810F4DE203283827D39345B8A3AA528B4E17_OpenInterface(DoorUnlockedEvt_t1E6D58AC4C10BE4C2135F3580DBAEE0D87024854* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method)
+{
+	NullCheck(___0_door);
+	InterfaceActionInvoker0::Invoke(il2cpp_codegen_method_get_slot(method), il2cpp_codegen_method_get_declaring_type(method), ___0_door);
+}
+void DoorUnlockedEvt_Invoke_m0946810F4DE203283827D39345B8A3AA528B4E17_OpenGenericVirtual(DoorUnlockedEvt_t1E6D58AC4C10BE4C2135F3580DBAEE0D87024854* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method)
+{
+	NullCheck(___0_door);
+	GenericVirtualActionInvoker0::Invoke(method, ___0_door);
+}
+void DoorUnlockedEvt_Invoke_m0946810F4DE203283827D39345B8A3AA528B4E17_OpenGenericInterface(DoorUnlockedEvt_t1E6D58AC4C10BE4C2135F3580DBAEE0D87024854* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method)
+{
+	NullCheck(___0_door);
+	GenericInterfaceActionInvoker0::Invoke(method, ___0_door);
+}
+// Method Definition Index: 74062
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorUnlockedEvt__ctor_m9062CFC7708B5B7251AE49761432B38AD78A9DA2 (DoorUnlockedEvt_t1E6D58AC4C10BE4C2135F3580DBAEE0D87024854* __this, RuntimeObject* ___0_object, intptr_t ___1_method, const RuntimeMethod* method) 
+{
+	__this->___method_ptr = (intptr_t)il2cpp_codegen_get_method_pointer((RuntimeMethod*)___1_method);
+	__this->___method = ___1_method;
+	__this->___m_target = ___0_object;
+	Il2CppCodeGenWriteBarrier((void**)(&__this->___m_target), (void*)___0_object);
+	int parameterCount = il2cpp_codegen_method_parameter_count((RuntimeMethod*)___1_method);
+	__this->___method_code = (intptr_t)__this;
+	if (MethodIsStatic((RuntimeMethod*)___1_method))
+	{
+		bool isOpen = parameterCount == 1;
+		if (isOpen)
+			__this->___invoke_impl = (intptr_t)&DoorUnlockedEvt_Invoke_m0946810F4DE203283827D39345B8A3AA528B4E17_OpenStatic;
+		else
+			{
+				__this->___invoke_impl = __this->___method_ptr;
+				__this->___method_code = (intptr_t)__this->___m_target;
+			}
+	}
+	else
+	{
+		bool isOpen = parameterCount == 0;
+		if (isOpen)
+		{
+			if (__this->___method_is_virtual)
+			{
+				if (il2cpp_codegen_method_is_generic_instance_method((RuntimeMethod*)___1_method))
+					if (il2cpp_codegen_method_is_interface_method((RuntimeMethod*)___1_method))
+						__this->___invoke_impl = (intptr_t)&DoorUnlockedEvt_Invoke_m0946810F4DE203283827D39345B8A3AA528B4E17_OpenGenericInterface;
+					else
+						__this->___invoke_impl = (intptr_t)&DoorUnlockedEvt_Invoke_m0946810F4DE203283827D39345B8A3AA528B4E17_OpenGenericVirtual;
+				else
+					if (il2cpp_codegen_method_is_interface_method((RuntimeMethod*)___1_method))
+						__this->___invoke_impl = (intptr_t)&DoorUnlockedEvt_Invoke_m0946810F4DE203283827D39345B8A3AA528B4E17_OpenInterface;
+					else
+						__this->___invoke_impl = (intptr_t)&DoorUnlockedEvt_Invoke_m0946810F4DE203283827D39345B8A3AA528B4E17_OpenVirtual;
+			}
+			else
+			{
+				__this->___invoke_impl = (intptr_t)&DoorUnlockedEvt_Invoke_m0946810F4DE203283827D39345B8A3AA528B4E17_OpenInst;
+			}
+		}
+		else
+		{
+			if (___0_object == NULL)
+				il2cpp_codegen_raise_exception(il2cpp_codegen_get_argument_exception(NULL, "Delegate to an instance method cannot have null 'this'."), NULL);
+			__this->___invoke_impl = __this->___method_ptr;
+			__this->___method_code = (intptr_t)__this->___m_target;
+		}
+	}
+	__this->___extra_arg = (intptr_t)&DoorUnlockedEvt_Invoke_m0946810F4DE203283827D39345B8A3AA528B4E17_Multicast;
+}
+// Method Definition Index: 74063
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorUnlockedEvt_Invoke_m0946810F4DE203283827D39345B8A3AA528B4E17 (DoorUnlockedEvt_t1E6D58AC4C10BE4C2135F3580DBAEE0D87024854* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method) 
+{
+	typedef void (*FunctionPointerType) (RuntimeObject*, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC*, const RuntimeMethod*);
+	((FunctionPointerType)__this->___invoke_impl)((Il2CppObject*)__this->___method_code, ___0_door, reinterpret_cast<RuntimeMethod*>(__this->___method));
+}
+// Method Definition Index: 74064
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* DoorUnlockedEvt_BeginInvoke_mFD27B1392CFF0B07F1E0D4DA240CDB40501762A9 (DoorUnlockedEvt_t1E6D58AC4C10BE4C2135F3580DBAEE0D87024854* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, AsyncCallback_t7FEF460CBDCFB9C5FA2EF776984778B9A4145F4C* ___1_callback, RuntimeObject* ___2_object, const RuntimeMethod* method) 
+{
+	void *__d_args[2] = {0};
+	__d_args[0] = ___0_door;
+	return (RuntimeObject*)il2cpp_codegen_delegate_begin_invoke((RuntimeDelegate*)__this, __d_args, (RuntimeDelegate*)___1_callback, (RuntimeObject*)___2_object);
+}
+// Method Definition Index: 74065
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorUnlockedEvt_EndInvoke_m5B5EA722C35AE246EAD987CE2628E6D32F521233 (DoorUnlockedEvt_t1E6D58AC4C10BE4C2135F3580DBAEE0D87024854* __this, RuntimeObject* ___0_result, const RuntimeMethod* method) 
+{
+	il2cpp_codegen_delegate_end_invoke((Il2CppAsyncResult*) ___0_result, 0);
+}
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#pragma clang diagnostic ignored "-Wunused-variable"
+#endif
+// Method Definition Index: 74066
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void U3CCloseU3Ed__127__ctor_m77782AC05F4445B5BA758504B3A85CE4DA937B4F (U3CCloseU3Ed__127_tE6E46BD2B6269348B940DAB4E07CCD62BC6053BC* __this, int32_t ___0_U3CU3E1__state, const RuntimeMethod* method) 
+{
+	{
+		Object__ctor_mE837C6B9FA8C6D5D109F4B2EC885D79919AC0EA2(__this, NULL);
+		int32_t L_0 = ___0_U3CU3E1__state;
+		__this->___U3CU3E1__state = L_0;
+		return;
+	}
+}
+// Method Definition Index: 74067
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void U3CCloseU3Ed__127_System_IDisposable_Dispose_mA1FFD7EC55389A0007E93C92F93AC8580E8E1494 (U3CCloseU3Ed__127_tE6E46BD2B6269348B940DAB4E07CCD62BC6053BC* __this, const RuntimeMethod* method) 
+{
+	{
+		return;
+	}
+}
+// Method Definition Index: 74068
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR bool U3CCloseU3Ed__127_MoveNext_m05140DB7D98C7C97CFA31395849C040BAE6046FF (U3CCloseU3Ed__127_tE6E46BD2B6269348B940DAB4E07CCD62BC6053BC* __this, const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_il2cpp_TypeInfo_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&WaitForSeconds_tF179DF251655B8DF044952E70A60DF4B358A3DD3_il2cpp_TypeInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	int32_t V_0 = 0;
+	OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* V_1 = NULL;
+	DoorWillCloseEvt_tCF052CFCAD1F6F42971A6A7F50DB3F69766740B3* G_B9_0 = NULL;
+	DoorWillCloseEvt_tCF052CFCAD1F6F42971A6A7F50DB3F69766740B3* G_B8_0 = NULL;
+	AudioSource_t871AC2272F896738252F04EE949AEF5B241D3299* G_B13_0 = NULL;
+	AudioSource_t871AC2272F896738252F04EE949AEF5B241D3299* G_B12_0 = NULL;
+	AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20* G_B14_0 = NULL;
+	AudioSource_t871AC2272F896738252F04EE949AEF5B241D3299* G_B14_1 = NULL;
+	OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* G_B26_0 = NULL;
+	OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* G_B25_0 = NULL;
+	float G_B27_0 = 0.0f;
+	OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* G_B27_1 = NULL;
+	OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* G_B29_0 = NULL;
+	OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* G_B28_0 = NULL;
+	float G_B30_0 = 0.0f;
+	OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* G_B30_1 = NULL;
+	OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* G_B32_0 = NULL;
+	OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* G_B31_0 = NULL;
+	float G_B33_0 = 0.0f;
+	OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* G_B33_1 = NULL;
+	{
+		int32_t L_0 = __this->___U3CU3E1__state;
+		V_0 = L_0;
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_1 = __this->___U3CU3E4__this;
+		V_1 = L_1;
+		int32_t L_2 = V_0;
+		if (!L_2)
+		{
+			goto IL_0017;
+		}
+	}
+	{
+		int32_t L_3 = V_0;
+		if ((((int32_t)L_3) == ((int32_t)1)))
+		{
+			goto IL_0078;
+		}
+	}
+	{
+		return (bool)0;
+	}
+
+IL_0017:
+	{
+		__this->___U3CU3E1__state = (-1);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:600>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_4 = V_1;
+		NullCheck(L_4);
+		Coroutine_t85EA685566A254C23F3FD77AB5BDFFFF8799596B* L_5 = L_4->___closeAfterRoutine;
+		if (!L_5)
+		{
+			goto IL_0039;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:602>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_6 = V_1;
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_7 = V_1;
+		NullCheck(L_7);
+		Coroutine_t85EA685566A254C23F3FD77AB5BDFFFF8799596B* L_8 = L_7->___closeAfterRoutine;
+		NullCheck(L_6);
+		MonoBehaviour_StopCoroutine_mB0FC91BE84203BD8E360B3FBAE5B958B4C5ED22A(L_6, L_8, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:603>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_9 = V_1;
+		NullCheck(L_9);
+		L_9->___closeAfterRoutine = (Coroutine_t85EA685566A254C23F3FD77AB5BDFFFF8799596B*)NULL;
+		Il2CppCodeGenWriteBarrier((void**)(&L_9->___closeAfterRoutine), (void*)(Coroutine_t85EA685566A254C23F3FD77AB5BDFFFF8799596B*)NULL);
+	}
+
+IL_0039:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:606>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_10 = V_1;
+		NullCheck(L_10);
+		bool L_11 = L_10->___openDelayComplete;
+		if (!L_11)
+		{
+			goto IL_026e;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:608>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_12 = V_1;
+		NullCheck(L_12);
+		bool L_13 = L_12->___isMoving;
+		__this->___U3CwasMovingU3E5__2 = L_13;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:609>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_14 = V_1;
+		NullCheck(L_14);
+		L_14->___isMoving = (bool)0;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:610>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_15 = V_1;
+		NullCheck(L_15);
+		L_15->___closeDelayComplete = (bool)0;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:611>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_16 = V_1;
+		NullCheck(L_16);
+		float L_17 = L_16->___closeDelay;
+		WaitForSeconds_tF179DF251655B8DF044952E70A60DF4B358A3DD3* L_18 = (WaitForSeconds_tF179DF251655B8DF044952E70A60DF4B358A3DD3*)il2cpp_codegen_object_new(WaitForSeconds_tF179DF251655B8DF044952E70A60DF4B358A3DD3_il2cpp_TypeInfo_var);
+		WaitForSeconds__ctor_m579F95BADEDBAB4B3A7E302C6EE3995926EF2EFC(L_18, L_17, NULL);
+		__this->___U3CU3E2__current = L_18;
+		Il2CppCodeGenWriteBarrier((void**)(&__this->___U3CU3E2__current), (void*)L_18);
+		__this->___U3CU3E1__state = 1;
+		return (bool)1;
+	}
+
+IL_0078:
+	{
+		__this->___U3CU3E1__state = (-1);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:612>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_19 = V_1;
+		NullCheck(L_19);
+		L_19->___closeDelayComplete = (bool)1;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:613>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_20 = V_1;
+		bool L_21 = __this->___U3CwasMovingU3E5__2;
+		NullCheck(L_20);
+		L_20->___isMoving = L_21;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:614>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_22 = V_1;
+		NullCheck(L_22);
+		DoorWillCloseEvt_tCF052CFCAD1F6F42971A6A7F50DB3F69766740B3* L_23 = L_22->___DoorWillClose;
+		DoorWillCloseEvt_tCF052CFCAD1F6F42971A6A7F50DB3F69766740B3* L_24 = L_23;
+		if (L_24)
+		{
+			G_B9_0 = L_24;
+			goto IL_009e;
+		}
+		G_B8_0 = L_24;
+	}
+	{
+		goto IL_00a4;
+	}
+
+IL_009e:
+	{
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_25 = V_1;
+		NullCheck(G_B9_0);
+		DoorWillCloseEvt_Invoke_m53BFA21E364CD48B295BC3ECAD5D32FAC66FCF4D_inline(G_B9_0, L_25, NULL);
+	}
+
+IL_00a4:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:616>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_26 = V_1;
+		NullCheck(L_26);
+		bool L_27 = L_26->___playAudio;
+		if (!L_27)
+		{
+			goto IL_00de;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:618>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_28 = V_1;
+		NullCheck(L_28);
+		AudioSource_t871AC2272F896738252F04EE949AEF5B241D3299* L_29 = L_28->___aSrc;
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_30 = V_1;
+		NullCheck(L_30);
+		AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20* L_31 = L_30->___closeOvrSound;
+		il2cpp_codegen_runtime_class_init_inline(Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_il2cpp_TypeInfo_var);
+		bool L_32;
+		L_32 = Object_op_Equality_mB6120F782D83091EF56A198FCEBCF066DB4A9605(L_31, (Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C*)NULL, NULL);
+		if (L_32)
+		{
+			G_B13_0 = L_29;
+			goto IL_00c8;
+		}
+		G_B12_0 = L_29;
+	}
+	{
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_33 = V_1;
+		NullCheck(L_33);
+		AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20* L_34 = L_33->___closeOvrSound;
+		G_B14_0 = L_34;
+		G_B14_1 = G_B12_0;
+		goto IL_00ce;
+	}
+
+IL_00c8:
+	{
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_35 = V_1;
+		NullCheck(L_35);
+		AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20* L_36 = L_35->___closeClip;
+		G_B14_0 = L_36;
+		G_B14_1 = G_B13_0;
+	}
+
+IL_00ce:
+	{
+		NullCheck(G_B14_1);
+		AudioSource_set_clip_mFF441895E274286C88D9C75ED5CA1B1B39528D70(G_B14_1, G_B14_0, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:619>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_37 = V_1;
+		NullCheck(L_37);
+		AudioSource_t871AC2272F896738252F04EE949AEF5B241D3299* L_38 = L_37->___aSrc;
+		NullCheck(L_38);
+		AudioSource_Play_m95DF07111C61D0E0F00257A00384D31531D590C3(L_38, NULL);
+	}
+
+IL_00de:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:623>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_39 = V_1;
+		NullCheck(L_39);
+		int32_t L_40 = L_39->___motionKind;
+		if (!L_40)
+		{
+			goto IL_026e;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:625>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_41 = V_1;
+		NullCheck(L_41);
+		int32_t L_42 = L_41->___motionKind;
+		if ((!(((uint32_t)L_42) == ((uint32_t)3))))
+		{
+			goto IL_012b;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:627>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_43 = V_1;
+		NullCheck(L_43);
+		bool L_44 = L_43->___isMoving;
+		if (!L_44)
+		{
+			goto IL_0116;
+		}
+	}
+	{
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_45 = V_1;
+		NullCheck(L_45);
+		bool L_46 = L_45->___motionOpen;
+		if (!L_46)
+		{
+			goto IL_0116;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:628>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_47 = V_1;
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_48 = V_1;
+		NullCheck(L_48);
+		float L_49 = L_48->___rollUpPosition;
+		NullCheck(L_47);
+		L_47->___rollUpPosition = ((float)il2cpp_codegen_subtract((1.0f), L_49));
+		goto IL_0137;
+	}
+
+IL_0116:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:629>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_50 = V_1;
+		NullCheck(L_50);
+		bool L_51 = L_50->___isMoving;
+		if (L_51)
+		{
+			goto IL_0137;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:630>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_52 = V_1;
+		NullCheck(L_52);
+		L_52->___rollUpPosition = (0.0f);
+		goto IL_0137;
+	}
+
+IL_012b:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:633>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_53 = V_1;
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_54 = V_1;
+		NullCheck(L_54);
+		float L_55 = L_54->___percentComplete;
+		NullCheck(L_53);
+		L_53->___motionStartPct = L_55;
+	}
+
+IL_0137:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:635>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_56 = V_1;
+		NullCheck(L_56);
+		int32_t L_57 = L_56->___motionKind;
+		if ((!(((uint32_t)L_57) == ((uint32_t)1))))
+		{
+			goto IL_020e;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:637>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_58 = V_1;
+		NullCheck(L_58);
+		L_58->___targetAngleX = (0.0f);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:638>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_59 = V_1;
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_60 = V_1;
+		NullCheck(L_60);
+		bool L_61 = L_60->___openFwd;
+		if (L_61)
+		{
+			G_B26_0 = L_59;
+			goto IL_015e;
+		}
+		G_B25_0 = L_59;
+	}
+	{
+		G_B27_0 = (-360.0f);
+		G_B27_1 = G_B25_0;
+		goto IL_0163;
+	}
+
+IL_015e:
+	{
+		G_B27_0 = (360.0f);
+		G_B27_1 = G_B26_0;
+	}
+
+IL_0163:
+	{
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_62 = V_1;
+		NullCheck(L_62);
+		float L_63 = L_62->___swingAmountX;
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_64 = V_1;
+		NullCheck(L_64);
+		float L_65 = L_64->___targetAngleX;
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_66 = V_1;
+		NullCheck(L_66);
+		float L_67 = L_66->___percentComplete;
+		float L_68;
+		L_68 = Mathf_Lerp_m47EF2FFB7647BD0A1FDC26DC03E28B19812139B5_inline(((float)il2cpp_codegen_multiply(G_B27_0, L_63)), L_65, ((float)il2cpp_codegen_subtract((1.0f), L_67)), NULL);
+		NullCheck(G_B27_1);
+		G_B27_1->___swingStartAngleX = L_68;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:639>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_69 = V_1;
+		NullCheck(L_69);
+		L_69->___targetAngleY = (0.0f);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:640>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_70 = V_1;
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_71 = V_1;
+		NullCheck(L_71);
+		bool L_72 = L_71->___openFwd;
+		if (L_72)
+		{
+			G_B29_0 = L_70;
+			goto IL_01a1;
+		}
+		G_B28_0 = L_70;
+	}
+	{
+		G_B30_0 = (-360.0f);
+		G_B30_1 = G_B28_0;
+		goto IL_01a6;
+	}
+
+IL_01a1:
+	{
+		G_B30_0 = (360.0f);
+		G_B30_1 = G_B29_0;
+	}
+
+IL_01a6:
+	{
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_73 = V_1;
+		NullCheck(L_73);
+		float L_74 = L_73->___swingAmountY;
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_75 = V_1;
+		NullCheck(L_75);
+		float L_76 = L_75->___targetAngleY;
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_77 = V_1;
+		NullCheck(L_77);
+		float L_78 = L_77->___percentComplete;
+		float L_79;
+		L_79 = Mathf_Lerp_m47EF2FFB7647BD0A1FDC26DC03E28B19812139B5_inline(((float)il2cpp_codegen_multiply(G_B30_0, L_74)), L_76, ((float)il2cpp_codegen_subtract((1.0f), L_78)), NULL);
+		NullCheck(G_B30_1);
+		G_B30_1->___swingStartAngleY = L_79;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:641>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_80 = V_1;
+		NullCheck(L_80);
+		L_80->___targetAngleZ = (0.0f);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:642>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_81 = V_1;
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_82 = V_1;
+		NullCheck(L_82);
+		bool L_83 = L_82->___openFwd;
+		if (L_83)
+		{
+			G_B32_0 = L_81;
+			goto IL_01e4;
+		}
+		G_B31_0 = L_81;
+	}
+	{
+		G_B33_0 = (-360.0f);
+		G_B33_1 = G_B31_0;
+		goto IL_01e9;
+	}
+
+IL_01e4:
+	{
+		G_B33_0 = (360.0f);
+		G_B33_1 = G_B32_0;
+	}
+
+IL_01e9:
+	{
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_84 = V_1;
+		NullCheck(L_84);
+		float L_85 = L_84->___swingAmountZ;
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_86 = V_1;
+		NullCheck(L_86);
+		float L_87 = L_86->___targetAngleZ;
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_88 = V_1;
+		NullCheck(L_88);
+		float L_89 = L_88->___percentComplete;
+		float L_90;
+		L_90 = Mathf_Lerp_m47EF2FFB7647BD0A1FDC26DC03E28B19812139B5_inline(((float)il2cpp_codegen_multiply(G_B33_0, L_85)), L_87, ((float)il2cpp_codegen_subtract((1.0f), L_89)), NULL);
+		NullCheck(G_B33_1);
+		G_B33_1->___swingStartAngleZ = L_90;
+		goto IL_0255;
+	}
+
+IL_020e:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:644>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_91 = V_1;
+		NullCheck(L_91);
+		int32_t L_92 = L_91->___motionKind;
+		if ((!(((uint32_t)L_92) == ((uint32_t)2))))
+		{
+			goto IL_0255;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:646>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_93 = V_1;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_94;
+		L_94 = Vector3_get_zero_m0C1249C3F25B1C70EAD3CC8B31259975A457AE39_inline(NULL);
+		NullCheck(L_93);
+		L_93->___targetPos = L_94;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:647>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_95 = V_1;
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_96 = V_1;
+		NullCheck(L_96);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_97 = (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2*)(&L_96->___slideDirection);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_98;
+		L_98 = Vector3_get_normalized_m736BBF65D5CDA7A18414370D15B4DFCC1E466F07_inline(L_97, NULL);
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_99 = V_1;
+		NullCheck(L_99);
+		float L_100 = L_99->___setTravelDistance;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_101;
+		L_101 = Vector3_op_Multiply_m87BA7C578F96C8E49BB07088DAAC4649F83B0353_inline(L_98, L_100, NULL);
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_102 = V_1;
+		NullCheck(L_102);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_103 = L_102->___targetPos;
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_104 = V_1;
+		NullCheck(L_104);
+		float L_105 = L_104->___percentComplete;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_106;
+		L_106 = Vector3_Lerp_m3A906D0530A94FAABB94F0F905E84D99BE85C3F8_inline(L_101, L_103, ((float)il2cpp_codegen_subtract((1.0f), L_105)), NULL);
+		NullCheck(L_95);
+		L_95->___slideStartPos = L_106;
+	}
+
+IL_0255:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:650>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_107 = V_1;
+		float L_108;
+		L_108 = Time_get_time_m3A271BB1B20041144AC5B7863B71AB1F0150374B(NULL);
+		NullCheck(L_107);
+		L_107->___motionStartTime = L_108;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:651>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_109 = V_1;
+		NullCheck(L_109);
+		L_109->___motionOpen = (bool)0;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:652>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_110 = V_1;
+		NullCheck(L_110);
+		L_110->___isMoving = (bool)1;
+	}
+
+IL_026e:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:655>
+		return (bool)0;
+	}
+}
+// Method Definition Index: 74069
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* U3CCloseU3Ed__127_System_Collections_Generic_IEnumeratorU3CSystem_ObjectU3E_get_Current_m52E8224D84220771CF4234C3A4CB31E8879FE2F4 (U3CCloseU3Ed__127_tE6E46BD2B6269348B940DAB4E07CCD62BC6053BC* __this, const RuntimeMethod* method) 
+{
+	{
+		RuntimeObject* L_0 = __this->___U3CU3E2__current;
+		return L_0;
+	}
+}
+// Method Definition Index: 74070
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void U3CCloseU3Ed__127_System_Collections_IEnumerator_Reset_m40067C0200B0494DA7A83FE3649A06FBAF78A92B (U3CCloseU3Ed__127_tE6E46BD2B6269348B940DAB4E07CCD62BC6053BC* __this, const RuntimeMethod* method) 
+{
+	{
+		NotSupportedException_t1429765983D409BD2986508963C98D214E4EBF4A* L_0 = (NotSupportedException_t1429765983D409BD2986508963C98D214E4EBF4A*)il2cpp_codegen_object_new(((RuntimeClass*)il2cpp_codegen_initialize_runtime_metadata_inline((uintptr_t*)&NotSupportedException_t1429765983D409BD2986508963C98D214E4EBF4A_il2cpp_TypeInfo_var)));
+		NotSupportedException__ctor_m1398D0CDE19B36AA3DE9392879738C1EA2439CDF(L_0, NULL);
+		IL2CPP_RAISE_MANAGED_EXCEPTION(L_0, ((RuntimeMethod*)il2cpp_codegen_initialize_runtime_metadata_inline((uintptr_t*)&U3CCloseU3Ed__127_System_Collections_IEnumerator_Reset_m40067C0200B0494DA7A83FE3649A06FBAF78A92B_RuntimeMethod_var)));
+	}
+}
+// Method Definition Index: 74071
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* U3CCloseU3Ed__127_System_Collections_IEnumerator_get_Current_mEFF92E4C4BAE691FCBB263BC292EDD4FBEC0367B (U3CCloseU3Ed__127_tE6E46BD2B6269348B940DAB4E07CCD62BC6053BC* __this, const RuntimeMethod* method) 
+{
+	{
+		RuntimeObject* L_0 = __this->___U3CU3E2__current;
+		return L_0;
+	}
+}
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#pragma clang diagnostic ignored "-Wunused-variable"
+#endif
+// Method Definition Index: 74072
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void U3CCloseAfterU3Ed__137__ctor_m29F51D3EDB7FFB4140938C795D156C39718E0655 (U3CCloseAfterU3Ed__137_t584913F7212C26F25FC8D9229420A68194CB6B51* __this, int32_t ___0_U3CU3E1__state, const RuntimeMethod* method) 
+{
+	{
+		Object__ctor_mE837C6B9FA8C6D5D109F4B2EC885D79919AC0EA2(__this, NULL);
+		int32_t L_0 = ___0_U3CU3E1__state;
+		__this->___U3CU3E1__state = L_0;
+		return;
+	}
+}
+// Method Definition Index: 74073
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void U3CCloseAfterU3Ed__137_System_IDisposable_Dispose_m21495A4B4CAFCDC7E67A10409D505F2B4B279AC4 (U3CCloseAfterU3Ed__137_t584913F7212C26F25FC8D9229420A68194CB6B51* __this, const RuntimeMethod* method) 
+{
+	{
+		return;
+	}
+}
+// Method Definition Index: 74074
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR bool U3CCloseAfterU3Ed__137_MoveNext_m1C6C32EB3818678B251B33EF16B2BEEC5087E86B (U3CCloseAfterU3Ed__137_t584913F7212C26F25FC8D9229420A68194CB6B51* __this, const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&WaitForSeconds_tF179DF251655B8DF044952E70A60DF4B358A3DD3_il2cpp_TypeInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	int32_t V_0 = 0;
+	OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* V_1 = NULL;
+	{
+		int32_t L_0 = __this->___U3CU3E1__state;
+		V_0 = L_0;
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_1 = __this->___U3CU3E4__this;
+		V_1 = L_1;
+		int32_t L_2 = V_0;
+		if (!L_2)
+		{
+			goto IL_0017;
+		}
+	}
+	{
+		int32_t L_3 = V_0;
+		if ((((int32_t)L_3) == ((int32_t)1)))
+		{
+			goto IL_0038;
+		}
+	}
+	{
+		return (bool)0;
+	}
+
+IL_0017:
+	{
+		__this->___U3CU3E1__state = (-1);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:907>
+		float L_4 = __this->___fSec;
+		WaitForSeconds_tF179DF251655B8DF044952E70A60DF4B358A3DD3* L_5 = (WaitForSeconds_tF179DF251655B8DF044952E70A60DF4B358A3DD3*)il2cpp_codegen_object_new(WaitForSeconds_tF179DF251655B8DF044952E70A60DF4B358A3DD3_il2cpp_TypeInfo_var);
+		WaitForSeconds__ctor_m579F95BADEDBAB4B3A7E302C6EE3995926EF2EFC(L_5, L_4, NULL);
+		__this->___U3CU3E2__current = L_5;
+		Il2CppCodeGenWriteBarrier((void**)(&__this->___U3CU3E2__current), (void*)L_5);
+		__this->___U3CU3E1__state = 1;
+		return (bool)1;
+	}
+
+IL_0038:
+	{
+		__this->___U3CU3E1__state = (-1);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:908>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_6 = V_1;
+		NullCheck(L_6);
+		OmniDoor3D_CloseLinkedDoors_mED6AD9FCD60C5242DA62085DCA76BB384409AED1(L_6, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:910>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_7 = V_1;
+		NullCheck(L_7);
+		bool L_8 = L_7->___isOpen;
+		if (!L_8)
+		{
+			goto IL_005b;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:912>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_9 = V_1;
+		NullCheck(L_9);
+		L_9->___isOpen = (bool)0;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:913>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_10 = V_1;
+		NullCheck(L_10);
+		OmniDoor3D_set_needClose_mBDACD3FCE99D25E9508221B8EDC1A77593E44020_inline(L_10, (bool)1, NULL);
+	}
+
+IL_005b:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:915>
+		return (bool)0;
+	}
+}
+// Method Definition Index: 74075
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* U3CCloseAfterU3Ed__137_System_Collections_Generic_IEnumeratorU3CSystem_ObjectU3E_get_Current_m80146C28984D4ACB09F4D2904D9C894528641DE8 (U3CCloseAfterU3Ed__137_t584913F7212C26F25FC8D9229420A68194CB6B51* __this, const RuntimeMethod* method) 
+{
+	{
+		RuntimeObject* L_0 = __this->___U3CU3E2__current;
+		return L_0;
+	}
+}
+// Method Definition Index: 74076
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void U3CCloseAfterU3Ed__137_System_Collections_IEnumerator_Reset_m19E726A66915EA506F2EF61B55687365BF282BF4 (U3CCloseAfterU3Ed__137_t584913F7212C26F25FC8D9229420A68194CB6B51* __this, const RuntimeMethod* method) 
+{
+	{
+		NotSupportedException_t1429765983D409BD2986508963C98D214E4EBF4A* L_0 = (NotSupportedException_t1429765983D409BD2986508963C98D214E4EBF4A*)il2cpp_codegen_object_new(((RuntimeClass*)il2cpp_codegen_initialize_runtime_metadata_inline((uintptr_t*)&NotSupportedException_t1429765983D409BD2986508963C98D214E4EBF4A_il2cpp_TypeInfo_var)));
+		NotSupportedException__ctor_m1398D0CDE19B36AA3DE9392879738C1EA2439CDF(L_0, NULL);
+		IL2CPP_RAISE_MANAGED_EXCEPTION(L_0, ((RuntimeMethod*)il2cpp_codegen_initialize_runtime_metadata_inline((uintptr_t*)&U3CCloseAfterU3Ed__137_System_Collections_IEnumerator_Reset_m19E726A66915EA506F2EF61B55687365BF282BF4_RuntimeMethod_var)));
+	}
+}
+// Method Definition Index: 74077
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* U3CCloseAfterU3Ed__137_System_Collections_IEnumerator_get_Current_m56DE0FCEC9D2F5D130F294B63AEE57F244D71AE5 (U3CCloseAfterU3Ed__137_t584913F7212C26F25FC8D9229420A68194CB6B51* __this, const RuntimeMethod* method) 
+{
+	{
+		RuntimeObject* L_0 = __this->___U3CU3E2__current;
+		return L_0;
+	}
+}
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#pragma clang diagnostic ignored "-Wunused-variable"
+#endif
+// Method Definition Index: 74078
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void U3COpenU3Ed__126__ctor_mD82276CE05291B1D8086F73DA5D162D2F9B56F42 (U3COpenU3Ed__126_t07F27A92AAC04A17C76494E8AEE7086DAEAD36F3* __this, int32_t ___0_U3CU3E1__state, const RuntimeMethod* method) 
+{
+	{
+		Object__ctor_mE837C6B9FA8C6D5D109F4B2EC885D79919AC0EA2(__this, NULL);
+		int32_t L_0 = ___0_U3CU3E1__state;
+		__this->___U3CU3E1__state = L_0;
+		return;
+	}
+}
+// Method Definition Index: 74079
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void U3COpenU3Ed__126_System_IDisposable_Dispose_mACC2EC3453150281A88A281BC91443BA18BE4949 (U3COpenU3Ed__126_t07F27A92AAC04A17C76494E8AEE7086DAEAD36F3* __this, const RuntimeMethod* method) 
+{
+	{
+		return;
+	}
+}
+// Method Definition Index: 74080
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR bool U3COpenU3Ed__126_MoveNext_m34AB2CFB9FC3245BD4D8DD56EB78276C69A4C357 (U3COpenU3Ed__126_t07F27A92AAC04A17C76494E8AEE7086DAEAD36F3* __this, const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_il2cpp_TypeInfo_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&WaitForSeconds_tF179DF251655B8DF044952E70A60DF4B358A3DD3_il2cpp_TypeInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	int32_t V_0 = 0;
+	OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* V_1 = NULL;
+	DoorWillOpenEvt_t3A953E675BDD6E13F554E0BDDD07F831A039BE22* G_B7_0 = NULL;
+	DoorWillOpenEvt_t3A953E675BDD6E13F554E0BDDD07F831A039BE22* G_B6_0 = NULL;
+	AudioSource_t871AC2272F896738252F04EE949AEF5B241D3299* G_B11_0 = NULL;
+	AudioSource_t871AC2272F896738252F04EE949AEF5B241D3299* G_B10_0 = NULL;
+	AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20* G_B12_0 = NULL;
+	AudioSource_t871AC2272F896738252F04EE949AEF5B241D3299* G_B12_1 = NULL;
+	OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* G_B24_0 = NULL;
+	OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* G_B23_0 = NULL;
+	float G_B25_0 = 0.0f;
+	OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* G_B25_1 = NULL;
+	OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* G_B27_0 = NULL;
+	OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* G_B26_0 = NULL;
+	float G_B28_0 = 0.0f;
+	OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* G_B28_1 = NULL;
+	OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* G_B30_0 = NULL;
+	OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* G_B29_0 = NULL;
+	float G_B31_0 = 0.0f;
+	OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* G_B31_1 = NULL;
+	{
+		int32_t L_0 = __this->___U3CU3E1__state;
+		V_0 = L_0;
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_1 = __this->___U3CU3E4__this;
+		V_1 = L_1;
+		int32_t L_2 = V_0;
+		if (!L_2)
+		{
+			goto IL_0017;
+		}
+	}
+	{
+		int32_t L_3 = V_0;
+		if ((((int32_t)L_3) == ((int32_t)1)))
+		{
+			goto IL_005d;
+		}
+	}
+	{
+		return (bool)0;
+	}
+
+IL_0017:
+	{
+		__this->___U3CU3E1__state = (-1);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:543>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_4 = V_1;
+		NullCheck(L_4);
+		bool L_5 = L_4->___closeDelayComplete;
+		if (!L_5)
+		{
+			goto IL_0272;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:545>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_6 = V_1;
+		NullCheck(L_6);
+		bool L_7 = L_6->___isMoving;
+		__this->___U3CwasMovingU3E5__2 = L_7;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:546>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_8 = V_1;
+		NullCheck(L_8);
+		L_8->___isMoving = (bool)0;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:547>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_9 = V_1;
+		NullCheck(L_9);
+		L_9->___openDelayComplete = (bool)0;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:548>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_10 = V_1;
+		NullCheck(L_10);
+		float L_11 = L_10->___openDelay;
+		WaitForSeconds_tF179DF251655B8DF044952E70A60DF4B358A3DD3* L_12 = (WaitForSeconds_tF179DF251655B8DF044952E70A60DF4B358A3DD3*)il2cpp_codegen_object_new(WaitForSeconds_tF179DF251655B8DF044952E70A60DF4B358A3DD3_il2cpp_TypeInfo_var);
+		WaitForSeconds__ctor_m579F95BADEDBAB4B3A7E302C6EE3995926EF2EFC(L_12, L_11, NULL);
+		__this->___U3CU3E2__current = L_12;
+		Il2CppCodeGenWriteBarrier((void**)(&__this->___U3CU3E2__current), (void*)L_12);
+		__this->___U3CU3E1__state = 1;
+		return (bool)1;
+	}
+
+IL_005d:
+	{
+		__this->___U3CU3E1__state = (-1);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:549>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_13 = V_1;
+		NullCheck(L_13);
+		L_13->___openDelayComplete = (bool)1;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:550>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_14 = V_1;
+		bool L_15 = __this->___U3CwasMovingU3E5__2;
+		NullCheck(L_14);
+		L_14->___isMoving = L_15;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:551>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_16 = V_1;
+		NullCheck(L_16);
+		DoorWillOpenEvt_t3A953E675BDD6E13F554E0BDDD07F831A039BE22* L_17 = L_16->___DoorWillOpen;
+		DoorWillOpenEvt_t3A953E675BDD6E13F554E0BDDD07F831A039BE22* L_18 = L_17;
+		if (L_18)
+		{
+			G_B7_0 = L_18;
+			goto IL_0083;
+		}
+		G_B6_0 = L_18;
+	}
+	{
+		goto IL_0089;
+	}
+
+IL_0083:
+	{
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_19 = V_1;
+		NullCheck(G_B7_0);
+		DoorWillOpenEvt_Invoke_mD170B0E6804066068C1825C3E35BBB31D6472AE5_inline(G_B7_0, L_19, NULL);
+	}
+
+IL_0089:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:553>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_20 = V_1;
+		NullCheck(L_20);
+		bool L_21 = L_20->___playAudio;
+		if (!L_21)
+		{
+			goto IL_00c3;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:555>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_22 = V_1;
+		NullCheck(L_22);
+		AudioSource_t871AC2272F896738252F04EE949AEF5B241D3299* L_23 = L_22->___aSrc;
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_24 = V_1;
+		NullCheck(L_24);
+		AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20* L_25 = L_24->___openOvrSound;
+		il2cpp_codegen_runtime_class_init_inline(Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_il2cpp_TypeInfo_var);
+		bool L_26;
+		L_26 = Object_op_Equality_mB6120F782D83091EF56A198FCEBCF066DB4A9605(L_25, (Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C*)NULL, NULL);
+		if (L_26)
+		{
+			G_B11_0 = L_23;
+			goto IL_00ad;
+		}
+		G_B10_0 = L_23;
+	}
+	{
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_27 = V_1;
+		NullCheck(L_27);
+		AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20* L_28 = L_27->___openOvrSound;
+		G_B12_0 = L_28;
+		G_B12_1 = G_B10_0;
+		goto IL_00b3;
+	}
+
+IL_00ad:
+	{
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_29 = V_1;
+		NullCheck(L_29);
+		AudioClip_t5D272C4EB4F2D3ED49F1C346DEA373CF6D585F20* L_30 = L_29->___openClip;
+		G_B12_0 = L_30;
+		G_B12_1 = G_B11_0;
+	}
+
+IL_00b3:
+	{
+		NullCheck(G_B12_1);
+		AudioSource_set_clip_mFF441895E274286C88D9C75ED5CA1B1B39528D70(G_B12_1, G_B12_0, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:556>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_31 = V_1;
+		NullCheck(L_31);
+		AudioSource_t871AC2272F896738252F04EE949AEF5B241D3299* L_32 = L_31->___aSrc;
+		NullCheck(L_32);
+		AudioSource_Play_m95DF07111C61D0E0F00257A00384D31531D590C3(L_32, NULL);
+	}
+
+IL_00c3:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:560>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_33 = V_1;
+		NullCheck(L_33);
+		int32_t L_34 = L_33->___motionKind;
+		if (!L_34)
+		{
+			goto IL_0272;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:562>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_35 = V_1;
+		NullCheck(L_35);
+		int32_t L_36 = L_35->___motionKind;
+		if ((!(((uint32_t)L_36) == ((uint32_t)3))))
+		{
+			goto IL_0110;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:564>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_37 = V_1;
+		NullCheck(L_37);
+		bool L_38 = L_37->___isMoving;
+		if (!L_38)
+		{
+			goto IL_00fb;
+		}
+	}
+	{
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_39 = V_1;
+		NullCheck(L_39);
+		bool L_40 = L_39->___motionOpen;
+		if (L_40)
+		{
+			goto IL_00fb;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:565>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_41 = V_1;
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_42 = V_1;
+		NullCheck(L_42);
+		float L_43 = L_42->___rollUpPosition;
+		NullCheck(L_41);
+		L_41->___rollUpPosition = ((float)il2cpp_codegen_subtract((1.0f), L_43));
+		goto IL_011c;
+	}
+
+IL_00fb:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:566>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_44 = V_1;
+		NullCheck(L_44);
+		bool L_45 = L_44->___isMoving;
+		if (L_45)
+		{
+			goto IL_011c;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:567>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_46 = V_1;
+		NullCheck(L_46);
+		L_46->___rollUpPosition = (0.0f);
+		goto IL_011c;
+	}
+
+IL_0110:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:570>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_47 = V_1;
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_48 = V_1;
+		NullCheck(L_48);
+		float L_49 = L_48->___percentComplete;
+		NullCheck(L_47);
+		L_47->___motionStartPct = L_49;
+	}
+
+IL_011c:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:572>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_50 = V_1;
+		NullCheck(L_50);
+		int32_t L_51 = L_50->___motionKind;
+		if ((!(((uint32_t)L_51) == ((uint32_t)1))))
+		{
+			goto IL_01f3;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:574>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_52 = V_1;
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_53 = V_1;
+		NullCheck(L_53);
+		bool L_54 = L_53->___openFwd;
+		if (L_54)
+		{
+			G_B24_0 = L_52;
+			goto IL_0138;
+		}
+		G_B23_0 = L_52;
+	}
+	{
+		G_B25_0 = (-360.0f);
+		G_B25_1 = G_B23_0;
+		goto IL_013d;
+	}
+
+IL_0138:
+	{
+		G_B25_0 = (360.0f);
+		G_B25_1 = G_B24_0;
+	}
+
+IL_013d:
+	{
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_55 = V_1;
+		NullCheck(L_55);
+		float L_56 = L_55->___swingAmountX;
+		NullCheck(G_B25_1);
+		G_B25_1->___targetAngleX = ((float)il2cpp_codegen_multiply(G_B25_0, L_56));
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:575>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_57 = V_1;
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_58 = V_1;
+		NullCheck(L_58);
+		float L_59 = L_58->___targetAngleX;
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_60 = V_1;
+		NullCheck(L_60);
+		float L_61 = L_60->___percentComplete;
+		float L_62;
+		L_62 = Mathf_Lerp_m47EF2FFB7647BD0A1FDC26DC03E28B19812139B5_inline((0.0f), L_59, ((float)il2cpp_codegen_subtract((1.0f), L_61)), NULL);
+		NullCheck(L_57);
+		L_57->___swingStartAngleX = L_62;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:576>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_63 = V_1;
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_64 = V_1;
+		NullCheck(L_64);
+		bool L_65 = L_64->___openFwd;
+		if (L_65)
+		{
+			G_B27_0 = L_63;
+			goto IL_017b;
+		}
+		G_B26_0 = L_63;
+	}
+	{
+		G_B28_0 = (-360.0f);
+		G_B28_1 = G_B26_0;
+		goto IL_0180;
+	}
+
+IL_017b:
+	{
+		G_B28_0 = (360.0f);
+		G_B28_1 = G_B27_0;
+	}
+
+IL_0180:
+	{
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_66 = V_1;
+		NullCheck(L_66);
+		float L_67 = L_66->___swingAmountY;
+		NullCheck(G_B28_1);
+		G_B28_1->___targetAngleY = ((float)il2cpp_codegen_multiply(G_B28_0, L_67));
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:577>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_68 = V_1;
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_69 = V_1;
+		NullCheck(L_69);
+		float L_70 = L_69->___targetAngleY;
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_71 = V_1;
+		NullCheck(L_71);
+		float L_72 = L_71->___percentComplete;
+		float L_73;
+		L_73 = Mathf_Lerp_m47EF2FFB7647BD0A1FDC26DC03E28B19812139B5_inline((0.0f), L_70, ((float)il2cpp_codegen_subtract((1.0f), L_72)), NULL);
+		NullCheck(L_68);
+		L_68->___swingStartAngleY = L_73;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:578>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_74 = V_1;
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_75 = V_1;
+		NullCheck(L_75);
+		bool L_76 = L_75->___openFwd;
+		if (L_76)
+		{
+			G_B30_0 = L_74;
+			goto IL_01be;
+		}
+		G_B29_0 = L_74;
+	}
+	{
+		G_B31_0 = (-360.0f);
+		G_B31_1 = G_B29_0;
+		goto IL_01c3;
+	}
+
+IL_01be:
+	{
+		G_B31_0 = (360.0f);
+		G_B31_1 = G_B30_0;
+	}
+
+IL_01c3:
+	{
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_77 = V_1;
+		NullCheck(L_77);
+		float L_78 = L_77->___swingAmountZ;
+		NullCheck(G_B31_1);
+		G_B31_1->___targetAngleZ = ((float)il2cpp_codegen_multiply(G_B31_0, L_78));
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:579>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_79 = V_1;
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_80 = V_1;
+		NullCheck(L_80);
+		float L_81 = L_80->___targetAngleZ;
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_82 = V_1;
+		NullCheck(L_82);
+		float L_83 = L_82->___percentComplete;
+		float L_84;
+		L_84 = Mathf_Lerp_m47EF2FFB7647BD0A1FDC26DC03E28B19812139B5_inline((0.0f), L_81, ((float)il2cpp_codegen_subtract((1.0f), L_83)), NULL);
+		NullCheck(L_79);
+		L_79->___swingStartAngleZ = L_84;
+		goto IL_0259;
+	}
+
+IL_01f3:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:581>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_85 = V_1;
+		NullCheck(L_85);
+		int32_t L_86 = L_85->___motionKind;
+		if ((!(((uint32_t)L_86) == ((uint32_t)2))))
+		{
+			goto IL_0259;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:583>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_87 = V_1;
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_88 = V_1;
+		NullCheck(L_88);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_89 = (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2*)(&L_88->___slideDirection);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_90;
+		L_90 = Vector3_get_normalized_m736BBF65D5CDA7A18414370D15B4DFCC1E466F07_inline(L_89, NULL);
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_91 = V_1;
+		NullCheck(L_91);
+		float L_92 = L_91->___setTravelDistance;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_93;
+		L_93 = Vector3_op_Multiply_m87BA7C578F96C8E49BB07088DAAC4649F83B0353_inline(L_90, L_92, NULL);
+		NullCheck(L_87);
+		L_87->___targetPos = L_93;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:584>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_94 = V_1;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_95;
+		L_95 = Vector3_get_zero_m0C1249C3F25B1C70EAD3CC8B31259975A457AE39_inline(NULL);
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_96 = V_1;
+		NullCheck(L_96);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_97 = L_96->___targetPos;
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_98 = V_1;
+		NullCheck(L_98);
+		float L_99 = L_98->___percentComplete;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_100;
+		L_100 = Vector3_Lerp_m3A906D0530A94FAABB94F0F905E84D99BE85C3F8_inline(L_95, L_97, ((float)il2cpp_codegen_subtract((1.0f), L_99)), NULL);
+		NullCheck(L_94);
+		L_94->___slideStartPos = L_100;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:586>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_101 = V_1;
+		NullCheck(L_101);
+		bool L_102 = L_101->___offsetSlide;
+		if (!L_102)
+		{
+			goto IL_0259;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:587>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_103 = V_1;
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_104 = V_1;
+		NullCheck(L_104);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_105 = L_104->___offsetDirection;
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_106 = V_1;
+		NullCheck(L_106);
+		float L_107 = L_106->___setOffsetDistance;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_108;
+		L_108 = Vector3_op_Multiply_m87BA7C578F96C8E49BB07088DAAC4649F83B0353_inline(L_105, L_107, NULL);
+		NullCheck(L_103);
+		L_103->___slideOffset = L_108;
+	}
+
+IL_0259:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:590>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_109 = V_1;
+		float L_110;
+		L_110 = Time_get_time_m3A271BB1B20041144AC5B7863B71AB1F0150374B(NULL);
+		NullCheck(L_109);
+		L_109->___motionStartTime = L_110;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:591>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_111 = V_1;
+		NullCheck(L_111);
+		L_111->___motionOpen = (bool)1;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:592>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_112 = V_1;
+		NullCheck(L_112);
+		L_112->___isMoving = (bool)1;
+	}
+
+IL_0272:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:595>
+		return (bool)0;
+	}
+}
+// Method Definition Index: 74081
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* U3COpenU3Ed__126_System_Collections_Generic_IEnumeratorU3CSystem_ObjectU3E_get_Current_mC277B8AB9BA2726DC0D69AF3142E2FA95A212C86 (U3COpenU3Ed__126_t07F27A92AAC04A17C76494E8AEE7086DAEAD36F3* __this, const RuntimeMethod* method) 
+{
+	{
+		RuntimeObject* L_0 = __this->___U3CU3E2__current;
+		return L_0;
+	}
+}
+// Method Definition Index: 74082
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void U3COpenU3Ed__126_System_Collections_IEnumerator_Reset_m5EAF55F020E95431123EACD222EAF20CFDDB9447 (U3COpenU3Ed__126_t07F27A92AAC04A17C76494E8AEE7086DAEAD36F3* __this, const RuntimeMethod* method) 
+{
+	{
+		NotSupportedException_t1429765983D409BD2986508963C98D214E4EBF4A* L_0 = (NotSupportedException_t1429765983D409BD2986508963C98D214E4EBF4A*)il2cpp_codegen_object_new(((RuntimeClass*)il2cpp_codegen_initialize_runtime_metadata_inline((uintptr_t*)&NotSupportedException_t1429765983D409BD2986508963C98D214E4EBF4A_il2cpp_TypeInfo_var)));
+		NotSupportedException__ctor_m1398D0CDE19B36AA3DE9392879738C1EA2439CDF(L_0, NULL);
+		IL2CPP_RAISE_MANAGED_EXCEPTION(L_0, ((RuntimeMethod*)il2cpp_codegen_initialize_runtime_metadata_inline((uintptr_t*)&U3COpenU3Ed__126_System_Collections_IEnumerator_Reset_m5EAF55F020E95431123EACD222EAF20CFDDB9447_RuntimeMethod_var)));
+	}
+}
+// Method Definition Index: 74083
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* U3COpenU3Ed__126_System_Collections_IEnumerator_get_Current_mE7C426B19A32C666C7E5FD140F17D07A94326E39 (U3COpenU3Ed__126_t07F27A92AAC04A17C76494E8AEE7086DAEAD36F3* __this, const RuntimeMethod* method) 
+{
+	{
+		RuntimeObject* L_0 = __this->___U3CU3E2__current;
+		return L_0;
+	}
+}
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#pragma clang diagnostic ignored "-Wunused-variable"
+#endif
+IL2CPP_EXTERN_C void DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81_marshal_pinvoke(const DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81& unmarshaled, DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81_marshaled_pinvoke& marshaled)
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81_0_0_0_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81____doorMesh_FieldInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	Exception_t* ___doorMeshException = il2cpp_codegen_get_marshal_directive_exception("Cannot marshal field '%s' of type '%s': Reference type field marshaling is not supported.", DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81____doorMesh_FieldInfo_var, DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81_0_0_0_var);
+	IL2CPP_RAISE_MANAGED_EXCEPTION(___doorMeshException, NULL);
+}
+IL2CPP_EXTERN_C void DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81_marshal_pinvoke_back(const DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81_marshaled_pinvoke& marshaled, DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81& unmarshaled)
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81_0_0_0_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81____doorMesh_FieldInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	Exception_t* ___doorMeshException = il2cpp_codegen_get_marshal_directive_exception("Cannot marshal field '%s' of type '%s': Reference type field marshaling is not supported.", DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81____doorMesh_FieldInfo_var, DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81_0_0_0_var);
+	IL2CPP_RAISE_MANAGED_EXCEPTION(___doorMeshException, NULL);
+}
+IL2CPP_EXTERN_C void DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81_marshal_pinvoke_cleanup(DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81_marshaled_pinvoke& marshaled)
+{
+}
+IL2CPP_EXTERN_C void DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81_marshal_com(const DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81& unmarshaled, DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81_marshaled_com& marshaled)
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81_0_0_0_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81____doorMesh_FieldInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	Exception_t* ___doorMeshException = il2cpp_codegen_get_marshal_directive_exception("Cannot marshal field '%s' of type '%s': Reference type field marshaling is not supported.", DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81____doorMesh_FieldInfo_var, DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81_0_0_0_var);
+	IL2CPP_RAISE_MANAGED_EXCEPTION(___doorMeshException, NULL);
+}
+IL2CPP_EXTERN_C void DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81_marshal_com_back(const DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81_marshaled_com& marshaled, DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81& unmarshaled)
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81_0_0_0_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81____doorMesh_FieldInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	Exception_t* ___doorMeshException = il2cpp_codegen_get_marshal_directive_exception("Cannot marshal field '%s' of type '%s': Reference type field marshaling is not supported.", DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81____doorMesh_FieldInfo_var, DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81_0_0_0_var);
+	IL2CPP_RAISE_MANAGED_EXCEPTION(___doorMeshException, NULL);
+}
+IL2CPP_EXTERN_C void DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81_marshal_com_cleanup(DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81_marshaled_com& marshaled)
+{
+}
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#pragma clang diagnostic ignored "-Wunused-variable"
+#endif
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#pragma clang diagnostic ignored "-Wunused-variable"
+#endif
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#pragma clang diagnostic ignored "-Wunused-variable"
+#endif
+IL2CPP_EXTERN_C void HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE_marshal_pinvoke(const HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE& unmarshaled, HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE_marshaled_pinvoke& marshaled)
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE_0_0_0_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE____handlePrefab_FieldInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	Exception_t* ___handlePrefabException = il2cpp_codegen_get_marshal_directive_exception("Cannot marshal field '%s' of type '%s': Reference type field marshaling is not supported.", HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE____handlePrefab_FieldInfo_var, HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE_0_0_0_var);
+	IL2CPP_RAISE_MANAGED_EXCEPTION(___handlePrefabException, NULL);
+}
+IL2CPP_EXTERN_C void HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE_marshal_pinvoke_back(const HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE_marshaled_pinvoke& marshaled, HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE& unmarshaled)
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE_0_0_0_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE____handlePrefab_FieldInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	Exception_t* ___handlePrefabException = il2cpp_codegen_get_marshal_directive_exception("Cannot marshal field '%s' of type '%s': Reference type field marshaling is not supported.", HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE____handlePrefab_FieldInfo_var, HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE_0_0_0_var);
+	IL2CPP_RAISE_MANAGED_EXCEPTION(___handlePrefabException, NULL);
+}
+IL2CPP_EXTERN_C void HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE_marshal_pinvoke_cleanup(HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE_marshaled_pinvoke& marshaled)
+{
+}
+IL2CPP_EXTERN_C void HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE_marshal_com(const HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE& unmarshaled, HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE_marshaled_com& marshaled)
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE_0_0_0_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE____handlePrefab_FieldInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	Exception_t* ___handlePrefabException = il2cpp_codegen_get_marshal_directive_exception("Cannot marshal field '%s' of type '%s': Reference type field marshaling is not supported.", HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE____handlePrefab_FieldInfo_var, HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE_0_0_0_var);
+	IL2CPP_RAISE_MANAGED_EXCEPTION(___handlePrefabException, NULL);
+}
+IL2CPP_EXTERN_C void HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE_marshal_com_back(const HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE_marshaled_com& marshaled, HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE& unmarshaled)
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE_0_0_0_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE____handlePrefab_FieldInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	Exception_t* ___handlePrefabException = il2cpp_codegen_get_marshal_directive_exception("Cannot marshal field '%s' of type '%s': Reference type field marshaling is not supported.", HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE____handlePrefab_FieldInfo_var, HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE_0_0_0_var);
+	IL2CPP_RAISE_MANAGED_EXCEPTION(___handlePrefabException, NULL);
+}
+IL2CPP_EXTERN_C void HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE_marshal_com_cleanup(HandleInfo_tD2BE0E0BB730832B1923ADE727947F64727377EE_marshaled_com& marshaled)
+{
+}
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#pragma clang diagnostic ignored "-Wunused-variable"
+#endif
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#pragma clang diagnostic ignored "-Wunused-variable"
+#endif
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#pragma clang diagnostic ignored "-Wunused-variable"
+#endif
+IL2CPP_EXTERN_C void PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900_marshal_pinvoke(const PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900& unmarshaled, PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900_marshaled_pinvoke& marshaled)
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900_0_0_0_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900____postPrefab_FieldInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	Exception_t* ___postPrefabException = il2cpp_codegen_get_marshal_directive_exception("Cannot marshal field '%s' of type '%s': Reference type field marshaling is not supported.", PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900____postPrefab_FieldInfo_var, PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900_0_0_0_var);
+	IL2CPP_RAISE_MANAGED_EXCEPTION(___postPrefabException, NULL);
+}
+IL2CPP_EXTERN_C void PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900_marshal_pinvoke_back(const PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900_marshaled_pinvoke& marshaled, PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900& unmarshaled)
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900_0_0_0_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900____postPrefab_FieldInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	Exception_t* ___postPrefabException = il2cpp_codegen_get_marshal_directive_exception("Cannot marshal field '%s' of type '%s': Reference type field marshaling is not supported.", PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900____postPrefab_FieldInfo_var, PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900_0_0_0_var);
+	IL2CPP_RAISE_MANAGED_EXCEPTION(___postPrefabException, NULL);
+}
+IL2CPP_EXTERN_C void PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900_marshal_pinvoke_cleanup(PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900_marshaled_pinvoke& marshaled)
+{
+}
+IL2CPP_EXTERN_C void PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900_marshal_com(const PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900& unmarshaled, PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900_marshaled_com& marshaled)
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900_0_0_0_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900____postPrefab_FieldInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	Exception_t* ___postPrefabException = il2cpp_codegen_get_marshal_directive_exception("Cannot marshal field '%s' of type '%s': Reference type field marshaling is not supported.", PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900____postPrefab_FieldInfo_var, PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900_0_0_0_var);
+	IL2CPP_RAISE_MANAGED_EXCEPTION(___postPrefabException, NULL);
+}
+IL2CPP_EXTERN_C void PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900_marshal_com_back(const PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900_marshaled_com& marshaled, PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900& unmarshaled)
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900_0_0_0_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900____postPrefab_FieldInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	Exception_t* ___postPrefabException = il2cpp_codegen_get_marshal_directive_exception("Cannot marshal field '%s' of type '%s': Reference type field marshaling is not supported.", PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900____postPrefab_FieldInfo_var, PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900_0_0_0_var);
+	IL2CPP_RAISE_MANAGED_EXCEPTION(___postPrefabException, NULL);
+}
+IL2CPP_EXTERN_C void PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900_marshal_com_cleanup(PostInfo_tF974F78DB1E3CEEAED139C9F6139A2ECB33AB900_marshaled_com& marshaled)
+{
+}
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#pragma clang diagnostic ignored "-Wunused-variable"
+#endif
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#pragma clang diagnostic ignored "-Wunused-variable"
+#endif
+IL2CPP_EXTERN_C void MotionInfo_tF0A4F63839720486FA5651B8A1CF8162CB22263C_marshal_pinvoke(const MotionInfo_tF0A4F63839720486FA5651B8A1CF8162CB22263C& unmarshaled, MotionInfo_tF0A4F63839720486FA5651B8A1CF8162CB22263C_marshaled_pinvoke& marshaled)
+{
+	marshaled.___motionKind = unmarshaled.___motionKind;
+	if (unmarshaled.___allowedDoorKinds != NULL)
+	{
+		il2cpp_array_size_t _unmarshaledallowedDoorKinds_Length = (unmarshaled.___allowedDoorKinds)->max_length;
+		marshaled.___allowedDoorKinds = il2cpp_codegen_marshal_allocate_array<int32_t>(_unmarshaledallowedDoorKinds_Length);
+		for (int32_t i = 0; i < ARRAY_LENGTH_AS_INT32(_unmarshaledallowedDoorKinds_Length); i++)
+		{
+			(marshaled.___allowedDoorKinds)[i] = (unmarshaled.___allowedDoorKinds)->GetAtUnchecked(static_cast<il2cpp_array_size_t>(i));
+		}
+	}
+	else
+	{
+		marshaled.___allowedDoorKinds = NULL;
+	}
+}
+IL2CPP_EXTERN_C void MotionInfo_tF0A4F63839720486FA5651B8A1CF8162CB22263C_marshal_pinvoke_back(const MotionInfo_tF0A4F63839720486FA5651B8A1CF8162CB22263C_marshaled_pinvoke& marshaled, MotionInfo_tF0A4F63839720486FA5651B8A1CF8162CB22263C& unmarshaled)
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&DoorKindU5BU5D_tE3A6220B579D8E30E313169232EDEFC0C71A7F28_il2cpp_TypeInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	int32_t unmarshaledmotionKind_temp_0 = 0;
+	unmarshaledmotionKind_temp_0 = marshaled.___motionKind;
+	unmarshaled.___motionKind = unmarshaledmotionKind_temp_0;
+	if (marshaled.___allowedDoorKinds != NULL)
+	{
+		if (unmarshaled.___allowedDoorKinds == NULL)
+		{
+			unmarshaled.___allowedDoorKinds = reinterpret_cast<DoorKindU5BU5D_tE3A6220B579D8E30E313169232EDEFC0C71A7F28*>((DoorKindU5BU5D_tE3A6220B579D8E30E313169232EDEFC0C71A7F28*)SZArrayNew(DoorKindU5BU5D_tE3A6220B579D8E30E313169232EDEFC0C71A7F28_il2cpp_TypeInfo_var, 1));
+			Il2CppCodeGenWriteBarrier((void**)(&unmarshaled.___allowedDoorKinds), (void*)reinterpret_cast<DoorKindU5BU5D_tE3A6220B579D8E30E313169232EDEFC0C71A7F28*>((DoorKindU5BU5D_tE3A6220B579D8E30E313169232EDEFC0C71A7F28*)SZArrayNew(DoorKindU5BU5D_tE3A6220B579D8E30E313169232EDEFC0C71A7F28_il2cpp_TypeInfo_var, 1)));
+		}
+		il2cpp_array_size_t _arrayLength = (unmarshaled.___allowedDoorKinds)->max_length;
+		for (int32_t i = 0; i < ARRAY_LENGTH_AS_INT32(_arrayLength); i++)
+		{
+			(unmarshaled.___allowedDoorKinds)->SetAtUnchecked(static_cast<il2cpp_array_size_t>(i), (marshaled.___allowedDoorKinds)[i]);
+		}
+	}
+}
+IL2CPP_EXTERN_C void MotionInfo_tF0A4F63839720486FA5651B8A1CF8162CB22263C_marshal_pinvoke_cleanup(MotionInfo_tF0A4F63839720486FA5651B8A1CF8162CB22263C_marshaled_pinvoke& marshaled)
+{
+	if (marshaled.___allowedDoorKinds != NULL)
+	{
+		il2cpp_codegen_marshal_free(marshaled.___allowedDoorKinds);
+		marshaled.___allowedDoorKinds = NULL;
+	}
+}
+IL2CPP_EXTERN_C void MotionInfo_tF0A4F63839720486FA5651B8A1CF8162CB22263C_marshal_com(const MotionInfo_tF0A4F63839720486FA5651B8A1CF8162CB22263C& unmarshaled, MotionInfo_tF0A4F63839720486FA5651B8A1CF8162CB22263C_marshaled_com& marshaled)
+{
+	marshaled.___motionKind = unmarshaled.___motionKind;
+	if (unmarshaled.___allowedDoorKinds != NULL)
+	{
+		il2cpp_array_size_t _unmarshaledallowedDoorKinds_Length = (unmarshaled.___allowedDoorKinds)->max_length;
+		marshaled.___allowedDoorKinds = il2cpp_codegen_marshal_allocate_array<int32_t>(_unmarshaledallowedDoorKinds_Length);
+		for (int32_t i = 0; i < ARRAY_LENGTH_AS_INT32(_unmarshaledallowedDoorKinds_Length); i++)
+		{
+			(marshaled.___allowedDoorKinds)[i] = (unmarshaled.___allowedDoorKinds)->GetAtUnchecked(static_cast<il2cpp_array_size_t>(i));
+		}
+	}
+	else
+	{
+		marshaled.___allowedDoorKinds = NULL;
+	}
+}
+IL2CPP_EXTERN_C void MotionInfo_tF0A4F63839720486FA5651B8A1CF8162CB22263C_marshal_com_back(const MotionInfo_tF0A4F63839720486FA5651B8A1CF8162CB22263C_marshaled_com& marshaled, MotionInfo_tF0A4F63839720486FA5651B8A1CF8162CB22263C& unmarshaled)
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&DoorKindU5BU5D_tE3A6220B579D8E30E313169232EDEFC0C71A7F28_il2cpp_TypeInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	int32_t unmarshaledmotionKind_temp_0 = 0;
+	unmarshaledmotionKind_temp_0 = marshaled.___motionKind;
+	unmarshaled.___motionKind = unmarshaledmotionKind_temp_0;
+	if (marshaled.___allowedDoorKinds != NULL)
+	{
+		if (unmarshaled.___allowedDoorKinds == NULL)
+		{
+			unmarshaled.___allowedDoorKinds = reinterpret_cast<DoorKindU5BU5D_tE3A6220B579D8E30E313169232EDEFC0C71A7F28*>((DoorKindU5BU5D_tE3A6220B579D8E30E313169232EDEFC0C71A7F28*)SZArrayNew(DoorKindU5BU5D_tE3A6220B579D8E30E313169232EDEFC0C71A7F28_il2cpp_TypeInfo_var, 1));
+			Il2CppCodeGenWriteBarrier((void**)(&unmarshaled.___allowedDoorKinds), (void*)reinterpret_cast<DoorKindU5BU5D_tE3A6220B579D8E30E313169232EDEFC0C71A7F28*>((DoorKindU5BU5D_tE3A6220B579D8E30E313169232EDEFC0C71A7F28*)SZArrayNew(DoorKindU5BU5D_tE3A6220B579D8E30E313169232EDEFC0C71A7F28_il2cpp_TypeInfo_var, 1)));
+		}
+		il2cpp_array_size_t _arrayLength = (unmarshaled.___allowedDoorKinds)->max_length;
+		for (int32_t i = 0; i < ARRAY_LENGTH_AS_INT32(_arrayLength); i++)
+		{
+			(unmarshaled.___allowedDoorKinds)->SetAtUnchecked(static_cast<il2cpp_array_size_t>(i), (marshaled.___allowedDoorKinds)[i]);
+		}
+	}
+}
+IL2CPP_EXTERN_C void MotionInfo_tF0A4F63839720486FA5651B8A1CF8162CB22263C_marshal_com_cleanup(MotionInfo_tF0A4F63839720486FA5651B8A1CF8162CB22263C_marshaled_com& marshaled)
+{
+	if (marshaled.___allowedDoorKinds != NULL)
+	{
+		il2cpp_codegen_marshal_free(marshaled.___allowedDoorKinds);
+		marshaled.___allowedDoorKinds = NULL;
+	}
+}
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#pragma clang diagnostic ignored "-Wunused-variable"
+#endif
+// Method Definition Index: 74084
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3DController__ctor_mDE16466B50AA26B6F7751331B570EF9E34FF24EA (OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* __this, const RuntimeMethod* method) 
+{
+	{
+		MonoBehaviour__ctor_m592DB0105CA0BC97AA1C5F4AD27B12D68A3B7C1E(__this, NULL);
+		return;
+	}
+}
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#pragma clang diagnostic ignored "-Wunused-variable"
+#endif
+void OpenDoorEvt_Invoke_mBC4CCF7F672C37BF8C2CC5556F906550F13F8DCC_Multicast(OpenDoorEvt_t53FDC500F958704C0041B93E83B01FD1685D2A98* __this, const RuntimeMethod* method)
+{
+	il2cpp_array_size_t length = __this->___delegates->max_length;
+	Delegate_t** delegatesToInvoke = reinterpret_cast<Delegate_t**>(__this->___delegates->GetAddressAtUnchecked(0));
+	for (il2cpp_array_size_t i = 0; i < length; i++)
+	{
+		OpenDoorEvt_t53FDC500F958704C0041B93E83B01FD1685D2A98* currentDelegate = reinterpret_cast<OpenDoorEvt_t53FDC500F958704C0041B93E83B01FD1685D2A98*>(delegatesToInvoke[i]);
+		typedef void (*FunctionPointerType) (RuntimeObject*, const RuntimeMethod*);
+		((FunctionPointerType)currentDelegate->___invoke_impl)((Il2CppObject*)currentDelegate->___method_code, reinterpret_cast<RuntimeMethod*>(currentDelegate->___method));
+	}
+}
+void OpenDoorEvt_Invoke_mBC4CCF7F672C37BF8C2CC5556F906550F13F8DCC_OpenInst(OpenDoorEvt_t53FDC500F958704C0041B93E83B01FD1685D2A98* __this, const RuntimeMethod* method)
+{
+	typedef void (*FunctionPointerType) (const RuntimeMethod*);
+	((FunctionPointerType)__this->___method_ptr)(method);
+}
+void OpenDoorEvt_Invoke_mBC4CCF7F672C37BF8C2CC5556F906550F13F8DCC_OpenStatic(OpenDoorEvt_t53FDC500F958704C0041B93E83B01FD1685D2A98* __this, const RuntimeMethod* method)
+{
+	typedef void (*FunctionPointerType) (const RuntimeMethod*);
+	((FunctionPointerType)__this->___method_ptr)(method);
+}
+IL2CPP_EXTERN_C  void DelegatePInvokeWrapper_OpenDoorEvt_t53FDC500F958704C0041B93E83B01FD1685D2A98 (OpenDoorEvt_t53FDC500F958704C0041B93E83B01FD1685D2A98* __this, const RuntimeMethod* method)
+{
+	typedef void (DEFAULT_CALL *PInvokeFunc)();
+	PInvokeFunc il2cppPInvokeFunc = reinterpret_cast<PInvokeFunc>(il2cpp_codegen_get_reverse_pinvoke_function_ptr(__this));
+	il2cppPInvokeFunc();
+
+}
+// Method Definition Index: 74085
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OpenDoorEvt__ctor_m93EE2C0EAFD8330FB5935959ECA507EAACE67773 (OpenDoorEvt_t53FDC500F958704C0041B93E83B01FD1685D2A98* __this, RuntimeObject* ___0_object, intptr_t ___1_method, const RuntimeMethod* method) 
+{
+	__this->___method_ptr = (intptr_t)il2cpp_codegen_get_method_pointer((RuntimeMethod*)___1_method);
+	__this->___method = ___1_method;
+	__this->___m_target = ___0_object;
+	Il2CppCodeGenWriteBarrier((void**)(&__this->___m_target), (void*)___0_object);
+	int parameterCount = il2cpp_codegen_method_parameter_count((RuntimeMethod*)___1_method);
+	__this->___method_code = (intptr_t)__this;
+	if (MethodIsStatic((RuntimeMethod*)___1_method))
+	{
+		bool isOpen = parameterCount == 0;
+		if (isOpen)
+			__this->___invoke_impl = (intptr_t)&OpenDoorEvt_Invoke_mBC4CCF7F672C37BF8C2CC5556F906550F13F8DCC_OpenStatic;
+		else
+			{
+				__this->___invoke_impl = __this->___method_ptr;
+				__this->___method_code = (intptr_t)__this->___m_target;
+			}
+	}
+	else
+	{
+		if (___0_object == NULL)
+			il2cpp_codegen_raise_exception(il2cpp_codegen_get_argument_exception(NULL, "Delegate to an instance method cannot have null 'this'."), NULL);
+		__this->___invoke_impl = __this->___method_ptr;
+		__this->___method_code = (intptr_t)__this->___m_target;
+	}
+	__this->___extra_arg = (intptr_t)&OpenDoorEvt_Invoke_mBC4CCF7F672C37BF8C2CC5556F906550F13F8DCC_Multicast;
+}
+// Method Definition Index: 74086
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OpenDoorEvt_Invoke_mBC4CCF7F672C37BF8C2CC5556F906550F13F8DCC (OpenDoorEvt_t53FDC500F958704C0041B93E83B01FD1685D2A98* __this, const RuntimeMethod* method) 
+{
+	typedef void (*FunctionPointerType) (RuntimeObject*, const RuntimeMethod*);
+	((FunctionPointerType)__this->___invoke_impl)((Il2CppObject*)__this->___method_code, reinterpret_cast<RuntimeMethod*>(__this->___method));
+}
+// Method Definition Index: 74087
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* OpenDoorEvt_BeginInvoke_mA1B55701155887DC352128727E33BD4CA49092D3 (OpenDoorEvt_t53FDC500F958704C0041B93E83B01FD1685D2A98* __this, AsyncCallback_t7FEF460CBDCFB9C5FA2EF776984778B9A4145F4C* ___0_callback, RuntimeObject* ___1_object, const RuntimeMethod* method) 
+{
+	void *__d_args[1] = {0};
+	return (RuntimeObject*)il2cpp_codegen_delegate_begin_invoke((RuntimeDelegate*)__this, __d_args, (RuntimeDelegate*)___0_callback, (RuntimeObject*)___1_object);
+}
+// Method Definition Index: 74088
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OpenDoorEvt_EndInvoke_mB1AD55D6BE69D1C2663E6012FAAF579F608C1AAE (OpenDoorEvt_t53FDC500F958704C0041B93E83B01FD1685D2A98* __this, RuntimeObject* ___0_result, const RuntimeMethod* method) 
+{
+	il2cpp_codegen_delegate_end_invoke((Il2CppAsyncResult*) ___0_result, 0);
+}
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#pragma clang diagnostic ignored "-Wunused-variable"
+#endif
+void CloseDoorEvt_Invoke_m3DF1BF5991F943417FB2FDAA0E63682AEF1CF612_Multicast(CloseDoorEvt_t0FA9DD6BBFED77AF496D88825BE7100D2C05E507* __this, const RuntimeMethod* method)
+{
+	il2cpp_array_size_t length = __this->___delegates->max_length;
+	Delegate_t** delegatesToInvoke = reinterpret_cast<Delegate_t**>(__this->___delegates->GetAddressAtUnchecked(0));
+	for (il2cpp_array_size_t i = 0; i < length; i++)
+	{
+		CloseDoorEvt_t0FA9DD6BBFED77AF496D88825BE7100D2C05E507* currentDelegate = reinterpret_cast<CloseDoorEvt_t0FA9DD6BBFED77AF496D88825BE7100D2C05E507*>(delegatesToInvoke[i]);
+		typedef void (*FunctionPointerType) (RuntimeObject*, const RuntimeMethod*);
+		((FunctionPointerType)currentDelegate->___invoke_impl)((Il2CppObject*)currentDelegate->___method_code, reinterpret_cast<RuntimeMethod*>(currentDelegate->___method));
+	}
+}
+void CloseDoorEvt_Invoke_m3DF1BF5991F943417FB2FDAA0E63682AEF1CF612_OpenInst(CloseDoorEvt_t0FA9DD6BBFED77AF496D88825BE7100D2C05E507* __this, const RuntimeMethod* method)
+{
+	typedef void (*FunctionPointerType) (const RuntimeMethod*);
+	((FunctionPointerType)__this->___method_ptr)(method);
+}
+void CloseDoorEvt_Invoke_m3DF1BF5991F943417FB2FDAA0E63682AEF1CF612_OpenStatic(CloseDoorEvt_t0FA9DD6BBFED77AF496D88825BE7100D2C05E507* __this, const RuntimeMethod* method)
+{
+	typedef void (*FunctionPointerType) (const RuntimeMethod*);
+	((FunctionPointerType)__this->___method_ptr)(method);
+}
+IL2CPP_EXTERN_C  void DelegatePInvokeWrapper_CloseDoorEvt_t0FA9DD6BBFED77AF496D88825BE7100D2C05E507 (CloseDoorEvt_t0FA9DD6BBFED77AF496D88825BE7100D2C05E507* __this, const RuntimeMethod* method)
+{
+	typedef void (DEFAULT_CALL *PInvokeFunc)();
+	PInvokeFunc il2cppPInvokeFunc = reinterpret_cast<PInvokeFunc>(il2cpp_codegen_get_reverse_pinvoke_function_ptr(__this));
+	il2cppPInvokeFunc();
+
+}
+// Method Definition Index: 74089
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void CloseDoorEvt__ctor_m135334B7D8C2D13F0CA3CA1B302150B8F3EA5FB8 (CloseDoorEvt_t0FA9DD6BBFED77AF496D88825BE7100D2C05E507* __this, RuntimeObject* ___0_object, intptr_t ___1_method, const RuntimeMethod* method) 
+{
+	__this->___method_ptr = (intptr_t)il2cpp_codegen_get_method_pointer((RuntimeMethod*)___1_method);
+	__this->___method = ___1_method;
+	__this->___m_target = ___0_object;
+	Il2CppCodeGenWriteBarrier((void**)(&__this->___m_target), (void*)___0_object);
+	int parameterCount = il2cpp_codegen_method_parameter_count((RuntimeMethod*)___1_method);
+	__this->___method_code = (intptr_t)__this;
+	if (MethodIsStatic((RuntimeMethod*)___1_method))
+	{
+		bool isOpen = parameterCount == 0;
+		if (isOpen)
+			__this->___invoke_impl = (intptr_t)&CloseDoorEvt_Invoke_m3DF1BF5991F943417FB2FDAA0E63682AEF1CF612_OpenStatic;
+		else
+			{
+				__this->___invoke_impl = __this->___method_ptr;
+				__this->___method_code = (intptr_t)__this->___m_target;
+			}
+	}
+	else
+	{
+		if (___0_object == NULL)
+			il2cpp_codegen_raise_exception(il2cpp_codegen_get_argument_exception(NULL, "Delegate to an instance method cannot have null 'this'."), NULL);
+		__this->___invoke_impl = __this->___method_ptr;
+		__this->___method_code = (intptr_t)__this->___m_target;
+	}
+	__this->___extra_arg = (intptr_t)&CloseDoorEvt_Invoke_m3DF1BF5991F943417FB2FDAA0E63682AEF1CF612_Multicast;
+}
+// Method Definition Index: 74090
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void CloseDoorEvt_Invoke_m3DF1BF5991F943417FB2FDAA0E63682AEF1CF612 (CloseDoorEvt_t0FA9DD6BBFED77AF496D88825BE7100D2C05E507* __this, const RuntimeMethod* method) 
+{
+	typedef void (*FunctionPointerType) (RuntimeObject*, const RuntimeMethod*);
+	((FunctionPointerType)__this->___invoke_impl)((Il2CppObject*)__this->___method_code, reinterpret_cast<RuntimeMethod*>(__this->___method));
+}
+// Method Definition Index: 74091
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* CloseDoorEvt_BeginInvoke_m004E02C3C259E1EEB6497DC341681BBCEBAA5BD6 (CloseDoorEvt_t0FA9DD6BBFED77AF496D88825BE7100D2C05E507* __this, AsyncCallback_t7FEF460CBDCFB9C5FA2EF776984778B9A4145F4C* ___0_callback, RuntimeObject* ___1_object, const RuntimeMethod* method) 
+{
+	void *__d_args[1] = {0};
+	return (RuntimeObject*)il2cpp_codegen_delegate_begin_invoke((RuntimeDelegate*)__this, __d_args, (RuntimeDelegate*)___0_callback, (RuntimeObject*)___1_object);
+}
+// Method Definition Index: 74092
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void CloseDoorEvt_EndInvoke_m017EA13119E686BD3A94869EB5EBBC92A62D83CE (CloseDoorEvt_t0FA9DD6BBFED77AF496D88825BE7100D2C05E507* __this, RuntimeObject* ___0_result, const RuntimeMethod* method) 
+{
+	il2cpp_codegen_delegate_end_invoke((Il2CppAsyncResult*) ___0_result, 0);
+}
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#pragma clang diagnostic ignored "-Wunused-variable"
+#endif
+void ToggleDoorEvt_Invoke_mF81798196C518135B86C2FA02286952D3A20B36B_Multicast(ToggleDoorEvt_tFE20427E5BADD68E7E1BE9380F1D78CFC33DDA40* __this, const RuntimeMethod* method)
+{
+	il2cpp_array_size_t length = __this->___delegates->max_length;
+	Delegate_t** delegatesToInvoke = reinterpret_cast<Delegate_t**>(__this->___delegates->GetAddressAtUnchecked(0));
+	for (il2cpp_array_size_t i = 0; i < length; i++)
+	{
+		ToggleDoorEvt_tFE20427E5BADD68E7E1BE9380F1D78CFC33DDA40* currentDelegate = reinterpret_cast<ToggleDoorEvt_tFE20427E5BADD68E7E1BE9380F1D78CFC33DDA40*>(delegatesToInvoke[i]);
+		typedef void (*FunctionPointerType) (RuntimeObject*, const RuntimeMethod*);
+		((FunctionPointerType)currentDelegate->___invoke_impl)((Il2CppObject*)currentDelegate->___method_code, reinterpret_cast<RuntimeMethod*>(currentDelegate->___method));
+	}
+}
+void ToggleDoorEvt_Invoke_mF81798196C518135B86C2FA02286952D3A20B36B_OpenInst(ToggleDoorEvt_tFE20427E5BADD68E7E1BE9380F1D78CFC33DDA40* __this, const RuntimeMethod* method)
+{
+	typedef void (*FunctionPointerType) (const RuntimeMethod*);
+	((FunctionPointerType)__this->___method_ptr)(method);
+}
+void ToggleDoorEvt_Invoke_mF81798196C518135B86C2FA02286952D3A20B36B_OpenStatic(ToggleDoorEvt_tFE20427E5BADD68E7E1BE9380F1D78CFC33DDA40* __this, const RuntimeMethod* method)
+{
+	typedef void (*FunctionPointerType) (const RuntimeMethod*);
+	((FunctionPointerType)__this->___method_ptr)(method);
+}
+IL2CPP_EXTERN_C  void DelegatePInvokeWrapper_ToggleDoorEvt_tFE20427E5BADD68E7E1BE9380F1D78CFC33DDA40 (ToggleDoorEvt_tFE20427E5BADD68E7E1BE9380F1D78CFC33DDA40* __this, const RuntimeMethod* method)
+{
+	typedef void (DEFAULT_CALL *PInvokeFunc)();
+	PInvokeFunc il2cppPInvokeFunc = reinterpret_cast<PInvokeFunc>(il2cpp_codegen_get_reverse_pinvoke_function_ptr(__this));
+	il2cppPInvokeFunc();
+
+}
+// Method Definition Index: 74093
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void ToggleDoorEvt__ctor_mCE9D795B7E5C415C8FBBB9967D78D0AC9B890297 (ToggleDoorEvt_tFE20427E5BADD68E7E1BE9380F1D78CFC33DDA40* __this, RuntimeObject* ___0_object, intptr_t ___1_method, const RuntimeMethod* method) 
+{
+	__this->___method_ptr = (intptr_t)il2cpp_codegen_get_method_pointer((RuntimeMethod*)___1_method);
+	__this->___method = ___1_method;
+	__this->___m_target = ___0_object;
+	Il2CppCodeGenWriteBarrier((void**)(&__this->___m_target), (void*)___0_object);
+	int parameterCount = il2cpp_codegen_method_parameter_count((RuntimeMethod*)___1_method);
+	__this->___method_code = (intptr_t)__this;
+	if (MethodIsStatic((RuntimeMethod*)___1_method))
+	{
+		bool isOpen = parameterCount == 0;
+		if (isOpen)
+			__this->___invoke_impl = (intptr_t)&ToggleDoorEvt_Invoke_mF81798196C518135B86C2FA02286952D3A20B36B_OpenStatic;
+		else
+			{
+				__this->___invoke_impl = __this->___method_ptr;
+				__this->___method_code = (intptr_t)__this->___m_target;
+			}
+	}
+	else
+	{
+		if (___0_object == NULL)
+			il2cpp_codegen_raise_exception(il2cpp_codegen_get_argument_exception(NULL, "Delegate to an instance method cannot have null 'this'."), NULL);
+		__this->___invoke_impl = __this->___method_ptr;
+		__this->___method_code = (intptr_t)__this->___m_target;
+	}
+	__this->___extra_arg = (intptr_t)&ToggleDoorEvt_Invoke_mF81798196C518135B86C2FA02286952D3A20B36B_Multicast;
+}
+// Method Definition Index: 74094
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void ToggleDoorEvt_Invoke_mF81798196C518135B86C2FA02286952D3A20B36B (ToggleDoorEvt_tFE20427E5BADD68E7E1BE9380F1D78CFC33DDA40* __this, const RuntimeMethod* method) 
+{
+	typedef void (*FunctionPointerType) (RuntimeObject*, const RuntimeMethod*);
+	((FunctionPointerType)__this->___invoke_impl)((Il2CppObject*)__this->___method_code, reinterpret_cast<RuntimeMethod*>(__this->___method));
+}
+// Method Definition Index: 74095
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* ToggleDoorEvt_BeginInvoke_m1A4B1895E45C8EE165621F7C91482A15EDBBD9B4 (ToggleDoorEvt_tFE20427E5BADD68E7E1BE9380F1D78CFC33DDA40* __this, AsyncCallback_t7FEF460CBDCFB9C5FA2EF776984778B9A4145F4C* ___0_callback, RuntimeObject* ___1_object, const RuntimeMethod* method) 
+{
+	void *__d_args[1] = {0};
+	return (RuntimeObject*)il2cpp_codegen_delegate_begin_invoke((RuntimeDelegate*)__this, __d_args, (RuntimeDelegate*)___0_callback, (RuntimeObject*)___1_object);
+}
+// Method Definition Index: 74096
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void ToggleDoorEvt_EndInvoke_mEDFB4CEE880317FBE0576C8E9F912FFA0CB3E1E8 (ToggleDoorEvt_tFE20427E5BADD68E7E1BE9380F1D78CFC33DDA40* __this, RuntimeObject* ___0_result, const RuntimeMethod* method) 
+{
+	il2cpp_codegen_delegate_end_invoke((Il2CppAsyncResult*) ___0_result, 0);
+}
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#pragma clang diagnostic ignored "-Wunused-variable"
+#endif
+void UnlockDoorEvt_Invoke_mE2370B6BA7803BA0199F438F608256535AAF7D07_Multicast(UnlockDoorEvt_t6006D394CC44175581D7140CCCC65A71B68F20CF* __this, const RuntimeMethod* method)
+{
+	il2cpp_array_size_t length = __this->___delegates->max_length;
+	Delegate_t** delegatesToInvoke = reinterpret_cast<Delegate_t**>(__this->___delegates->GetAddressAtUnchecked(0));
+	for (il2cpp_array_size_t i = 0; i < length; i++)
+	{
+		UnlockDoorEvt_t6006D394CC44175581D7140CCCC65A71B68F20CF* currentDelegate = reinterpret_cast<UnlockDoorEvt_t6006D394CC44175581D7140CCCC65A71B68F20CF*>(delegatesToInvoke[i]);
+		typedef void (*FunctionPointerType) (RuntimeObject*, const RuntimeMethod*);
+		((FunctionPointerType)currentDelegate->___invoke_impl)((Il2CppObject*)currentDelegate->___method_code, reinterpret_cast<RuntimeMethod*>(currentDelegate->___method));
+	}
+}
+void UnlockDoorEvt_Invoke_mE2370B6BA7803BA0199F438F608256535AAF7D07_OpenInst(UnlockDoorEvt_t6006D394CC44175581D7140CCCC65A71B68F20CF* __this, const RuntimeMethod* method)
+{
+	typedef void (*FunctionPointerType) (const RuntimeMethod*);
+	((FunctionPointerType)__this->___method_ptr)(method);
+}
+void UnlockDoorEvt_Invoke_mE2370B6BA7803BA0199F438F608256535AAF7D07_OpenStatic(UnlockDoorEvt_t6006D394CC44175581D7140CCCC65A71B68F20CF* __this, const RuntimeMethod* method)
+{
+	typedef void (*FunctionPointerType) (const RuntimeMethod*);
+	((FunctionPointerType)__this->___method_ptr)(method);
+}
+IL2CPP_EXTERN_C  void DelegatePInvokeWrapper_UnlockDoorEvt_t6006D394CC44175581D7140CCCC65A71B68F20CF (UnlockDoorEvt_t6006D394CC44175581D7140CCCC65A71B68F20CF* __this, const RuntimeMethod* method)
+{
+	typedef void (DEFAULT_CALL *PInvokeFunc)();
+	PInvokeFunc il2cppPInvokeFunc = reinterpret_cast<PInvokeFunc>(il2cpp_codegen_get_reverse_pinvoke_function_ptr(__this));
+	il2cppPInvokeFunc();
+
+}
+// Method Definition Index: 74097
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void UnlockDoorEvt__ctor_mBED67DC21D06E11BB16218C6B27020F5DB951574 (UnlockDoorEvt_t6006D394CC44175581D7140CCCC65A71B68F20CF* __this, RuntimeObject* ___0_object, intptr_t ___1_method, const RuntimeMethod* method) 
+{
+	__this->___method_ptr = (intptr_t)il2cpp_codegen_get_method_pointer((RuntimeMethod*)___1_method);
+	__this->___method = ___1_method;
+	__this->___m_target = ___0_object;
+	Il2CppCodeGenWriteBarrier((void**)(&__this->___m_target), (void*)___0_object);
+	int parameterCount = il2cpp_codegen_method_parameter_count((RuntimeMethod*)___1_method);
+	__this->___method_code = (intptr_t)__this;
+	if (MethodIsStatic((RuntimeMethod*)___1_method))
+	{
+		bool isOpen = parameterCount == 0;
+		if (isOpen)
+			__this->___invoke_impl = (intptr_t)&UnlockDoorEvt_Invoke_mE2370B6BA7803BA0199F438F608256535AAF7D07_OpenStatic;
+		else
+			{
+				__this->___invoke_impl = __this->___method_ptr;
+				__this->___method_code = (intptr_t)__this->___m_target;
+			}
+	}
+	else
+	{
+		if (___0_object == NULL)
+			il2cpp_codegen_raise_exception(il2cpp_codegen_get_argument_exception(NULL, "Delegate to an instance method cannot have null 'this'."), NULL);
+		__this->___invoke_impl = __this->___method_ptr;
+		__this->___method_code = (intptr_t)__this->___m_target;
+	}
+	__this->___extra_arg = (intptr_t)&UnlockDoorEvt_Invoke_mE2370B6BA7803BA0199F438F608256535AAF7D07_Multicast;
+}
+// Method Definition Index: 74098
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void UnlockDoorEvt_Invoke_mE2370B6BA7803BA0199F438F608256535AAF7D07 (UnlockDoorEvt_t6006D394CC44175581D7140CCCC65A71B68F20CF* __this, const RuntimeMethod* method) 
+{
+	typedef void (*FunctionPointerType) (RuntimeObject*, const RuntimeMethod*);
+	((FunctionPointerType)__this->___invoke_impl)((Il2CppObject*)__this->___method_code, reinterpret_cast<RuntimeMethod*>(__this->___method));
+}
+// Method Definition Index: 74099
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* UnlockDoorEvt_BeginInvoke_mB6A354FEBB6FC370D7C8F0259451DE9A3782FE8A (UnlockDoorEvt_t6006D394CC44175581D7140CCCC65A71B68F20CF* __this, AsyncCallback_t7FEF460CBDCFB9C5FA2EF776984778B9A4145F4C* ___0_callback, RuntimeObject* ___1_object, const RuntimeMethod* method) 
+{
+	void *__d_args[1] = {0};
+	return (RuntimeObject*)il2cpp_codegen_delegate_begin_invoke((RuntimeDelegate*)__this, __d_args, (RuntimeDelegate*)___0_callback, (RuntimeObject*)___1_object);
+}
+// Method Definition Index: 74100
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void UnlockDoorEvt_EndInvoke_m1D6E32CBD17B617E50D8559C3235F8987715EB0C (UnlockDoorEvt_t6006D394CC44175581D7140CCCC65A71B68F20CF* __this, RuntimeObject* ___0_result, const RuntimeMethod* method) 
+{
+	il2cpp_codegen_delegate_end_invoke((Il2CppAsyncResult*) ___0_result, 0);
+}
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#pragma clang diagnostic ignored "-Wunused-variable"
+#endif
+void LockDoorEvt_Invoke_m0ED3A8C1C3B21230CB550F56580CE576CEA0A9B8_Multicast(LockDoorEvt_t15338F49A7805255093B5E4DE5994C05EC2FEC84* __this, const RuntimeMethod* method)
+{
+	il2cpp_array_size_t length = __this->___delegates->max_length;
+	Delegate_t** delegatesToInvoke = reinterpret_cast<Delegate_t**>(__this->___delegates->GetAddressAtUnchecked(0));
+	for (il2cpp_array_size_t i = 0; i < length; i++)
+	{
+		LockDoorEvt_t15338F49A7805255093B5E4DE5994C05EC2FEC84* currentDelegate = reinterpret_cast<LockDoorEvt_t15338F49A7805255093B5E4DE5994C05EC2FEC84*>(delegatesToInvoke[i]);
+		typedef void (*FunctionPointerType) (RuntimeObject*, const RuntimeMethod*);
+		((FunctionPointerType)currentDelegate->___invoke_impl)((Il2CppObject*)currentDelegate->___method_code, reinterpret_cast<RuntimeMethod*>(currentDelegate->___method));
+	}
+}
+void LockDoorEvt_Invoke_m0ED3A8C1C3B21230CB550F56580CE576CEA0A9B8_OpenInst(LockDoorEvt_t15338F49A7805255093B5E4DE5994C05EC2FEC84* __this, const RuntimeMethod* method)
+{
+	typedef void (*FunctionPointerType) (const RuntimeMethod*);
+	((FunctionPointerType)__this->___method_ptr)(method);
+}
+void LockDoorEvt_Invoke_m0ED3A8C1C3B21230CB550F56580CE576CEA0A9B8_OpenStatic(LockDoorEvt_t15338F49A7805255093B5E4DE5994C05EC2FEC84* __this, const RuntimeMethod* method)
+{
+	typedef void (*FunctionPointerType) (const RuntimeMethod*);
+	((FunctionPointerType)__this->___method_ptr)(method);
+}
+IL2CPP_EXTERN_C  void DelegatePInvokeWrapper_LockDoorEvt_t15338F49A7805255093B5E4DE5994C05EC2FEC84 (LockDoorEvt_t15338F49A7805255093B5E4DE5994C05EC2FEC84* __this, const RuntimeMethod* method)
+{
+	typedef void (DEFAULT_CALL *PInvokeFunc)();
+	PInvokeFunc il2cppPInvokeFunc = reinterpret_cast<PInvokeFunc>(il2cpp_codegen_get_reverse_pinvoke_function_ptr(__this));
+	il2cppPInvokeFunc();
+
+}
+// Method Definition Index: 74101
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void LockDoorEvt__ctor_mFEC79ED10859BA028795E11E320CE2F0B3AA762A (LockDoorEvt_t15338F49A7805255093B5E4DE5994C05EC2FEC84* __this, RuntimeObject* ___0_object, intptr_t ___1_method, const RuntimeMethod* method) 
+{
+	__this->___method_ptr = (intptr_t)il2cpp_codegen_get_method_pointer((RuntimeMethod*)___1_method);
+	__this->___method = ___1_method;
+	__this->___m_target = ___0_object;
+	Il2CppCodeGenWriteBarrier((void**)(&__this->___m_target), (void*)___0_object);
+	int parameterCount = il2cpp_codegen_method_parameter_count((RuntimeMethod*)___1_method);
+	__this->___method_code = (intptr_t)__this;
+	if (MethodIsStatic((RuntimeMethod*)___1_method))
+	{
+		bool isOpen = parameterCount == 0;
+		if (isOpen)
+			__this->___invoke_impl = (intptr_t)&LockDoorEvt_Invoke_m0ED3A8C1C3B21230CB550F56580CE576CEA0A9B8_OpenStatic;
+		else
+			{
+				__this->___invoke_impl = __this->___method_ptr;
+				__this->___method_code = (intptr_t)__this->___m_target;
+			}
+	}
+	else
+	{
+		if (___0_object == NULL)
+			il2cpp_codegen_raise_exception(il2cpp_codegen_get_argument_exception(NULL, "Delegate to an instance method cannot have null 'this'."), NULL);
+		__this->___invoke_impl = __this->___method_ptr;
+		__this->___method_code = (intptr_t)__this->___m_target;
+	}
+	__this->___extra_arg = (intptr_t)&LockDoorEvt_Invoke_m0ED3A8C1C3B21230CB550F56580CE576CEA0A9B8_Multicast;
+}
+// Method Definition Index: 74102
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void LockDoorEvt_Invoke_m0ED3A8C1C3B21230CB550F56580CE576CEA0A9B8 (LockDoorEvt_t15338F49A7805255093B5E4DE5994C05EC2FEC84* __this, const RuntimeMethod* method) 
+{
+	typedef void (*FunctionPointerType) (RuntimeObject*, const RuntimeMethod*);
+	((FunctionPointerType)__this->___invoke_impl)((Il2CppObject*)__this->___method_code, reinterpret_cast<RuntimeMethod*>(__this->___method));
+}
+// Method Definition Index: 74103
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* LockDoorEvt_BeginInvoke_mF9AEC886049E608262B240FEEC64C6BBC5C6C173 (LockDoorEvt_t15338F49A7805255093B5E4DE5994C05EC2FEC84* __this, AsyncCallback_t7FEF460CBDCFB9C5FA2EF776984778B9A4145F4C* ___0_callback, RuntimeObject* ___1_object, const RuntimeMethod* method) 
+{
+	void *__d_args[1] = {0};
+	return (RuntimeObject*)il2cpp_codegen_delegate_begin_invoke((RuntimeDelegate*)__this, __d_args, (RuntimeDelegate*)___0_callback, (RuntimeObject*)___1_object);
+}
+// Method Definition Index: 74104
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void LockDoorEvt_EndInvoke_m263E5F85C2198E6F16F19323B6D0CC08251045B5 (LockDoorEvt_t15338F49A7805255093B5E4DE5994C05EC2FEC84* __this, RuntimeObject* ___0_result, const RuntimeMethod* method) 
+{
+	il2cpp_codegen_delegate_end_invoke((Il2CppAsyncResult*) ___0_result, 0);
+}
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#pragma clang diagnostic ignored "-Wunused-variable"
+#endif
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#pragma clang diagnostic ignored "-Wunused-variable"
+#endif
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#pragma clang diagnostic ignored "-Wunused-variable"
+#endif
+// Method Definition Index: 74105
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR bool OmniDoor3DData_IsStandard_mAC537037B236421107762A3388E7DB74E127D43E (int32_t ___0_doorKind, const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&OmniDoor3DData_tC2F25EE7B9156401B8B1CC7164E74372B6F83F45_il2cpp_TypeInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	DoorKindU5BU5D_tE3A6220B579D8E30E313169232EDEFC0C71A7F28* V_0 = NULL;
+	int32_t V_1 = 0;
+	int32_t V_2 = 0;
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3DData.cs:45>
+		il2cpp_codegen_runtime_class_init_inline(OmniDoor3DData_tC2F25EE7B9156401B8B1CC7164E74372B6F83F45_il2cpp_TypeInfo_var);
+		DoorKindU5BU5D_tE3A6220B579D8E30E313169232EDEFC0C71A7F28* L_0 = ((OmniDoor3DData_tC2F25EE7B9156401B8B1CC7164E74372B6F83F45_StaticFields*)il2cpp_codegen_static_fields_for(OmniDoor3DData_tC2F25EE7B9156401B8B1CC7164E74372B6F83F45_il2cpp_TypeInfo_var))->___standardKinds;
+		V_0 = L_0;
+		V_1 = 0;
+		goto IL_0018;
+	}
+
+IL_000a:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3DData.cs:45>
+		DoorKindU5BU5D_tE3A6220B579D8E30E313169232EDEFC0C71A7F28* L_1 = V_0;
+		int32_t L_2 = V_1;
+		NullCheck(L_1);
+		int32_t L_3 = L_2;
+		int32_t L_4 = (int32_t)(L_1)->GetAt(static_cast<il2cpp_array_size_t>(L_3));
+		V_2 = L_4;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3DData.cs:47>
+		int32_t L_5 = ___0_doorKind;
+		int32_t L_6 = V_2;
+		if ((!(((uint32_t)L_5) == ((uint32_t)L_6))))
+		{
+			goto IL_0014;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3DData.cs:48>
+		return (bool)1;
+	}
+
+IL_0014:
+	{
+		int32_t L_7 = V_1;
+		V_1 = ((int32_t)il2cpp_codegen_add(L_7, 1));
+	}
+
+IL_0018:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3DData.cs:45>
+		int32_t L_8 = V_1;
+		DoorKindU5BU5D_tE3A6220B579D8E30E313169232EDEFC0C71A7F28* L_9 = V_0;
+		NullCheck(L_9);
+		if ((((int32_t)L_8) < ((int32_t)((int32_t)(((RuntimeArray*)L_9)->max_length)))))
+		{
+			goto IL_000a;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3DData.cs:51>
+		return (bool)0;
+	}
+}
+// Method Definition Index: 74106
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR bool OmniDoor3DData_IsFence_m01EF6BAA81A6E884FAF0C1778CF0870F67BB8B09 (int32_t ___0_doorKind, const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&OmniDoor3DData_tC2F25EE7B9156401B8B1CC7164E74372B6F83F45_il2cpp_TypeInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	DoorKindU5BU5D_tE3A6220B579D8E30E313169232EDEFC0C71A7F28* V_0 = NULL;
+	int32_t V_1 = 0;
+	int32_t V_2 = 0;
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3DData.cs:57>
+		il2cpp_codegen_runtime_class_init_inline(OmniDoor3DData_tC2F25EE7B9156401B8B1CC7164E74372B6F83F45_il2cpp_TypeInfo_var);
+		DoorKindU5BU5D_tE3A6220B579D8E30E313169232EDEFC0C71A7F28* L_0 = ((OmniDoor3DData_tC2F25EE7B9156401B8B1CC7164E74372B6F83F45_StaticFields*)il2cpp_codegen_static_fields_for(OmniDoor3DData_tC2F25EE7B9156401B8B1CC7164E74372B6F83F45_il2cpp_TypeInfo_var))->___fenceKinds;
+		V_0 = L_0;
+		V_1 = 0;
+		goto IL_0018;
+	}
+
+IL_000a:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3DData.cs:57>
+		DoorKindU5BU5D_tE3A6220B579D8E30E313169232EDEFC0C71A7F28* L_1 = V_0;
+		int32_t L_2 = V_1;
+		NullCheck(L_1);
+		int32_t L_3 = L_2;
+		int32_t L_4 = (int32_t)(L_1)->GetAt(static_cast<il2cpp_array_size_t>(L_3));
+		V_2 = L_4;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3DData.cs:59>
+		int32_t L_5 = ___0_doorKind;
+		int32_t L_6 = V_2;
+		if ((!(((uint32_t)L_5) == ((uint32_t)L_6))))
+		{
+			goto IL_0014;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3DData.cs:60>
+		return (bool)1;
+	}
+
+IL_0014:
+	{
+		int32_t L_7 = V_1;
+		V_1 = ((int32_t)il2cpp_codegen_add(L_7, 1));
+	}
+
+IL_0018:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3DData.cs:57>
+		int32_t L_8 = V_1;
+		DoorKindU5BU5D_tE3A6220B579D8E30E313169232EDEFC0C71A7F28* L_9 = V_0;
+		NullCheck(L_9);
+		if ((((int32_t)L_8) < ((int32_t)((int32_t)(((RuntimeArray*)L_9)->max_length)))))
+		{
+			goto IL_000a;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3DData.cs:63>
+		return (bool)0;
+	}
+}
+// Method Definition Index: 74107
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3DData__cctor_mCC9C9DDBAC330A669897FBBB015A380C3C187A11 (const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&DoorKindU5BU5D_tE3A6220B579D8E30E313169232EDEFC0C71A7F28_il2cpp_TypeInfo_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&OmniDoor3DData_tC2F25EE7B9156401B8B1CC7164E74372B6F83F45_il2cpp_TypeInfo_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&U3CPrivateImplementationDetailsU3E_tDF76FE2002958A97429065AC028E0A0C70442121____67E2A8FC1FEBD460E2F91F2E0DEF7277FD09E3A1EA149EFC3C83728EFFB5712D_FieldInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3DData.cs:35>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3DData.cs:36>
+		DoorKindU5BU5D_tE3A6220B579D8E30E313169232EDEFC0C71A7F28* L_0 = (DoorKindU5BU5D_tE3A6220B579D8E30E313169232EDEFC0C71A7F28*)(DoorKindU5BU5D_tE3A6220B579D8E30E313169232EDEFC0C71A7F28*)SZArrayNew(DoorKindU5BU5D_tE3A6220B579D8E30E313169232EDEFC0C71A7F28_il2cpp_TypeInfo_var, (uint32_t)3);
+		DoorKindU5BU5D_tE3A6220B579D8E30E313169232EDEFC0C71A7F28* L_1 = L_0;
+		NullCheck(L_1);
+		(L_1)->SetAt(static_cast<il2cpp_array_size_t>(1), (int32_t)1);
+		DoorKindU5BU5D_tE3A6220B579D8E30E313169232EDEFC0C71A7F28* L_2 = L_1;
+		NullCheck(L_2);
+		(L_2)->SetAt(static_cast<il2cpp_array_size_t>(2), (int32_t)4);
+		((OmniDoor3DData_tC2F25EE7B9156401B8B1CC7164E74372B6F83F45_StaticFields*)il2cpp_codegen_static_fields_for(OmniDoor3DData_tC2F25EE7B9156401B8B1CC7164E74372B6F83F45_il2cpp_TypeInfo_var))->___standardKinds = L_2;
+		Il2CppCodeGenWriteBarrier((void**)(&((OmniDoor3DData_tC2F25EE7B9156401B8B1CC7164E74372B6F83F45_StaticFields*)il2cpp_codegen_static_fields_for(OmniDoor3DData_tC2F25EE7B9156401B8B1CC7164E74372B6F83F45_il2cpp_TypeInfo_var))->___standardKinds), (void*)L_2);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3DData.cs:39>
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3DData.cs:40>
+		DoorKindU5BU5D_tE3A6220B579D8E30E313169232EDEFC0C71A7F28* L_3 = (DoorKindU5BU5D_tE3A6220B579D8E30E313169232EDEFC0C71A7F28*)(DoorKindU5BU5D_tE3A6220B579D8E30E313169232EDEFC0C71A7F28*)SZArrayNew(DoorKindU5BU5D_tE3A6220B579D8E30E313169232EDEFC0C71A7F28_il2cpp_TypeInfo_var, (uint32_t)4);
+		DoorKindU5BU5D_tE3A6220B579D8E30E313169232EDEFC0C71A7F28* L_4 = L_3;
+		RuntimeFieldHandle_t6E4C45B6D2EA12FC99185805A7E77527899B25C5 L_5 = { reinterpret_cast<intptr_t> (U3CPrivateImplementationDetailsU3E_tDF76FE2002958A97429065AC028E0A0C70442121____67E2A8FC1FEBD460E2F91F2E0DEF7277FD09E3A1EA149EFC3C83728EFFB5712D_FieldInfo_var) };
+		RuntimeHelpers_InitializeArray_m751372AA3F24FBF6DA9B9D687CBFA2DE436CAB9B((RuntimeArray*)L_4, L_5, NULL);
+		((OmniDoor3DData_tC2F25EE7B9156401B8B1CC7164E74372B6F83F45_StaticFields*)il2cpp_codegen_static_fields_for(OmniDoor3DData_tC2F25EE7B9156401B8B1CC7164E74372B6F83F45_il2cpp_TypeInfo_var))->___fenceKinds = L_4;
+		Il2CppCodeGenWriteBarrier((void**)(&((OmniDoor3DData_tC2F25EE7B9156401B8B1CC7164E74372B6F83F45_StaticFields*)il2cpp_codegen_static_fields_for(OmniDoor3DData_tC2F25EE7B9156401B8B1CC7164E74372B6F83F45_il2cpp_TypeInfo_var))->___fenceKinds), (void*)L_4);
+		return;
+	}
+}
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#pragma clang diagnostic ignored "-Wunused-variable"
+#endif
+// Method Definition Index: 74108
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3DConfig__ctor_m12DE4BE4DCB9E4C4A46249C49CB59F1CE87A685E (OmniDoor3DConfig_t190977036D4995316F7EBBC5305FE39D88914957* __this, const RuntimeMethod* method) 
+{
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/ScriptableObjects/OmniDoor3DConfig.cs:8>
+		__this->___checkTime = (0.0500000007f);
+		ScriptableObject__ctor_mD037FDB0B487295EA47F79A4DB1BF1846C9087FF(__this, NULL);
+		return;
+	}
+}
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#pragma clang diagnostic ignored "-Wunused-variable"
+#endif
+// Method Definition Index: 74109
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoorDB__ctor_mA833938070842C1D1351B6B84F3FB2FF87C11F63 (OmniDoorDB_t370225F36C9C4B0D70F59485EC3D8ABB4B1DCB46* __this, const RuntimeMethod* method) 
+{
+	{
+		ScriptableObject__ctor_mD037FDB0B487295EA47F79A4DB1BF1846C9087FF(__this, NULL);
+		return;
+	}
+}
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#pragma clang diagnostic ignored "-Wunused-variable"
+#endif
+// Method Definition Index: 74110
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorControllerExample_Awake_m93C07A9DD85A000D10FD94C59911DF3312FECD0B (DoorControllerExample_t7764C4F0A254D914B8E378680A4F273D55FE0933* __this, const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Component_GetComponent_TisOmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6_m1E08F03E67FCFF643285BD146713535A5FE8FFF4_RuntimeMethod_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/DoorControllerExample.cs:14>
+		OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* L_0;
+		L_0 = Component_GetComponent_TisOmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6_m1E08F03E67FCFF643285BD146713535A5FE8FFF4(__this, Component_GetComponent_TisOmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6_m1E08F03E67FCFF643285BD146713535A5FE8FFF4_RuntimeMethod_var);
+		__this->___dc = L_0;
+		Il2CppCodeGenWriteBarrier((void**)(&__this->___dc), (void*)L_0);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/DoorControllerExample.cs:15>
+		return;
+	}
+}
+// Method Definition Index: 74111
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorControllerExample_OpenDoor_m52C7C37D31ADF3CD90353865BC89DBAF95469123 (DoorControllerExample_t7764C4F0A254D914B8E378680A4F273D55FE0933* __this, const RuntimeMethod* method) 
+{
+	OpenDoorEvt_t53FDC500F958704C0041B93E83B01FD1685D2A98* G_B2_0 = NULL;
+	OpenDoorEvt_t53FDC500F958704C0041B93E83B01FD1685D2A98* G_B1_0 = NULL;
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/DoorControllerExample.cs:22>
+		OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* L_0 = __this->___dc;
+		NullCheck(L_0);
+		OpenDoorEvt_t53FDC500F958704C0041B93E83B01FD1685D2A98* L_1 = L_0->___OpenDoor;
+		OpenDoorEvt_t53FDC500F958704C0041B93E83B01FD1685D2A98* L_2 = L_1;
+		if (L_2)
+		{
+			G_B2_0 = L_2;
+			goto IL_0010;
+		}
+		G_B1_0 = L_2;
+	}
+	{
+		return;
+	}
+
+IL_0010:
+	{
+		NullCheck(G_B2_0);
+		OpenDoorEvt_Invoke_mBC4CCF7F672C37BF8C2CC5556F906550F13F8DCC_inline(G_B2_0, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/DoorControllerExample.cs:23>
+		return;
+	}
+}
+// Method Definition Index: 74112
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorControllerExample_CloseDoor_mD85BE538AA4D52F46A277F793D2456D0E8F92664 (DoorControllerExample_t7764C4F0A254D914B8E378680A4F273D55FE0933* __this, const RuntimeMethod* method) 
+{
+	CloseDoorEvt_t0FA9DD6BBFED77AF496D88825BE7100D2C05E507* G_B2_0 = NULL;
+	CloseDoorEvt_t0FA9DD6BBFED77AF496D88825BE7100D2C05E507* G_B1_0 = NULL;
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/DoorControllerExample.cs:27>
+		OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* L_0 = __this->___dc;
+		NullCheck(L_0);
+		CloseDoorEvt_t0FA9DD6BBFED77AF496D88825BE7100D2C05E507* L_1 = L_0->___CloseDoor;
+		CloseDoorEvt_t0FA9DD6BBFED77AF496D88825BE7100D2C05E507* L_2 = L_1;
+		if (L_2)
+		{
+			G_B2_0 = L_2;
+			goto IL_0010;
+		}
+		G_B1_0 = L_2;
+	}
+	{
+		return;
+	}
+
+IL_0010:
+	{
+		NullCheck(G_B2_0);
+		CloseDoorEvt_Invoke_m3DF1BF5991F943417FB2FDAA0E63682AEF1CF612_inline(G_B2_0, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/DoorControllerExample.cs:28>
+		return;
+	}
+}
+// Method Definition Index: 74113
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorControllerExample_LockDoor_mA3E2942ABC571D21C64ADEF29BA5B469CC75B8EE (DoorControllerExample_t7764C4F0A254D914B8E378680A4F273D55FE0933* __this, const RuntimeMethod* method) 
+{
+	LockDoorEvt_t15338F49A7805255093B5E4DE5994C05EC2FEC84* G_B2_0 = NULL;
+	LockDoorEvt_t15338F49A7805255093B5E4DE5994C05EC2FEC84* G_B1_0 = NULL;
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/DoorControllerExample.cs:32>
+		OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* L_0 = __this->___dc;
+		NullCheck(L_0);
+		LockDoorEvt_t15338F49A7805255093B5E4DE5994C05EC2FEC84* L_1 = L_0->___LockDoor;
+		LockDoorEvt_t15338F49A7805255093B5E4DE5994C05EC2FEC84* L_2 = L_1;
+		if (L_2)
+		{
+			G_B2_0 = L_2;
+			goto IL_0010;
+		}
+		G_B1_0 = L_2;
+	}
+	{
+		return;
+	}
+
+IL_0010:
+	{
+		NullCheck(G_B2_0);
+		LockDoorEvt_Invoke_m0ED3A8C1C3B21230CB550F56580CE576CEA0A9B8_inline(G_B2_0, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/DoorControllerExample.cs:33>
+		return;
+	}
+}
+// Method Definition Index: 74114
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorControllerExample_UnlockDoor_mA4003E94231AE1686DE8CDE5EBB88262E14A7563 (DoorControllerExample_t7764C4F0A254D914B8E378680A4F273D55FE0933* __this, const RuntimeMethod* method) 
+{
+	UnlockDoorEvt_t6006D394CC44175581D7140CCCC65A71B68F20CF* G_B2_0 = NULL;
+	UnlockDoorEvt_t6006D394CC44175581D7140CCCC65A71B68F20CF* G_B1_0 = NULL;
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/DoorControllerExample.cs:37>
+		OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* L_0 = __this->___dc;
+		NullCheck(L_0);
+		UnlockDoorEvt_t6006D394CC44175581D7140CCCC65A71B68F20CF* L_1 = L_0->___UnlockDoor;
+		UnlockDoorEvt_t6006D394CC44175581D7140CCCC65A71B68F20CF* L_2 = L_1;
+		if (L_2)
+		{
+			G_B2_0 = L_2;
+			goto IL_0010;
+		}
+		G_B1_0 = L_2;
+	}
+	{
+		return;
+	}
+
+IL_0010:
+	{
+		NullCheck(G_B2_0);
+		UnlockDoorEvt_Invoke_mE2370B6BA7803BA0199F438F608256535AAF7D07_inline(G_B2_0, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/DoorControllerExample.cs:38>
+		return;
+	}
+}
+// Method Definition Index: 74115
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorControllerExample_OnTriggerEnter_m13F102246A0C381214D25ED5FB596C092FAA35F0 (DoorControllerExample_t7764C4F0A254D914B8E378680A4F273D55FE0933* __this, Collider_t1CC3163924FCD6C4CC2E816373A929C1E3D55E76* ___0_other, const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Component_GetComponent_TisPlayerOrbital_tF69524049E80DB19D1E220115D3472F6614CCA7A_m9F4AE622EACEA668F0C6807340906160178ACF2F_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&_stringLiteralCAF8804297181FF007CA835529DD4477CFD94A70);
+		s_Il2CppMethodInitialized = true;
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/DoorControllerExample.cs:45>
+		Collider_t1CC3163924FCD6C4CC2E816373A929C1E3D55E76* L_0 = ___0_other;
+		NullCheck(L_0);
+		bool L_1;
+		L_1 = Component_CompareTag_mE6F8897E84F12DF12D302FFC4D58204D51096FC5(L_0, _stringLiteralCAF8804297181FF007CA835529DD4477CFD94A70, NULL);
+		if (L_1)
+		{
+			goto IL_000e;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/DoorControllerExample.cs:46>
+		return;
+	}
+
+IL_000e:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/DoorControllerExample.cs:48>
+		SpriteRenderer_t1DD7FE258F072E1FA87D6577BA27225892B8047B* L_2 = __this->___spaceHint;
+		NullCheck(L_2);
+		Renderer_set_enabled_m015E6D7B825528A31182F267234CC6A925F71DA8(L_2, (bool)1, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/DoorControllerExample.cs:49>
+		Collider_t1CC3163924FCD6C4CC2E816373A929C1E3D55E76* L_3 = ___0_other;
+		NullCheck(L_3);
+		PlayerOrbital_tF69524049E80DB19D1E220115D3472F6614CCA7A* L_4;
+		L_4 = Component_GetComponent_TisPlayerOrbital_tF69524049E80DB19D1E220115D3472F6614CCA7A_m9F4AE622EACEA668F0C6807340906160178ACF2F(L_3, Component_GetComponent_TisPlayerOrbital_tF69524049E80DB19D1E220115D3472F6614CCA7A_m9F4AE622EACEA668F0C6807340906160178ACF2F_RuntimeMethod_var);
+		OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* L_5 = __this->___dc;
+		NullCheck(L_4);
+		PlayerOrbital_set_doorController_m693A76ECD26EBA11E594BA3E3DB69F86865D2F43_inline(L_4, L_5, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/DoorControllerExample.cs:50>
+		return;
+	}
+}
+// Method Definition Index: 74116
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorControllerExample_OnTriggerExit_m9924C3B1E037B4A8B43CDC4773C998FA2519CBBF (DoorControllerExample_t7764C4F0A254D914B8E378680A4F273D55FE0933* __this, Collider_t1CC3163924FCD6C4CC2E816373A929C1E3D55E76* ___0_other, const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Component_GetComponent_TisPlayerOrbital_tF69524049E80DB19D1E220115D3472F6614CCA7A_m9F4AE622EACEA668F0C6807340906160178ACF2F_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&_stringLiteralCAF8804297181FF007CA835529DD4477CFD94A70);
+		s_Il2CppMethodInitialized = true;
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/DoorControllerExample.cs:54>
+		Collider_t1CC3163924FCD6C4CC2E816373A929C1E3D55E76* L_0 = ___0_other;
+		NullCheck(L_0);
+		bool L_1;
+		L_1 = Component_CompareTag_mE6F8897E84F12DF12D302FFC4D58204D51096FC5(L_0, _stringLiteralCAF8804297181FF007CA835529DD4477CFD94A70, NULL);
+		if (L_1)
+		{
+			goto IL_000e;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/DoorControllerExample.cs:55>
+		return;
+	}
+
+IL_000e:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/DoorControllerExample.cs:57>
+		SpriteRenderer_t1DD7FE258F072E1FA87D6577BA27225892B8047B* L_2 = __this->___spaceHint;
+		NullCheck(L_2);
+		Renderer_set_enabled_m015E6D7B825528A31182F267234CC6A925F71DA8(L_2, (bool)0, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/DoorControllerExample.cs:58>
+		Collider_t1CC3163924FCD6C4CC2E816373A929C1E3D55E76* L_3 = ___0_other;
+		NullCheck(L_3);
+		PlayerOrbital_tF69524049E80DB19D1E220115D3472F6614CCA7A* L_4;
+		L_4 = Component_GetComponent_TisPlayerOrbital_tF69524049E80DB19D1E220115D3472F6614CCA7A_m9F4AE622EACEA668F0C6807340906160178ACF2F(L_3, Component_GetComponent_TisPlayerOrbital_tF69524049E80DB19D1E220115D3472F6614CCA7A_m9F4AE622EACEA668F0C6807340906160178ACF2F_RuntimeMethod_var);
+		NullCheck(L_4);
+		PlayerOrbital_set_doorController_m693A76ECD26EBA11E594BA3E3DB69F86865D2F43_inline(L_4, (OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6*)NULL, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/DoorControllerExample.cs:59>
+		return;
+	}
+}
+// Method Definition Index: 74117
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorControllerExample__ctor_m824B7855C7409C2314F9821296951BE21A5C8BDC (DoorControllerExample_t7764C4F0A254D914B8E378680A4F273D55FE0933* __this, const RuntimeMethod* method) 
+{
+	{
+		MonoBehaviour__ctor_m592DB0105CA0BC97AA1C5F4AD27B12D68A3B7C1E(__this, NULL);
+		return;
+	}
+}
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#pragma clang diagnostic ignored "-Wunused-variable"
+#endif
+// Method Definition Index: 74118
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void ItsLocked_Start_mCC6475F66A8C40D1D3458BAD20D0EEA96849414D (ItsLocked_t28889B0EBCBE99A9D4F0B4824407D45791512669* __this, const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Component_GetComponent_TisSpriteRenderer_t1DD7FE258F072E1FA87D6577BA27225892B8047B_m6181F10C09FC1650DAE0EF2308D344A2F170AA45_RuntimeMethod_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&DoorOpenFailedEvt_t1032FDEE75EB91423C95DF2155669047463F16C8_il2cpp_TypeInfo_var);
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&ItsLocked_OnDoorOpenFailed_m244494686A3F3F13419FE4706AEADB8C188C6FB0_RuntimeMethod_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/ItsLocked.cs:16>
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_0 = __this->___door;
+		OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* L_1 = L_0;
+		NullCheck(L_1);
+		DoorOpenFailedEvt_t1032FDEE75EB91423C95DF2155669047463F16C8* L_2 = L_1->___DoorOpenFailed;
+		DoorOpenFailedEvt_t1032FDEE75EB91423C95DF2155669047463F16C8* L_3 = (DoorOpenFailedEvt_t1032FDEE75EB91423C95DF2155669047463F16C8*)il2cpp_codegen_object_new(DoorOpenFailedEvt_t1032FDEE75EB91423C95DF2155669047463F16C8_il2cpp_TypeInfo_var);
+		DoorOpenFailedEvt__ctor_mEC8DDD242C47E1508C4DDFEC673B731F643D3E01(L_3, __this, (intptr_t)((void*)ItsLocked_OnDoorOpenFailed_m244494686A3F3F13419FE4706AEADB8C188C6FB0_RuntimeMethod_var), NULL);
+		Delegate_t* L_4;
+		L_4 = Delegate_Combine_m1F725AEF318BE6F0426863490691A6F4606E7D00(L_2, L_3, NULL);
+		NullCheck(L_1);
+		L_1->___DoorOpenFailed = ((DoorOpenFailedEvt_t1032FDEE75EB91423C95DF2155669047463F16C8*)CastclassSealed((RuntimeObject*)L_4, DoorOpenFailedEvt_t1032FDEE75EB91423C95DF2155669047463F16C8_il2cpp_TypeInfo_var));
+		Il2CppCodeGenWriteBarrier((void**)(&L_1->___DoorOpenFailed), (void*)((DoorOpenFailedEvt_t1032FDEE75EB91423C95DF2155669047463F16C8*)CastclassSealed((RuntimeObject*)L_4, DoorOpenFailedEvt_t1032FDEE75EB91423C95DF2155669047463F16C8_il2cpp_TypeInfo_var)));
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/ItsLocked.cs:17>
+		SpriteRenderer_t1DD7FE258F072E1FA87D6577BA27225892B8047B* L_5;
+		L_5 = Component_GetComponent_TisSpriteRenderer_t1DD7FE258F072E1FA87D6577BA27225892B8047B_m6181F10C09FC1650DAE0EF2308D344A2F170AA45(__this, Component_GetComponent_TisSpriteRenderer_t1DD7FE258F072E1FA87D6577BA27225892B8047B_m6181F10C09FC1650DAE0EF2308D344A2F170AA45_RuntimeMethod_var);
+		__this->___spr = L_5;
+		Il2CppCodeGenWriteBarrier((void**)(&__this->___spr), (void*)L_5);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/ItsLocked.cs:18>
+		return;
+	}
+}
+// Method Definition Index: 74119
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void ItsLocked_OnDoorOpenFailed_m244494686A3F3F13419FE4706AEADB8C188C6FB0 (ItsLocked_t28889B0EBCBE99A9D4F0B4824407D45791512669* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_lockedDoor, const RuntimeMethod* method) 
+{
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/ItsLocked.cs:24>
+		bool L_0 = __this->___flashing;
+		if (L_0)
+		{
+			goto IL_0015;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/ItsLocked.cs:25>
+		RuntimeObject* L_1;
+		L_1 = ItsLocked_FlashLockedSprite_mE06B158999B225C006FB6E30CBA7633BD3F0AA15(__this, NULL);
+		Coroutine_t85EA685566A254C23F3FD77AB5BDFFFF8799596B* L_2;
+		L_2 = MonoBehaviour_StartCoroutine_m4CAFF732AA28CD3BDC5363B44A863575530EC812(__this, L_1, NULL);
+	}
+
+IL_0015:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/ItsLocked.cs:26>
+		return;
+	}
+}
+// Method Definition Index: 74120
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* ItsLocked_FlashLockedSprite_mE06B158999B225C006FB6E30CBA7633BD3F0AA15 (ItsLocked_t28889B0EBCBE99A9D4F0B4824407D45791512669* __this, const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&U3CFlashLockedSpriteU3Ed__5_tA7E7D004963111EECBD0B36EFEE1989F1E951B65_il2cpp_TypeInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	{
+		U3CFlashLockedSpriteU3Ed__5_tA7E7D004963111EECBD0B36EFEE1989F1E951B65* L_0 = (U3CFlashLockedSpriteU3Ed__5_tA7E7D004963111EECBD0B36EFEE1989F1E951B65*)il2cpp_codegen_object_new(U3CFlashLockedSpriteU3Ed__5_tA7E7D004963111EECBD0B36EFEE1989F1E951B65_il2cpp_TypeInfo_var);
+		U3CFlashLockedSpriteU3Ed__5__ctor_mF679643F0269634E8DB0BD7B84E1BD9A2A700AEA(L_0, 0, NULL);
+		U3CFlashLockedSpriteU3Ed__5_tA7E7D004963111EECBD0B36EFEE1989F1E951B65* L_1 = L_0;
+		NullCheck(L_1);
+		L_1->___U3CU3E4__this = __this;
+		Il2CppCodeGenWriteBarrier((void**)(&L_1->___U3CU3E4__this), (void*)__this);
+		return L_1;
+	}
+}
+// Method Definition Index: 74121
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void ItsLocked__ctor_m17AE0BE3ECF0FFBCCBEC06457C13C71449C3C956 (ItsLocked_t28889B0EBCBE99A9D4F0B4824407D45791512669* __this, const RuntimeMethod* method) 
+{
+	{
+		MonoBehaviour__ctor_m592DB0105CA0BC97AA1C5F4AD27B12D68A3B7C1E(__this, NULL);
+		return;
+	}
+}
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#pragma clang diagnostic ignored "-Wunused-variable"
+#endif
+// Method Definition Index: 74122
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void U3CFlashLockedSpriteU3Ed__5__ctor_mF679643F0269634E8DB0BD7B84E1BD9A2A700AEA (U3CFlashLockedSpriteU3Ed__5_tA7E7D004963111EECBD0B36EFEE1989F1E951B65* __this, int32_t ___0_U3CU3E1__state, const RuntimeMethod* method) 
+{
+	{
+		Object__ctor_mE837C6B9FA8C6D5D109F4B2EC885D79919AC0EA2(__this, NULL);
+		int32_t L_0 = ___0_U3CU3E1__state;
+		__this->___U3CU3E1__state = L_0;
+		return;
+	}
+}
+// Method Definition Index: 74123
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void U3CFlashLockedSpriteU3Ed__5_System_IDisposable_Dispose_m7CA3DC86E4C85220CB60A056FF0C3DCCBED41A3B (U3CFlashLockedSpriteU3Ed__5_tA7E7D004963111EECBD0B36EFEE1989F1E951B65* __this, const RuntimeMethod* method) 
+{
+	{
+		return;
+	}
+}
+// Method Definition Index: 74124
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR bool U3CFlashLockedSpriteU3Ed__5_MoveNext_mD0056F4504487227F37158A17E4C27D8A43F1A5B (U3CFlashLockedSpriteU3Ed__5_tA7E7D004963111EECBD0B36EFEE1989F1E951B65* __this, const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&WaitForSeconds_tF179DF251655B8DF044952E70A60DF4B358A3DD3_il2cpp_TypeInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	int32_t V_0 = 0;
+	ItsLocked_t28889B0EBCBE99A9D4F0B4824407D45791512669* V_1 = NULL;
+	{
+		int32_t L_0 = __this->___U3CU3E1__state;
+		V_0 = L_0;
+		ItsLocked_t28889B0EBCBE99A9D4F0B4824407D45791512669* L_1 = __this->___U3CU3E4__this;
+		V_1 = L_1;
+		int32_t L_2 = V_0;
+		switch (L_2)
+		{
+			case 0:
+			{
+				goto IL_002e;
+			}
+			case 1:
+			{
+				goto IL_0061;
+			}
+			case 2:
+			{
+				goto IL_008d;
+			}
+			case 3:
+			{
+				goto IL_00b9;
+			}
+			case 4:
+			{
+				goto IL_00e5;
+			}
+			case 5:
+			{
+				goto IL_0111;
+			}
+		}
+	}
+	{
+		return (bool)0;
+	}
+
+IL_002e:
+	{
+		__this->___U3CU3E1__state = (-1);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/ItsLocked.cs:31>
+		ItsLocked_t28889B0EBCBE99A9D4F0B4824407D45791512669* L_3 = V_1;
+		NullCheck(L_3);
+		L_3->___flashing = (bool)1;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/ItsLocked.cs:32>
+		ItsLocked_t28889B0EBCBE99A9D4F0B4824407D45791512669* L_4 = V_1;
+		NullCheck(L_4);
+		SpriteRenderer_t1DD7FE258F072E1FA87D6577BA27225892B8047B* L_5 = L_4->___spr;
+		NullCheck(L_5);
+		Renderer_set_enabled_m015E6D7B825528A31182F267234CC6A925F71DA8(L_5, (bool)1, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/ItsLocked.cs:33>
+		WaitForSeconds_tF179DF251655B8DF044952E70A60DF4B358A3DD3* L_6 = (WaitForSeconds_tF179DF251655B8DF044952E70A60DF4B358A3DD3*)il2cpp_codegen_object_new(WaitForSeconds_tF179DF251655B8DF044952E70A60DF4B358A3DD3_il2cpp_TypeInfo_var);
+		WaitForSeconds__ctor_m579F95BADEDBAB4B3A7E302C6EE3995926EF2EFC(L_6, (0.5f), NULL);
+		__this->___U3CU3E2__current = L_6;
+		Il2CppCodeGenWriteBarrier((void**)(&__this->___U3CU3E2__current), (void*)L_6);
+		__this->___U3CU3E1__state = 1;
+		return (bool)1;
+	}
+
+IL_0061:
+	{
+		__this->___U3CU3E1__state = (-1);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/ItsLocked.cs:34>
+		ItsLocked_t28889B0EBCBE99A9D4F0B4824407D45791512669* L_7 = V_1;
+		NullCheck(L_7);
+		SpriteRenderer_t1DD7FE258F072E1FA87D6577BA27225892B8047B* L_8 = L_7->___spr;
+		NullCheck(L_8);
+		Renderer_set_enabled_m015E6D7B825528A31182F267234CC6A925F71DA8(L_8, (bool)0, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/ItsLocked.cs:35>
+		WaitForSeconds_tF179DF251655B8DF044952E70A60DF4B358A3DD3* L_9 = (WaitForSeconds_tF179DF251655B8DF044952E70A60DF4B358A3DD3*)il2cpp_codegen_object_new(WaitForSeconds_tF179DF251655B8DF044952E70A60DF4B358A3DD3_il2cpp_TypeInfo_var);
+		WaitForSeconds__ctor_m579F95BADEDBAB4B3A7E302C6EE3995926EF2EFC(L_9, (0.5f), NULL);
+		__this->___U3CU3E2__current = L_9;
+		Il2CppCodeGenWriteBarrier((void**)(&__this->___U3CU3E2__current), (void*)L_9);
+		__this->___U3CU3E1__state = 2;
+		return (bool)1;
+	}
+
+IL_008d:
+	{
+		__this->___U3CU3E1__state = (-1);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/ItsLocked.cs:36>
+		ItsLocked_t28889B0EBCBE99A9D4F0B4824407D45791512669* L_10 = V_1;
+		NullCheck(L_10);
+		SpriteRenderer_t1DD7FE258F072E1FA87D6577BA27225892B8047B* L_11 = L_10->___spr;
+		NullCheck(L_11);
+		Renderer_set_enabled_m015E6D7B825528A31182F267234CC6A925F71DA8(L_11, (bool)1, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/ItsLocked.cs:37>
+		WaitForSeconds_tF179DF251655B8DF044952E70A60DF4B358A3DD3* L_12 = (WaitForSeconds_tF179DF251655B8DF044952E70A60DF4B358A3DD3*)il2cpp_codegen_object_new(WaitForSeconds_tF179DF251655B8DF044952E70A60DF4B358A3DD3_il2cpp_TypeInfo_var);
+		WaitForSeconds__ctor_m579F95BADEDBAB4B3A7E302C6EE3995926EF2EFC(L_12, (0.5f), NULL);
+		__this->___U3CU3E2__current = L_12;
+		Il2CppCodeGenWriteBarrier((void**)(&__this->___U3CU3E2__current), (void*)L_12);
+		__this->___U3CU3E1__state = 3;
+		return (bool)1;
+	}
+
+IL_00b9:
+	{
+		__this->___U3CU3E1__state = (-1);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/ItsLocked.cs:38>
+		ItsLocked_t28889B0EBCBE99A9D4F0B4824407D45791512669* L_13 = V_1;
+		NullCheck(L_13);
+		SpriteRenderer_t1DD7FE258F072E1FA87D6577BA27225892B8047B* L_14 = L_13->___spr;
+		NullCheck(L_14);
+		Renderer_set_enabled_m015E6D7B825528A31182F267234CC6A925F71DA8(L_14, (bool)0, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/ItsLocked.cs:39>
+		WaitForSeconds_tF179DF251655B8DF044952E70A60DF4B358A3DD3* L_15 = (WaitForSeconds_tF179DF251655B8DF044952E70A60DF4B358A3DD3*)il2cpp_codegen_object_new(WaitForSeconds_tF179DF251655B8DF044952E70A60DF4B358A3DD3_il2cpp_TypeInfo_var);
+		WaitForSeconds__ctor_m579F95BADEDBAB4B3A7E302C6EE3995926EF2EFC(L_15, (0.5f), NULL);
+		__this->___U3CU3E2__current = L_15;
+		Il2CppCodeGenWriteBarrier((void**)(&__this->___U3CU3E2__current), (void*)L_15);
+		__this->___U3CU3E1__state = 4;
+		return (bool)1;
+	}
+
+IL_00e5:
+	{
+		__this->___U3CU3E1__state = (-1);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/ItsLocked.cs:40>
+		ItsLocked_t28889B0EBCBE99A9D4F0B4824407D45791512669* L_16 = V_1;
+		NullCheck(L_16);
+		SpriteRenderer_t1DD7FE258F072E1FA87D6577BA27225892B8047B* L_17 = L_16->___spr;
+		NullCheck(L_17);
+		Renderer_set_enabled_m015E6D7B825528A31182F267234CC6A925F71DA8(L_17, (bool)1, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/ItsLocked.cs:41>
+		WaitForSeconds_tF179DF251655B8DF044952E70A60DF4B358A3DD3* L_18 = (WaitForSeconds_tF179DF251655B8DF044952E70A60DF4B358A3DD3*)il2cpp_codegen_object_new(WaitForSeconds_tF179DF251655B8DF044952E70A60DF4B358A3DD3_il2cpp_TypeInfo_var);
+		WaitForSeconds__ctor_m579F95BADEDBAB4B3A7E302C6EE3995926EF2EFC(L_18, (0.5f), NULL);
+		__this->___U3CU3E2__current = L_18;
+		Il2CppCodeGenWriteBarrier((void**)(&__this->___U3CU3E2__current), (void*)L_18);
+		__this->___U3CU3E1__state = 5;
+		return (bool)1;
+	}
+
+IL_0111:
+	{
+		__this->___U3CU3E1__state = (-1);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/ItsLocked.cs:42>
+		ItsLocked_t28889B0EBCBE99A9D4F0B4824407D45791512669* L_19 = V_1;
+		NullCheck(L_19);
+		SpriteRenderer_t1DD7FE258F072E1FA87D6577BA27225892B8047B* L_20 = L_19->___spr;
+		NullCheck(L_20);
+		Renderer_set_enabled_m015E6D7B825528A31182F267234CC6A925F71DA8(L_20, (bool)0, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/ItsLocked.cs:43>
+		ItsLocked_t28889B0EBCBE99A9D4F0B4824407D45791512669* L_21 = V_1;
+		NullCheck(L_21);
+		L_21->___flashing = (bool)0;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/ItsLocked.cs:44>
+		return (bool)0;
+	}
+}
+// Method Definition Index: 74125
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* U3CFlashLockedSpriteU3Ed__5_System_Collections_Generic_IEnumeratorU3CSystem_ObjectU3E_get_Current_m51C740F180147C16B0BB9B7766E61C9E7EBAFF43 (U3CFlashLockedSpriteU3Ed__5_tA7E7D004963111EECBD0B36EFEE1989F1E951B65* __this, const RuntimeMethod* method) 
+{
+	{
+		RuntimeObject* L_0 = __this->___U3CU3E2__current;
+		return L_0;
+	}
+}
+// Method Definition Index: 74126
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void U3CFlashLockedSpriteU3Ed__5_System_Collections_IEnumerator_Reset_m6F4D8025768F4D2D687674EBF9BE7F3EC412D8B6 (U3CFlashLockedSpriteU3Ed__5_tA7E7D004963111EECBD0B36EFEE1989F1E951B65* __this, const RuntimeMethod* method) 
+{
+	{
+		NotSupportedException_t1429765983D409BD2986508963C98D214E4EBF4A* L_0 = (NotSupportedException_t1429765983D409BD2986508963C98D214E4EBF4A*)il2cpp_codegen_object_new(((RuntimeClass*)il2cpp_codegen_initialize_runtime_metadata_inline((uintptr_t*)&NotSupportedException_t1429765983D409BD2986508963C98D214E4EBF4A_il2cpp_TypeInfo_var)));
+		NotSupportedException__ctor_m1398D0CDE19B36AA3DE9392879738C1EA2439CDF(L_0, NULL);
+		IL2CPP_RAISE_MANAGED_EXCEPTION(L_0, ((RuntimeMethod*)il2cpp_codegen_initialize_runtime_metadata_inline((uintptr_t*)&U3CFlashLockedSpriteU3Ed__5_System_Collections_IEnumerator_Reset_m6F4D8025768F4D2D687674EBF9BE7F3EC412D8B6_RuntimeMethod_var)));
+	}
+}
+// Method Definition Index: 74127
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* U3CFlashLockedSpriteU3Ed__5_System_Collections_IEnumerator_get_Current_m993D106184E094DFB36B620B9CF86C769DDDD0A3 (U3CFlashLockedSpriteU3Ed__5_tA7E7D004963111EECBD0B36EFEE1989F1E951B65* __this, const RuntimeMethod* method) 
+{
+	{
+		RuntimeObject* L_0 = __this->___U3CU3E2__current;
+		return L_0;
+	}
+}
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#pragma clang diagnostic ignored "-Wunused-variable"
+#endif
+// Method Definition Index: 74128
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* PlayerOrbital_get_doorController_mF3F41580BE53B0BEE70ACFD43FCFA5CC01392C63 (PlayerOrbital_tF69524049E80DB19D1E220115D3472F6614CCA7A* __this, const RuntimeMethod* method) 
+{
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PlayerOrbital.cs:17>
+		OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* L_0 = __this->____doorController;
+		return L_0;
+	}
+}
+// Method Definition Index: 74129
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void PlayerOrbital_set_doorController_m693A76ECD26EBA11E594BA3E3DB69F86865D2F43 (PlayerOrbital_tF69524049E80DB19D1E220115D3472F6614CCA7A* __this, OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* ___0_value, const RuntimeMethod* method) 
+{
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PlayerOrbital.cs:17>
+		OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* L_0 = ___0_value;
+		__this->____doorController = L_0;
+		Il2CppCodeGenWriteBarrier((void**)(&__this->____doorController), (void*)L_0);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PlayerOrbital.cs:17>
+		return;
+	}
+}
+// Method Definition Index: 74130
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void PlayerOrbital_Start_m02C7A04EF118894A33B0AA93B3E7BA90772E8BD6 (PlayerOrbital_tF69524049E80DB19D1E220115D3472F6614CCA7A* __this, const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Component_GetComponent_TisCharacterController_t847C1A2719F60547D7D6077B648D6CE2D1EF3A6A_m96B48A644EDC97C5C82F154D1FEA551B2E392040_RuntimeMethod_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PlayerOrbital.cs:28>
+		Camera_tA92CC927D7439999BC82DBEDC0AA45B470F9E184* L_0;
+		L_0 = Camera_get_main_m52C992F18E05355ABB9EEB64A4BF2215E12762DF(NULL);
+		__this->___camMain = L_0;
+		Il2CppCodeGenWriteBarrier((void**)(&__this->___camMain), (void*)L_0);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PlayerOrbital.cs:29>
+		CharacterController_t847C1A2719F60547D7D6077B648D6CE2D1EF3A6A* L_1;
+		L_1 = Component_GetComponent_TisCharacterController_t847C1A2719F60547D7D6077B648D6CE2D1EF3A6A_m96B48A644EDC97C5C82F154D1FEA551B2E392040(__this, Component_GetComponent_TisCharacterController_t847C1A2719F60547D7D6077B648D6CE2D1EF3A6A_m96B48A644EDC97C5C82F154D1FEA551B2E392040_RuntimeMethod_var);
+		__this->___controller = L_1;
+		Il2CppCodeGenWriteBarrier((void**)(&__this->___controller), (void*)L_1);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PlayerOrbital.cs:30>
+		Camera_tA92CC927D7439999BC82DBEDC0AA45B470F9E184* L_2 = __this->___camMain;
+		NullCheck(L_2);
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_3;
+		L_3 = Component_get_transform_m2919A1D81931E6932C7F06D4C2F0AB8DDA9A5371(L_2, NULL);
+		NullCheck(L_3);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_4;
+		L_4 = Transform_get_position_m69CD5FA214FDAE7BB701552943674846C220FDE1(L_3, NULL);
+		__this->___currentCamPos = L_4;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PlayerOrbital.cs:31>
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_5;
+		L_5 = Component_get_transform_m2919A1D81931E6932C7F06D4C2F0AB8DDA9A5371(__this, NULL);
+		Quaternion_tDA59F214EF07D7700B26E40E562F267AF7306974 L_6;
+		L_6 = Quaternion_Euler_m9262AB29E3E9CE94EF71051F38A28E82AEC73F90_inline((0.0f), (0.0f), (0.0f), NULL);
+		NullCheck(L_5);
+		Transform_set_rotation_m61340DE74726CF0F9946743A727C4D444397331D(L_5, L_6, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PlayerOrbital.cs:32>
+		return;
+	}
+}
+// Method Definition Index: 74131
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void PlayerOrbital_OnMove_m53DCD2F7D055F76E43788DC51D85D63F94065D13 (PlayerOrbital_tF69524049E80DB19D1E220115D3472F6614CCA7A* __this, InputValue_t4F053958518BDF6FD85C55F31B0597C9521B4231* ___0_iv, const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&InputValue_Get_TisVector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7_mBA56AD2906D3B6F2B87F3DE248CB62E1AA4D2293_RuntimeMethod_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7 V_0;
+	memset((&V_0), 0, sizeof(V_0));
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PlayerOrbital.cs:37>
+		InputValue_t4F053958518BDF6FD85C55F31B0597C9521B4231* L_0 = ___0_iv;
+		NullCheck(L_0);
+		Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7 L_1;
+		L_1 = InputValue_Get_TisVector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7_mBA56AD2906D3B6F2B87F3DE248CB62E1AA4D2293(L_0, InputValue_Get_TisVector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7_mBA56AD2906D3B6F2B87F3DE248CB62E1AA4D2293_RuntimeMethod_var);
+		V_0 = L_1;
+		Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7 L_2;
+		L_2 = Vector2_get_normalized_mF6722883AEFB5027690A778DF8ACC20F0FA65297_inline((&V_0), NULL);
+		__this->___moveAxes = L_2;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PlayerOrbital.cs:38>
+		return;
+	}
+}
+// Method Definition Index: 74132
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void PlayerOrbital_OnLook_mB81FB3447F6F524445EEB3905066E33DC2989D77 (PlayerOrbital_tF69524049E80DB19D1E220115D3472F6614CCA7A* __this, InputValue_t4F053958518BDF6FD85C55F31B0597C9521B4231* ___0_iv, const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&InputValue_Get_TisVector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7_mBA56AD2906D3B6F2B87F3DE248CB62E1AA4D2293_RuntimeMethod_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PlayerOrbital.cs:43>
+		InputValue_t4F053958518BDF6FD85C55F31B0597C9521B4231* L_0 = ___0_iv;
+		NullCheck(L_0);
+		Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7 L_1;
+		L_1 = InputValue_Get_TisVector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7_mBA56AD2906D3B6F2B87F3DE248CB62E1AA4D2293(L_0, InputValue_Get_TisVector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7_mBA56AD2906D3B6F2B87F3DE248CB62E1AA4D2293_RuntimeMethod_var);
+		__this->___lookAxes = L_1;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PlayerOrbital.cs:44>
+		return;
+	}
+}
+// Method Definition Index: 74133
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void PlayerOrbital_OnJump_m6E69D31B14F3CBA2984F00D88F51503C34E1A19F (PlayerOrbital_tF69524049E80DB19D1E220115D3472F6614CCA7A* __this, const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_il2cpp_TypeInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	ToggleDoorEvt_tFE20427E5BADD68E7E1BE9380F1D78CFC33DDA40* G_B3_0 = NULL;
+	ToggleDoorEvt_tFE20427E5BADD68E7E1BE9380F1D78CFC33DDA40* G_B2_0 = NULL;
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PlayerOrbital.cs:49>
+		OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* L_0 = __this->____doorController;
+		il2cpp_codegen_runtime_class_init_inline(Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_il2cpp_TypeInfo_var);
+		bool L_1;
+		L_1 = Object_op_Inequality_mD0BE578448EAA61948F25C32F8DD55AB1F778602(L_0, (Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C*)NULL, NULL);
+		if (!L_1)
+		{
+			goto IL_0023;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PlayerOrbital.cs:50>
+		OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* L_2 = __this->____doorController;
+		NullCheck(L_2);
+		ToggleDoorEvt_tFE20427E5BADD68E7E1BE9380F1D78CFC33DDA40* L_3 = L_2->___ToggleDoor;
+		ToggleDoorEvt_tFE20427E5BADD68E7E1BE9380F1D78CFC33DDA40* L_4 = L_3;
+		if (L_4)
+		{
+			G_B3_0 = L_4;
+			goto IL_001e;
+		}
+		G_B2_0 = L_4;
+	}
+	{
+		return;
+	}
+
+IL_001e:
+	{
+		NullCheck(G_B3_0);
+		ToggleDoorEvt_Invoke_mF81798196C518135B86C2FA02286952D3A20B36B_inline(G_B3_0, NULL);
+	}
+
+IL_0023:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PlayerOrbital.cs:51>
+		return;
+	}
+}
+// Method Definition Index: 74134
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void PlayerOrbital_Update_m1ECBBA2AE563FDDB1CE26CA139E2204346E45718 (PlayerOrbital_tF69524049E80DB19D1E220115D3472F6614CCA7A* __this, const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_il2cpp_TypeInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 V_0;
+	memset((&V_0), 0, sizeof(V_0));
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 V_1;
+	memset((&V_1), 0, sizeof(V_1));
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 V_2;
+	memset((&V_2), 0, sizeof(V_2));
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 V_3;
+	memset((&V_3), 0, sizeof(V_3));
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PlayerOrbital.cs:55>
+		CharacterController_t847C1A2719F60547D7D6077B648D6CE2D1EF3A6A* L_0 = __this->___controller;
+		il2cpp_codegen_runtime_class_init_inline(Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_il2cpp_TypeInfo_var);
+		bool L_1;
+		L_1 = Object_op_Equality_mB6120F782D83091EF56A198FCEBCF066DB4A9605(L_0, (Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C*)NULL, NULL);
+		if (!L_1)
+		{
+			goto IL_000f;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PlayerOrbital.cs:56>
+		return;
+	}
+
+IL_000f:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PlayerOrbital.cs:60>
+		Mouse_t9A9CC4636FA9CDBAD7FB7A02DB0D6395EDCC338F* L_2;
+		L_2 = Mouse_get_current_m410C1F9ABC5AA77353574E8815F7E63289707986_inline(NULL);
+		NullCheck(L_2);
+		ButtonControl_t85949109B98AAF5B7ADC0285F0EC98A61EC88ECF* L_3;
+		L_3 = Mouse_get_rightButton_mFA0FD700624C0DE1B858F9516426414767F09D98_inline(L_2, NULL);
+		NullCheck(L_3);
+		bool L_4;
+		L_4 = ButtonControl_get_isPressed_m947621402F6EC1B957C2DE984806A6500D422EA6(L_3, NULL);
+		if (!L_4)
+		{
+			goto IL_008d;
+		}
+	}
+	{
+		Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7 L_5 = __this->___lookAxes;
+		Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7 L_6;
+		L_6 = Vector2_get_zero_m32506C40EC2EE7D5D4410BF40D3EE683A3D5F32C_inline(NULL);
+		bool L_7;
+		L_7 = Vector2_op_Inequality_mBEA93B5A0E954FEFB863DC61CB209119980EC713_inline(L_5, L_6, NULL);
+		if (!L_7)
+		{
+			goto IL_008d;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PlayerOrbital.cs:62>
+		float L_8 = __this->___yaw;
+		Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7* L_9 = (Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7*)(&__this->___lookAxes);
+		float L_10 = L_9->___x;
+		float L_11 = __this->___orbitSensitivity;
+		__this->___yaw = ((float)il2cpp_codegen_add(L_8, ((float)il2cpp_codegen_multiply(L_10, L_11))));
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PlayerOrbital.cs:63>
+		float L_12 = __this->___pitch;
+		Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7* L_13 = (Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7*)(&__this->___lookAxes);
+		float L_14 = L_13->___y;
+		float L_15 = __this->___orbitSensitivity;
+		__this->___pitch = ((float)il2cpp_codegen_subtract(L_12, ((float)il2cpp_codegen_multiply(L_14, L_15))));
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PlayerOrbital.cs:64>
+		float L_16 = __this->___pitch;
+		float L_17 = __this->___minYAngle;
+		float L_18 = __this->___maxYAngle;
+		float L_19;
+		L_19 = Mathf_Clamp_mEB9AEA827D27D20FCC787F7375156AF46BB12BBF_inline(L_16, L_17, L_18, NULL);
+		__this->___pitch = L_19;
+	}
+
+IL_008d:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PlayerOrbital.cs:67>
+		float L_20 = __this->___pitch;
+		float L_21 = __this->___yaw;
+		Quaternion_tDA59F214EF07D7700B26E40E562F267AF7306974 L_22;
+		L_22 = Quaternion_Euler_m9262AB29E3E9CE94EF71051F38A28E82AEC73F90_inline(L_20, L_21, (0.0f), NULL);
+		float L_23 = __this->___cameraDistance;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_24;
+		memset((&L_24), 0, sizeof(L_24));
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&L_24), (0.0f), (0.0f), ((-L_23)), NULL);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_25;
+		L_25 = Quaternion_op_Multiply_mE1EBA73F9173432B50F8F17CE8190C5A7986FB8C(L_22, L_24, NULL);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_26;
+		L_26 = Vector3_get_up_m128AF3FDC820BF59D5DE86D973E7DE3F20C3AEBA_inline(NULL);
+		float L_27 = __this->___cameraHeight;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_28;
+		L_28 = Vector3_op_Multiply_m87BA7C578F96C8E49BB07088DAAC4649F83B0353_inline(L_26, L_27, NULL);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_29;
+		L_29 = Vector3_op_Addition_m78C0EC70CB66E8DCAC225743D82B268DAEE92067_inline(L_25, L_28, NULL);
+		V_0 = L_29;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PlayerOrbital.cs:69>
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_30 = V_0;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_31;
+		L_31 = Vector3_get_zero_m0C1249C3F25B1C70EAD3CC8B31259975A457AE39_inline(NULL);
+		bool L_32;
+		L_32 = Vector3_op_Inequality_m9F170CDFBF1E490E559DA5D06D6547501A402BBF_inline(L_30, L_31, NULL);
+		if (!L_32)
+		{
+			goto IL_0155;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PlayerOrbital.cs:71>
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_33 = __this->___currentCamPos;
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_34;
+		L_34 = Component_get_transform_m2919A1D81931E6932C7F06D4C2F0AB8DDA9A5371(__this, NULL);
+		NullCheck(L_34);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_35;
+		L_35 = Transform_get_position_m69CD5FA214FDAE7BB701552943674846C220FDE1(L_34, NULL);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_36 = V_0;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_37;
+		L_37 = Vector3_op_Addition_m78C0EC70CB66E8DCAC225743D82B268DAEE92067_inline(L_35, L_36, NULL);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_38 = (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2*)(&__this->___camVelocity);
+		float L_39 = __this->___cameraSmoothTime;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_40;
+		L_40 = Vector3_SmoothDamp_mF673AC30464B7DF671A0556140EB6E9DD75827ED_inline(L_33, L_37, L_38, L_39, NULL);
+		__this->___currentCamPos = L_40;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PlayerOrbital.cs:72>
+		Camera_tA92CC927D7439999BC82DBEDC0AA45B470F9E184* L_41 = __this->___camMain;
+		NullCheck(L_41);
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_42;
+		L_42 = Component_get_transform_m2919A1D81931E6932C7F06D4C2F0AB8DDA9A5371(L_41, NULL);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_43 = __this->___currentCamPos;
+		NullCheck(L_42);
+		Transform_set_position_mA1A817124BB41B685043DED2A9BA48CDF37C4156(L_42, L_43, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PlayerOrbital.cs:73>
+		Camera_tA92CC927D7439999BC82DBEDC0AA45B470F9E184* L_44 = __this->___camMain;
+		NullCheck(L_44);
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_45;
+		L_45 = Component_get_transform_m2919A1D81931E6932C7F06D4C2F0AB8DDA9A5371(L_44, NULL);
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_46;
+		L_46 = Component_get_transform_m2919A1D81931E6932C7F06D4C2F0AB8DDA9A5371(__this, NULL);
+		NullCheck(L_46);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_47;
+		L_47 = Transform_get_position_m69CD5FA214FDAE7BB701552943674846C220FDE1(L_46, NULL);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_48;
+		L_48 = Vector3_get_up_m128AF3FDC820BF59D5DE86D973E7DE3F20C3AEBA_inline(NULL);
+		float L_49 = __this->___cameraHeight;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_50;
+		L_50 = Vector3_op_Multiply_m87BA7C578F96C8E49BB07088DAAC4649F83B0353_inline(L_48, L_49, NULL);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_51;
+		L_51 = Vector3_op_Addition_m78C0EC70CB66E8DCAC225743D82B268DAEE92067_inline(L_47, L_50, NULL);
+		NullCheck(L_45);
+		Transform_LookAt_mFEF7353E4CAEB85D5F7CEEF9276C3B8D6E314C6C(L_45, L_51, NULL);
+	}
+
+IL_0155:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PlayerOrbital.cs:77>
+		Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7 L_52 = __this->___moveAxes;
+		Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7 L_53;
+		L_53 = Vector2_get_zero_m32506C40EC2EE7D5D4410BF40D3EE683A3D5F32C_inline(NULL);
+		bool L_54;
+		L_54 = Vector2_op_Inequality_mBEA93B5A0E954FEFB863DC61CB209119980EC713_inline(L_52, L_53, NULL);
+		if (!L_54)
+		{
+			goto IL_022c;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PlayerOrbital.cs:79>
+		Camera_tA92CC927D7439999BC82DBEDC0AA45B470F9E184* L_55 = __this->___camMain;
+		NullCheck(L_55);
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_56;
+		L_56 = Component_get_transform_m2919A1D81931E6932C7F06D4C2F0AB8DDA9A5371(L_55, NULL);
+		NullCheck(L_56);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_57;
+		L_57 = Transform_get_forward_mFCFACF7165FDAB21E80E384C494DF278386CEE2F(L_56, NULL);
+		float L_58 = L_57.___x;
+		Camera_tA92CC927D7439999BC82DBEDC0AA45B470F9E184* L_59 = __this->___camMain;
+		NullCheck(L_59);
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_60;
+		L_60 = Component_get_transform_m2919A1D81931E6932C7F06D4C2F0AB8DDA9A5371(L_59, NULL);
+		NullCheck(L_60);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_61;
+		L_61 = Transform_get_forward_mFCFACF7165FDAB21E80E384C494DF278386CEE2F(L_60, NULL);
+		float L_62 = L_61.___z;
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&V_1), L_58, (0.0f), L_62, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PlayerOrbital.cs:80>
+		Camera_tA92CC927D7439999BC82DBEDC0AA45B470F9E184* L_63 = __this->___camMain;
+		NullCheck(L_63);
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_64;
+		L_64 = Component_get_transform_m2919A1D81931E6932C7F06D4C2F0AB8DDA9A5371(L_63, NULL);
+		NullCheck(L_64);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_65;
+		L_65 = Transform_get_right_mC6DC057C23313802E2186A9E0DB760D795A758A4(L_64, NULL);
+		float L_66 = L_65.___x;
+		Camera_tA92CC927D7439999BC82DBEDC0AA45B470F9E184* L_67 = __this->___camMain;
+		NullCheck(L_67);
+		Transform_tB27202C6F4E36D225EE28A13E4D662BF99785DB1* L_68;
+		L_68 = Component_get_transform_m2919A1D81931E6932C7F06D4C2F0AB8DDA9A5371(L_67, NULL);
+		NullCheck(L_68);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_69;
+		L_69 = Transform_get_right_mC6DC057C23313802E2186A9E0DB760D795A758A4(L_68, NULL);
+		float L_70 = L_69.___z;
+		Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline((&V_2), L_66, (0.0f), L_70, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PlayerOrbital.cs:81>
+		float L_71 = __this->___moveSpeed;
+		Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7* L_72 = (Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7*)(&__this->___moveAxes);
+		float L_73 = L_72->___x;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_74;
+		L_74 = Vector3_get_normalized_m736BBF65D5CDA7A18414370D15B4DFCC1E466F07_inline((&V_2), NULL);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_75;
+		L_75 = Vector3_op_Multiply_m7F3B0FA9256CE368D7636558EFEFC4AB0E1A0F41_inline(L_73, L_74, NULL);
+		Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7* L_76 = (Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7*)(&__this->___moveAxes);
+		float L_77 = L_76->___y;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_78;
+		L_78 = Vector3_get_normalized_m736BBF65D5CDA7A18414370D15B4DFCC1E466F07_inline((&V_1), NULL);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_79;
+		L_79 = Vector3_op_Multiply_m7F3B0FA9256CE368D7636558EFEFC4AB0E1A0F41_inline(L_77, L_78, NULL);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_80;
+		L_80 = Vector3_op_Addition_m78C0EC70CB66E8DCAC225743D82B268DAEE92067_inline(L_75, L_79, NULL);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_81;
+		L_81 = Vector3_op_Multiply_m7F3B0FA9256CE368D7636558EFEFC4AB0E1A0F41_inline(L_71, L_80, NULL);
+		V_3 = L_81;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PlayerOrbital.cs:82>
+		CharacterController_t847C1A2719F60547D7D6077B648D6CE2D1EF3A6A* L_82 = __this->___controller;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_83 = V_3;
+		float L_84;
+		L_84 = Time_get_deltaTime_mC3195000401F0FD167DD2F948FD2BC58330D0865(NULL);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_85;
+		L_85 = Vector3_op_Multiply_m87BA7C578F96C8E49BB07088DAAC4649F83B0353_inline(L_83, L_84, NULL);
+		NullCheck(L_82);
+		int32_t L_86;
+		L_86 = CharacterController_Move_mE3F7AC1B4A2D6955980811C088B68ED3A31D2DA4(L_82, L_85, NULL);
+	}
+
+IL_022c:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PlayerOrbital.cs:84>
+		return;
+	}
+}
+// Method Definition Index: 74135
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void PlayerOrbital__ctor_m2CA30A9279CC09439B651D2C00A1D92B03A05372 (PlayerOrbital_tF69524049E80DB19D1E220115D3472F6614CCA7A* __this, const RuntimeMethod* method) 
+{
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PlayerOrbital.cs:9>
+		__this->___moveSpeed = (4.0f);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PlayerOrbital.cs:10>
+		__this->___cameraDistance = (12.0f);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PlayerOrbital.cs:11>
+		__this->___cameraHeight = (5.0f);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PlayerOrbital.cs:12>
+		__this->___orbitSensitivity = (0.330000013f);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PlayerOrbital.cs:13>
+		__this->___minYAngle = (-15.0f);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PlayerOrbital.cs:14>
+		__this->___maxYAngle = (70.0f);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PlayerOrbital.cs:15>
+		__this->___cameraSmoothTime = (0.5f);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PlayerOrbital.cs:21>
+		__this->___pitch = (20.0f);
+		MonoBehaviour__ctor_m592DB0105CA0BC97AA1C5F4AD27B12D68A3B7C1E(__this, NULL);
+		return;
+	}
+}
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#pragma clang diagnostic ignored "-Wunused-variable"
+#endif
+// Method Definition Index: 74136
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void PressureSwitch_Awake_mBAD2E7C8DA061091AF4F535E8471E6DEB5943209 (PressureSwitch_t69495303BB205C04B725F04CD3979A6CAF9CB6AC* __this, const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Component_GetComponent_TisOmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6_m1E08F03E67FCFF643285BD146713535A5FE8FFF4_RuntimeMethod_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PressureSwitch.cs:12>
+		OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* L_0;
+		L_0 = Component_GetComponent_TisOmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6_m1E08F03E67FCFF643285BD146713535A5FE8FFF4(__this, Component_GetComponent_TisOmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6_m1E08F03E67FCFF643285BD146713535A5FE8FFF4_RuntimeMethod_var);
+		__this->___dc = L_0;
+		Il2CppCodeGenWriteBarrier((void**)(&__this->___dc), (void*)L_0);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PressureSwitch.cs:13>
+		return;
+	}
+}
+// Method Definition Index: 74137
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void PressureSwitch_OnTriggerEnter_mC640806D82A35FFA59030DF4F47E355ABB61A96A (PressureSwitch_t69495303BB205C04B725F04CD3979A6CAF9CB6AC* __this, Collider_t1CC3163924FCD6C4CC2E816373A929C1E3D55E76* ___0_other, const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&_stringLiteralCAF8804297181FF007CA835529DD4477CFD94A70);
+		s_Il2CppMethodInitialized = true;
+	}
+	OpenDoorEvt_t53FDC500F958704C0041B93E83B01FD1685D2A98* G_B4_0 = NULL;
+	OpenDoorEvt_t53FDC500F958704C0041B93E83B01FD1685D2A98* G_B3_0 = NULL;
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PressureSwitch.cs:17>
+		Collider_t1CC3163924FCD6C4CC2E816373A929C1E3D55E76* L_0 = ___0_other;
+		NullCheck(L_0);
+		bool L_1;
+		L_1 = Component_CompareTag_mE6F8897E84F12DF12D302FFC4D58204D51096FC5(L_0, _stringLiteralCAF8804297181FF007CA835529DD4477CFD94A70, NULL);
+		if (L_1)
+		{
+			goto IL_000e;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PressureSwitch.cs:18>
+		return;
+	}
+
+IL_000e:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PressureSwitch.cs:20>
+		OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* L_2 = __this->___dc;
+		NullCheck(L_2);
+		OpenDoorEvt_t53FDC500F958704C0041B93E83B01FD1685D2A98* L_3 = L_2->___OpenDoor;
+		OpenDoorEvt_t53FDC500F958704C0041B93E83B01FD1685D2A98* L_4 = L_3;
+		if (L_4)
+		{
+			G_B4_0 = L_4;
+			goto IL_001e;
+		}
+		G_B3_0 = L_4;
+	}
+	{
+		return;
+	}
+
+IL_001e:
+	{
+		NullCheck(G_B4_0);
+		OpenDoorEvt_Invoke_mBC4CCF7F672C37BF8C2CC5556F906550F13F8DCC_inline(G_B4_0, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PressureSwitch.cs:21>
+		return;
+	}
+}
+// Method Definition Index: 74138
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void PressureSwitch_OnTriggerExit_m7D4CA9D231E10ECBAAB9ACAA0E9DD204241FA37E (PressureSwitch_t69495303BB205C04B725F04CD3979A6CAF9CB6AC* __this, Collider_t1CC3163924FCD6C4CC2E816373A929C1E3D55E76* ___0_other, const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&_stringLiteralCAF8804297181FF007CA835529DD4477CFD94A70);
+		s_Il2CppMethodInitialized = true;
+	}
+	CloseDoorEvt_t0FA9DD6BBFED77AF496D88825BE7100D2C05E507* G_B4_0 = NULL;
+	CloseDoorEvt_t0FA9DD6BBFED77AF496D88825BE7100D2C05E507* G_B3_0 = NULL;
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PressureSwitch.cs:25>
+		Collider_t1CC3163924FCD6C4CC2E816373A929C1E3D55E76* L_0 = ___0_other;
+		NullCheck(L_0);
+		bool L_1;
+		L_1 = Component_CompareTag_mE6F8897E84F12DF12D302FFC4D58204D51096FC5(L_0, _stringLiteralCAF8804297181FF007CA835529DD4477CFD94A70, NULL);
+		if (L_1)
+		{
+			goto IL_000e;
+		}
+	}
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PressureSwitch.cs:26>
+		return;
+	}
+
+IL_000e:
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PressureSwitch.cs:28>
+		OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* L_2 = __this->___dc;
+		NullCheck(L_2);
+		CloseDoorEvt_t0FA9DD6BBFED77AF496D88825BE7100D2C05E507* L_3 = L_2->___CloseDoor;
+		CloseDoorEvt_t0FA9DD6BBFED77AF496D88825BE7100D2C05E507* L_4 = L_3;
+		if (L_4)
+		{
+			G_B4_0 = L_4;
+			goto IL_001e;
+		}
+		G_B3_0 = L_4;
+	}
+	{
+		return;
+	}
+
+IL_001e:
+	{
+		NullCheck(G_B4_0);
+		CloseDoorEvt_Invoke_m3DF1BF5991F943417FB2FDAA0E63682AEF1CF612_inline(G_B4_0, NULL);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PressureSwitch.cs:29>
+		return;
+	}
+}
+// Method Definition Index: 74139
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void PressureSwitch__ctor_m07C7485E9558F549AC9813F52BABD05BDE4F2D85 (PressureSwitch_t69495303BB205C04B725F04CD3979A6CAF9CB6AC* __this, const RuntimeMethod* method) 
+{
+	{
+		MonoBehaviour__ctor_m592DB0105CA0BC97AA1C5F4AD27B12D68A3B7C1E(__this, NULL);
+		return;
+	}
+}
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#pragma clang diagnostic ignored "-Wunused-variable"
+#endif
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#pragma clang diagnostic ignored "-Wunused-variable"
+#endif
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#pragma clang diagnostic ignored "-Wunused-variable"
+#endif
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#pragma clang diagnostic ignored "-Wunused-variable"
+#endif
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+// Method Definition Index: 35204
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Quaternion_tDA59F214EF07D7700B26E40E562F267AF7306974 Quaternion_Euler_m5BCCC19216CFAD2426F15BC51A30421880D27B73_inline (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___0_euler, const RuntimeMethod* method) 
+{
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 V_0;
+	memset((&V_0), 0, sizeof(V_0));
+	{
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_0 = ___0_euler;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_1;
+		L_1 = Vector3_op_Multiply_m87BA7C578F96C8E49BB07088DAAC4649F83B0353_inline(L_0, (0.0174532924f), NULL);
+		V_0 = L_1;
+		Quaternion_tDA59F214EF07D7700B26E40E562F267AF7306974 L_2;
+		L_2 = Quaternion_Internal_FromEulerRad_mD0C4C0EFE1D70EC0EA4A92B11F1A4D5B0A134E49((&V_0), NULL);
+		return L_2;
+	}
+}
+// Method Definition Index: 35126
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void Vector3__ctor_m376936E6B999EF1ECBE57D990A386303E2283DE0_inline (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* __this, float ___0_x, float ___1_y, float ___2_z, const RuntimeMethod* method) 
+{
+	{
+		float L_0 = ___0_x;
+		__this->___x = L_0;
+		float L_1 = ___1_y;
+		__this->___y = L_1;
+		float L_2 = ___2_z;
+		__this->___z = L_2;
+		return;
+	}
+}
+// Method Definition Index: 33622
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void Bounds_Encapsulate_m7C70C382B9380A8C962074C78E189B53CE8F7A22_inline (Bounds_t367E830C64BBF235ED8C3B2F8CF6254FDCAD39C3* __this, Bounds_t367E830C64BBF235ED8C3B2F8CF6254FDCAD39C3 ___0_bounds, const RuntimeMethod* method) 
+{
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 V_0;
+	memset((&V_0), 0, sizeof(V_0));
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 V_1;
+	memset((&V_1), 0, sizeof(V_1));
+	{
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_0;
+		L_0 = Bounds_get_min_m465AC9BBE1DE5D8E8AD95AC19B9899068FEEBB13_inline((&___0_bounds), NULL);
+		V_0 = L_0;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_1;
+		L_1 = Bounds_get_max_m6446F2AB97C1E57CA89467B9DE52D4EB61F1CB09_inline((&___0_bounds), NULL);
+		V_1 = L_1;
+		Bounds_Encapsulate_m96221CB8E1B1226A2D066DF6F7F7B84CB5B9BF70_inline(__this, (&V_0), NULL);
+		Bounds_Encapsulate_m96221CB8E1B1226A2D066DF6F7F7B84CB5B9BF70_inline(__this, (&V_1), NULL);
+		return;
+	}
+}
+// Method Definition Index: 33606
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 Bounds_get_center_m5B05F81CB835EB6DD8628FDA24B638F477984DC3_inline (Bounds_t367E830C64BBF235ED8C3B2F8CF6254FDCAD39C3* __this, const RuntimeMethod* method) 
+{
+	{
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_0 = __this->___m_Center;
+		return L_0;
+	}
+}
+// Method Definition Index: 35097
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 Matrix4x4_MultiplyPoint3x4_mACCBD70AFA82C63DA88555780B7B6B01281AB814_inline (Matrix4x4_tDB70CF134A14BA38190C59AA700BCE10E2AED3E6* __this, Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___0_point, const RuntimeMethod* method) 
+{
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 V_0;
+	memset((&V_0), 0, sizeof(V_0));
+	{
+		il2cpp_codegen_initobj((&V_0), sizeof(Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2));
+		float L_0 = __this->___m00;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_1 = ___0_point;
+		float L_2 = L_1.___x;
+		float L_3 = __this->___m01;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_4 = ___0_point;
+		float L_5 = L_4.___y;
+		float L_6 = __this->___m02;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_7 = ___0_point;
+		float L_8 = L_7.___z;
+		float L_9 = __this->___m03;
+		(&V_0)->___x = ((float)il2cpp_codegen_add(((float)il2cpp_codegen_add(((float)il2cpp_codegen_add(((float)il2cpp_codegen_multiply(L_0, L_2)), ((float)il2cpp_codegen_multiply(L_3, L_5)))), ((float)il2cpp_codegen_multiply(L_6, L_8)))), L_9));
+		float L_10 = __this->___m10;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_11 = ___0_point;
+		float L_12 = L_11.___x;
+		float L_13 = __this->___m11;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_14 = ___0_point;
+		float L_15 = L_14.___y;
+		float L_16 = __this->___m12;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_17 = ___0_point;
+		float L_18 = L_17.___z;
+		float L_19 = __this->___m13;
+		(&V_0)->___y = ((float)il2cpp_codegen_add(((float)il2cpp_codegen_add(((float)il2cpp_codegen_add(((float)il2cpp_codegen_multiply(L_10, L_12)), ((float)il2cpp_codegen_multiply(L_13, L_15)))), ((float)il2cpp_codegen_multiply(L_16, L_18)))), L_19));
+		float L_20 = __this->___m20;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_21 = ___0_point;
+		float L_22 = L_21.___x;
+		float L_23 = __this->___m21;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_24 = ___0_point;
+		float L_25 = L_24.___y;
+		float L_26 = __this->___m22;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_27 = ___0_point;
+		float L_28 = L_27.___z;
+		float L_29 = __this->___m23;
+		(&V_0)->___z = ((float)il2cpp_codegen_add(((float)il2cpp_codegen_add(((float)il2cpp_codegen_add(((float)il2cpp_codegen_multiply(L_20, L_22)), ((float)il2cpp_codegen_multiply(L_23, L_25)))), ((float)il2cpp_codegen_multiply(L_26, L_28)))), L_29));
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_30 = V_0;
+		return L_30;
+	}
+}
+// Method Definition Index: 35163
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 Vector3_op_Addition_m78C0EC70CB66E8DCAC225743D82B268DAEE92067_inline (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___0_a, Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___1_b, const RuntimeMethod* method) 
+{
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 V_0;
+	memset((&V_0), 0, sizeof(V_0));
+	{
+		il2cpp_codegen_initobj((&V_0), sizeof(Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2));
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_0 = ___0_a;
+		float L_1 = L_0.___x;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_2 = ___1_b;
+		float L_3 = L_2.___x;
+		(&V_0)->___x = ((float)il2cpp_codegen_add(L_1, L_3));
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_4 = ___0_a;
+		float L_5 = L_4.___y;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_6 = ___1_b;
+		float L_7 = L_6.___y;
+		(&V_0)->___y = ((float)il2cpp_codegen_add(L_5, L_7));
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_8 = ___0_a;
+		float L_9 = L_8.___z;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_10 = ___1_b;
+		float L_11 = L_10.___z;
+		(&V_0)->___z = ((float)il2cpp_codegen_add(L_9, L_11));
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_12 = V_0;
+		return L_12;
+	}
+}
+// Method Definition Index: 35166
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 Vector3_op_Multiply_m87BA7C578F96C8E49BB07088DAAC4649F83B0353_inline (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___0_a, float ___1_d, const RuntimeMethod* method) 
+{
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 V_0;
+	memset((&V_0), 0, sizeof(V_0));
+	{
+		il2cpp_codegen_initobj((&V_0), sizeof(Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2));
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_0 = ___0_a;
+		float L_1 = L_0.___x;
+		float L_2 = ___1_d;
+		(&V_0)->___x = ((float)il2cpp_codegen_multiply(L_1, L_2));
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_3 = ___0_a;
+		float L_4 = L_3.___y;
+		float L_5 = ___1_d;
+		(&V_0)->___y = ((float)il2cpp_codegen_multiply(L_4, L_5));
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_6 = ___0_a;
+		float L_7 = L_6.___z;
+		float L_8 = ___1_d;
+		(&V_0)->___z = ((float)il2cpp_codegen_multiply(L_7, L_8));
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_9 = V_0;
+		return L_9;
+	}
+}
+// Method Definition Index: 35156
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 Vector3_get_one_mC9B289F1E15C42C597180C9FE6FB492495B51D02_inline (const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2_il2cpp_TypeInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	{
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_0 = ((Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2_StaticFields*)il2cpp_codegen_static_fields_for(Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2_il2cpp_TypeInfo_var))->___oneVector;
+		return L_0;
+	}
+}
+// Method Definition Index: 35192
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Quaternion_tDA59F214EF07D7700B26E40E562F267AF7306974 Quaternion_get_identity_m7E701AE095ED10FD5EA0B50ABCFDE2EEFF2173A5_inline (const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Quaternion_tDA59F214EF07D7700B26E40E562F267AF7306974_il2cpp_TypeInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	{
+		Quaternion_tDA59F214EF07D7700B26E40E562F267AF7306974 L_0 = ((Quaternion_tDA59F214EF07D7700B26E40E562F267AF7306974_StaticFields*)il2cpp_codegen_static_fields_for(Quaternion_tDA59F214EF07D7700B26E40E562F267AF7306974_il2cpp_TypeInfo_var))->___identityQuaternion;
+		return L_0;
+	}
+}
+// Method Definition Index: 35155
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 Vector3_get_zero_m0C1249C3F25B1C70EAD3CC8B31259975A457AE39_inline (const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2_il2cpp_TypeInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	{
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_0 = ((Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2_StaticFields*)il2cpp_codegen_static_fields_for(Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2_il2cpp_TypeInfo_var))->___zeroVector;
+		return L_0;
+	}
+}
+// Method Definition Index: 73992
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void OmniDoor3D_set_needClose_mBDACD3FCE99D25E9508221B8EDC1A77593E44020_inline (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, bool ___0_value, const RuntimeMethod* method) 
+{
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:50>
+		bool L_0 = ___0_value;
+		__this->____needClose = L_0;
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:50>
+		return;
+	}
+}
+// Method Definition Index: 74059
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void DoorLockedEvt_Invoke_m0336C43427A49DB8930EB24C0811C4F59FFAE7AD_inline (DoorLockedEvt_t24FA80C7BCDB52586B684991ECB99317F4F4F8AA* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method) 
+{
+	typedef void (*FunctionPointerType) (RuntimeObject*, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC*, const RuntimeMethod*);
+	((FunctionPointerType)__this->___invoke_impl)((Il2CppObject*)__this->___method_code, ___0_door, reinterpret_cast<RuntimeMethod*>(__this->___method));
+}
+// Method Definition Index: 74063
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void DoorUnlockedEvt_Invoke_m0946810F4DE203283827D39345B8A3AA528B4E17_inline (DoorUnlockedEvt_t1E6D58AC4C10BE4C2135F3580DBAEE0D87024854* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method) 
+{
+	typedef void (*FunctionPointerType) (RuntimeObject*, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC*, const RuntimeMethod*);
+	((FunctionPointerType)__this->___invoke_impl)((Il2CppObject*)__this->___method_code, ___0_door, reinterpret_cast<RuntimeMethod*>(__this->___method));
+}
+// Method Definition Index: 74043
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void DoorOpenFailedEvt_Invoke_mEB611B296A59578C322CF8D16385203BB26E8BA4_inline (DoorOpenFailedEvt_t1032FDEE75EB91423C95DF2155669047463F16C8* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method) 
+{
+	typedef void (*FunctionPointerType) (RuntimeObject*, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC*, const RuntimeMethod*);
+	((FunctionPointerType)__this->___invoke_impl)((Il2CppObject*)__this->___method_code, ___0_door, reinterpret_cast<RuntimeMethod*>(__this->___method));
+}
+// Method Definition Index: 73991
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR bool OmniDoor3D_get_needClose_mA8C427131EBA052EE262833A830ECF878CE737C2_inline (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
+{
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Scripts/OmniDoor3D.cs:50>
+		bool L_0 = __this->____needClose;
+		return L_0;
+	}
+}
+// Method Definition Index: 35258
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR float Mathf_Clamp01_mA7E048DBDA832D399A581BE4D6DED9FA44CE0F14_inline (float ___0_value, const RuntimeMethod* method) 
+{
+	bool V_0 = false;
+	float V_1 = 0.0f;
+	bool V_2 = false;
+	{
+		float L_0 = ___0_value;
+		V_0 = (bool)((((float)L_0) < ((float)(0.0f)))? 1 : 0);
+		bool L_1 = V_0;
+		if (!L_1)
+		{
+			goto IL_0015;
+		}
+	}
+	{
+		V_1 = (0.0f);
+		goto IL_002d;
+	}
+
+IL_0015:
+	{
+		float L_2 = ___0_value;
+		V_2 = (bool)((((float)L_2) > ((float)(1.0f)))? 1 : 0);
+		bool L_3 = V_2;
+		if (!L_3)
+		{
+			goto IL_0029;
+		}
+	}
+	{
+		V_1 = (1.0f);
+		goto IL_002d;
+	}
+
+IL_0029:
+	{
+		float L_4 = ___0_value;
+		V_1 = L_4;
+		goto IL_002d;
+	}
+
+IL_002d:
+	{
+		float L_5 = V_1;
+		return L_5;
+	}
+}
+// Method Definition Index: 74039
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void DoorOpenedEvt_Invoke_m25A787A473AE4D2FAA71159238C4E729C1AB59B5_inline (DoorOpenedEvt_t000102A9D09036B3D64BB710FE11FD7FE05AD585* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method) 
+{
+	typedef void (*FunctionPointerType) (RuntimeObject*, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC*, const RuntimeMethod*);
+	((FunctionPointerType)__this->___invoke_impl)((Il2CppObject*)__this->___method_code, ___0_door, reinterpret_cast<RuntimeMethod*>(__this->___method));
+}
+// Method Definition Index: 74047
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void DoorClosedEvt_Invoke_mB5F245C3A2B92B56DBB9B92FE3878F7FAB5353AA_inline (DoorClosedEvt_t3512971C2165EA9C9D0F0A489E03B04EEE894C5C* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method) 
+{
+	typedef void (*FunctionPointerType) (RuntimeObject*, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC*, const RuntimeMethod*);
+	((FunctionPointerType)__this->___invoke_impl)((Il2CppObject*)__this->___method_code, ___0_door, reinterpret_cast<RuntimeMethod*>(__this->___method));
+}
+// Method Definition Index: 35253
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR int32_t Mathf_FloorToInt_m2A39AE881CAEE6B6A4B3BFEF9CA1ED40625F5AB7_inline (float ___0_f, const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Math_tEB65DE7CA8B083C412C969C92981C030865486CE_il2cpp_TypeInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	int32_t V_0 = 0;
+	{
+		float L_0 = ___0_f;
+		il2cpp_codegen_runtime_class_init_inline(Math_tEB65DE7CA8B083C412C969C92981C030865486CE_il2cpp_TypeInfo_var);
+		double L_1;
+		L_1 = floor(((double)L_0));
+		V_0 = il2cpp_codegen_cast_double_to_int<int32_t>(L_1);
+		goto IL_000c;
+	}
+
+IL_000c:
+	{
+		int32_t L_2 = V_0;
+		return L_2;
+	}
+}
+// Method Definition Index: 35257
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR int32_t Mathf_Clamp_m4DC36EEFDBE5F07C16249DA568023C5ECCFF0E7B_inline (int32_t ___0_value, int32_t ___1_min, int32_t ___2_max, const RuntimeMethod* method) 
+{
+	bool V_0 = false;
+	bool V_1 = false;
+	int32_t V_2 = 0;
+	{
+		int32_t L_0 = ___0_value;
+		int32_t L_1 = ___1_min;
+		V_0 = (bool)((((int32_t)L_0) < ((int32_t)L_1))? 1 : 0);
+		bool L_2 = V_0;
+		if (!L_2)
+		{
+			goto IL_000e;
+		}
+	}
+	{
+		int32_t L_3 = ___1_min;
+		___0_value = L_3;
+		goto IL_0019;
+	}
+
+IL_000e:
+	{
+		int32_t L_4 = ___0_value;
+		int32_t L_5 = ___2_max;
+		V_1 = (bool)((((int32_t)L_4) > ((int32_t)L_5))? 1 : 0);
+		bool L_6 = V_1;
+		if (!L_6)
+		{
+			goto IL_0019;
+		}
+	}
+	{
+		int32_t L_7 = ___2_max;
+		___0_value = L_7;
+	}
+
+IL_0019:
+	{
+		int32_t L_8 = ___0_value;
+		V_2 = L_8;
+		goto IL_001d;
+	}
+
+IL_001d:
+	{
+		int32_t L_9 = V_2;
+		return L_9;
+	}
+}
+// Method Definition Index: 35119
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 Vector3_Lerp_m3A906D0530A94FAABB94F0F905E84D99BE85C3F8_inline (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___0_a, Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___1_b, float ___2_t, const RuntimeMethod* method) 
+{
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 V_0;
+	memset((&V_0), 0, sizeof(V_0));
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 V_1;
+	memset((&V_1), 0, sizeof(V_1));
+	{
+		float L_0 = ___2_t;
+		float L_1;
+		L_1 = Mathf_Clamp01_mA7E048DBDA832D399A581BE4D6DED9FA44CE0F14_inline(L_0, NULL);
+		___2_t = L_1;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_2 = ___0_a;
+		float L_3 = L_2.___x;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_4 = ___1_b;
+		float L_5 = L_4.___x;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_6 = ___0_a;
+		float L_7 = L_6.___x;
+		float L_8 = ___2_t;
+		(&V_0)->___x = ((float)il2cpp_codegen_add(L_3, ((float)il2cpp_codegen_multiply(((float)il2cpp_codegen_subtract(L_5, L_7)), L_8))));
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_9 = ___0_a;
+		float L_10 = L_9.___y;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_11 = ___1_b;
+		float L_12 = L_11.___y;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_13 = ___0_a;
+		float L_14 = L_13.___y;
+		float L_15 = ___2_t;
+		(&V_0)->___y = ((float)il2cpp_codegen_add(L_10, ((float)il2cpp_codegen_multiply(((float)il2cpp_codegen_subtract(L_12, L_14)), L_15))));
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_16 = ___0_a;
+		float L_17 = L_16.___z;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_18 = ___1_b;
+		float L_19 = L_18.___z;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_20 = ___0_a;
+		float L_21 = L_20.___z;
+		float L_22 = ___2_t;
+		(&V_0)->___z = ((float)il2cpp_codegen_add(L_17, ((float)il2cpp_codegen_multiply(((float)il2cpp_codegen_subtract(L_19, L_21)), L_22))));
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_23 = V_0;
+		V_1 = L_23;
+		goto IL_0064;
+	}
+
+IL_0064:
+	{
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_24 = V_1;
+		return L_24;
+	}
+}
+// Method Definition Index: 35158
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 Vector3_get_back_mCA5A84170E8DE5CE38C0551B4CCAD647BF215E57_inline (const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2_il2cpp_TypeInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	{
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_0 = ((Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2_StaticFields*)il2cpp_codegen_static_fields_for(Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2_il2cpp_TypeInfo_var))->___backVector;
+		return L_0;
+	}
+}
+// Method Definition Index: 35162
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 Vector3_get_right_mFF573AFBBB2186E7AFA1BA7CA271A78DF67E4EA0_inline (const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2_il2cpp_TypeInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	{
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_0 = ((Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2_StaticFields*)il2cpp_codegen_static_fields_for(Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2_il2cpp_TypeInfo_var))->___rightVector;
+		return L_0;
+	}
+}
+// Method Definition Index: 35167
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 Vector3_op_Multiply_m7F3B0FA9256CE368D7636558EFEFC4AB0E1A0F41_inline (float ___0_d, Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___1_a, const RuntimeMethod* method) 
+{
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 V_0;
+	memset((&V_0), 0, sizeof(V_0));
+	{
+		il2cpp_codegen_initobj((&V_0), sizeof(Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2));
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_0 = ___1_a;
+		float L_1 = L_0.___x;
+		float L_2 = ___0_d;
+		(&V_0)->___x = ((float)il2cpp_codegen_multiply(L_1, L_2));
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_3 = ___1_a;
+		float L_4 = L_3.___y;
+		float L_5 = ___0_d;
+		(&V_0)->___y = ((float)il2cpp_codegen_multiply(L_4, L_5));
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_6 = ___1_a;
+		float L_7 = L_6.___z;
+		float L_8 = ___0_d;
+		(&V_0)->___z = ((float)il2cpp_codegen_multiply(L_7, L_8));
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_9 = V_0;
+		return L_9;
+	}
+}
+// Method Definition Index: 74055
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void DoorWillCloseEvt_Invoke_m53BFA21E364CD48B295BC3ECAD5D32FAC66FCF4D_inline (DoorWillCloseEvt_tCF052CFCAD1F6F42971A6A7F50DB3F69766740B3* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method) 
+{
+	typedef void (*FunctionPointerType) (RuntimeObject*, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC*, const RuntimeMethod*);
+	((FunctionPointerType)__this->___invoke_impl)((Il2CppObject*)__this->___method_code, ___0_door, reinterpret_cast<RuntimeMethod*>(__this->___method));
+}
+// Method Definition Index: 35259
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR float Mathf_Lerp_m47EF2FFB7647BD0A1FDC26DC03E28B19812139B5_inline (float ___0_a, float ___1_b, float ___2_t, const RuntimeMethod* method) 
+{
+	float V_0 = 0.0f;
+	{
+		float L_0 = ___0_a;
+		float L_1 = ___1_b;
+		float L_2 = ___0_a;
+		float L_3 = ___2_t;
+		float L_4;
+		L_4 = Mathf_Clamp01_mA7E048DBDA832D399A581BE4D6DED9FA44CE0F14_inline(L_3, NULL);
+		V_0 = ((float)il2cpp_codegen_add(L_0, ((float)il2cpp_codegen_multiply(((float)il2cpp_codegen_subtract(L_1, L_2)), L_4))));
+		goto IL_0010;
+	}
+
+IL_0010:
+	{
+		float L_5 = V_0;
+		return L_5;
+	}
+}
+// Method Definition Index: 35138
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 Vector3_get_normalized_m736BBF65D5CDA7A18414370D15B4DFCC1E466F07_inline (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* __this, const RuntimeMethod* method) 
+{
+	{
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_0;
+		L_0 = Vector3_Normalize_m1DE89849FE2019B6AA0031306896F3B800849399_inline(__this, NULL);
+		return L_0;
+	}
+}
+// Method Definition Index: 74051
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void DoorWillOpenEvt_Invoke_mD170B0E6804066068C1825C3E35BBB31D6472AE5_inline (DoorWillOpenEvt_t3A953E675BDD6E13F554E0BDDD07F831A039BE22* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method) 
+{
+	typedef void (*FunctionPointerType) (RuntimeObject*, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC*, const RuntimeMethod*);
+	((FunctionPointerType)__this->___invoke_impl)((Il2CppObject*)__this->___method_code, ___0_door, reinterpret_cast<RuntimeMethod*>(__this->___method));
+}
+// Method Definition Index: 74086
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void OpenDoorEvt_Invoke_mBC4CCF7F672C37BF8C2CC5556F906550F13F8DCC_inline (OpenDoorEvt_t53FDC500F958704C0041B93E83B01FD1685D2A98* __this, const RuntimeMethod* method) 
+{
+	typedef void (*FunctionPointerType) (RuntimeObject*, const RuntimeMethod*);
+	((FunctionPointerType)__this->___invoke_impl)((Il2CppObject*)__this->___method_code, reinterpret_cast<RuntimeMethod*>(__this->___method));
+}
+// Method Definition Index: 74090
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void CloseDoorEvt_Invoke_m3DF1BF5991F943417FB2FDAA0E63682AEF1CF612_inline (CloseDoorEvt_t0FA9DD6BBFED77AF496D88825BE7100D2C05E507* __this, const RuntimeMethod* method) 
+{
+	typedef void (*FunctionPointerType) (RuntimeObject*, const RuntimeMethod*);
+	((FunctionPointerType)__this->___invoke_impl)((Il2CppObject*)__this->___method_code, reinterpret_cast<RuntimeMethod*>(__this->___method));
+}
+// Method Definition Index: 74102
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void LockDoorEvt_Invoke_m0ED3A8C1C3B21230CB550F56580CE576CEA0A9B8_inline (LockDoorEvt_t15338F49A7805255093B5E4DE5994C05EC2FEC84* __this, const RuntimeMethod* method) 
+{
+	typedef void (*FunctionPointerType) (RuntimeObject*, const RuntimeMethod*);
+	((FunctionPointerType)__this->___invoke_impl)((Il2CppObject*)__this->___method_code, reinterpret_cast<RuntimeMethod*>(__this->___method));
+}
+// Method Definition Index: 74098
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void UnlockDoorEvt_Invoke_mE2370B6BA7803BA0199F438F608256535AAF7D07_inline (UnlockDoorEvt_t6006D394CC44175581D7140CCCC65A71B68F20CF* __this, const RuntimeMethod* method) 
+{
+	typedef void (*FunctionPointerType) (RuntimeObject*, const RuntimeMethod*);
+	((FunctionPointerType)__this->___invoke_impl)((Il2CppObject*)__this->___method_code, reinterpret_cast<RuntimeMethod*>(__this->___method));
+}
+// Method Definition Index: 74129
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void PlayerOrbital_set_doorController_m693A76ECD26EBA11E594BA3E3DB69F86865D2F43_inline (PlayerOrbital_tF69524049E80DB19D1E220115D3472F6614CCA7A* __this, OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* ___0_value, const RuntimeMethod* method) 
+{
+	{
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PlayerOrbital.cs:17>
+		OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* L_0 = ___0_value;
+		__this->____doorController = L_0;
+		Il2CppCodeGenWriteBarrier((void**)(&__this->____doorController), (void*)L_0);
+		//<source_info:C:/Users/andre/OneDrive/Desktop/LASTPROJECTSCENE/Assets/Plugins/OmniDoor3D/Examples/Scripts/PlayerOrbital.cs:17>
+		return;
+	}
+}
+// Method Definition Index: 35203
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Quaternion_tDA59F214EF07D7700B26E40E562F267AF7306974 Quaternion_Euler_m9262AB29E3E9CE94EF71051F38A28E82AEC73F90_inline (float ___0_x, float ___1_y, float ___2_z, const RuntimeMethod* method) 
+{
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 V_0;
+	memset((&V_0), 0, sizeof(V_0));
+	{
+		il2cpp_codegen_initobj((&V_0), sizeof(Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2));
+		float L_0 = ___0_x;
+		(&V_0)->___x = ((float)il2cpp_codegen_multiply(L_0, (0.0174532924f)));
+		float L_1 = ___1_y;
+		(&V_0)->___y = ((float)il2cpp_codegen_multiply(L_1, (0.0174532924f)));
+		float L_2 = ___2_z;
+		(&V_0)->___z = ((float)il2cpp_codegen_multiply(L_2, (0.0174532924f)));
+		Quaternion_tDA59F214EF07D7700B26E40E562F267AF7306974 L_3;
+		L_3 = Quaternion_Internal_FromEulerRad_mD0C4C0EFE1D70EC0EA4A92B11F1A4D5B0A134E49((&V_0), NULL);
+		return L_3;
+	}
+}
+// Method Definition Index: 35288
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7 Vector2_get_normalized_mF6722883AEFB5027690A778DF8ACC20F0FA65297_inline (Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7* __this, const RuntimeMethod* method) 
+{
+	{
+		Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7 L_0;
+		L_0 = Vector2_Normalize_m52526AC1D25ED668DF8A5DE540769FA7D5671FC7(__this, NULL);
+		return L_0;
+	}
+}
+// Method Definition Index: 74094
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void ToggleDoorEvt_Invoke_mF81798196C518135B86C2FA02286952D3A20B36B_inline (ToggleDoorEvt_tFE20427E5BADD68E7E1BE9380F1D78CFC33DDA40* __this, const RuntimeMethod* method) 
+{
+	typedef void (*FunctionPointerType) (RuntimeObject*, const RuntimeMethod*);
+	((FunctionPointerType)__this->___invoke_impl)((Il2CppObject*)__this->___method_code, reinterpret_cast<RuntimeMethod*>(__this->___method));
+}
+// Method Definition Index: 28837
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Mouse_t9A9CC4636FA9CDBAD7FB7A02DB0D6395EDCC338F* Mouse_get_current_m410C1F9ABC5AA77353574E8815F7E63289707986_inline (const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Mouse_t9A9CC4636FA9CDBAD7FB7A02DB0D6395EDCC338F_il2cpp_TypeInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	{
+		//<source_info:./Library/PackageCache/com.unity.inputsystem@02433b2481ab/InputSystem/Devices/Mouse.cs:258>
+		Mouse_t9A9CC4636FA9CDBAD7FB7A02DB0D6395EDCC338F* L_0 = ((Mouse_t9A9CC4636FA9CDBAD7FB7A02DB0D6395EDCC338F_StaticFields*)il2cpp_codegen_static_fields_for(Mouse_t9A9CC4636FA9CDBAD7FB7A02DB0D6395EDCC338F_il2cpp_TypeInfo_var))->___U3CcurrentU3Ek__BackingField;
+		return L_0;
+	}
+}
+// Method Definition Index: 28829
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR ButtonControl_t85949109B98AAF5B7ADC0285F0EC98A61EC88ECF* Mouse_get_rightButton_mFA0FD700624C0DE1B858F9516426414767F09D98_inline (Mouse_t9A9CC4636FA9CDBAD7FB7A02DB0D6395EDCC338F* __this, const RuntimeMethod* method) 
+{
+	{
+		//<source_info:./Library/PackageCache/com.unity.inputsystem@02433b2481ab/InputSystem/Devices/Mouse.cs:227>
+		ButtonControl_t85949109B98AAF5B7ADC0285F0EC98A61EC88ECF* L_0 = __this->___U3CrightButtonU3Ek__BackingField;
+		return L_0;
+	}
+}
+// Method Definition Index: 35319
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7 Vector2_get_zero_m32506C40EC2EE7D5D4410BF40D3EE683A3D5F32C_inline (const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7_il2cpp_TypeInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	{
+		Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7 L_0 = ((Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7_StaticFields*)il2cpp_codegen_static_fields_for(Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7_il2cpp_TypeInfo_var))->___zeroVector;
+		return L_0;
+	}
+}
+// Method Definition Index: 35316
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR bool Vector2_op_Inequality_mBEA93B5A0E954FEFB863DC61CB209119980EC713_inline (Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7 ___0_lhs, Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7 ___1_rhs, const RuntimeMethod* method) 
+{
+	{
+		Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7 L_0 = ___0_lhs;
+		Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7 L_1 = ___1_rhs;
+		bool L_2;
+		L_2 = Vector2_op_Equality_m6F2E069A50E787D131261E5CB25FC9E03F95B5E1_inline(L_0, L_1, NULL);
+		return (bool)((((int32_t)L_2) == ((int32_t)0))? 1 : 0);
+	}
+}
+// Method Definition Index: 35256
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR float Mathf_Clamp_mEB9AEA827D27D20FCC787F7375156AF46BB12BBF_inline (float ___0_value, float ___1_min, float ___2_max, const RuntimeMethod* method) 
+{
+	bool V_0 = false;
+	bool V_1 = false;
+	float V_2 = 0.0f;
+	{
+		float L_0 = ___0_value;
+		float L_1 = ___1_min;
+		V_0 = (bool)((((float)L_0) < ((float)L_1))? 1 : 0);
+		bool L_2 = V_0;
+		if (!L_2)
+		{
+			goto IL_000e;
+		}
+	}
+	{
+		float L_3 = ___1_min;
+		___0_value = L_3;
+		goto IL_0019;
+	}
+
+IL_000e:
+	{
+		float L_4 = ___0_value;
+		float L_5 = ___2_max;
+		V_1 = (bool)((((float)L_4) > ((float)L_5))? 1 : 0);
+		bool L_6 = V_1;
+		if (!L_6)
+		{
+			goto IL_0019;
+		}
+	}
+	{
+		float L_7 = ___2_max;
+		___0_value = L_7;
+	}
+
+IL_0019:
+	{
+		float L_8 = ___0_value;
+		V_2 = L_8;
+		goto IL_001d;
+	}
+
+IL_001d:
+	{
+		float L_9 = V_2;
+		return L_9;
+	}
+}
+// Method Definition Index: 35159
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 Vector3_get_up_m128AF3FDC820BF59D5DE86D973E7DE3F20C3AEBA_inline (const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2_il2cpp_TypeInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	{
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_0 = ((Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2_StaticFields*)il2cpp_codegen_static_fields_for(Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2_il2cpp_TypeInfo_var))->___upVector;
+		return L_0;
+	}
+}
+// Method Definition Index: 35170
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR bool Vector3_op_Inequality_m9F170CDFBF1E490E559DA5D06D6547501A402BBF_inline (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___0_lhs, Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___1_rhs, const RuntimeMethod* method) 
+{
+	{
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_0 = ___0_lhs;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_1 = ___1_rhs;
+		bool L_2;
+		L_2 = Vector3_op_Equality_mCDCBB8D2EDC3D3BF20F31A25ACB34705D352B479_inline(L_0, L_1, NULL);
+		return (bool)((((int32_t)L_2) == ((int32_t)0))? 1 : 0);
+	}
+}
+// Method Definition Index: 35121
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 Vector3_SmoothDamp_mF673AC30464B7DF671A0556140EB6E9DD75827ED_inline (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___0_current, Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___1_target, Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* ___2_currentVelocity, float ___3_smoothTime, const RuntimeMethod* method) 
+{
+	float V_0 = 0.0f;
+	float V_1 = 0.0f;
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 V_2;
+	memset((&V_2), 0, sizeof(V_2));
+	{
+		float L_0;
+		L_0 = Time_get_deltaTime_mC3195000401F0FD167DD2F948FD2BC58330D0865(NULL);
+		V_0 = L_0;
+		V_1 = (std::numeric_limits<float>::infinity());
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_1 = ___2_currentVelocity;
+		float L_2 = ___3_smoothTime;
+		float L_3 = V_1;
+		float L_4 = V_0;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_5;
+		L_5 = Vector3_SmoothDamp_m4A3D0EA27C95C3B8CF7DE5F91DEB6D9D1F2591DD((&___0_current), (&___1_target), L_1, L_2, L_3, L_4, NULL);
+		V_2 = L_5;
+		goto IL_001d;
+	}
+
+IL_001d:
+	{
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_6 = V_2;
+		return L_6;
+	}
+}
+// Method Definition Index: 20773
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void List_1_Clear_m16C1F2C61FED5955F10EB36BC1CB2DF34B128994_gshared_inline (List_1_tA239CB83DE5615F348BB0507E45F490F4F7C9A8D* __this, const RuntimeMethod* method) 
+{
+	int32_t V_0 = 0;
+	{
+		int32_t L_0 = __this->____version;
+		__this->____version = ((int32_t)il2cpp_codegen_add(L_0, 1));
+	}
+	{
+		int32_t L_1 = __this->____size;
+		V_0 = L_1;
+		__this->____size = 0;
+		int32_t L_2 = V_0;
+		if ((((int32_t)L_2) <= ((int32_t)0)))
+		{
+			goto IL_003c;
+		}
+	}
+	{
+		ObjectU5BU5D_t8061030B0A12A55D5AD8652A20C922FE99450918* L_3 = __this->____items;
+		int32_t L_4 = V_0;
+		Array_Clear_m50BAA3751899858B097D3FF2ED31F284703FE5CB((RuntimeArray*)L_3, 0, L_4, NULL);
+		return;
+	}
+
+IL_003c:
+	{
+		return;
+	}
+}
+// Method Definition Index: 20765
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void List_1_Add_mEBCF994CC3814631017F46A387B1A192ED6C85C7_gshared_inline (List_1_tA239CB83DE5615F348BB0507E45F490F4F7C9A8D* __this, RuntimeObject* ___0_item, const RuntimeMethod* method) 
+{
+	ObjectU5BU5D_t8061030B0A12A55D5AD8652A20C922FE99450918* V_0 = NULL;
+	int32_t V_1 = 0;
+	{
+		int32_t L_0 = __this->____version;
+		__this->____version = ((int32_t)il2cpp_codegen_add(L_0, 1));
+		ObjectU5BU5D_t8061030B0A12A55D5AD8652A20C922FE99450918* L_1 = __this->____items;
+		V_0 = L_1;
+		int32_t L_2 = __this->____size;
+		V_1 = L_2;
+		int32_t L_3 = V_1;
+		ObjectU5BU5D_t8061030B0A12A55D5AD8652A20C922FE99450918* L_4 = V_0;
+		NullCheck(L_4);
+		if ((!(((uint32_t)L_3) < ((uint32_t)((int32_t)(((RuntimeArray*)L_4)->max_length))))))
+		{
+			goto IL_0034;
+		}
+	}
+	{
+		int32_t L_5 = V_1;
+		__this->____size = ((int32_t)il2cpp_codegen_add(L_5, 1));
+		ObjectU5BU5D_t8061030B0A12A55D5AD8652A20C922FE99450918* L_6 = V_0;
+		int32_t L_7 = V_1;
+		RuntimeObject* L_8 = ___0_item;
+		NullCheck(L_6);
+		(L_6)->SetAt(static_cast<il2cpp_array_size_t>(L_7), (RuntimeObject*)L_8);
+		return;
+	}
+
+IL_0034:
+	{
+		RuntimeObject* L_9 = ___0_item;
+		List_1_AddWithResize_m79A9BF770BEF9C06BE40D5401E55E375F2726CC4(__this, L_9, il2cpp_rgctx_method(method->klass->rgctx_data, 14));
+		return;
+	}
+}
+// Method Definition Index: 20815
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR RuntimeObject* Enumerator_get_Current_m6330F15D18EE4F547C05DF9BF83C5EB710376027_gshared_inline (Enumerator_t9473BAB568A27E2339D48C1F91319E0F6D244D7A* __this, const RuntimeMethod* method) 
+{
+	{
+		RuntimeObject* L_0 = __this->____current;
+		return L_0;
+	}
+}
+// Method Definition Index: 20755
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR int32_t List_1_get_Count_m4407E4C389F22B8CEC282C15D56516658746C383_gshared_inline (List_1_tA239CB83DE5615F348BB0507E45F490F4F7C9A8D* __this, const RuntimeMethod* method) 
+{
+	{
+		int32_t L_0 = __this->____size;
+		return L_0;
+	}
+}
+// Method Definition Index: 33612
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 Bounds_get_min_m465AC9BBE1DE5D8E8AD95AC19B9899068FEEBB13_inline (Bounds_t367E830C64BBF235ED8C3B2F8CF6254FDCAD39C3* __this, const RuntimeMethod* method) 
+{
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 V_0;
+	memset((&V_0), 0, sizeof(V_0));
+	{
+		il2cpp_codegen_initobj((&V_0), sizeof(Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2));
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_0 = (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2*)(&__this->___m_Center);
+		float L_1 = L_0->___x;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_2 = (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2*)(&__this->___m_Extents);
+		float L_3 = L_2->___x;
+		(&V_0)->___x = ((float)il2cpp_codegen_subtract(L_1, L_3));
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_4 = (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2*)(&__this->___m_Center);
+		float L_5 = L_4->___y;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_6 = (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2*)(&__this->___m_Extents);
+		float L_7 = L_6->___y;
+		(&V_0)->___y = ((float)il2cpp_codegen_subtract(L_5, L_7));
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_8 = (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2*)(&__this->___m_Center);
+		float L_9 = L_8->___z;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_10 = (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2*)(&__this->___m_Extents);
+		float L_11 = L_10->___z;
+		(&V_0)->___z = ((float)il2cpp_codegen_subtract(L_9, L_11));
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_12 = V_0;
+		return L_12;
+	}
+}
+// Method Definition Index: 33614
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 Bounds_get_max_m6446F2AB97C1E57CA89467B9DE52D4EB61F1CB09_inline (Bounds_t367E830C64BBF235ED8C3B2F8CF6254FDCAD39C3* __this, const RuntimeMethod* method) 
+{
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 V_0;
+	memset((&V_0), 0, sizeof(V_0));
+	{
+		il2cpp_codegen_initobj((&V_0), sizeof(Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2));
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_0 = (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2*)(&__this->___m_Center);
+		float L_1 = L_0->___x;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_2 = (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2*)(&__this->___m_Extents);
+		float L_3 = L_2->___x;
+		(&V_0)->___x = ((float)il2cpp_codegen_add(L_1, L_3));
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_4 = (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2*)(&__this->___m_Center);
+		float L_5 = L_4->___y;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_6 = (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2*)(&__this->___m_Extents);
+		float L_7 = L_6->___y;
+		(&V_0)->___y = ((float)il2cpp_codegen_add(L_5, L_7));
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_8 = (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2*)(&__this->___m_Center);
+		float L_9 = L_8->___z;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_10 = (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2*)(&__this->___m_Extents);
+		float L_11 = L_10->___z;
+		(&V_0)->___z = ((float)il2cpp_codegen_add(L_9, L_11));
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_12 = V_0;
+		return L_12;
+	}
+}
+// Method Definition Index: 33621
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void Bounds_Encapsulate_m96221CB8E1B1226A2D066DF6F7F7B84CB5B9BF70_inline (Bounds_t367E830C64BBF235ED8C3B2F8CF6254FDCAD39C3* __this, Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* ___0_point, const RuntimeMethod* method) 
+{
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 V_0;
+	memset((&V_0), 0, sizeof(V_0));
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 V_1;
+	memset((&V_1), 0, sizeof(V_1));
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 V_2;
+	memset((&V_2), 0, sizeof(V_2));
+	{
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_0;
+		L_0 = Bounds_get_min_m465AC9BBE1DE5D8E8AD95AC19B9899068FEEBB13_inline(__this, NULL);
+		V_2 = L_0;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_1 = ___0_point;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_2;
+		L_2 = Vector3_Min_m8E66B8A553166603505B72F5011ED9E0A2CB1413_inline((&V_2), L_1, NULL);
+		V_0 = L_2;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_3;
+		L_3 = Bounds_get_max_m6446F2AB97C1E57CA89467B9DE52D4EB61F1CB09_inline(__this, NULL);
+		V_2 = L_3;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_4 = ___0_point;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_5;
+		L_5 = Vector3_Max_m60E53C4131016B84E7E592A8D950DADA96F526EC_inline((&V_2), L_4, NULL);
+		V_1 = L_5;
+		Bounds_SetMinMax_m42AF5C7723187A09BACEB4AF46292F8BDEFFDE56_inline(__this, (&V_0), (&V_1), NULL);
+		return;
+	}
+}
+// Method Definition Index: 35136
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 Vector3_Normalize_m1DE89849FE2019B6AA0031306896F3B800849399_inline (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* ___0_value, const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2_il2cpp_TypeInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	float V_0 = 0.0f;
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 V_1;
+	memset((&V_1), 0, sizeof(V_1));
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 V_2;
+	memset((&V_2), 0, sizeof(V_2));
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 G_B3_0;
+	memset((&G_B3_0), 0, sizeof(G_B3_0));
+	{
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_0 = ___0_value;
+		float L_1;
+		L_1 = Vector3_get_magnitude_mF0D6017E90B345F1F52D1CC564C640F1A847AF2D_inline(L_0, NULL);
+		V_0 = L_1;
+		float L_2 = V_0;
+		if ((((float)L_2) > ((float)(9.99999975E-06f))))
+		{
+			goto IL_0017;
+		}
+	}
+	{
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_3 = ((Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2_StaticFields*)il2cpp_codegen_static_fields_for(Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2_il2cpp_TypeInfo_var))->___zeroVector;
+		G_B3_0 = L_3;
+		goto IL_004d;
+	}
+
+IL_0017:
+	{
+		il2cpp_codegen_initobj((&V_1), sizeof(Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2));
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_4 = ___0_value;
+		float L_5 = L_4->___x;
+		float L_6 = V_0;
+		(&V_1)->___x = ((float)(L_5/L_6));
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_7 = ___0_value;
+		float L_8 = L_7->___y;
+		float L_9 = V_0;
+		(&V_1)->___y = ((float)(L_8/L_9));
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_10 = ___0_value;
+		float L_11 = L_10->___z;
+		float L_12 = V_0;
+		(&V_1)->___z = ((float)(L_11/L_12));
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_13 = V_1;
+		G_B3_0 = L_13;
+	}
+
+IL_004d:
+	{
+		V_2 = G_B3_0;
+		goto IL_0050;
+	}
+
+IL_0050:
+	{
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_14 = V_2;
+		return L_14;
+	}
+}
+// Method Definition Index: 35315
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR bool Vector2_op_Equality_m6F2E069A50E787D131261E5CB25FC9E03F95B5E1_inline (Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7 ___0_lhs, Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7 ___1_rhs, const RuntimeMethod* method) 
+{
+	float V_0 = 0.0f;
+	float V_1 = 0.0f;
+	bool V_2 = false;
+	{
+		Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7 L_0 = ___0_lhs;
+		float L_1 = L_0.___x;
+		Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7 L_2 = ___1_rhs;
+		float L_3 = L_2.___x;
+		V_0 = ((float)il2cpp_codegen_subtract(L_1, L_3));
+		Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7 L_4 = ___0_lhs;
+		float L_5 = L_4.___y;
+		Vector2_t1FD6F485C871E832B347AB2DC8CBA08B739D8DF7 L_6 = ___1_rhs;
+		float L_7 = L_6.___y;
+		V_1 = ((float)il2cpp_codegen_subtract(L_5, L_7));
+		float L_8 = V_0;
+		float L_9 = V_0;
+		float L_10 = V_1;
+		float L_11 = V_1;
+		V_2 = (bool)((((float)((float)il2cpp_codegen_add(((float)il2cpp_codegen_multiply(L_8, L_9)), ((float)il2cpp_codegen_multiply(L_10, L_11))))) < ((float)(9.99999944E-11f)))? 1 : 0);
+		goto IL_002e;
+	}
+
+IL_002e:
+	{
+		bool L_12 = V_2;
+		return L_12;
+	}
+}
+// Method Definition Index: 35169
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR bool Vector3_op_Equality_mCDCBB8D2EDC3D3BF20F31A25ACB34705D352B479_inline (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___0_lhs, Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___1_rhs, const RuntimeMethod* method) 
+{
+	float V_0 = 0.0f;
+	float V_1 = 0.0f;
+	float V_2 = 0.0f;
+	float V_3 = 0.0f;
+	bool V_4 = false;
+	{
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_0 = ___0_lhs;
+		float L_1 = L_0.___x;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_2 = ___1_rhs;
+		float L_3 = L_2.___x;
+		V_0 = ((float)il2cpp_codegen_subtract(L_1, L_3));
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_4 = ___0_lhs;
+		float L_5 = L_4.___y;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_6 = ___1_rhs;
+		float L_7 = L_6.___y;
+		V_1 = ((float)il2cpp_codegen_subtract(L_5, L_7));
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_8 = ___0_lhs;
+		float L_9 = L_8.___z;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_10 = ___1_rhs;
+		float L_11 = L_10.___z;
+		V_2 = ((float)il2cpp_codegen_subtract(L_9, L_11));
+		float L_12 = V_0;
+		float L_13 = V_0;
+		float L_14 = V_1;
+		float L_15 = V_1;
+		float L_16 = V_2;
+		float L_17 = V_2;
+		V_3 = ((float)il2cpp_codegen_add(((float)il2cpp_codegen_add(((float)il2cpp_codegen_multiply(L_12, L_13)), ((float)il2cpp_codegen_multiply(L_14, L_15)))), ((float)il2cpp_codegen_multiply(L_16, L_17))));
+		float L_18 = V_3;
+		V_4 = (bool)((((float)L_18) < ((float)(9.99999944E-11f)))? 1 : 0);
+		goto IL_0043;
+	}
+
+IL_0043:
+	{
+		bool L_19 = V_4;
+		return L_19;
+	}
+}
+// Method Definition Index: 35152
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 Vector3_Min_m8E66B8A553166603505B72F5011ED9E0A2CB1413_inline (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* ___0_lhs, Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* ___1_rhs, const RuntimeMethod* method) 
+{
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 V_0;
+	memset((&V_0), 0, sizeof(V_0));
+	{
+		il2cpp_codegen_initobj((&V_0), sizeof(Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2));
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_0 = ___0_lhs;
+		float L_1 = L_0->___x;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_2 = ___1_rhs;
+		float L_3 = L_2->___x;
+		float L_4;
+		L_4 = Mathf_Min_m747CA71A9483CDB394B13BD0AD048EE17E48FFE4_inline(L_1, L_3, NULL);
+		(&V_0)->___x = L_4;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_5 = ___0_lhs;
+		float L_6 = L_5->___y;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_7 = ___1_rhs;
+		float L_8 = L_7->___y;
+		float L_9;
+		L_9 = Mathf_Min_m747CA71A9483CDB394B13BD0AD048EE17E48FFE4_inline(L_6, L_8, NULL);
+		(&V_0)->___y = L_9;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_10 = ___0_lhs;
+		float L_11 = L_10->___z;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_12 = ___1_rhs;
+		float L_13 = L_12->___z;
+		float L_14;
+		L_14 = Mathf_Min_m747CA71A9483CDB394B13BD0AD048EE17E48FFE4_inline(L_11, L_13, NULL);
+		(&V_0)->___z = L_14;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_15 = V_0;
+		return L_15;
+	}
+}
+// Method Definition Index: 35154
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 Vector3_Max_m60E53C4131016B84E7E592A8D950DADA96F526EC_inline (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* ___0_lhs, Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* ___1_rhs, const RuntimeMethod* method) 
+{
+	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 V_0;
+	memset((&V_0), 0, sizeof(V_0));
+	{
+		il2cpp_codegen_initobj((&V_0), sizeof(Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2));
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_0 = ___0_lhs;
+		float L_1 = L_0->___x;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_2 = ___1_rhs;
+		float L_3 = L_2->___x;
+		float L_4;
+		L_4 = Mathf_Max_mF5379E63D2BBAC76D090748695D833934F8AD051_inline(L_1, L_3, NULL);
+		(&V_0)->___x = L_4;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_5 = ___0_lhs;
+		float L_6 = L_5->___y;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_7 = ___1_rhs;
+		float L_8 = L_7->___y;
+		float L_9;
+		L_9 = Mathf_Max_mF5379E63D2BBAC76D090748695D833934F8AD051_inline(L_6, L_8, NULL);
+		(&V_0)->___y = L_9;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_10 = ___0_lhs;
+		float L_11 = L_10->___z;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_12 = ___1_rhs;
+		float L_13 = L_12->___z;
+		float L_14;
+		L_14 = Mathf_Max_mF5379E63D2BBAC76D090748695D833934F8AD051_inline(L_11, L_13, NULL);
+		(&V_0)->___z = L_14;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 L_15 = V_0;
+		return L_15;
+	}
+}
+// Method Definition Index: 33619
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void Bounds_SetMinMax_m42AF5C7723187A09BACEB4AF46292F8BDEFFDE56_inline (Bounds_t367E830C64BBF235ED8C3B2F8CF6254FDCAD39C3* __this, Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* ___0_min, Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* ___1_max, const RuntimeMethod* method) 
+{
+	{
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_0 = (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2*)(&__this->___m_Extents);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_1 = ___1_max;
+		float L_2 = L_1->___x;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_3 = ___0_min;
+		float L_4 = L_3->___x;
+		L_0->___x = ((float)il2cpp_codegen_multiply(((float)il2cpp_codegen_subtract(L_2, L_4)), (0.5f)));
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_5 = (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2*)(&__this->___m_Extents);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_6 = ___1_max;
+		float L_7 = L_6->___y;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_8 = ___0_min;
+		float L_9 = L_8->___y;
+		L_5->___y = ((float)il2cpp_codegen_multiply(((float)il2cpp_codegen_subtract(L_7, L_9)), (0.5f)));
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_10 = (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2*)(&__this->___m_Extents);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_11 = ___1_max;
+		float L_12 = L_11->___z;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_13 = ___0_min;
+		float L_14 = L_13->___z;
+		L_10->___z = ((float)il2cpp_codegen_multiply(((float)il2cpp_codegen_subtract(L_12, L_14)), (0.5f)));
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_15 = (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2*)(&__this->___m_Center);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_16 = ___0_min;
+		float L_17 = L_16->___x;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_18 = (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2*)(&__this->___m_Extents);
+		float L_19 = L_18->___x;
+		L_15->___x = ((float)il2cpp_codegen_add(L_17, L_19));
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_20 = (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2*)(&__this->___m_Center);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_21 = ___0_min;
+		float L_22 = L_21->___y;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_23 = (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2*)(&__this->___m_Extents);
+		float L_24 = L_23->___y;
+		L_20->___y = ((float)il2cpp_codegen_add(L_22, L_24));
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_25 = (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2*)(&__this->___m_Center);
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_26 = ___0_min;
+		float L_27 = L_26->___z;
+		Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* L_28 = (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2*)(&__this->___m_Extents);
+		float L_29 = L_28->___z;
+		L_25->___z = ((float)il2cpp_codegen_add(L_27, L_29));
+		return;
+	}
+}
+// Method Definition Index: 35148
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR float Vector3_get_magnitude_mF0D6017E90B345F1F52D1CC564C640F1A847AF2D_inline (Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2* __this, const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Math_tEB65DE7CA8B083C412C969C92981C030865486CE_il2cpp_TypeInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	{
+		float L_0 = __this->___x;
+		float L_1 = __this->___x;
+		float L_2 = __this->___y;
+		float L_3 = __this->___y;
+		float L_4 = __this->___z;
+		float L_5 = __this->___z;
+		il2cpp_codegen_runtime_class_init_inline(Math_tEB65DE7CA8B083C412C969C92981C030865486CE_il2cpp_TypeInfo_var);
+		double L_6;
+		L_6 = sqrt(((double)((float)il2cpp_codegen_add(((float)il2cpp_codegen_add(((float)il2cpp_codegen_multiply(L_0, L_1)), ((float)il2cpp_codegen_multiply(L_2, L_3)))), ((float)il2cpp_codegen_multiply(L_4, L_5))))));
+		return ((float)L_6);
+	}
+}
+// Method Definition Index: 35239
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR float Mathf_Min_m747CA71A9483CDB394B13BD0AD048EE17E48FFE4_inline (float ___0_a, float ___1_b, const RuntimeMethod* method) 
+{
+	float V_0 = 0.0f;
+	float G_B3_0 = 0.0f;
+	{
+		float L_0 = ___0_a;
+		float L_1 = ___1_b;
+		if ((((float)L_0) < ((float)L_1)))
+		{
+			goto IL_0008;
+		}
+	}
+	{
+		float L_2 = ___1_b;
+		G_B3_0 = L_2;
+		goto IL_0009;
+	}
+
+IL_0008:
+	{
+		float L_3 = ___0_a;
+		G_B3_0 = L_3;
+	}
+
+IL_0009:
+	{
+		V_0 = G_B3_0;
+		goto IL_000c;
+	}
+
+IL_000c:
+	{
+		float L_4 = V_0;
+		return L_4;
+	}
+}
+// Method Definition Index: 35241
+IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR float Mathf_Max_mF5379E63D2BBAC76D090748695D833934F8AD051_inline (float ___0_a, float ___1_b, const RuntimeMethod* method) 
+{
+	float V_0 = 0.0f;
+	float G_B3_0 = 0.0f;
+	{
+		float L_0 = ___0_a;
+		float L_1 = ___1_b;
+		if ((((float)L_0) > ((float)L_1)))
+		{
+			goto IL_0008;
+		}
+	}
+	{
+		float L_2 = ___1_b;
+		G_B3_0 = L_2;
+		goto IL_0009;
+	}
+
+IL_0008:
+	{
+		float L_3 = ___0_a;
+		G_B3_0 = L_3;
+	}
+
+IL_0009:
+	{
+		V_0 = G_B3_0;
+		goto IL_000c;
+	}
+
+IL_000c:
+	{
+		float L_4 = V_0;
+		return L_4;
+	}
+}

@@ -23,3 +23,10 @@ plugins {
 }
 
 include(":app")
+
+include(":unityLibrary")
+project(":unityLibrary").projectDir = File(rootDir, "unityLibrary")
+
+include(":unityLibrary:mobilenotifications.androidlib")
+project(":unityLibrary:mobilenotifications.androidlib").projectDir =
+    File(rootDir, "unityLibrary/mobilenotifications.androidlib")
