@@ -2,7 +2,9 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../unity_launcher.dart';
+import '../profile_progress_sync.dart';
 
 class SimulationScene extends StatefulWidget {
   const SimulationScene({super.key});
@@ -15,6 +17,15 @@ class _SimulationSceneState extends State<SimulationScene> {
   static const Color accent = Color(0xFFB11217);
   static const Color accent2 = Color(0xFF2563EB);
 
+  String _sceneLabelFor(int scene) {
+    switch (scene) {
+      case 1:
+        return 'Module 1 - Scene 1';
+      default:
+        return 'Module 1 - Unknown Scene';
+    }
+  }
+
   String? _unitySceneNameFor(int scene) {
     switch (scene) {
       case 1:
@@ -22,6 +33,49 @@ class _SimulationSceneState extends State<SimulationScene> {
       default:
         return null;
     }
+  }
+
+  Future<void> _markSimulationCompleted(int moduleNo) async {
+    final supabase = Supabase.instance.client;
+    final user = supabase.auth.currentUser;
+
+    if (user == null) {
+      throw Exception('No active user session.');
+    }
+
+    final moduleRow = await supabase
+        .from('modules')
+        .select('id')
+        .eq('module_no', moduleNo)
+        .maybeSingle();
+
+    if (moduleRow == null) {
+      throw Exception('Module $moduleNo not found in database.');
+    }
+
+    final moduleId = moduleRow['id'].toString();
+
+    final existingRow = await supabase
+        .from('module_progress')
+        .select('id, pre_test_completed_at, simulation_completed_at, post_test_completed_at')
+        .eq('user_id', user.id)
+        .eq('module_id', moduleId)
+        .maybeSingle();
+
+    final now = DateTime.now().toIso8601String();
+
+    await supabase.from('module_progress').upsert(
+      {
+        if (existingRow != null && existingRow['id'] != null)
+          'id': existingRow['id'],
+        'user_id': user.id,
+        'module_id': moduleId,
+        'pre_test_completed_at': existingRow?['pre_test_completed_at'],
+        'simulation_completed_at': now,
+        'post_test_completed_at': existingRow?['post_test_completed_at'],
+      },
+      onConflict: 'user_id,module_id',
+    );
   }
 
   Future<void> _openSceneFlow() async {
@@ -43,12 +97,38 @@ class _SimulationSceneState extends State<SimulationScene> {
     }
 
     try {
-      await UnityLauncher.openScene(unitySceneName);
+      final unityResult = await UnityLauncher.openScene(unitySceneName);
+
+      if (!mounted) return;
+
+      await ProfileProgressSync.updateLastSimulation(_sceneLabelFor(picked));
+
+      if (unityResult.completed == true) {
+        await _markSimulationCompleted(1);
+        await ProfileProgressSync.syncCompletedSimulations();
+
+        if (!mounted) return;
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Module 1 simulation completed. Progress updated.'),
+          ),
+        );
+
+        Navigator.pop(context, true);
+      }
     } on PlatformException catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Failed to open Unity: ${e.message ?? e.code}'),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to save simulation progress: $e'),
         ),
       );
     }
@@ -138,7 +218,6 @@ class _SimulationSceneState extends State<SimulationScene> {
     return Scaffold(
       body: Stack(
         children: [
-          // ===== BACKGROUND =====
           Positioned(
             top: 0,
             left: 0,
@@ -146,14 +225,11 @@ class _SimulationSceneState extends State<SimulationScene> {
             height: 900,
             child: Image.asset('assets/bg.png', fit: BoxFit.cover),
           ),
-
           SafeArea(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 15),
-
-                // ===== HEADER =====
                 Padding(
                   padding: const EdgeInsets.only(left: 9, right: 25),
                   child: Column(
@@ -237,10 +313,7 @@ class _SimulationSceneState extends State<SimulationScene> {
                     ],
                   ),
                 ),
-
                 const SizedBox(height: 30),
-
-                // ===== CONTENT AREA =====
                 Expanded(
                   child: ListView(
                     padding: const EdgeInsets.fromLTRB(16, 14, 16, 18),
@@ -265,8 +338,6 @@ class _SimulationSceneState extends State<SimulationScene> {
     );
   }
 }
-
-/* ---------------------- BIG MODULE CARD ---------------------- */
 
 class _ModuleCard extends StatelessWidget {
   final String moduleLabel;
@@ -410,8 +481,6 @@ class _ModuleCard extends StatelessWidget {
     );
   }
 }
-
-/* ---------------------- POPUP #1 (Scene 1 only) ---------------------- */
 
 class _ScenePickerPopup extends StatelessWidget {
   final VoidCallback onClose;
@@ -607,8 +676,6 @@ class _ModernSceneTile extends StatelessWidget {
   }
 }
 
-/* ---------------------- POPUP #2 (dynamic explanation) ---------------------- */
-
 class _SceneConfirmPopup extends StatelessWidget {
   final int scene;
   final VoidCallback onClose;
@@ -669,8 +736,7 @@ class _SceneConfirmPopup extends StatelessWidget {
                     color: brandRed.withOpacity(0.10),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child:
-                      const Icon(Icons.check_circle_rounded, color: brandRed),
+                  child: const Icon(Icons.check_circle_rounded, color: brandRed),
                 ),
                 const SizedBox(width: 12),
                 Expanded(

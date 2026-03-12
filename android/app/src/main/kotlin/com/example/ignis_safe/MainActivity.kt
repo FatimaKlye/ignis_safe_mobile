@@ -8,6 +8,10 @@ import io.flutter.plugin.common.MethodChannel
 class MainActivity : FlutterActivity() {
 
     private val CHANNEL = "ignis_safe/unity"
+    private val UNITY_REQUEST_CODE = 1001
+
+    private var pendingUnityResult: MethodChannel.Result? = null
+    private var pendingUnitySceneName: String? = null
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -26,6 +30,11 @@ class MainActivity : FlutterActivity() {
                         return@setMethodCallHandler
                     }
 
+                    if (pendingUnityResult != null) {
+                        result.error("UNITY_BUSY", "A Unity scene is already running.", null)
+                        return@setMethodCallHandler
+                    }
+
                     try {
                         val intent = Intent().apply {
                             setClassName(
@@ -35,9 +44,16 @@ class MainActivity : FlutterActivity() {
                             putExtra("sceneName", sceneName)
                         }
 
-                        startActivity(intent)
-                        result.success(true)
+                        pendingUnityResult = result
+                        pendingUnitySceneName = sceneName
+
+                        @Suppress("DEPRECATION")
+                        startActivityForResult(intent, UNITY_REQUEST_CODE)
+
                     } catch (e: Exception) {
+                        pendingUnityResult = null
+                        pendingUnitySceneName = null
+
                         result.error(
                             "UNITY_LAUNCH_ERROR",
                             "Failed to launch Unity: ${e.message}",
@@ -48,6 +64,23 @@ class MainActivity : FlutterActivity() {
 
                 else -> result.notImplemented()
             }
+        }
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == UNITY_REQUEST_CODE) {
+            pendingUnityResult?.success(
+                mapOf(
+                    "completed" to true,
+                    "sceneName" to pendingUnitySceneName
+                )
+            )
+
+            pendingUnityResult = null
+            pendingUnitySceneName = null
         }
     }
 }
