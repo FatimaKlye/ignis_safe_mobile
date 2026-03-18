@@ -1,4 +1,3 @@
-// fire_materials_tab.dart
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -11,13 +10,15 @@ import 'module_1.dart/pre_test_module1.dart' as pre1;
 import 'module_1.dart/postassessment_extinguisher.dart';
 import 'module_1.dart/simulation_scene.dart';
 
-import 'module_2.dart/postassessment_extinguisher1.dart';
-import 'module_2.dart/pre_test_module2.dart' as pre2;
-import 'module_2.dart/simulation_scene.dart' as sim2;
+// OLD MODULE 2 FILES -> now used as MODULE 2 (HOUSE FIRE)
+import 'module_2.dart/postassessment_extinguisher1.dart' as house_post;
+import 'module_2.dart/pre_test_module2.dart' as house_pre;
+import 'module_2.dart/simulation_scene.dart' as house_sim;
 
-import 'module_3.dart/postassessment_extinguisher2.dart';
-import 'module_3.dart/pre_test_module3.dart' as pre3;
-import 'module_3.dart/simulation_scene.dart' as sim3;
+// OLD MODULE 3 FILES -> now used as MODULE 5 (BUILDING FIRE)
+import 'module_3.dart/postassessment_extinguisher2.dart' as electrical_post;
+import 'module_3.dart/pre_test_module3.dart' as electrical_pre;
+import 'module_3.dart/simulation_scene.dart' as electrical_sim;
 
 enum ModuleFilter { all, pending, inProgress, completed }
 
@@ -47,6 +48,8 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
     1: const ModuleProgress(preDone: false, simDone: false, postDone: false),
     2: const ModuleProgress(preDone: false, simDone: false, postDone: false),
     3: const ModuleProgress(preDone: false, simDone: false, postDone: false),
+    4: const ModuleProgress(preDone: false, simDone: false, postDone: false),
+    5: const ModuleProgress(preDone: false, simDone: false, postDone: false),
   };
 
   final List<_ModuleItem> _modules = const [
@@ -61,17 +64,33 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
     _ModuleItem(
       moduleNo: 2,
       moduleLabel: "MODULE 2",
-      title: "ELECTRICAL AND HOUSE FIRE",
+      title: "HOUSE FIRE",
       description:
-          "Learn how electrical and household fires start, and understand the proper safety actions to prevent and respond to emergencies at home.",
+          "Learn how household fires begin, recognize home fire hazards, and respond safely and effectively during emergencies at home.",
       asset: "assets/electrical.png",
     ),
     _ModuleItem(
       moduleNo: 3,
       moduleLabel: "MODULE 3",
-      title: "KITCHEN AND BUILDING FIRE",
+      title: "ELECTRICAL FIRE",
       description:
-          "Understand common kitchen and building fire risks, and learn the correct fire safety practices and emergency response steps.",
+          "Learn how electrical fires start, identify common hazards, and apply the correct fire safety response for electrical-related incidents.",
+      asset: "assets/electrical.png",
+    ),
+    _ModuleItem(
+      moduleNo: 4,
+      moduleLabel: "MODULE 4",
+      title: "KITCHEN FIRE",
+      description:
+          "Understand common kitchen fire risks and learn the proper fire safety practices and emergency response steps in cooking areas.",
+      asset: "assets/kitchen.png",
+    ),
+    _ModuleItem(
+      moduleNo: 5,
+      moduleLabel: "MODULE 5",
+      title: "BUILDING FIRE",
+      description:
+          "Understand building fire risks, evacuation procedures, and the correct fire safety response in larger structures and shared spaces.",
       asset: "assets/kitchen.png",
     ),
   ];
@@ -120,7 +139,7 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
       final moduleRows = await Supabase.instance.client
           .from('modules')
           .select('id, module_no')
-          .inFilter('module_no', [1, 2, 3]);
+          .inFilter('module_no', [1, 2, 3, 4, 5]);
 
       final moduleDbIdByNo = <int, String>{};
       final moduleNoByDbId = <String, int>{};
@@ -136,6 +155,8 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
         1: const ModuleProgress(preDone: false, simDone: false, postDone: false),
         2: const ModuleProgress(preDone: false, simDone: false, postDone: false),
         3: const ModuleProgress(preDone: false, simDone: false, postDone: false),
+        4: const ModuleProgress(preDone: false, simDone: false, postDone: false),
+        5: const ModuleProgress(preDone: false, simDone: false, postDone: false),
       };
 
       if (moduleDbIdByNo.isNotEmpty) {
@@ -217,8 +238,6 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
   ) async {
     if (!mounted) return;
 
-    // Temporary testing override: unlock post-assessment navigation.
-    // final postLocked = !progress.simDone;
     final postLocked = false;
 
     await showGeneralDialog(
@@ -275,89 +294,168 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
   }
 
   Future<void> _goToPre(_ModuleItem m) async {
-    if (m.moduleNo == 1) {
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => const pre1.PreAssessmentIntroPage(),
-        ),
-      );
-    } else if (m.moduleNo == 2) {
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => const pre2.PreAssessmentIntroPage2(),
-        ),
-      );
-    } else {
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => const pre3.PreAssessmentIntroPage2(),
-        ),
-      );
+    switch (m.moduleNo) {
+      case 1:
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const pre1.PreAssessmentIntroPage(),
+          ),
+        );
+        break;
+
+      case 2:
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const house_pre.PreAssessmentIntroPage2(),
+          ),
+        );
+        break;
+
+      case 3:
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const electrical_pre.PreAssessmentIntroPage2(),
+          ),
+        );
+        break;
+
+      case 4:
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const _ModuleUnderConstructionPage(
+              title: "Module 4 - Kitchen Fire",
+              subtitle: "Connect your Kitchen Fire pre-assessment page here.",
+            ),
+          ),
+        );
+        break;
+
+      case 5:
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const _ModuleUnderConstructionPage(           
+            title: "Module 3 - Electrical Fire",
+              subtitle: "Connect your Electrical Fire pre-assessment page here.",
+            ),
+          ),
+        );
+        break;
     }
 
     await _loadModuleProgressFromDatabase();
   }
 
   Future<void> _goToSim(_ModuleItem m) async {
-    if (m.moduleNo == 1) {
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => const SimulationScene(),
-        ),
-      );
-    } else if (m.moduleNo == 2) {
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => const sim2.SimulationScene2(),
-        ),
-      );
-    } else {
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => const sim3.SimulationScene3(),
-        ),
-      );
+    switch (m.moduleNo) {
+      case 1:
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const SimulationScene(),
+          ),
+        );
+        break;
+
+      case 2:
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const house_sim.SimulationScene2(),
+          ),
+        );
+        break;
+
+      case 3:
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const electrical_sim.SimulationScene3()
+          ),
+        );
+        break;
+
+      case 4:
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const _ModuleUnderConstructionPage(
+              title: "Module 4 - Kitchen Fire",
+              subtitle: "Connect your Kitchen Fire simulation page here.",
+            ),
+          ),
+        );
+        break;
+
+      case 5:
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const _ModuleUnderConstructionPage(
+              title: "Module 4 - Kitchen Fire",
+              subtitle: "Connect your Kitchen Fire simulation page here.",
+            ),
+          ),
+        );
+        break;
     }
 
     await _loadModuleProgressFromDatabase();
   }
 
   Future<void> _goToPost(_ModuleItem m) async {
-    if (m.moduleNo == 1) {
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => const PostAssessmentPassPage(),
-        ),
-      );
-    } else if (m.moduleNo == 2) {
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => const PostAssessmentHousePage(),
-        ),
-      );
-    } else if (m.moduleNo == 3) {
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => const PostAssessmentModule3Page(),
-        ),
-      );
-    } else {
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) =>
-              _PlaceholderPage(title: "${m.moduleLabel} - Post Assessment"),
-        ),
-      );
+    switch (m.moduleNo) {
+      case 1:
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const PostAssessmentPassPage(),
+          ),
+        );
+        break;
+
+      case 2:
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const house_post.PostAssessmentHousePage(),
+          ),
+        );
+        break;
+
+      case 3:
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const electrical_post.PostAssessmentModule3Page(),
+          ),
+        );
+        break;
+
+      case 4:
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const _ModuleUnderConstructionPage(
+              title: "Module 4 - Kitchen Fire",
+              subtitle: "Connect your Kitchen Fire post-assessment page here.",
+            ),
+          ),
+        );
+        break;
+
+      case 5:
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const electrical_post.PostAssessmentModule3Page(),
+          ),
+        );
+        break;
     }
 
     await _loadModuleProgressFromDatabase();
@@ -581,12 +679,13 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
                         : Builder(
                             builder: (context) {
                               final filteredModules = searchedModules.where((m) {
-                                final progress = _progressByModuleNo[m.moduleNo] ??
-                                    const ModuleProgress(
-                                      preDone: false,
-                                      simDone: false,
-                                      postDone: false,
-                                    );
+                                final progress =
+                                    _progressByModuleNo[m.moduleNo] ??
+                                        const ModuleProgress(
+                                          preDone: false,
+                                          simDone: false,
+                                          postDone: false,
+                                        );
                                 return _matchesFilter(progress);
                               }).toList();
 
@@ -600,7 +699,8 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
                                 itemCount: filteredModules.length,
                                 itemBuilder: (context, index) {
                                   final m = filteredModules[index];
-                                  final isLast = index == filteredModules.length - 1;
+                                  final isLast =
+                                      index == filteredModules.length - 1;
                                   final progress =
                                       _progressByModuleNo[m.moduleNo] ??
                                           const ModuleProgress(
@@ -610,7 +710,8 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
                                           );
 
                                   return Padding(
-                                    padding: EdgeInsets.only(bottom: isLast ? 0 : 30),
+                                    padding:
+                                        EdgeInsets.only(bottom: isLast ? 0 : 30),
                                     child: _ModuleCard(
                                       moduleLabel: m.moduleLabel,
                                       title: m.title,
@@ -990,8 +1091,10 @@ class _ModuleActionPopup extends StatelessWidget {
                                 ),
                                 title: const Row(
                                   children: [
-                                    Icon(Icons.lock_outline,
-                                        color: Color(0xFFB11217)),
+                                    Icon(
+                                      Icons.lock_outline,
+                                      color: Color(0xFFB11217),
+                                    ),
                                     SizedBox(width: 10),
                                     Expanded(
                                       child: Text(
@@ -1107,17 +1210,57 @@ class _OutlineActionButton extends StatelessWidget {
   }
 }
 
-class _PlaceholderPage extends StatelessWidget {
+class _ModuleUnderConstructionPage extends StatelessWidget {
   final String title;
+  final String subtitle;
 
-  const _PlaceholderPage({required this.title});
+  const _ModuleUnderConstructionPage({
+    required this.title,
+    required this.subtitle,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(title)),
-      body: const Center(
-        child: Text("Replace this with your real page."),
+      appBar: AppBar(
+        title: Text(title),
+        backgroundColor: const Color(0xFFB11217),
+        foregroundColor: Colors.white,
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(
+                Icons.construction_rounded,
+                size: 64,
+                color: Color(0xFFB11217),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                subtitle,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 15,
+                  color: Colors.black54,
+                  fontWeight: FontWeight.w600,
+                  height: 1.4,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

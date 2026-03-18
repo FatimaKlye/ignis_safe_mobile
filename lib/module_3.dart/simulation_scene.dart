@@ -1,6 +1,10 @@
 // simulation_scene.dart
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../unity_launcher.dart';
+import '../profile_progress_sync.dart';
 
 class SimulationScene3 extends StatefulWidget {
   const SimulationScene3({super.key});
@@ -10,9 +14,73 @@ class SimulationScene3 extends StatefulWidget {
 }
 
 class _SimulationScene3State extends State<SimulationScene3> {
-  // Brand + header gradient (matches your header style)
-  static const accent = Color(0xFF1E3A8A); // deep blue
-  static const accent2 = Color(0xFF7C3AED); // purple/blue
+  static const accent = Color(0xFF1E3A8A);
+  static const accent2 = Color(0xFF7C3AED);
+
+  static const int _moduleNo = 3;
+
+  String _sceneLabelFor(int scene) {
+    switch (scene) {
+      case 3:
+        return 'Module 3 - Scene 3';
+      default:
+        return 'Module 3 - Scene 3';
+    }
+  }
+
+  String? _unitySceneNameFor(int scene) {
+    switch (scene) {
+      case 3:
+        return 'Electrical_Fire'; // replace with your actual Unity scene name
+      default:
+        return null;
+    }
+  }
+
+  Future<void> _markSimulationCompleted(int moduleNo) async {
+    final supabase = Supabase.instance.client;
+    final user = supabase.auth.currentUser;
+
+    if (user == null) {
+      throw Exception('No active user session.');
+    }
+
+    final moduleRow = await supabase
+        .from('modules')
+        .select('id')
+        .eq('module_no', moduleNo)
+        .maybeSingle();
+
+    if (moduleRow == null) {
+      throw Exception('Module $moduleNo not found in database.');
+    }
+
+    final moduleId = moduleRow['id'].toString();
+
+    final existingRow = await supabase
+        .from('module_progress')
+        .select(
+          'id, pre_test_completed_at, simulation_completed_at, post_test_completed_at',
+        )
+        .eq('user_id', user.id)
+        .eq('module_id', moduleId)
+        .maybeSingle();
+
+    final now = DateTime.now().toIso8601String();
+
+    await supabase.from('module_progress').upsert(
+      {
+        if (existingRow != null && existingRow['id'] != null)
+          'id': existingRow['id'],
+        'user_id': user.id,
+        'module_id': moduleId,
+        'pre_test_completed_at': existingRow?['pre_test_completed_at'],
+        'simulation_completed_at': now,
+        'post_test_completed_at': existingRow?['post_test_completed_at'],
+      },
+      onConflict: 'user_id,module_id',
+    );
+  }
 
   Future<void> _openSceneFlow() async {
     final picked = await _showScenePickerPopup();
@@ -21,11 +89,53 @@ class _SimulationScene3State extends State<SimulationScene3> {
     final confirmed = await _showSceneConfirmPopup(picked);
     if (!mounted || confirmed != true) return;
 
-    // TODO: Replace with Unity launch / actual scene route
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => _ScenePlaceholder(scene: picked)),
-    );
+    final unitySceneName = _unitySceneNameFor(picked);
+
+    if (unitySceneName == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Scene 3 is not yet available in Unity.'),
+        ),
+      );
+      return;
+    }
+
+    try {
+      final unityResult = await UnityLauncher.openScene(unitySceneName);
+
+      if (!mounted) return;
+
+      await ProfileProgressSync.updateLastSimulation(_sceneLabelFor(picked));
+
+      if (unityResult.completed == true) {
+        await _markSimulationCompleted(_moduleNo);
+        await ProfileProgressSync.syncCompletedSimulations();
+
+        if (!mounted) return;
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Module 3 simulation completed. Progress updated.'),
+          ),
+        );
+
+        Navigator.pop(context, true);
+      }
+    } on PlatformException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to open Unity: ${e.message ?? e.code}'),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to save simulation progress: $e'),
+        ),
+      );
+    }
   }
 
   Future<int?> _showScenePickerPopup() {
@@ -46,7 +156,7 @@ class _SimulationScene3State extends State<SimulationScene3> {
               Center(
                 child: _ScenePickerPopup(
                   onClose: () => Navigator.pop(context),
-                  onPickScene5: () => Navigator.pop(context, 5),
+                  onPickScene3: () => Navigator.pop(context, 3),
                 ),
               ),
             ],
@@ -54,7 +164,8 @@ class _SimulationScene3State extends State<SimulationScene3> {
         );
       },
       transitionBuilder: (_, anim, __, child) {
-        final curved = CurvedAnimation(parent: anim, curve: Curves.easeOutCubic);
+        final curved =
+            CurvedAnimation(parent: anim, curve: Curves.easeOutCubic);
         return FadeTransition(
           opacity: curved,
           child: ScaleTransition(
@@ -93,7 +204,8 @@ class _SimulationScene3State extends State<SimulationScene3> {
         );
       },
       transitionBuilder: (_, anim, __, child) {
-        final curved = CurvedAnimation(parent: anim, curve: Curves.easeOutCubic);
+        final curved =
+            CurvedAnimation(parent: anim, curve: Curves.easeOutCubic);
         return FadeTransition(
           opacity: curved,
           child: ScaleTransition(
@@ -110,7 +222,6 @@ class _SimulationScene3State extends State<SimulationScene3> {
     return Scaffold(
       body: Stack(
         children: [
-          // ===== BACKGROUND =====
           Positioned(
             top: 0,
             left: 0,
@@ -118,14 +229,11 @@ class _SimulationScene3State extends State<SimulationScene3> {
             height: 900,
             child: Image.asset('assets/bg.png', fit: BoxFit.cover),
           ),
-
           SafeArea(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 15),
-
-                // ===== HEADER (kept) =====
                 Padding(
                   padding: const EdgeInsets.only(left: 9, right: 25),
                   child: Column(
@@ -195,7 +303,7 @@ class _SimulationScene3State extends State<SimulationScene3> {
                             const SizedBox(width: 15),
                             const Expanded(
                               child: Text(
-                                "Building Fire Safety (Tenement / Condo)",
+                                "Electrical Fire",
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontWeight: FontWeight.w600,
@@ -209,20 +317,17 @@ class _SimulationScene3State extends State<SimulationScene3> {
                     ],
                   ),
                 ),
-
                 const SizedBox(height: 30),
-
-                // ===== CONTENT AREA (fills remaining height) =====
                 Expanded(
                   child: ListView(
                     padding: const EdgeInsets.fromLTRB(16, 14, 16, 18),
                     children: [
                       _ModuleCard(
                         moduleLabel: "MODULE 3",
-                        title: "BUILDING",
+                        title: "ELECTRICAL FIRE",
                         description:
-                            "Learn the correct actions during a building fire, including safe evacuation and what to do in a tenement or condo setting.",
-                        asset: "assets/condo.jpg", // <-- change to your asset
+                            "Learn the correct response during an electrical fire, including shutting off power when safe, using the correct extinguisher, and evacuating if the fire spreads.",
+                        asset: "assets/electricalfire.jpg", // change if needed
                         buttonText: "Scene",
                         onPressed: _openSceneFlow,
                       ),
@@ -237,8 +342,6 @@ class _SimulationScene3State extends State<SimulationScene3> {
     );
   }
 }
-
-/* ---------------------- BIG MODULE CARD (fixed size) ---------------------- */
 
 class _ModuleCard extends StatelessWidget {
   final String moduleLabel;
@@ -383,15 +486,13 @@ class _ModuleCard extends StatelessWidget {
   }
 }
 
-/* ---------------------- POPUP #1 (Scene 5 only) ---------------------- */
-
 class _ScenePickerPopup extends StatelessWidget {
   final VoidCallback onClose;
-  final VoidCallback onPickScene5;
+  final VoidCallback onPickScene3;
 
   const _ScenePickerPopup({
     required this.onClose,
-    required this.onPickScene5,
+    required this.onPickScene3,
   });
 
   static const Color brandRed = Color(0xFFB11217);
@@ -427,7 +528,10 @@ class _ScenePickerPopup extends StatelessWidget {
                     color: brandRed.withOpacity(0.10),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(Icons.apartment_rounded, color: brandRed),
+                  child: const Icon(
+                    Icons.electrical_services_rounded,
+                    color: brandRed,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 const Expanded(
@@ -444,14 +548,14 @@ class _ScenePickerPopup extends StatelessWidget {
                 IconButton(
                   onPressed: onClose,
                   icon: const Icon(Icons.close_rounded),
-                  color: Colors.black.withOpacity(0.45),
+                  color: Colors.black54,
                   splashRadius: 18,
                 ),
               ],
             ),
             const SizedBox(height: 10),
             Text(
-              "You selected Module 3 (Building). Scene 5 is available.",
+              "Module 3 has one available simulation scene.",
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: 'Poppins',
@@ -463,10 +567,10 @@ class _ScenePickerPopup extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             _ModernSceneTile(
-              title: "Scene 5",
-              subtitle: "Tenement / Condo",
-              icon: Icons.apartment_rounded,
-              onTap: onPickScene5,
+              title: "Scene 3",
+              subtitle: "Electrical fire in the house",
+              icon: Icons.electrical_services_rounded,
+              onTap: onPickScene3,
             ),
           ],
         ),
@@ -576,8 +680,6 @@ class _ModernSceneTile extends StatelessWidget {
   }
 }
 
-/* ---------------------- POPUP #2 (Scene 5 explanation) ---------------------- */
-
 class _SceneConfirmPopup extends StatelessWidget {
   final int scene;
   final VoidCallback onClose;
@@ -590,6 +692,20 @@ class _SceneConfirmPopup extends StatelessWidget {
   });
 
   static const Color brandRed = Color(0xFFB11217);
+
+  String get _body {
+    switch (scene) {
+      case 3:
+        return "You chose Scene 3: Electrical fire in the house.\n\n"
+            "In this scene, you will practice electrical fire safety:\n"
+            "• Do NOT use water\n"
+            "• Switch off power if safe\n"
+            "• Use the correct extinguisher\n"
+            "• Evacuate if the fire spreads";
+      default:
+        return "You chose a scene. Press Start to continue.";
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -622,8 +738,7 @@ class _SceneConfirmPopup extends StatelessWidget {
                     color: brandRed.withOpacity(0.10),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child:
-                      const Icon(Icons.check_circle_rounded, color: brandRed),
+                  child: const Icon(Icons.check_circle_rounded, color: brandRed),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -640,7 +755,7 @@ class _SceneConfirmPopup extends StatelessWidget {
                 IconButton(
                   onPressed: onClose,
                   icon: const Icon(Icons.close_rounded),
-                  color: Colors.black.withOpacity(0.45),
+                  color: Colors.black54,
                   splashRadius: 18,
                 ),
               ],
@@ -655,12 +770,7 @@ class _SceneConfirmPopup extends StatelessWidget {
                 border: Border.all(color: Colors.black.withOpacity(0.06)),
               ),
               child: Text(
-                "You chose Scene 5: Tenement / Condo.\n\n"
-                "In this scene, you will practice building fire safety:\n"
-                "• Identify safe exits and stairwells\n"
-                "• Avoid elevators during fire\n"
-                "• Check corridors for smoke/heat\n"
-                "• Follow evacuation signage and procedures",
+                _body,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontFamily: 'Poppins',
@@ -709,25 +819,6 @@ class _SceneConfirmPopup extends StatelessWidget {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-/* ---------------------- Placeholder ---------------------- */
-
-class _ScenePlaceholder extends StatelessWidget {
-  final int scene;
-  const _ScenePlaceholder({required this.scene});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Text(
-          "Scene $scene Placeholder (launch Unity here)",
-          style: const TextStyle(fontFamily: 'Poppins'),
         ),
       ),
     );

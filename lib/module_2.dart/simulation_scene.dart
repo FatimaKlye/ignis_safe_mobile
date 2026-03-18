@@ -21,10 +21,6 @@ class _SimulationScene2State extends State<SimulationScene2> {
     switch (scene) {
       case 2:
         return 'Module 2 - Scene 2';
-      case 3:
-        return 'Module 2 - Scene 3';
-      case 4:
-        return 'Module 2 - Scene 4';
       default:
         return 'Module 2 - Unknown Scene';
     }
@@ -34,10 +30,6 @@ class _SimulationScene2State extends State<SimulationScene2> {
     switch (scene) {
       case 2:
         return 'House_FireEscape';
-      case 3:
-        return null;
-      case 4:
-        return null;
       default:
         return null;
     }
@@ -161,8 +153,6 @@ class _SimulationScene2State extends State<SimulationScene2> {
                 child: _ScenePickerPopup(
                   onClose: () => Navigator.pop(context),
                   onPickScene2: () => Navigator.pop(context, 2),
-                  onPickScene3: () => Navigator.pop(context, 3),
-                  onPickScene4: () => Navigator.pop(context, 4),
                 ),
               ),
             ],
@@ -332,7 +322,7 @@ class _SimulationScene2State extends State<SimulationScene2> {
                         moduleLabel: "MODULE 2",
                         title: "HOUSE",
                         description:
-                            "Learn how to respond safely during a house fire, including evacuation, electrical fire response, and kitchen fire safety.",
+                            "Learn how to respond safely during a house fire through proper evacuation steps.",
                         asset: "assets/house.jpg",
                         buttonText: "Scene",
                         onPressed: _openSceneFlow,
@@ -495,14 +485,10 @@ class _ModuleCard extends StatelessWidget {
 class _ScenePickerPopup extends StatelessWidget {
   final VoidCallback onClose;
   final VoidCallback onPickScene2;
-  final VoidCallback onPickScene3;
-  final VoidCallback onPickScene4;
 
   const _ScenePickerPopup({
     required this.onClose,
     required this.onPickScene2,
-    required this.onPickScene3,
-    required this.onPickScene4,
   });
 
   static const Color brandRed = Color(0xFFB11217);
@@ -562,7 +548,7 @@ class _ScenePickerPopup extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              "Module 2 (House) has three scenes available.",
+              "Module 2 (House) has one scene available.",
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: 'Poppins',
@@ -578,20 +564,6 @@ class _ScenePickerPopup extends StatelessWidget {
               subtitle: "How to get out of the house if the house is on fire",
               icon: Icons.directions_run_rounded,
               onTap: onPickScene2,
-            ),
-            const SizedBox(height: 12),
-            _ModernSceneTile(
-              title: "Scene 3",
-              subtitle: "Electrical fire in the house",
-              icon: Icons.electrical_services_rounded,
-              onTap: onPickScene3,
-            ),
-            const SizedBox(height: 12),
-            _ModernSceneTile(
-              title: "Scene 4",
-              subtitle: "Kitchen fire",
-              icon: Icons.local_fire_department_rounded,
-              onTap: onPickScene4,
             ),
           ],
         ),
@@ -725,20 +697,6 @@ class _SceneConfirmPopup extends StatelessWidget {
             "• Check doors for heat\n"
             "• Use the nearest safe exit\n"
             "• Call for help once outside";
-      case 3:
-        return "You chose Scene 3: Electrical fire in the house.\n\n"
-            "In this scene, you will practice electrical fire safety:\n"
-            "• Do NOT use water\n"
-            "• Switch off power if safe\n"
-            "• Use the correct extinguisher (Class C / CO₂)\n"
-            "• Evacuate if the fire spreads";
-      case 4:
-        return "You chose Scene 4: Kitchen fire.\n\n"
-            "In this scene, you will practice kitchen fire response:\n"
-            "• Turn off the heat source\n"
-            "• Smother grease fires (lid/blanket)\n"
-            "• Do NOT use water on oil\n"
-            "• Use Class K / appropriate extinguisher if needed";
       default:
         return "You chose a scene. Press Start to continue.";
     }
