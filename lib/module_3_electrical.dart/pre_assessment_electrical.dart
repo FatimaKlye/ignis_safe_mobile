@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'pre_assessment_completion_page2.dart';
+import 'pre_completion_electrical.dart';
 
 const Color kBrandRed = Color(0xFFB11217);
 const Color kBrandAmber = Color(0xFFF59E0B);
 const Color kDarkText = Color(0xFF1F2937);
 const Color kSoftBg = Color(0xFFF8FAFC);
 
-class PreAssessmentKitchenPage extends StatefulWidget {
-  const PreAssessmentKitchenPage({super.key});
+class PreAssessmentElectricalPage extends StatefulWidget {
+  const PreAssessmentElectricalPage({super.key});
 
   @override
-  State<PreAssessmentKitchenPage> createState() =>
-      _PreAssessmentKitchenPageState();
+  State<PreAssessmentElectricalPage> createState() =>
+      _PreAssessmentElectricalPageState();
 }
 
-class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
+class _PreAssessmentElectricalPageState extends State<PreAssessmentElectricalPage> {
   static const int _moduleNo = 3;
   static const String _assessmentType = 'pre';
 
@@ -747,7 +747,7 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (_) => PreAssessmentCompletionPage2(
+          builder: (_) => PreAssessmentCompletionPage1(
             score: correctCount,
             totalQuestions: _questions.length,
             assessmentTitle: _assessmentTitle,

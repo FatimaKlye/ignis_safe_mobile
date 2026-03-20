@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'module_1.dart/module1.dart';
-import 'module_2.dart/module2.dart';
-import 'module_3.dart/module3.dart';
+import 'module_1_extinguisher.dart/module_1_learning.dart';
+import 'module_2_house.dart/module_2_learning.dart' as house_learning;
+import 'module_3_electrical.dart/module_3_learning.dart' as electrical_learning;
+import 'module_4_kitchen.dart/module_4_learning.dart' as kitchen_learning;
+import 'module_5_building.dart/module_5_learning.dart' as building_learning;
 import 'login.dart';
-import 'profile.dart';
-
 
 class LearningMaterialsTab extends StatefulWidget {
   const LearningMaterialsTab({super.key, this.onRequestTabChange});
@@ -34,27 +34,20 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
     try {
       final user = Supabase.instance.client.auth.currentUser;
       if (user == null) return;
+
       final data = await Supabase.instance.client
           .from('profiles')
-          .select('first_name, last_name')
+          .select('first_name, last_name, avatar_url')
           .eq('id', user.id)
           .maybeSingle();
+
       if (!mounted || data == null) return;
+
       setState(() {
-        _firstName = data['first_name'] ?? '';
-        _lastName = data['last_name'] ?? '';
+        _firstName = (data['first_name'] ?? '').toString();
+        _lastName = (data['last_name'] ?? '').toString();
+        _avatarUrl = data['avatar_url'] as String?;
       });
-      // avatar_url fetched separately — column may not exist yet
-      try {
-        final av = await Supabase.instance.client
-            .from('profiles')
-            .select('avatar_url')
-            .eq('id', user.id)
-            .maybeSingle();
-        if (mounted && av != null) {
-          setState(() => _avatarUrl = av['avatar_url'] as String?);
-        }
-      } catch (_) {}
     } catch (_) {}
   }
 
@@ -65,20 +58,39 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
       description:
           "Learn the proper and safe use of fire extinguishers for effective response during fire emergencies.",
       asset: "assets/fire_ex.png",
+      moduleNo: 1,
     ),
     _ModuleItem(
       moduleLabel: "MODULE 2",
+      title: "HOUSE FIRE",
+      description:
+          "Learn the common causes of house fires and the correct actions to take during a residential fire emergency.",
+      asset: "assets/house.jpg",
+      moduleNo: 2,
+    ),
+    _ModuleItem(
+      moduleLabel: "MODULE 3",
       title: "ELECTRICAL FIRE",
       description:
           "Learn how electrical fires occur and the correct actions to take during an electrical fire emergency.",
       asset: "assets/electrical.png",
+      moduleNo: 3,
     ),
     _ModuleItem(
-      moduleLabel: "MODULE 3",
+      moduleLabel: "MODULE 4",
       title: "KITCHEN FIRE",
       description:
           "Understand safe cooking practices and proper response to grease and oil fires.",
       asset: "assets/kitchen.png",
+      moduleNo: 4,
+    ),
+    _ModuleItem(
+      moduleLabel: "MODULE 5",
+      title: "BUILDING FIRE",
+      description:
+          "Learn how to respond safely during building fire incidents, including evacuation and hazard awareness.",
+      asset: "assets/condo.jpg",
+      moduleNo: 5,
     ),
   ];
 
@@ -96,7 +108,52 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
   }
 
   Future<void> _goToProfile() async {
-    widget.onRequestTabChange?.call(2); // change 3 to your actual Profile tab index
+    widget.onRequestTabChange?.call(2);
+  }
+
+  void _openModule(int moduleNo) {
+    switch (moduleNo) {
+      case 1:
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const LearningMaterialExtinguisherPage(),
+          ),
+        );
+        break;
+      case 2:
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const house_learning.LearningMaterialHousePage(),
+          ),
+        );
+        break;
+      case 3:
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const electrical_learning.LearningMaterialElectricalPage(),
+          ),
+        );
+        break;
+      case 4:
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const kitchen_learning.LearningMaterialKitchenPage(),
+          ),
+        );
+        break;
+      case 5:
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const building_learning.LearningMaterialTenementPage(),
+          ),
+        );
+        break;
+    }
   }
 
   @override
@@ -107,6 +164,9 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
       return m.title.toLowerCase().contains(q) ||
           m.moduleLabel.toLowerCase().contains(q);
     }).toList();
+
+    final greetingName = '$_firstName $_lastName'.trim();
+    final greeting = greetingName.isEmpty ? 'Hi!' : 'Hi, $greetingName';
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -127,7 +187,6 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
                 children: [
                   const SizedBox(height: 20),
 
-                  // ✅ HEADER (avatar is a menu button: Profile / Logout)
                   Row(
                     children: [
                       PopupMenuButton<String>(
@@ -170,12 +229,17 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
                         ],
                         child: CircleAvatar(
                           radius: 22,
-                          backgroundColor: Colors.grey.shade400,
-                          backgroundImage: _avatarUrl != null
-                              ? NetworkImage(_avatarUrl!) as ImageProvider
+                          backgroundColor: Colors.grey,
+                          backgroundImage: (_avatarUrl != null &&
+                                  _avatarUrl!.trim().isNotEmpty)
+                              ? NetworkImage(_avatarUrl!)
                               : null,
-                          child: _avatarUrl == null
-                              ? const Icon(Icons.person, size: 22, color: Colors.white)
+                          child: (_avatarUrl == null || _avatarUrl!.trim().isEmpty)
+                              ? const Icon(
+                                  Icons.person,
+                                  size: 22,
+                                  color: Colors.white,
+                                )
                               : null,
                         ),
                       ),
@@ -184,7 +248,7 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Hi, $_firstName $_lastName'.trim() == 'Hi,' ? 'Hi!' : 'Hi, $_firstName $_lastName'.trim(),
+                            greeting,
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 12,
@@ -217,8 +281,7 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
                     ),
                   ),
                   const SizedBox(height: 30),
-             
-                  // ✅ SEARCH
+
                   Container(
                     height: 50,
                     padding: const EdgeInsets.symmetric(horizontal: 14),
@@ -254,58 +317,27 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
 
                   const SizedBox(height: 30),
 
-                  // ✅ LIST
                   Expanded(
-                    child: Padding(
+                    child: ListView.builder(
                       padding: EdgeInsets.only(
                         top: 14,
-                        bottom: (MediaQuery.of(context).padding.bottom - 25)
-                            .clamp(0.0, 999.0),
+                        bottom: (MediaQuery.of(context).padding.bottom + 20)
+                            .clamp(20.0, 999.0),
                       ),
-                      child: Column(
-                        children: filtered.asMap().entries.map((entry) {
-                          final index = entry.key;
-                          final m = entry.value;
-                          final isLast = index == filtered.length - 1;
-
-                          return Padding(
-                            padding: EdgeInsets.only(bottom: isLast ? 0 : 25),
-                            child: _ModuleCard(
-                              moduleLabel: m.moduleLabel,
-                              title: m.title,
-                              description: m.description,
-                              asset: m.asset,
-                              onPressed: () {
-                                if (m.moduleLabel == "MODULE 1") {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) =>
-                                          const LearningMaterialExtinguisherPage(),
-                                    ),
-                                  );
-                                } else if (m.moduleLabel == "MODULE 2") {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) =>
-                                          const LearningMaterialElectricalPage(),
-                                    ),
-                                  );
-                                } else {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) =>
-                                          const LearningMaterialKitchenPage(),
-                                    ),
-                                  );
-                                }
-                              },
-                            ),
-                          );
-                        }).toList(),
-                      ),
+                      itemCount: filtered.length,
+                      itemBuilder: (context, index) {
+                        final m = filtered[index];
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 25),
+                          child: _ModuleCard(
+                            moduleLabel: m.moduleLabel,
+                            title: m.title,
+                            description: m.description,
+                            asset: m.asset,
+                            onPressed: () => _openModule(m.moduleNo),
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ],
@@ -323,12 +355,14 @@ class _ModuleItem {
   final String title;
   final String description;
   final String asset;
+  final int moduleNo;
 
   const _ModuleItem({
     required this.moduleLabel,
     required this.title,
     required this.description,
     required this.asset,
+    required this.moduleNo,
   });
 }
 
@@ -376,7 +410,15 @@ class _ModuleCard extends StatelessWidget {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Image.asset(asset, fit: BoxFit.contain),
+                child: Image.asset(
+                  asset,
+                  fit: BoxFit.contain,
+                  errorBuilder: (_, __, ___) => const Icon(
+                    Icons.local_fire_department,
+                    size: 42,
+                    color: Color(0xFFB11217),
+                  ),
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -412,7 +454,8 @@ class _ModuleCard extends StatelessWidget {
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFFB11217),
                               elevation: 6,
-                              padding: const EdgeInsets.symmetric(horizontal: 14),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 14),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(6),
                               ),

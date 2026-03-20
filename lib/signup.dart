@@ -265,7 +265,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                 )
               : const Text(
-                  'Verify Account',
+                  'Verify Email Address',
                   style: TextStyle(
                     fontFamily: 'Poppins',
                     color: Colors.white,

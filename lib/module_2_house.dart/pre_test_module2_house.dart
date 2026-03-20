@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'preassessment_kitchen.dart';
+import 'preassessment_house.dart';
 
 
 class PreAssessmentIntroPage2 extends StatelessWidget {
   const PreAssessmentIntroPage2({super.key});
 
-  static const accent = Color(0xFFB11217); // red
-  static const accent2 = Color(0xFFF59E0B);
+  static const accent = Color(0xFF1E3A8A); // deep blue
+  static const accent2 = Color(0xFF7C3AED); 
   static const Color brandRed = Color(0xFFB71C1C);
 
   @override
@@ -86,7 +86,7 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                                       color: Colors.white, size: 18),
                                   SizedBox(width: 8),
                                   Text(
-                                    "MODULE 3",
+                                    "MODULE 2",
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white,
@@ -99,7 +99,7 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                             const SizedBox(width: 15),
                             const Expanded(
                               child: Text(
-                                "Kitchen Fire: What It Is, Common Types, and What To Do",
+                                "Electrical Fire: Causes, Safe Actions, and Prevention",
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontWeight: FontWeight.w600,
@@ -185,7 +185,7 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                                       ),
                                       TextSpan(
                                         text:
-                                            "Module 3: Kitchen Fire: What It Is, Common Types, and What To Do",
+                                            "Module 2: Electrical Fire: Causes, Safe Actions, and Prevention",
                                         style: TextStyle(fontWeight: FontWeight.w700),
                                       ),
                                       TextSpan(
@@ -220,11 +220,11 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                                   height: 52,
                                   child: ElevatedButton(
                                     onPressed: () {
-                                      Navigator.push(
+                                      Navigator.pushReplacement(
                                         context,
                                         MaterialPageRoute(
                                           builder: (_) =>
-                                              const PreAssessmentKitchenPage(),
+                                              const PreAssessmentElectricalPage(),
                                         ),
                                       );
                                     },

@@ -6,19 +6,19 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'login.dart';
 
-import 'module_1.dart/pre_test_module1.dart' as pre1;
-import 'module_1.dart/postassessment_extinguisher.dart';
-import 'module_1.dart/simulation_scene.dart';
+import 'module_1_extinguisher.dart/pre_test_module1.dart' as pre1;
+import 'module_1_extinguisher.dart/postassessment_extinguisher.dart';
+import 'module_1_extinguisher.dart/simulation_scene.dart';
 
 // OLD MODULE 2 FILES -> now used as MODULE 2 (HOUSE FIRE)
-import 'module_2.dart/postassessment_extinguisher1.dart' as house_post;
-import 'module_2.dart/pre_test_module2.dart' as house_pre;
-import 'module_2.dart/simulation_scene.dart' as house_sim;
+import 'module_2_house.dart/postassessment_house.dart' as house_post;
+import 'module_2_house.dart/pre_test_module2_house.dart' as house_pre;
+import 'module_2_house.dart/simulation_scene_house.dart' as house_sim;
 
 // OLD MODULE 3 FILES -> now used as MODULE 5 (BUILDING FIRE)
-import 'module_3.dart/postassessment_extinguisher2.dart' as electrical_post;
-import 'module_3.dart/pre_test_module3.dart' as electrical_pre;
-import 'module_3.dart/simulation_scene.dart' as electrical_sim;
+import 'module_3_electrical.dart/post_assessment_electrical.dart' as electrical_post;
+import 'module_3_electrical.dart/pre_test_module3_electrical.dart' as electrical_pre;
+import 'module_3_electrical.dart/simulation_scene_electrical.dart' as electrical_sim;
 
 enum ModuleFilter { all, pending, inProgress, completed }
 
@@ -338,8 +338,8 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
         await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => const _ModuleUnderConstructionPage(           
-            title: "Module 3 - Electrical Fire",
+            builder: (_) => const _ModuleUnderConstructionPage(
+              title: "Module 3 - Electrical Fire",
               subtitle: "Connect your Electrical Fire pre-assessment page here.",
             ),
           ),
@@ -431,7 +431,7 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
         await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => const electrical_post.PostAssessmentModule3Page(),
+            builder: (_) => const electrical_post.PostAssessmentElectricalPage(),
           ),
         );
         break;
@@ -452,7 +452,7 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
         await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => const electrical_post.PostAssessmentModule3Page(),
+            builder: (_) => const electrical_post.PostAssessmentElectricalPage(),
           ),
         );
         break;

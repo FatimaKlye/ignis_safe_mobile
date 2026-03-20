@@ -7,8 +7,8 @@ const Color kBrandBlue = Color(0xFF2563EB);
 const Color kDarkText = Color(0xFF1F2937);
 const Color kSoftBg = Color(0xFFF8FAFC);
 
-class PreAssessmentCompletionPage1 extends StatelessWidget {
-  const PreAssessmentCompletionPage1({
+class PreAssessmentCompletionPage extends StatelessWidget {
+  const PreAssessmentCompletionPage({
     super.key,
     required this.score,
     required this.totalQuestions,
@@ -168,7 +168,7 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => const SimulationScene2(),
+                                builder: (_) => const SimulationScene(),
                               ),
                             );
                           },
@@ -195,7 +195,7 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
                           ),
                           onPressed: () => Navigator.pop(context),
                           child: const Text(
-                            'Continue',
+                            'Retake',
                             style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.w900,

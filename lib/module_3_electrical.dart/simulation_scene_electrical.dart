@@ -31,7 +31,7 @@ class _SimulationScene3State extends State<SimulationScene3> {
   String? _unitySceneNameFor(int scene) {
     switch (scene) {
       case 3:
-        return 'Electrical_Fire'; // replace with your actual Unity scene name
+        return 'Electrical_Fire'; 
       default:
         return null;
     }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'pre_test_module2.dart';
+import 'pre_test_module3_electrical.dart';
 
 class LearningMaterialElectricalPage extends StatefulWidget {
   const LearningMaterialElectricalPage({super.key});
@@ -11,8 +11,8 @@ class LearningMaterialElectricalPage extends StatefulWidget {
 
 class _LearningMaterialElectricalPageState
     extends State<LearningMaterialElectricalPage> {
-  static const accent = Color(0xFF1E3A8A); // deep blue
-  static const accent2 = Color(0xFF7C3AED); // purple
+  static const accent = Color(0xFF2563EB); // primary blue
+  static const accent2 = Color(0xFFF59E0B); // caution amber
 
   final PageController _pageCtrl = PageController();
   final ScrollController _scrollCtrl = ScrollController();
@@ -184,7 +184,7 @@ class _LearningMaterialElectricalPageState
                                       Icon(Icons.bolt_rounded, color: Colors.white, size: 18),
                                       SizedBox(width: 8),
                                       Text(
-                                        "MODULE 2",
+                                        "MODULE 3",
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           color: Colors.white,
@@ -275,7 +275,7 @@ class _LearningMaterialElectricalPageState
                     children: [
                       OutlinedButton(
                         style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color: Color(0xFFB11217)),
+                          side: const BorderSide(color: Color(0xFF2563EB)),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(22),
                           ),
@@ -284,14 +284,14 @@ class _LearningMaterialElectricalPageState
                         child: const Text(
                           "« BACK",
                           style: TextStyle(
-                            color: Color(0xFFB11217),
+                            color: Color(0xFF2563EB),
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFB11217),
+                          backgroundColor: const Color(0xFF2563EB),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(22),
                           ),
@@ -411,7 +411,7 @@ class _LearningMaterialElectricalPageState
           ),
           const SizedBox(height: 10),
           const _MiniTile(
-            color: Color(0xFF7C3AED),
+            color: Color(0xFF1D4ED8),
             icon: Icons.power_rounded,
             title: "Overloaded Circuit Fire",
             desc:
@@ -419,7 +419,7 @@ class _LearningMaterialElectricalPageState
           ),
           const SizedBox(height: 10),
           const _MiniTile(
-            color: Color(0xFF16A34A),
+            color: Color(0xFFF59E0B),
             icon: Icons.electrical_services_rounded,
             title: "Faulty Appliance Fire",
             desc:
@@ -427,7 +427,7 @@ class _LearningMaterialElectricalPageState
           ),
           const SizedBox(height: 10),
           const _MiniTile(
-            color: Color(0xFFB11217),
+            color: Color(0xFFEA580C),
             icon: Icons.cable_rounded,
             title: "Loose Wiring Fire",
             desc:
@@ -488,7 +488,7 @@ class _LearningMaterialElectricalPageState
 
           const _ChipLine(
             icon: Icons.fact_check_rounded,
-            color: Color(0xFF16A34A),
+            color: Color(0xFFF59E0B),
             text:
                 "Regular inspection and proper usage significantly reduce risk.",
           ),
@@ -513,7 +513,7 @@ class _LearningMaterialElectricalPageState
 
           const _Callout(
             icon: Icons.shield_rounded,
-            color: Color(0xFF16A34A),
+            color: Color(0xFF2563EB),
             title: "Prevention",
             lines: [
               "Prevention reduces ignition sources and electrical overheating.",
@@ -527,7 +527,7 @@ class _LearningMaterialElectricalPageState
   // ===================== PAGE 3 =====================
   Widget _page3EmergencyResponse() {
     return _ModernCard(
-      accent1: Color(0xFF16A34A),
+      accent1: Color(0xFF1D4ED8),
       accent2: accent,
       pageTitle: "PAGE 3 – WHAT TO DO DURING AN ELECTRICAL FIRE",
       child: Column(
@@ -551,8 +551,8 @@ class _LearningMaterialElectricalPageState
             children: const [
               _IconBox(
                 icon: Icons.fire_extinguisher_rounded,
-                c1: Color(0xFF16A34A),
-                c2: Color(0xFF1E3A8A),
+                c1: Color(0xFF2563EB),
+                c2: Color(0xFFF59E0B),
               ),
               SizedBox(width: 15),
               Expanded(

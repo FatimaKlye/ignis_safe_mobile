@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
-import 'simulation_scene.dart';
+import 'simulation_scene_electrical.dart';
 
 const Color kBrandRed = Color(0xFFB11217);
 const Color kBrandBlue = Color(0xFF2563EB);
 const Color kDarkText = Color(0xFF1F2937);
 const Color kSoftBg = Color(0xFFF8FAFC);
 
-class PreAssessmentCompletionPage extends StatelessWidget {
-  const PreAssessmentCompletionPage({
+class PreAssessmentCompletionPage1 extends StatelessWidget {
+  const PreAssessmentCompletionPage1({
     super.key,
     required this.score,
     required this.totalQuestions,
@@ -168,7 +168,7 @@ class PreAssessmentCompletionPage extends StatelessWidget {
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => const SimulationScene(),
+                                builder: (_) => const SimulationScene3(),
                               ),
                             );
                           },

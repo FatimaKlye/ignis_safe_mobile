@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'preassessment_electrical.dart';
+import 'pre_assessment_kitchen.dart';
 
 
 class PreAssessmentIntroPage2 extends StatelessWidget {
   const PreAssessmentIntroPage2({super.key});
 
-  static const accent = Color(0xFF1E3A8A); // deep blue
-  static const accent2 = Color(0xFF7C3AED); 
+  static const accent = Color(0xFFB11217); // red
+  static const accent2 = Color(0xFFF59E0B);
   static const Color brandRed = Color(0xFFB71C1C);
 
   @override
@@ -86,7 +86,7 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                                       color: Colors.white, size: 18),
                                   SizedBox(width: 8),
                                   Text(
-                                    "MODULE 2",
+                                    "MODULE 3",
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white,
@@ -99,7 +99,7 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                             const SizedBox(width: 15),
                             const Expanded(
                               child: Text(
-                                "Electrical Fire: Causes, Safe Actions, and Prevention",
+                                "Kitchen Fire: What It Is, Common Types, and What To Do",
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontWeight: FontWeight.w600,
@@ -185,7 +185,7 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                                       ),
                                       TextSpan(
                                         text:
-                                            "Module 2: Electrical Fire: Causes, Safe Actions, and Prevention",
+                                            "Module 3: Kitchen Fire: What It Is, Common Types, and What To Do",
                                         style: TextStyle(fontWeight: FontWeight.w700),
                                       ),
                                       TextSpan(
@@ -220,11 +220,11 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                                   height: 52,
                                   child: ElevatedButton(
                                     onPressed: () {
-                                      Navigator.pushReplacement(
+                                      Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                           builder: (_) =>
-                                              const PreAssessmentElectricalPage(),
+                                              const PreAssessmentQuestionsPage(),
                                         ),
                                       );
                                     },
@@ -310,20 +310,6 @@ class _InfoChip extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-// Placeholder – replace with your real questions page.
-class PreAssessmentQuestionsPage extends StatelessWidget {
-  const PreAssessmentQuestionsPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text("Pre-Assessment Questions Page (replace this)"),
       ),
     );
   }
