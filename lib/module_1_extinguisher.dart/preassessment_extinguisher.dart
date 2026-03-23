@@ -1036,7 +1036,7 @@ class _PreAssessmentExtinguisherPageState
             Expanded(
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: kBrandBlue,
+                  backgroundColor: kBrandRed,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18),
                   ),
@@ -1094,7 +1094,7 @@ class _PreAssessmentExtinguisherPageState
             Expanded(
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: locked ? Colors.grey.shade400 : kBrandBlue,
+                  backgroundColor: locked ? Colors.grey.shade400 : kBrandRed,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18),
                   ),
@@ -1230,11 +1230,7 @@ class _PreAssessmentExtinguisherPageState
                                         vertical: 10,
                                       ),
                                       decoration: BoxDecoration(
-                                        gradient: const LinearGradient(
-                                          begin: Alignment.topLeft,
-                                          end: Alignment.bottomRight,
-                                          colors: [kBrandRed, kBrandBlue],
-                                        ),
+                                        color: kBrandRed,
                                         borderRadius: BorderRadius.circular(10),
                                         boxShadow: [
                                           BoxShadow(
@@ -1385,7 +1381,7 @@ class _StatsRow extends StatelessWidget {
             icon: Icons.outlined_flag_rounded,
             label: 'Flagged',
             value: '$flagged',
-            color: kBrandBlue,
+            color: kBrandRed,
           ),
         ),
       ],
@@ -1497,9 +1493,7 @@ class _QuestionHeaderCard extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [kBrandRed, kBrandBlue],
-                  ),
+                  color: kBrandRed,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
@@ -1520,11 +1514,11 @@ class _QuestionHeaderCard extends StatelessWidget {
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                   decoration: BoxDecoration(
                     color: isFlagged
-                        ? kBrandBlue.withOpacity(0.12)
+                        ? kBrandRed.withOpacity(0.12)
                         : Colors.black.withOpacity(0.04),
                     borderRadius: BorderRadius.circular(999),
                     border: Border.all(
-                      color: isFlagged ? kBrandBlue : Colors.black12,
+                      color: isFlagged ? kBrandRed : Colors.black12,
                     ),
                   ),
                   child: Row(
@@ -1534,14 +1528,14 @@ class _QuestionHeaderCard extends StatelessWidget {
                             ? Icons.flag_rounded
                             : Icons.outlined_flag_rounded,
                         size: 16,
-                        color: isFlagged ? kBrandBlue : kDarkText,
+                        color: isFlagged ? kBrandRed : kDarkText,
                       ),
                       const SizedBox(width: 6),
                       Text(
                         isFlagged ? 'Flagged' : 'Flag',
                         style: TextStyle(
                           fontWeight: FontWeight.w800,
-                          color: isFlagged ? kBrandBlue : kDarkText,
+                          color: isFlagged ? kBrandRed : kDarkText,
                         ),
                       ),
                     ],
@@ -1660,15 +1654,15 @@ class _HintCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(13),
       decoration: BoxDecoration(
-        color: kBrandBlue.withOpacity(0.08),
+        color: kBrandRed.withOpacity(0.08),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: kBrandBlue.withOpacity(0.18),
+          color: kBrandRed.withOpacity(0.18),
         ),
       ),
       child: Row(
         children: [
-          Icon(icon, color: kBrandBlue, size: 18),
+          Icon(icon, color: kBrandRed, size: 18),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
@@ -1832,14 +1826,14 @@ class _SummaryCard extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                   decoration: BoxDecoration(
-                    color: kBrandBlue.withOpacity(0.12),
+                    color: kBrandRed.withOpacity(0.12),
                     borderRadius: BorderRadius.circular(999),
                   ),
                   child: const Text(
                     'Flagged',
                     style: TextStyle(
                       fontWeight: FontWeight.w900,
-                      color: kBrandBlue,
+                      color: kBrandRed,
                       fontSize: 12,
                     ),
                   ),
@@ -1850,7 +1844,7 @@ class _SummaryCard extends StatelessWidget {
                 onPressed: onFlagTap,
                 icon: Icon(
                   flagged ? Icons.flag_rounded : Icons.outlined_flag_rounded,
-                  color: flagged ? kBrandBlue : Colors.grey.shade600,
+                  color: flagged ? kBrandRed : Colors.grey.shade600,
                 ),
               ),
             ],
@@ -1958,7 +1952,7 @@ class _ReviewTopCard extends StatelessWidget {
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w800,
-              color: kBrandBlue,
+              color: kBrandRed,
             ),
           ),
         ],

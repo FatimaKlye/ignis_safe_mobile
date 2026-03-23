@@ -5,9 +5,7 @@ import 'preassessment_house.dart';
 class PreAssessmentIntroPage2 extends StatelessWidget {
   const PreAssessmentIntroPage2({super.key});
 
-  static const accent = Color(0xFF1E3A8A); // deep blue
-  static const accent2 = Color(0xFF7C3AED); 
-  static const Color brandRed = Color(0xFFB71C1C);
+  static const Color brandOrange = Color(0xFFF97316);
 
   @override
   Widget build(BuildContext context) {
@@ -65,11 +63,7 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                                 vertical: 10,
                               ),
                               decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                  colors: [accent, accent2],
-                                ),
+                                color: brandOrange,
                                 borderRadius: BorderRadius.circular(10),
                                 boxShadow: [
                                   BoxShadow(
@@ -99,7 +93,7 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                             const SizedBox(width: 15),
                             const Expanded(
                               child: Text(
-                                "Electrical Fire: Causes, Safe Actions, and Prevention",
+                                "House Fire: How to Get Out Safely During a Fire",
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontWeight: FontWeight.w600,
@@ -185,7 +179,7 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                                       ),
                                       TextSpan(
                                         text:
-                                            "Module 2: Electrical Fire: Causes, Safe Actions, and Prevention",
+                                            "House Fire: How to Get Out Safely During a Fire",
                                         style: TextStyle(fontWeight: FontWeight.w700),
                                       ),
                                       TextSpan(
@@ -224,12 +218,12 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                                         context,
                                         MaterialPageRoute(
                                           builder: (_) =>
-                                              const PreAssessmentElectricalPage(),
+                                              const PreAssessmentHousePage(),
                                         ),
                                       );
                                     },
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: brandRed,
+                                      backgroundColor: brandOrange,
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(14),
                                       ),
@@ -315,16 +309,3 @@ class _InfoChip extends StatelessWidget {
   }
 }
 
-// Placeholder – replace with your real questions page.
-class PreAssessmentQuestionsPage extends StatelessWidget {
-  const PreAssessmentQuestionsPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text("Pre-Assessment Questions Page (replace this)"),
-      ),
-    );
-  }
-}

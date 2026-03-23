@@ -5,9 +5,7 @@ import 'preassessment_extinguisher.dart';
 class PreAssessmentIntroPage extends StatelessWidget {
   const PreAssessmentIntroPage({super.key});
 
-  static const accent = Color(0xFFB11217); // red
-  static const accent2 = Color(0xFF2563EB); // blue
-  static const Color brandRed = Color(0xFFB71C1C);
+  static const Color brandRed = Color(0xFFB11217);
 
   @override
   Widget build(BuildContext context) {
@@ -65,11 +63,7 @@ class PreAssessmentIntroPage extends StatelessWidget {
                                 vertical: 10,
                               ),
                               decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                  colors: [accent, accent2],
-                                ),
+                                color: brandRed,
                                 borderRadius: BorderRadius.circular(10),
                                 boxShadow: [
                                   BoxShadow(

@@ -23,12 +23,15 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
   static const Color brandRed = Color(0xFFB71C1C);
 
   final passCtrl = TextEditingController();
+  final confirmPassCtrl = TextEditingController();
   bool _showPassword = false;
+  bool _showConfirmPassword = false;
 
   bool _min8 = false;
   bool _hasNumber = false;
   bool _hasSymbol = false;
   bool _hasUpper = false;
+  bool _matches = false;
 
   bool _isLoading = false;
 
@@ -36,33 +39,40 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
   void initState() {
     super.initState();
     passCtrl.addListener(_recalc);
+    confirmPassCtrl.addListener(_recalc);
   }
 
   @override
   void dispose() {
     passCtrl.removeListener(_recalc);
+    confirmPassCtrl.removeListener(_recalc);
     passCtrl.dispose();
+    confirmPassCtrl.dispose();
     super.dispose();
   }
 
   void _recalc() {
     final p = passCtrl.text;
+    final c = confirmPassCtrl.text;
 
     final min8 = p.length >= 8;
     final hasNum = RegExp(r'\d').hasMatch(p);
     final hasSym =
         RegExp(r'[!@#$%^&*(),.?":{}|<>_\-\[\]\\\/~`+=;]').hasMatch(p);
     final hasUpper = RegExp(r'[A-Z]').hasMatch(p);
+    final matches = c.isNotEmpty && p == c;
 
     if (_min8 != min8 ||
         _hasNumber != hasNum ||
         _hasSymbol != hasSym ||
-        _hasUpper != hasUpper) {
+        _hasUpper != hasUpper ||
+        _matches != matches) {
       setState(() {
         _min8 = min8;
         _hasNumber = hasNum;
         _hasSymbol = hasSym;
         _hasUpper = hasUpper;
+        _matches = matches;
       });
     }
   }
@@ -103,7 +113,7 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
     return const Color(0xFF2E7D32);
   }
 
-  bool get _allOk => _passedRules == 4;
+  bool get _allOk => _passedRules == 4 && _matches;
 
   Future<void> _showPopup(String message, {String title = 'Notice'}) async {
     if (!mounted) return;
@@ -174,6 +184,14 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
 
   Future<void> _continueWithSupabase() async {
     if (_isLoading) return;
+
+    if (!_matches) {
+      await _showPopup(
+        'Passwords do not match.',
+        title: 'Invalid Password',
+      );
+      return;
+    }
 
     if (!_allOk) {
       await _showPopup(
@@ -513,6 +531,80 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                           ),
                         ),
 
+                        const SizedBox(height: 12),
+
+                        const Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'Confirm Password',
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black54,
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 8),
+
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Color(0x14000000),
+                                blurRadius: 10,
+                                offset: Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: TextField(
+                            controller: confirmPassCtrl,
+                            obscureText: !_showConfirmPassword,
+                            style: const TextStyle(
+                              fontFamily: 'Poppins',
+                              fontSize: 13,
+                              color: Colors.black87,
+                            ),
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: Colors.white,
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 14,
+                                vertical: 14,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide:
+                                    const BorderSide(color: Color(0xFFDDDDDD)),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide:
+                                    const BorderSide(color: Color(0xFFDDDDDD)),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide:
+                                    const BorderSide(color: Color(0xFFCCCCCC)),
+                              ),
+                              suffixIcon: IconButton(
+                                onPressed: () => setState(
+                                  () => _showConfirmPassword = !_showConfirmPassword,
+                                ),
+                                icon: Icon(
+                                  _showConfirmPassword
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                  color: Colors.black45,
+                                  size: 20,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+
                         const SizedBox(height: 10),
 
                         ClipRRect(
@@ -553,6 +645,8 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                         _RuleRow(text: 'a symbol', ok: _hasSymbol),
                         const SizedBox(height: 8),
                         _RuleRow(text: 'a capital letter', ok: _hasUpper),
+                        const SizedBox(height: 8),
+                        _RuleRow(text: 'passwords match', ok: _matches),
 
                         const SizedBox(height: 20),
 
