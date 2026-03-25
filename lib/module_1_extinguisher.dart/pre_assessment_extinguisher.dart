@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'pre_assessment_completion_page.dart';
+import 'pre_assess_completion_page.dart';
 import '../profile_progress_sync.dart';
 
 

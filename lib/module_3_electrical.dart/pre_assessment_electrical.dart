@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'pre_completion_electrical.dart';
+import 'pre_assess_completion_page.dart';
 
 const Color kBrandBlue = Color(0xFF2563EB);
 const Color kBrandBlueDark = Color(0xFF1D4ED8);

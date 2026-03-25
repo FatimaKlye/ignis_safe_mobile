@@ -6,18 +6,18 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'login.dart';
 
-import 'module_1_extinguisher.dart/pre_test_module1.dart' as pre1;
-import 'module_1_extinguisher.dart/postassessment_extinguisher.dart';
+import 'module_1_extinguisher.dart/pre_assess_instruction.dart' as pre1;
+import 'module_1_extinguisher.dart/post_assessment_extinguisher.dart';
 import 'module_1_extinguisher.dart/simulation_scene.dart';
 
 
-import 'module_2_house.dart/postassessment_house.dart' as house_post;
-import 'module_2_house.dart/pre_test_module2_house.dart' as house_pre;
+import 'module_2_house.dart/post_assessment_house.dart' as house_post;
+import 'module_2_house.dart/pre_assess_instruction.dart' as house_pre;
 import 'module_2_house.dart/simulation_scene_house.dart' as house_sim;
 
 
 import 'module_3_electrical.dart/post_assessment_electrical.dart' as electrical_post;
-import 'module_3_electrical.dart/pre_test_module3_electrical.dart' as electrical_pre;
+import 'module_3_electrical.dart/pre_assess_instruction.dart' as electrical_pre;
 import 'module_3_electrical.dart/simulation_scene_electrical.dart' as electrical_sim;
 
 import 'module_4_kitchen.dart/pre_assessment_kitchen.dart' as kitchen_pre;

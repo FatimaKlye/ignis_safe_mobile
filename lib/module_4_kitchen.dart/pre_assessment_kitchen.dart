@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'pre_completion_kitchen.dart';
+import 'pre_assess_completion_page.dart';
 
 const Color kKitchenAmber = Color(0xFFF59E0B);
 const Color kKitchenAmberDark = Color(0xFFEA580C);

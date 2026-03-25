@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'navbar.dart';
 import 'learning_materials.dart';
-import 'firemodules.dart';
+import 'fire_modules.dart';
 import 'profile.dart';
 import 'about_us.dart';
 

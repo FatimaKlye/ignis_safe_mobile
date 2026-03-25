@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'pre_completion_building.dart';
+import 'pre_assess_completion_page.dart';
 
 const Color kBuildingPurple = Color(0xFF7C3AED);
 const Color kBuildingPurpleDark = Color(0xFF4338CA);

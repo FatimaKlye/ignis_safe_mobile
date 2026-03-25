@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
-import 'pre_test_module2_house.dart';
+import 'pre_assess_instruction.dart';
 
-class LearningMaterialHousePage extends StatefulWidget {
-  const LearningMaterialHousePage({super.key});
+class LearningMaterialKitchenPage extends StatefulWidget {
+  const LearningMaterialKitchenPage({super.key});
 
   @override
-  State<LearningMaterialHousePage> createState() =>
-      _LearningMaterialHousePageState();
+  State<LearningMaterialKitchenPage> createState() =>
+      _LearningMaterialKitchenPageState();
 }
 
-class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
-  static const accent = Color(0xFFF97316); // primary orange
-  static const accent2 = Color(0xFFF59E0B); // warm amber
+class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPage> {
+  static const accent = Color(0xFFF59E0B); // amber primary
+  static const accent2 = Color(0xFFEA580C); // deep orange
 
   final PageController _pageCtrl = PageController();
   final ScrollController _scrollCtrl = ScrollController();
@@ -84,7 +84,7 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
   }
 
   void _goNext() {
-    if (!_canNext && _pageIndex < 2) return;
+    if (!_canNext) return;
 
     if (_pageIndex < 2) {
       _pageCtrl.nextPage(
@@ -101,6 +101,54 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
     }
   }
 
+  // ---------- POPUPS ----------
+  void _showInfoPopup({
+    required String title,
+    required String message,
+    IconData icon = Icons.info_rounded,
+    Color color = accent,
+  }) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: [
+            Icon(icon, color: color),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                title,
+                style: TextStyle(fontWeight: FontWeight.w900, color: color),
+              ),
+            ),
+          ],
+        ),
+        content: Text(message, style: const TextStyle(height: 1.45)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("OK"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showDoThisNowPopup() {
+    _showInfoPopup(
+      title: "If a pan catches fire",
+      icon: Icons.local_fire_department_rounded,
+      color: const Color(0xFFDC2626),
+      message:
+          "1) Turn off the heat.\n"
+          "2) Cover the pan with a metal lid or baking tray.\n"
+          "3) Do NOT carry the pan.\n"
+          "4) Do NOT use water on burning oil.\n"
+          "5) If it grows, evacuate and call for help.",
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isLast = _pageIndex == 2;
@@ -115,11 +163,13 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
             height: 900,
             child: Image.asset('assets/bg.png', fit: BoxFit.cover),
           ),
+
           SafeArea(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 5),
+
                 Padding(
                   padding: const EdgeInsets.only(left: 9, right: 25),
                   child: Column(
@@ -143,61 +193,64 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
                         ),
                       ),
                       const SizedBox(height: 15),
+
                       Padding(
-                        padding: const EdgeInsets.only(left: 16),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 18,
-                                vertical: 10,
+                      padding: const EdgeInsets.only(left: 25), // adjust 12/16/20/24
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 18,
+                              vertical: 10,
+                            ),
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [accent, accent2],
                               ),
-                              decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                  colors: [accent, accent2],
+                              borderRadius: BorderRadius.circular(10),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.18),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 6),
                                 ),
-                                borderRadius: BorderRadius.circular(10),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.18),
-                                    blurRadius: 10,
-                                    offset: const Offset(0, 6),
+                              ],
+                            ),
+                            child: const Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.bolt_rounded, color: Colors.white, size: 18),
+                                SizedBox(width: 8),
+                                Text(
+                                  "MODULE 4",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
                                   ),
-                                ],
-                              ),
-                              child: const Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(Icons.home_rounded,
-                                      color: Colors.white, size: 18),
-                                  SizedBox(width: 8),
-                                  Text(
-                                    "MODULE 2",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ],
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          const SizedBox(width: 15),
+
+                          const Expanded(
+                            child: Text(
+                              "Kitchen Fire: What It Is, Common Types, and What To Do",
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
-                            const SizedBox(width: 15),
-                            const Expanded(
-                              child: Text(
-                                "House Fire: How to Get Out Safely During a Fire",
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
+                    ),
                       const SizedBox(height: 14),
+
                       ClipRRect(
                         borderRadius: BorderRadius.circular(999),
                         child: SizedBox(
@@ -205,12 +258,13 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
                           child: LinearProgressIndicator(
                             value: _progress,
                             backgroundColor: Colors.white.withOpacity(0.25),
-                            valueColor:
-                                const AlwaysStoppedAnimation(accent2),
+                            valueColor: const AlwaysStoppedAnimation(accent2),
                           ),
                         ),
                       ),
+
                       const SizedBox(height: 10),
+
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: List.generate(3, (i) {
@@ -229,10 +283,12 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
                           );
                         }),
                       ),
+
                       const SizedBox(height: 14),
                     ],
                   ),
                 ),
+
                 Expanded(
                   child: PageView(
                     controller: _pageCtrl,
@@ -241,12 +297,13 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
                       _resetForNewPage();
                     },
                     children: [
-                      _pageWrap(_page1Overview()),
-                      _pageWrap(_page2HowToEscape()),
-                      _pageWrap(_page3AfterEscape()),
+                      _pageWrap(_page1OverviewAndTypes()),
+                      _pageWrap(_page2CausesAndPrevention()),
+                      _pageWrap(_page3EmergencyResponse()),
                     ],
                   ),
                 ),
+
                 Padding(
                   padding: const EdgeInsets.fromLTRB(25, 8, 25, 18),
                   child: Row(
@@ -254,7 +311,7 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
                     children: [
                       OutlinedButton(
                         style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color: Color(0xFFF97316)),
+                          side: const BorderSide(color: Color(0xFFF59E0B)),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(22),
                           ),
@@ -263,19 +320,19 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
                         child: const Text(
                           "« BACK",
                           style: TextStyle(
-                            color: Color(0xFFF97316),
+                            color: Color(0xFFF59E0B),
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFF97316),
+                          backgroundColor: const Color(0xFFF59E0B),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(22),
                           ),
                         ),
-                        onPressed: (_canNext || isLast) ? _goNext : null,
+                        onPressed: _canNext ? _goNext : null,
                         child: Text(
                           isLast ? "Start pre test" : "NEXT »",
                           style: const TextStyle(
@@ -292,6 +349,7 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
           ),
         ],
       ),
+      // ✅ Removed floatingActionButton
     );
   }
 
@@ -310,17 +368,18 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
     );
   }
 
-  Widget _page1Overview() {
+  // ===================== PAGE 1 =====================
+  Widget _page1OverviewAndTypes() {
     return _ModernCard(
       accent1: accent,
       accent2: accent2,
-      pageTitle: "PAGE 1 – HOUSE FIRE OVERVIEW",
+      pageTitle: "PAGE 1 – KITCHEN FIRE OVERVIEW",
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Center(
             child: Text(
-              "What is a House Fire?",
+              "What is a Kitchen Fire?",
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -330,18 +389,19 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
             ),
           ),
           const SizedBox(height: 18),
+
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _ImageBox(
-                asset: "assets/house.png",
+                asset: "assets/kitchen_overview.png",
                 c1: accent,
                 c2: accent2,
               ),
               const SizedBox(width: 15),
               const Expanded(
                 child: Text(
-                  "A house fire is a dangerous emergency that can spread very quickly through rooms, ceilings, and hallways. Smoke, heat, and flames can block exits in just a few minutes, so every second matters.",
+                  "A kitchen fire starts in the cooking area. It often happens when food, oil, or appliances overheat. Most kitchen fires spread fast because heat and grease build up quickly.",
                   style: TextStyle(
                     fontSize: 14,
                     height: 1.5,
@@ -351,74 +411,103 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          const _Callout(
+
+          const SizedBox(height: 14),
+
+          _Callout(
             icon: Icons.warning_rounded,
-            color: Color(0xFFDC2626),
-            title: "Why house fires are dangerous",
-            lines: [
-              "Smoke can make it hard to see and breathe.",
-              "Fire spreads fast through curtains, wood, and furniture.",
-              "Heat can make doors and escape paths unsafe.",
+            color: const Color(0xFFDC2626),
+            title: "Common danger",
+            lines: const [
+              "Grease can ignite suddenly.",
+              "Smoke can block vision fast.",
+              "Wrong action (like water on oil) can make it worse.",
             ],
           ),
+
           const SizedBox(height: 14),
-          const _ChipLine(
-            icon: Icons.access_time_rounded,
-            color: Color(0xFFB11217),
-            text:
-                "When a house is on fire, leave immediately. Do not stop to collect belongings.",
+
+          _ChipLine(
+            icon: Icons.menu_book_rounded,
+            color: const Color(0xFFF59E0B),
+            text: "Tap the buttons below for quick pop-ups.",
           ),
-          const SizedBox(height: 24),
-          const _SectionTitle("Common Signs of a House Fire"),
+
           const SizedBox(height: 12),
+
+          Row(
+            children: [
+              Expanded(
+                child: _ActionPill(
+                  icon: Icons.help_rounded,
+                  label: "Why it happens",
+                  onTap: () => _showInfoPopup(
+                    title: "Why kitchen fires happen",
+                    message:
+                        "Usually from unattended cooking, overheated oil, grease buildup, or flammable items near heat.",
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: _ActionPill(
+                  icon: Icons.local_fire_department_rounded,
+                  label: "If pan ignites",
+                  onTap: _showDoThisNowPopup,
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 24),
+
+          const _SectionTitle("Types of Kitchen Fires"),
+          const SizedBox(height: 12),
+
           const _MiniTile(
             color: Color(0xFFF59E0B),
-            icon: Icons.smoke_free_rounded,
-            title: "Smoke",
-            desc:
-                "Thick smoke in a room or hallway is an early sign that a fire is spreading nearby.",
+            icon: Icons.oil_barrel_rounded,
+            title: "Grease Fire",
+            desc: "Cooking oil or fat overheats and ignites (fast and intense).",
+          ),
+          const SizedBox(height: 10),
+          const _MiniTile(
+            color: Color(0xFFF59E0B),
+            icon: Icons.local_pizza_rounded,
+            title: "Oven Fire",
+            desc: "Food spills or grease buildup burns inside the oven.",
           ),
           const SizedBox(height: 10),
           const _MiniTile(
             color: Color(0xFFFB923C),
-            icon: Icons.campaign_rounded,
-            title: "Smoke Alarm",
-            desc:
-                "If the alarm sounds, treat it as a real emergency and begin evacuating at once.",
+            icon: Icons.microwave_rounded,
+            title: "Microwave Fire",
+            desc: "Metal or overheated food ignites and causes flames/smoke.",
           ),
           const SizedBox(height: 10),
           const _MiniTile(
             color: Color(0xFFEA580C),
-            icon: Icons.local_fire_department_rounded,
-            title: "Visible Flames",
-            desc:
-                "Flames from appliances, curtains, walls, or ceilings mean the fire is already active and dangerous.",
-          ),
-          const SizedBox(height: 10),
-          const _MiniTile(
-            color: Color(0xFFF97316),
-            icon: Icons.whatshot_rounded,
-            title: "Hot Doors or Walls",
-            desc:
-                "A hot door may mean fire is on the other side. Do not open it right away.",
+            icon: Icons.local_gas_station_rounded,
+            title: "Gas Stove Fire",
+            desc: "Flame flare-ups or leaking gas ignites near the stove.",
           ),
         ],
       ),
     );
   }
 
-  Widget _page2HowToEscape() {
+  // ===================== PAGE 2 =====================
+  Widget _page2CausesAndPrevention() {
     return _ModernCard(
       accent1: accent2,
       accent2: accent,
-      pageTitle: "PAGE 2 – HOW TO GET OUT SAFELY",
+      pageTitle: "PAGE 2 – CAUSES & PREVENTION",
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Center(
             child: Text(
-              "Steps to Escape from a House Fire",
+              "Common Causes of Kitchen Fires",
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -428,11 +517,12 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
             ),
           ),
           const SizedBox(height: 18),
+
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: const [
               _IconBox(
-                icon: Icons.directions_run_rounded,
+                icon: Icons.kitchen_rounded,
                 c1: accent2,
                 c2: accent,
               ),
@@ -440,44 +530,101 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
               Expanded(
                 child: _Bullets(
                   items: [
-                    "Stay calm and move quickly to the nearest safe exit.",
-                    "Check doors with the back of your hand before opening.",
-                    "If the door is hot, do not open it. Use another way out.",
-                    "Crawl low under smoke where the air is cleaner.",
-                    "Help children, older persons, and others who need assistance.",
-                    "Do not use elevators if you are in a multi-level home or building.",
+                    "Leaving cooking unattended",
+                    "Oil overheating while frying",
+                    "Grease buildup on stove/hood",
+                    "Towels or paper near flames",
+                    "Cooking while tired or distracted",
+                    "Wrong use of appliances (dirty toaster, etc.)",
                   ],
                 ),
               ),
             ],
           ),
+
           const SizedBox(height: 14),
-          const _ChipLine(
-            icon: Icons.health_and_safety_rounded,
-            color: Color(0xFFF97316),
-            text:
-                "Stay low, move fast, and head outside using the safest exit.",
-          ),
-          const SizedBox(height: 26),
-          const _SectionTitle("Important Escape Reminders"),
-          const SizedBox(height: 12),
-          const _Bullets(
-            items: [
-              "Do not hide during a fire.",
-              "Do not go back inside for phones, bags, or valuables.",
-              "Close doors behind you if possible to slow the spread of fire.",
-              "Use windows only if doors are blocked and it is safe to do so.",
-              "If your clothes catch fire: Stop, Drop, and Roll.",
-              "Once outside, keep moving away from the house.",
+
+          Row(
+            children: [
+              Expanded(
+                child: _ActionPill(
+                  icon: Icons.quiz_rounded,
+                  label: "Quick check",
+                  onTap: () => _showInfoPopup(
+                    title: "Quick Check",
+                    icon: Icons.check_circle_rounded,
+                    color: const Color(0xFFF59E0B),
+                    message:
+                        "If you leave the kitchen for even 1 minute while frying, risk increases a lot. Stay nearby and keep heat controlled.",
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: _ActionPill(
+                  icon: Icons.tips_and_updates_rounded,
+                  label: "Safety tips",
+                  onTap: () => _showInfoPopup(
+                    title: "Safety Tips",
+                    icon: Icons.tips_and_updates_rounded,
+                    color: const Color(0xFFEA580C),
+                    message:
+                        "• Keep a lid nearby when cooking.\n"
+                        "• Clean grease regularly.\n"
+                        "• Keep flammables away from heat.\n"
+                        "• Turn pot handles inward.\n"
+                        "• Don’t overheat oil.",
+                  ),
+                ),
+              ),
             ],
           ),
+
+          const SizedBox(height: 18),
+
+          const _ChipLine(
+            icon: Icons.fact_check_rounded,
+            color: Color(0xFFF59E0B),
+            text: "Small habits prevent most kitchen fires.",
+          ),
+
+          const SizedBox(height: 24),
+
+          const _SectionTitle("Prevention (Simple Steps)"),
+          const SizedBox(height: 12),
+
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _ImageBox(
+                asset: "assets/prevent_kitchen.png",
+                c1: accent2,
+                c2: accent,
+              ),
+              const SizedBox(width: 15),
+              const Expanded(
+                child: _Bullets(
+                  items: [
+                    "Keep a lid near the pan when cooking.",
+                    "Clean grease from stove and hood.",
+                    "Keep flammables away from heat.",
+                    "Turn handles inward.",
+                    "Use the right heat level (don’t overheat oil).",
+                    "Know your extinguisher location.",
+                  ],
+                ),
+              ),
+            ],
+          ),
+
           const SizedBox(height: 14),
+
           const _Callout(
-            icon: Icons.block_rounded,
-            color: Color(0xFFDC2626),
-            title: "Never do this",
+            icon: Icons.shield_rounded,
+            color: Color(0xFFF59E0B),
+            title: "Prevention goal",
             lines: [
-              "Never go back into a burning house after you have escaped.",
+              "Reduce heat, reduce grease buildup, and keep flammable items away.",
             ],
           ),
         ],
@@ -485,17 +632,18 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
     );
   }
 
-  Widget _page3AfterEscape() {
+  // ===================== PAGE 3 =====================
+  Widget _page3EmergencyResponse() {
     return _ModernCard(
-      accent1: Color(0xFFF59E0B),
+      accent1: const Color(0xFFEA580C),
       accent2: accent,
-      pageTitle: "PAGE 3 – AFTER YOU GET OUT",
+      pageTitle: "PAGE 3 – WHAT TO DO DURING A KITCHEN FIRE",
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Center(
             child: Text(
-              "What to Do After Escaping",
+              "Emergency Response",
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -505,45 +653,110 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
             ),
           ),
           const SizedBox(height: 18),
+
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: const [
               _IconBox(
-                icon: Icons.support_agent_rounded,
-                c1: Color(0xFFF59E0B),
-                c2: Color(0xFFF97316),
+                icon: Icons.fire_extinguisher_rounded,
+                c1: Color(0xFFEA580C),
+                c2: Color(0xFFF59E0B),
               ),
               SizedBox(width: 15),
               Expanded(
                 child: _Bullets(
                   items: [
-                    "Go to a safe meeting place outside the house.",
-                    "Call emergency services immediately.",
-                    "Tell firefighters if someone may still be inside.",
-                    "Stay outside and wait for professional help.",
-                    "Do not re-enter the house for any reason.",
-                    "Follow instructions from firefighters or responders.",
+                    "Turn off heat source if safe.",
+                    "Cover small pan fire with a metal lid/tray.",
+                    "Do NOT use water on burning oil/grease.",
+                    "Use a fire extinguisher if trained and safe.",
+                    "If it spreads: evacuate and call emergency services.",
+                    "Close doors behind you to slow the fire.",
                   ],
                 ),
               ),
             ],
           ),
+
           const SizedBox(height: 14),
-          const _Callout(
-            icon: Icons.groups_rounded,
-            color: Color(0xFFF97316),
-            title: "Meeting Place",
-            lines: [
-              "Choose a safe family meeting place outside, such as near a gate, tree, or neighbor’s house.",
+
+          Row(
+            children: [
+              Expanded(
+                child: _ActionPill(
+                  icon: Icons.local_fire_department_rounded,
+                  label: "Grease fire rule",
+                  onTap: () => _showInfoPopup(
+                    title: "Grease Fire Rule",
+                    icon: Icons.block_rounded,
+                    color: const Color(0xFFDC2626),
+                    message:
+                        "Never pour water on burning oil. Water can spread burning grease and cause flare-ups.",
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: _ActionPill(
+                  icon: Icons.help_center_rounded,
+                  label: "When to evacuate",
+                  onTap: () => _showInfoPopup(
+                    title: "Evacuate when…",
+                    icon: Icons.directions_run_rounded,
+                    color: const Color(0xFFDC2626),
+                    message:
+                        "Evacuate immediately if flames grow, smoke fills the room, or you can’t control it quickly. Call for help.",
+                  ),
+                ),
+              ),
             ],
           ),
+
+          const SizedBox(height: 18),
+
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _ImageBox(
+                asset: "assets/response_kitchen.png",
+                c1: const Color(0xFFEA580C),
+                c2: accent,
+              ),
+              const SizedBox(width: 15),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const _SectionTitle("One-minute plan"),
+                    const SizedBox(height: 10),
+                    const _Bullets(
+                      items: [
+                        "Stop the heat.",
+                        "Smother small flames.",
+                        "Use extinguisher only if safe.",
+                        "Get out if unsure.",
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    _ActionPill(
+                      icon: Icons.play_circle_rounded,
+                      label: "Show steps",
+                      onTap: _showDoThisNowPopup,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+
           const SizedBox(height: 14),
+
           const _Callout(
-            icon: Icons.phone_in_talk_rounded,
-            color: Color(0xFFEA580C),
-            title: "Call for Help",
+            icon: Icons.block_rounded,
+            color: Color(0xFFDC2626),
+            title: "Remember",
             lines: [
-              "Call your local fire department or emergency hotline as soon as you are safe.",
+              "Your safety is the priority. If you feel unsafe, evacuate and call for help.",
             ],
           ),
         ],
@@ -553,6 +766,7 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
 }
 
 // ===================== UI WIDGETS =====================
+// (unchanged below)
 
 class _ModernCard extends StatelessWidget {
   final Color accent1;
@@ -876,6 +1090,48 @@ class _Bullets extends StatelessWidget {
             ),
           )
           .toList(),
+    );
+  }
+}
+
+class _ActionPill extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback? onTap;
+
+  const _ActionPill({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(999),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        decoration: BoxDecoration(
+          color: Colors.black.withOpacity(0.04),
+          borderRadius: BorderRadius.circular(999),
+          border: Border.all(color: Colors.black.withOpacity(0.06)),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 18, color: const Color(0xFFF59E0B)),
+            const SizedBox(width: 8),
+            Flexible(
+              child: Text(
+                label,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(fontWeight: FontWeight.w900),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

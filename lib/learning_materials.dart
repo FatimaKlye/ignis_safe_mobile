@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'module_1_extinguisher.dart/module_1_learning.dart';
-import 'module_2_house.dart/module_2_learning.dart' as house_learning;
-import 'module_3_electrical.dart/module_3_learning.dart' as electrical_learning;
-import 'module_4_kitchen.dart/module_4_learning.dart' as kitchen_learning;
-import 'module_5_building.dart/module_5_learning.dart' as building_learning;
+import 'module_1_extinguisher.dart/module_1_learningmaterials.dart';
+import 'module_2_house.dart/module_2_learningmaterials.dart' as house_learning;
+import 'module_3_electrical.dart/module_3_learningmaterials.dart' as electrical_learning;
+import 'module_4_kitchen.dart/module_4_learningmaterials.dart' as kitchen_learning;
+import 'module_5_building.dart/module_5_learningmaterials.dart' as building_learning;
 import 'login.dart';
 
 class LearningMaterialsTab extends StatefulWidget {
