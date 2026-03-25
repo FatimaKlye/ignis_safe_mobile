@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
 import 'forgotpass.dart';
 import 'passwordvalidation.dart';
 import 'login.dart';
@@ -73,14 +74,12 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   Future<bool> _emailAlreadyExists(String email) async {
     final normalizedEmail = email.trim().toLowerCase();
 
-    final existing = await Supabase.instance.client
-        .from('profiles')
-        .select('id')
-        .eq('email', normalizedEmail)
-        .limit(1)
-        .maybeSingle();
+    final result = await Supabase.instance.client.rpc(
+      'email_exists',
+      params: {'p_email': normalizedEmail},
+    );
 
-    return existing != null;
+    return result == true;
   }
 
   void _showExistingAccountDialog(String email) {
@@ -91,11 +90,11 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
           borderRadius: BorderRadius.circular(16),
         ),
         title: const Text(
-          'Email already has an account',
+          'This email already has an account',
           style: TextStyle(fontWeight: FontWeight.w900),
         ),
         content: Text(
-          '$email already has an account.\n\nWould you like to log in or reset your password?',
+          '$email already has an account.\n\nWould you like to reset your password or go to login?',
           style: const TextStyle(
             fontWeight: FontWeight.w600,
             height: 1.4,
@@ -119,9 +118,11 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
-              Navigator.pushReplacement(
+              LoginPage.skipAutoRoute = false;
+              Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(builder: (_) => const LoginPage()),
+                (route) => false,
               );
             },
             child: const Text('Login'),
@@ -134,22 +135,29 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   Future<void> _sendCode({bool showToast = true}) async {
     final email = widget.email.trim().toLowerCase();
 
-    final exists = await _emailAlreadyExists(email);
+    try {
+      final exists = await _emailAlreadyExists(email);
 
-    if (!mounted) return;
+      if (!mounted) return;
 
-    if (exists) {
-      _showExistingAccountDialog(email);
-      return;
+      if (exists) {
+        _showExistingAccountDialog(email);
+        return;
+      }
+
+      await _sendOtp(showToast: showToast);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Could not check email: $e')),
+      );
     }
-
-    await _sendOtp(showToast: showToast);
   }
 
   Future<void> _sendOtp({bool showToast = true}) async {
     if (_isSending) return;
 
-    final email = widget.email.trim();
+    final email = widget.email.trim().toLowerCase();
     if (email.isEmpty) return;
 
     setState(() => _isSending = true);
@@ -188,10 +196,22 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     }
   }
 
+  Future<void> _upsertProfileAfterVerify(User user) async {
+    await supabase.from('profiles').upsert({
+      'id': user.id,
+      'first_name': widget.firstName,
+      'last_name': widget.lastName,
+      'email': widget.email.trim().toLowerCase(),
+      'terms_accepted': false,
+      'terms_accepted_at': null,
+      'updated_at': DateTime.now().toIso8601String(),
+    });
+  }
+
   Future<void> _verifyOtp() async {
     if (_isVerifying) return;
 
-    final email = widget.email.trim();
+    final email = widget.email.trim().toLowerCase();
     if (email.isEmpty) return;
 
     if (!_codeComplete) {
@@ -212,13 +232,18 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
         token: _code,
       );
 
+      final user = supabase.auth.currentUser;
+      if (user != null) {
+        await _upsertProfileAfterVerify(user);
+      }
+
       if (!mounted) return;
 
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (_) => CreatePasswordPage(
-            email: widget.email,
+            email: widget.email.trim().toLowerCase(),
             firstName: widget.firstName,
             lastName: widget.lastName,
           ),

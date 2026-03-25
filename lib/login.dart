@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'signup.dart';
@@ -12,8 +11,6 @@ import 'forgotpass.dart';
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
-  /// Set to true during the registration flow to prevent the auth-state
-  /// listener from auto-routing to Home when OTP is verified.
   static bool skipAutoRoute = false;
 
   @override
@@ -22,7 +19,6 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   static const Color brandRed = Color(0xFFB71C1C);
-  static const String _kSavedEmail = 'saved_login_email';
 
   final SupabaseClient supabase = Supabase.instance.client;
 
@@ -32,68 +28,24 @@ class _LoginPageState extends State<LoginPage> {
 
   bool _isLoading = false;
   bool _showPassword = false;
-  bool _agreedToTerms = false;
 
   StreamSubscription<AuthState>? _authSub;
 
   @override
   void initState() {
     super.initState();
-    _restoreSavedEmail();
-    _loadTermsAgreement();
     _listenAuthChanges();
-    _routeIfAlreadySignedIn();
-  }
-
-  Future<void> _loadTermsAgreement() async {
-    final prefs = await SharedPreferences.getInstance();
-    if (!mounted) return;
-    setState(() => _agreedToTerms = prefs.getBool('agreed_to_terms') ?? false);
   }
 
   void _listenAuthChanges() {
     _authSub = supabase.auth.onAuthStateChange.listen((data) {
-      final event = data.event;
-      final session = data.session;
-
       if (!mounted) return;
-
-      // Skip auto-routing during the registration flow (OTP verify → password creation).
       if (LoginPage.skipAutoRoute) return;
 
-      // Google OAuth completes asynchronously; this event is the reliable signal.
-      if (event == AuthChangeEvent.signedIn && session != null) {
-        _goNext();
-      }
+      final event = data.event;
+      final session = data.session;
+      debugPrint('Auth event: $event, session exists: ${session != null}');
     });
-  }
-
-  void _routeIfAlreadySignedIn() {
-    // Don't auto-route if we just returned from the registration flow.
-    if (LoginPage.skipAutoRoute) return;
-
-    final session = supabase.auth.currentSession;
-    if (session != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!mounted) return;
-        _goNext();
-      });
-    }
-  }
-
-  Future<void> _restoreSavedEmail() async {
-    final prefs = await SharedPreferences.getInstance();
-    final saved = prefs.getString(_kSavedEmail);
-    if (!mounted) return;
-
-    if (saved != null && saved.isNotEmpty) {
-      setState(() => emailCtrl.text = saved);
-    }
-  }
-
-  Future<void> _saveEmail(String email) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_kSavedEmail, email);
   }
 
   @override
@@ -131,23 +83,68 @@ class _LoginPageState extends State<LoginPage> {
     return null;
   }
 
-  Future<void> _login() async {
-    // Terms and Conditions validation is intentionally disabled.
-    // if (!_agreedToTerms) {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     const SnackBar(
-    //       content: Text(
-    //         'You must read and agree to the Terms and Conditions before logging in.',
-    //       ),
-    //     ),
-    //   );
-    //   return;
-    // }
+  Future<void> _ensureProfile(User user) async {
+    final email = (user.email ?? '').trim().toLowerCase();
 
+    await supabase.from('profiles').upsert({
+      'id': user.id,
+      'email': email.isEmpty ? null : email,
+      'first_name': user.userMetadata?['first_name'],
+      'last_name': user.userMetadata?['last_name'],
+      'updated_at': DateTime.now().toIso8601String(),
+    });
+  }
+
+  Future<bool> _hasAcceptedTerms(String userId) async {
+    final row = await supabase
+        .from('profiles')
+        .select('terms_accepted')
+        .eq('id', userId)
+        .maybeSingle();
+
+    return (row?['terms_accepted'] ?? false) == true;
+  }
+
+  Future<void> _handlePostLogin(User user) async {
+    await _ensureProfile(user);
+
+    final accepted = await _hasAcceptedTerms(user.id);
+
+    if (!mounted) return;
+
+    if (!accepted) {
+      final agreed = await Navigator.push<bool>(
+        context,
+        MaterialPageRoute(
+          builder: (_) => TermsAndConditionsPage(userId: user.id),
+        ),
+      );
+
+      if (!mounted) return;
+
+      if (agreed == true) {
+        _goNext();
+      } else {
+        await supabase.auth.signOut();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'You must read and agree to the Terms and Conditions before logging in.',
+            ),
+          ),
+        );
+      }
+      return;
+    }
+
+    _goNext();
+  }
+
+  Future<void> _login() async {
     final ok = _formKey.currentState?.validate() ?? false;
     if (!ok) return;
 
-    final email = emailCtrl.text.trim();
+    final email = emailCtrl.text.trim().toLowerCase();
     final password = passCtrl.text;
 
     setState(() => _isLoading = true);
@@ -160,22 +157,29 @@ class _LoginPageState extends State<LoginPage> {
 
       if (!mounted) return;
 
-      if (res.user != null) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Login successful.')));
-        _goNext();
+      final user = res.user;
+      if (user == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Login failed.')),
+        );
+        return;
       }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Login successful.')),
+      );
+
+      await _handlePostLogin(user);
     } on AuthException catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(e.message)));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message)),
+      );
     } catch (_) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Unexpected error.')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Unexpected error.')),
+      );
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -183,22 +187,20 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> _googleSignIn() async {
     try {
-      // NOTE: This does NOT complete the login immediately.
-      // The app must receive the redirect/deeplink, then Supabase fires signedIn event.
       await supabase.auth.signInWithOAuth(
         OAuthProvider.google,
         redirectTo: 'com.ignissafe://login-callback',
       );
     } on AuthException catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(e.message)));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message)),
+      );
     } catch (_) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Google sign-in failed.')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Google sign-in failed.')),
+      );
     }
   }
 
@@ -232,8 +234,6 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             ),
                           ),
-
-                          // Title (tight)
                           const Text(
                             'Login',
                             style: TextStyle(
@@ -244,9 +244,7 @@ class _LoginPageState extends State<LoginPage> {
                               height: 1.0,
                             ),
                           ),
-
                           const SizedBox(height: 6),
-
                           Container(
                             height: 2,
                             width: 150,
@@ -255,9 +253,7 @@ class _LoginPageState extends State<LoginPage> {
                               borderRadius: BorderRadius.circular(8),
                             ),
                           ),
-
                           const SizedBox(height: 8),
-
                           const Text(
                             'Welcome to, IGNIS SAFE',
                             style: TextStyle(
@@ -268,10 +264,7 @@ class _LoginPageState extends State<LoginPage> {
                               height: 1.1,
                             ),
                           ),
-
-                          // continue your fields...
                           const SizedBox(height: 80),
-
                           _inputLabel('EMAIL ADDRESS:'),
                           _buildValidatedField(
                             hint: 'Enter your email address',
@@ -280,9 +273,7 @@ class _LoginPageState extends State<LoginPage> {
                             validator: _validateEmail,
                             textInputAction: TextInputAction.next,
                           ),
-
                           const SizedBox(height: 25),
-
                           _inputLabel('PASSWORD:'),
                           _buildValidatedField(
                             hint: 'Enter your password',
@@ -296,7 +287,6 @@ class _LoginPageState extends State<LoginPage> {
                                 setState(() => _showPassword = !_showPassword),
                             onSubmitted: (_) => _isLoading ? null : _login(),
                           ),
-
                           Align(
                             alignment: Alignment.centerRight,
                             child: TextButton(
@@ -318,22 +308,8 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             ),
                           ),
-
                           const SizedBox(height: 40),
                           _buildLoginButton(),
-                          // if (!_agreedToTerms)
-                          //   const Padding(
-                          //     padding: EdgeInsets.only(top: 8),
-                          //     child: Text(
-                          //       'Please read and agree to the Terms and Conditions to enable login.',
-                          //       textAlign: TextAlign.center,
-                          //       style: TextStyle(
-                          //         fontFamily: 'Poppins',
-                          //         fontSize: 11,
-                          //         color: Colors.grey,
-                          //       ),
-                          //     ),
-                          //   ),
                           const SizedBox(height: 20),
                           const SizedBox(height: 10),
                           _buildFooter(),
@@ -352,17 +328,17 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _inputLabel(String label) => Align(
-    alignment: Alignment.centerLeft,
-    child: Text(
-      label,
-      style: const TextStyle(
-        fontFamily: 'Poppins',
-        color: brandRed,
-        fontWeight: FontWeight.bold,
-        fontSize: 13,
-      ),
-    ),
-  );
+        alignment: Alignment.centerLeft,
+        child: Text(
+          label,
+          style: const TextStyle(
+            fontFamily: 'Poppins',
+            color: brandRed,
+            fontWeight: FontWeight.bold,
+            fontSize: 13,
+          ),
+        ),
+      );
 
   Widget _buildValidatedField({
     required String hint,
@@ -405,12 +381,7 @@ class _LoginPageState extends State<LoginPage> {
                 onSubmitted: onSubmitted,
                 obscureText: obscure,
                 style: const TextStyle(fontFamily: 'Poppins'),
-                onChanged: (_) {
-                  state.didChange(controller.text);
-                  if (controller == emailCtrl) {
-                    _saveEmail(controller.text);
-                  }
-                },
+                onChanged: (_) => state.didChange(controller.text),
                 decoration: InputDecoration(
                   hintText: hint,
                   hintStyle: const TextStyle(fontFamily: 'Poppins'),
@@ -458,124 +429,117 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _buildLoginButton() => SizedBox(
-    width: double.infinity,
-    height: 50,
-    child: ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: brandRed,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      ),
-      onPressed: _isLoading ? null : _login,
-      child: _isLoading
-          ? const SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(strokeWidth: 2),
-            )
-          : const Text(
-              'Login',
-              style: TextStyle(
-                fontFamily: 'Poppins',
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
+        width: double.infinity,
+        height: 50,
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: brandRed,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
             ),
-    ),
-  );
+          ),
+          onPressed: _isLoading ? null : _login,
+          child: _isLoading
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white,
+                  ),
+                )
+              : const Text(
+                  'Login',
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+        ),
+      );
 
   Widget _buildFooter() => Column(
-    children: [
-      // const Text(
-      //   'or sign up using',
-      //   style: TextStyle(
-      //     fontFamily: 'Poppins',
-      //     color: Colors.grey,
-      //     fontSize: 14,
-      //     fontWeight: FontWeight.w500,
-      //   ),
-      // ),
-      // const SizedBox(height: 20),
-      // GestureDetector(
-      //   onTap: _googleSignIn,
-      //   child: Image.asset(
-      //     'assets/google.jpg',
-      //     height: 50,
-      //     fit: BoxFit.contain,
-      //   ),
-      // ),
-      const SizedBox(height: 20),
-      GestureDetector(
-        onTap: () async {
-          final agreed = await Navigator.push<bool>(
-            context,
-            MaterialPageRoute(builder: (_) => const TermsAndConditionsPage()),
-          );
-          if (agreed == true) {
-            setState(() => _agreedToTerms = true);
-          }
-        },
-        child: const Text(
-          'Terms and Conditions and Privacy Policy.',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontFamily: 'Poppins',
-            color: brandRed,
-            fontWeight: FontWeight.bold,
-            fontSize: 12,
-            decoration: TextDecoration.none,
-            decorationColor: Color(0xFFB71C1C),
-          ),
-        ),
-      ),
-      const SizedBox(height: 16),
-      Row(
-        children: const [
-          Expanded(child: Divider(thickness: 1)),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 12),
-            child: Text(
-              'OR',
-              style: TextStyle(
-                fontFamily: 'Poppins',
-                color: Colors.grey,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          Expanded(child: Divider(thickness: 1)),
-        ],
-      ),
-      const SizedBox(height: 10),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text(
-            "Don't have an account? ",
-            style: TextStyle(
-              fontFamily: 'Poppins',
-              fontSize: 13,
-              color: Colors.grey,
-            ),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(
+          const SizedBox(height: 20),
+          GestureDetector(
+            onTap: () async {
+              final user = supabase.auth.currentUser;
+              final agreed = await Navigator.push<bool>(
                 context,
-              ).push(MaterialPageRoute(builder: (_) => const RegisterPage()));
+                MaterialPageRoute(
+                  builder: (_) => TermsAndConditionsPage(
+                    userId: user?.id,
+                    readOnly: user == null,
+                  ),
+                ),
+              );
+              if (agreed == true && mounted && user != null) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Terms accepted.')),
+                );
+              }
             },
             child: const Text(
-              'Sign Up',
+              'Terms and Conditions and Privacy Policy.',
+              textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: 'Poppins',
                 color: brandRed,
                 fontWeight: FontWeight.bold,
-                fontSize: 13,
+                fontSize: 12,
               ),
             ),
           ),
+          const SizedBox(height: 16),
+          Row(
+            children: const [
+              Expanded(child: Divider(thickness: 1)),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 12),
+                child: Text(
+                  'OR',
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    color: Colors.grey,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              Expanded(child: Divider(thickness: 1)),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                "Don't have an account? ",
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 13,
+                  color: Colors.grey,
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const RegisterPage()),
+                  );
+                },
+                child: const Text(
+                  'Sign Up',
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    color: brandRed,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ],
-      ),
-    ],
-  );
+      );
 }

@@ -179,7 +179,7 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                                       ),
                                       TextSpan(
                                         text:
-                                            "House Fire: How to Get Out Safely During a Fire",
+                                            "Module 2: House Fire: How to Get Out Safely During a Fire",
                                         style: TextStyle(fontWeight: FontWeight.w700),
                                       ),
                                       TextSpan(

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'login.dart';
-import 'signup.dart';
 import 'home.dart';
 
 Future<void> main() async {
@@ -21,6 +20,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final session = Supabase.instance.client.auth.currentSession;
+
     return MaterialApp(
       title: 'Ignis Safe',
       debugShowCheckedModeBanner: false,
@@ -28,15 +29,9 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Poppins',
         useMaterial3: true,
       ),
-
-      // IMPORTANT:
-      // Always start on Login. Do NOT auto-route to home just because session exists.
-      // This prevents OTP verification from jumping to Home.
-      home: const LoginPage(),
-
+      home: session != null ? const IgnisHomePage() : const LoginPage(),
       routes: {
         '/login': (_) => const LoginPage(),
-        '/signup': (_) => const RegisterPage(),
         '/home': (_) => const IgnisHomePage(),
       },
     );

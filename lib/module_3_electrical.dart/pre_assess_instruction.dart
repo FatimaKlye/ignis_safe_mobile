@@ -183,7 +183,7 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                                       ),
                                       TextSpan(
                                         text:
-                                            "Module 2: Electrical Fire: Causes, Safe Actions, and Prevention",
+                                            "Module 3: Electrical Fire: Causes, Safe Actions, and Prevention",
                                         style: TextStyle(
                                           fontWeight: FontWeight.w700,
                                         ),

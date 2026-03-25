@@ -5,9 +5,9 @@ import 'pre_assessment_building.dart';
 class PreAssessmentIntroPage2 extends StatelessWidget {
   const PreAssessmentIntroPage2({super.key});
 
-  static const accent = Color(0xFFB11217); // red
-  static const accent2 = Color(0xFFF59E0B);
-  static const Color brandRed = Color(0xFFB71C1C);
+  static const accent = Color(0xFF7C3AED); // purple primary
+  static const accent2 = Color(0xFF4338CA); // deep indigo
+  static const Color brandRed = Color(0xFF7C3AED);
 
   @override
   Widget build(BuildContext context) {
@@ -185,7 +185,7 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                                       ),
                                       TextSpan(
                                         text:
-                                            "Module 3: Kitchen Fire: What It Is, Common Types, and What To Do",
+                                            "Module 5: Tenement Fire: What It Is, Common Causes, and What To Do",
                                         style: TextStyle(fontWeight: FontWeight.w700),
                                       ),
                                       TextSpan(

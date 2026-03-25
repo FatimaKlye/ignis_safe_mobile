@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'pre_assessment_kitchen.dart';
 
+const Color kKitchenAmber = Color(0xFFF59E0B);
+const Color kKitchenAmberDark = Color(0xFFEA580C);
 
 class PreAssessmentIntroPage2 extends StatelessWidget {
   const PreAssessmentIntroPage2({super.key});
-
-  static const accent = Color(0xFFB11217); // red
-  static const accent2 = Color(0xFFF59E0B);
-  static const Color brandRed = Color(0xFFB71C1C);
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +66,7 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                                 gradient: const LinearGradient(
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
-                                  colors: [accent, accent2],
+                                  colors: [kKitchenAmber, kKitchenAmberDark],
                                 ),
                                 borderRadius: BorderRadius.circular(10),
                                 boxShadow: [
@@ -86,7 +84,7 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                                       color: Colors.white, size: 18),
                                   SizedBox(width: 8),
                                   Text(
-                                    "MODULE 3",
+                                    "MODULE 4",
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white,
@@ -185,7 +183,7 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                                       ),
                                       TextSpan(
                                         text:
-                                            "Module 3: Kitchen Fire: What It Is, Common Types, and What To Do",
+                                            "Module 4: Kitchen Fire: What It Is, Common Types, and What To Do",
                                         style: TextStyle(fontWeight: FontWeight.w700),
                                       ),
                                       TextSpan(
@@ -229,7 +227,7 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                                       );
                                     },
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: brandRed,
+                                      backgroundColor: kKitchenAmber,
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(14),
                                       ),

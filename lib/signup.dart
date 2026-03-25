@@ -20,6 +20,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final firstNameCtrl = TextEditingController();
   final lastNameCtrl = TextEditingController();
   final emailCtrl = TextEditingController();
+
   bool _isLoading = false;
 
   @override
@@ -57,14 +58,12 @@ class _RegisterPageState extends State<RegisterPage> {
   Future<bool> _emailAlreadyExists(String email) async {
     final normalizedEmail = email.trim().toLowerCase();
 
-    final existing = await Supabase.instance.client
-        .from('profiles')
-        .select('id')
-        .eq('email', normalizedEmail)
-        .limit(1)
-        .maybeSingle();
+    final result = await Supabase.instance.client.rpc(
+      'email_exists',
+      params: {'p_email': normalizedEmail},
+    );
 
-    return existing != null;
+    return result == true;
   }
 
   void _showExistingAccountDialog(String email) {
@@ -75,11 +74,11 @@ class _RegisterPageState extends State<RegisterPage> {
           borderRadius: BorderRadius.circular(16),
         ),
         title: const Text(
-          'Email already has an account',
+          'This email already has an account',
           style: TextStyle(fontWeight: FontWeight.w900),
         ),
         content: Text(
-          '$email already has an account.\n\nWould you like to log in or reset your password?',
+          '$email already has an account.\n\nWould you like to reset your password or go to login?',
           style: const TextStyle(
             fontWeight: FontWeight.w600,
             height: 1.4,
@@ -103,9 +102,11 @@ class _RegisterPageState extends State<RegisterPage> {
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
-              Navigator.pushReplacement(
+              LoginPage.skipAutoRoute = false;
+              Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(builder: (_) => const LoginPage()),
+                (route) => false,
               );
             },
             child: const Text('Login'),
@@ -119,13 +120,6 @@ class _RegisterPageState extends State<RegisterPage> {
     final firstName = firstNameCtrl.text.trim();
     final lastName = lastNameCtrl.text.trim();
     final email = emailCtrl.text.trim().toLowerCase();
-
-    if (firstName.isEmpty || lastName.isEmpty || email.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please complete all fields.')),
-      );
-      return;
-    }
 
     final ok = _formKey.currentState?.validate() ?? false;
     if (!ok) return;
@@ -142,8 +136,6 @@ class _RegisterPageState extends State<RegisterPage> {
         return;
       }
 
-      // Prevent LoginPage's auth-state listener from redirecting to Home
-      // while the user is still in the registration flow.
       LoginPage.skipAutoRoute = true;
 
       Navigator.push(
@@ -162,9 +154,7 @@ class _RegisterPageState extends State<RegisterPage> {
         SnackBar(content: Text('Could not check email: $e')),
       );
     } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -220,8 +210,10 @@ class _RegisterPageState extends State<RegisterPage> {
                   hintText: hint,
                   hintStyle: const TextStyle(fontFamily: 'Poppins'),
                   border: InputBorder.none,
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 18,
+                  ),
                 ),
               ),
             ),
@@ -254,8 +246,8 @@ class _RegisterPageState extends State<RegisterPage> {
               borderRadius: BorderRadius.circular(10),
             ),
           ),
-            onPressed: _isLoading ? null : _continueToVerifyEmail,
-            child: _isLoading
+          onPressed: _isLoading ? null : _continueToVerifyEmail,
+          child: _isLoading
               ? const SizedBox(
                   width: 20,
                   height: 20,

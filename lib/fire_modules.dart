@@ -20,11 +20,11 @@ import 'module_3_electrical.dart/post_assessment_electrical.dart' as electrical_
 import 'module_3_electrical.dart/pre_assess_instruction.dart' as electrical_pre;
 import 'module_3_electrical.dart/simulation_scene_electrical.dart' as electrical_sim;
 
-import 'module_4_kitchen.dart/pre_assessment_kitchen.dart' as kitchen_pre;
+import 'module_4_kitchen.dart/pre_assess_instruction.dart' as kitchen_pre;
 import 'module_4_kitchen.dart/post_assessment_kitchen.dart' as kitchen_post;
 import 'module_4_kitchen.dart/simulation_scene.dart' as kitchen_sim;
 
-import 'module_5_building.dart/pre_assessment_building.dart' as building_pre;
+import 'module_5_building.dart/pre_assess_instruction.dart' as building_pre;
 import 'module_5_building.dart/post_assessment_building.dart' as building_post;
 import 'module_5_building.dart/simulation_scene.dart' as building_sim;
 
@@ -335,7 +335,7 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
         await Navigator.push(
           context,
           MaterialPageRoute(
-           builder: (_) => const kitchen_pre.PreAssessmentKitchenPage(),
+           builder: (_) => const kitchen_pre.PreAssessmentIntroPage2(),
           ),
         );
         break;
@@ -344,7 +344,7 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
         await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => const building_pre.PreAssessmentBuildingPage(),
+            builder: (_) => const building_pre.PreAssessmentIntroPage2(),
           ),
         );
         break;

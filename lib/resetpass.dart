@@ -29,6 +29,18 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
     super.dispose();
   }
 
+  Future<void> _goToLogin() async {
+    await supabase.auth.signOut();
+
+    if (!mounted) return;
+
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (_) => const LoginPage()),
+      (route) => false,
+    );
+  }
+
   Future<void> _updatePassword() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -39,10 +51,12 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
         UserAttributes(password: _passwordCtrl.text.trim()),
       );
 
+      await supabase.auth.signOut();
+
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Password updated successfully.')),
+        const SnackBar(content: Text('Password updated successfully. Please log in again.')),
       );
 
       Navigator.pushAndRemoveUntil(
@@ -223,6 +237,11 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                                       ),
                                     ),
                             ),
+                          ),
+                          const SizedBox(height: 12),
+                          TextButton(
+                            onPressed: _goToLogin,
+                            child: const Text('Back to Login'),
                           ),
                           const SizedBox(height: 30),
                         ],

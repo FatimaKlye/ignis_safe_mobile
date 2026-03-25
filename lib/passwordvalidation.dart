@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
 import 'forgotpass.dart';
 import 'login.dart';
 
@@ -22,18 +23,20 @@ class CreatePasswordPage extends StatefulWidget {
 class _CreatePasswordPageState extends State<CreatePasswordPage> {
   static const Color brandRed = Color(0xFFB71C1C);
 
-  final passCtrl = TextEditingController();
-  final confirmPassCtrl = TextEditingController();
+  final SupabaseClient supabase = Supabase.instance.client;
+
+  final TextEditingController passCtrl = TextEditingController();
+  final TextEditingController confirmPassCtrl = TextEditingController();
+
   bool _showPassword = false;
   bool _showConfirmPassword = false;
+  bool _isLoading = false;
 
   bool _min8 = false;
   bool _hasNumber = false;
   bool _hasSymbol = false;
   bool _hasUpper = false;
   bool _matches = false;
-
-  bool _isLoading = false;
 
   @override
   void initState() {
@@ -52,25 +55,25 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
   }
 
   void _recalc() {
-    final p = passCtrl.text;
-    final c = confirmPassCtrl.text;
+    final password = passCtrl.text;
+    final confirm = confirmPassCtrl.text;
 
-    final min8 = p.length >= 8;
-    final hasNum = RegExp(r'\d').hasMatch(p);
-    final hasSym =
-        RegExp(r'[!@#$%^&*(),.?":{}|<>_\-\[\]\\\/~`+=;]').hasMatch(p);
-    final hasUpper = RegExp(r'[A-Z]').hasMatch(p);
-    final matches = c.isNotEmpty && p == c;
+    final min8 = password.length >= 8;
+    final hasNumber = RegExp(r'\d').hasMatch(password);
+    final hasSymbol =
+        RegExp(r'[!@#$%^&*(),.?":{}|<>_\-\[\]\\/~`+=;]').hasMatch(password);
+    final hasUpper = RegExp(r'[A-Z]').hasMatch(password);
+    final matches = confirm.isNotEmpty && password == confirm;
 
     if (_min8 != min8 ||
-        _hasNumber != hasNum ||
-        _hasSymbol != hasSym ||
+        _hasNumber != hasNumber ||
+        _hasSymbol != hasSymbol ||
         _hasUpper != hasUpper ||
         _matches != matches) {
       setState(() {
         _min8 = min8;
-        _hasNumber = hasNum;
-        _hasSymbol = hasSym;
+        _hasNumber = hasNumber;
+        _hasSymbol = hasSymbol;
         _hasUpper = hasUpper;
         _matches = matches;
       });
@@ -78,12 +81,12 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
   }
 
   int get _passedRules {
-    int n = 0;
-    if (_min8) n++;
-    if (_hasNumber) n++;
-    if (_hasSymbol) n++;
-    if (_hasUpper) n++;
-    return n;
+    int count = 0;
+    if (_min8) count++;
+    if (_hasNumber) count++;
+    if (_hasSymbol) count++;
+    if (_hasUpper) count++;
+    return count;
   }
 
   bool get _isEmpty => passCtrl.text.trim().isEmpty;
@@ -117,10 +120,13 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
 
   Future<void> _showPopup(String message, {String title = 'Notice'}) async {
     if (!mounted) return;
+
     await showDialog<void>(
       context: context,
       builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
         title: Text(title),
         content: Text(message),
         actions: [
@@ -141,11 +147,11 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
           borderRadius: BorderRadius.circular(16),
         ),
         title: const Text(
-          'Email already has an account',
+          'This email already has an account',
           style: TextStyle(fontWeight: FontWeight.w900),
         ),
         content: Text(
-          '$email already has an account.\n\nWould you like to log in or reset your password?',
+          '$email already has an account.\n\nWould you like to reset your password or go to login?',
           style: const TextStyle(
             fontWeight: FontWeight.w600,
             height: 1.4,
@@ -169,6 +175,7 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
+              LoginPage.skipAutoRoute = false;
               Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(builder: (_) => const LoginPage()),
@@ -195,7 +202,7 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
 
     if (!_allOk) {
       await _showPopup(
-        'Password does not meet requirements.',
+        'Password does not meet all requirements.',
         title: 'Invalid Password',
       );
       return;
@@ -203,62 +210,45 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
 
     setState(() => _isLoading = true);
 
-    final supabase = Supabase.instance.client;
-
     try {
       final password = passCtrl.text;
 
-      // If there is no authenticated session yet, create an auth user first.
-      if (supabase.auth.currentUser == null) {
-        try {
-          await Supabase.instance.client.auth.signUp(
-            email: widget.email.trim().toLowerCase(),
-            password: passCtrl.text,
-            data: {
-              'first_name': widget.firstName.trim(),
-              'last_name': widget.lastName.trim(),
-            },
-          );
-        } on AuthException catch (e) {
-          final msg = e.message.toLowerCase();
+      final currentUser = supabase.auth.currentUser;
 
-          if (msg.contains('already registered') ||
-              msg.contains('already exists')) {
-            _showExistingAccountDialog(widget.email.trim().toLowerCase());
-            return;
-          }
-
-          rethrow;
-        }
+      if (currentUser == null) {
+        throw const AuthException(
+          'No active session found. Please verify your email again.',
+        );
       }
 
-      // After verifyOTP, user is authenticated but may not have a password yet.
-      // This sets the password for the current authenticated user.
-      final update = await supabase.auth.updateUser(
+      final updateResponse = await supabase.auth.updateUser(
         UserAttributes(password: password),
       );
 
-      final user = update.user ?? supabase.auth.currentUser;
+      final user = updateResponse.user ?? supabase.auth.currentUser;
       if (user == null) {
-        throw const AuthException('No active user session. Verify OTP again.');
+        throw const AuthException(
+          'Unable to complete account setup. Please verify your email again.',
+        );
       }
 
-      // Create/Update profiles row (id = auth user id)
       await supabase.from('profiles').upsert({
         'id': user.id,
         'first_name': widget.firstName.trim(),
         'last_name': widget.lastName.trim(),
-        'email': widget.email.trim(),
+        'email': widget.email.trim().toLowerCase(),
+        'updated_at': DateTime.now().toIso8601String(),
       });
 
       if (!mounted) return;
 
-      // Success dialog (same UI behavior as your local-only version)
       showDialog(
         context: context,
         barrierDismissible: false,
         builder: (_) => AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(18),
+          ),
           contentPadding: const EdgeInsets.fromLTRB(24, 28, 24, 20),
           content: Column(
             mainAxisSize: MainAxisSize.min,
@@ -301,10 +291,11 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                     ),
                   ),
                   onPressed: () async {
-                    // Ensure user ends the registration flow logged-out,
-                    // so they must login with email+password next.
+                    LoginPage.skipAutoRoute = false;
                     await supabase.auth.signOut();
+
                     if (!context.mounted) return;
+
                     Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(builder: (_) => const LoginPage()),
@@ -327,22 +318,131 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
         ),
       );
     } on AuthException catch (e) {
-      await _showPopup(e.message, title: 'Authentication Error');
+      final msg = e.message.toLowerCase();
+
+      if (msg.contains('already registered') || msg.contains('already exists')) {
+        if (mounted) {
+          _showExistingAccountDialog(widget.email.trim().toLowerCase());
+        }
+      } else {
+        await _showPopup(e.message, title: 'Account Setup Failed');
+      }
     } catch (e) {
-      await _showPopup('Error: $e', title: 'Something Went Wrong');
+      await _showPopup(
+        'Something went wrong while creating your account.\n\n$e',
+        title: 'Account Setup Failed',
+      );
     } finally {
-      if (mounted) setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
+  }
+
+  Widget _ruleItem(String text, bool passed) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(
+          passed ? Icons.check_circle : Icons.radio_button_unchecked,
+          size: 18,
+          color: passed ? const Color(0xFF2E7D32) : Colors.black38,
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            text,
+            style: TextStyle(
+              fontFamily: 'Poppins',
+              fontSize: 12,
+              color: passed ? const Color(0xFF2E7D32) : Colors.black54,
+              fontWeight: passed ? FontWeight.w600 : FontWeight.w500,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _passwordField({
+    required String hint,
+    required TextEditingController controller,
+    required bool obscureText,
+    required String suffixText,
+    required VoidCallback onSuffixTap,
+    TextInputAction? textInputAction,
+    ValueChanged<String>? onSubmitted,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(top: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 8,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: TextField(
+        controller: controller,
+        obscureText: obscureText,
+        textInputAction: textInputAction,
+        onSubmitted: onSubmitted,
+        style: const TextStyle(fontFamily: 'Poppins'),
+        decoration: InputDecoration(
+          hintText: hint,
+          hintStyle: const TextStyle(fontFamily: 'Poppins'),
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 18,
+          ),
+          suffixIcon: InkWell(
+            onTap: onSuffixTap,
+            child: Padding(
+              padding: const EdgeInsets.all(15),
+              child: Text(
+                suffixText,
+                style: const TextStyle(
+                  fontFamily: 'Poppins',
+                  color: brandRed,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _inputLabel(String label) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Text(
+        label,
+        style: const TextStyle(
+          fontFamily: 'Poppins',
+          color: brandRed,
+          fontWeight: FontWeight.bold,
+          fontSize: 13,
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    // UI copied from your createpassword.dart (NO layout/styling changes)
+    final email = widget.email.trim().toLowerCase();
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30.0), // same as verify email
+          padding: const EdgeInsets.symmetric(horizontal: 35.0),
           child: LayoutBuilder(
             builder: (context, constraints) {
               return SingleChildScrollView(
@@ -352,9 +452,7 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                     alignment: Alignment.topCenter,
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        // Header (same as verify email)
                         Padding(
                           padding: const EdgeInsets.only(top: 70, bottom: 30),
                           child: SizedBox(
@@ -365,7 +463,6 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                             ),
                           ),
                         ),
-
                         const Text(
                           'Create Password',
                           style: TextStyle(
@@ -376,9 +473,7 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                             height: 1.0,
                           ),
                         ),
-
                         const SizedBox(height: 6),
-
                         Container(
                           height: 2,
                           width: 150,
@@ -387,9 +482,7 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-
                         const SizedBox(height: 8),
-
                         const Text(
                           'Welcome to, IGNIS SAFE',
                           style: TextStyle(
@@ -400,19 +493,18 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                             height: 1.1,
                           ),
                         ),
-
-                        const SizedBox(height: 80),
-
-                        // Section header row (same spacing pattern)
+                        const SizedBox(height: 60),
                         Row(
                           children: [
                             IconButton(
-                              onPressed: () => Navigator.pop(context),
+                              onPressed: _isLoading
+                                  ? null
+                                  : () => Navigator.pop(context),
                               icon: const Icon(Icons.arrow_back_ios_new, size: 18),
                             ),
                             const SizedBox(width: 4),
                             const Text(
-                              'Create your password',
+                              'Set your password',
                               style: TextStyle(
                                 fontFamily: 'Poppins',
                                 fontSize: 16,
@@ -422,13 +514,28 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                             ),
                           ],
                         ),
-
                         const SizedBox(height: 8),
-
-                        // Steps
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
+                            Container(
+                              width: 18,
+                              height: 3,
+                              decoration: BoxDecoration(
+                                color: brandRed,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            const SizedBox(width: 18),
+                            Container(
+                              width: 18,
+                              height: 3,
+                              decoration: BoxDecoration(
+                                color: brandRed,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            const SizedBox(width: 18),
                             Container(
                               width: 18,
                               height: 3,
@@ -437,231 +544,117 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                                 borderRadius: BorderRadius.circular(8),
                               ),
                             ),
-                            const SizedBox(width: 18),
-                            Container(
-                              width: 18,
-                              height: 3,
-                              decoration: BoxDecoration(
-                                color: brandRed,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                            const SizedBox(width: 18),
-                            Container(
-                              width: 18,
-                              height: 3,
-                              decoration: BoxDecoration(
-                                color: brandRed,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
                           ],
                         ),
-
-                        const SizedBox(height: 22),
-
-                        const Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            'Password',
-                            style: TextStyle(
-                              fontFamily: 'Poppins',
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.black54,
-                            ),
+                        const SizedBox(height: 18),
+                        Text(
+                          email,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black54,
                           ),
                         ),
-
-                        const SizedBox(height: 8),
-
-                        Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            boxShadow: const [
-                              BoxShadow(
-                                color: Color(0x14000000),
-                                blurRadius: 10,
-                                offset: Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: TextField(
-                            controller: passCtrl,
-                            obscureText: !_showPassword,
-                            style: const TextStyle(
-                              fontFamily: 'Poppins',
-                              fontSize: 13,
-                              color: Colors.black87,
-                            ),
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: Colors.white,
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 14,
-                                vertical: 14,
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide:
-                                    const BorderSide(color: Color(0xFFDDDDDD)),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide:
-                                    const BorderSide(color: Color(0xFFDDDDDD)),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide:
-                                    const BorderSide(color: Color(0xFFCCCCCC)),
-                              ),
-                              suffixIcon: IconButton(
-                                onPressed: () =>
-                                    setState(() => _showPassword = !_showPassword),
-                                icon: Icon(
-                                  _showPassword
-                                      ? Icons.visibility
-                                      : Icons.visibility_off,
-                                  color: Colors.black45,
-                                  size: 20,
-                                ),
-                              ),
-                            ),
-                          ),
+                        const SizedBox(height: 28),
+                        _inputLabel('PASSWORD:'),
+                        _passwordField(
+                          hint: 'Enter your password',
+                          controller: passCtrl,
+                          obscureText: !_showPassword,
+                          suffixText: _showPassword ? 'HIDE' : 'SHOW',
+                          onSuffixTap: () {
+                            setState(() => _showPassword = !_showPassword);
+                          },
+                          textInputAction: TextInputAction.next,
                         ),
-
-                        const SizedBox(height: 12),
-
-                        const Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            'Confirm Password',
-                            style: TextStyle(
-                              fontFamily: 'Poppins',
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.black54,
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(height: 8),
-
-                        Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            boxShadow: const [
-                              BoxShadow(
-                                color: Color(0x14000000),
-                                blurRadius: 10,
-                                offset: Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: TextField(
-                            controller: confirmPassCtrl,
-                            obscureText: !_showConfirmPassword,
-                            style: const TextStyle(
-                              fontFamily: 'Poppins',
-                              fontSize: 13,
-                              color: Colors.black87,
-                            ),
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: Colors.white,
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 14,
-                                vertical: 14,
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide:
-                                    const BorderSide(color: Color(0xFFDDDDDD)),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide:
-                                    const BorderSide(color: Color(0xFFDDDDDD)),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide:
-                                    const BorderSide(color: Color(0xFFCCCCCC)),
-                              ),
-                              suffixIcon: IconButton(
-                                onPressed: () => setState(
-                                  () => _showConfirmPassword = !_showConfirmPassword,
-                                ),
-                                icon: Icon(
-                                  _showConfirmPassword
-                                      ? Icons.visibility
-                                      : Icons.visibility_off,
-                                  color: Colors.black45,
-                                  size: 20,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(height: 10),
-
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: SizedBox(
-                            height: 6,
-                            width: double.infinity,
-                            child: LinearProgressIndicator(
-                              value: _progress,
-                              backgroundColor: const Color(0xFFE6E6E6),
-                              valueColor: AlwaysStoppedAnimation<Color>(_barColor),
-                              minHeight: 6,
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(height: 10),
-
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            _strengthText,
-                            style: TextStyle(
-                              fontFamily: 'Poppins',
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700,
-                              color: _strengthColor,
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(height: 14),
-
-                        _RuleRow(text: '8 characters minimum', ok: _min8),
-                        const SizedBox(height: 8),
-                        _RuleRow(text: 'a number', ok: _hasNumber),
-                        const SizedBox(height: 8),
-                        _RuleRow(text: 'a symbol', ok: _hasSymbol),
-                        const SizedBox(height: 8),
-                        _RuleRow(text: 'a capital letter', ok: _hasUpper),
-                        const SizedBox(height: 8),
-                        _RuleRow(text: 'passwords match', ok: _matches),
-
                         const SizedBox(height: 20),
-
+                        _inputLabel('CONFIRM PASSWORD:'),
+                        _passwordField(
+                          hint: 'Confirm your password',
+                          controller: confirmPassCtrl,
+                          obscureText: !_showConfirmPassword,
+                          suffixText: _showConfirmPassword ? 'HIDE' : 'SHOW',
+                          onSuffixTap: () {
+                            setState(() {
+                              _showConfirmPassword = !_showConfirmPassword;
+                            });
+                          },
+                          textInputAction: TextInputAction.done,
+                          onSubmitted: (_) {
+                            if (!_isLoading) {
+                              _continueWithSupabase();
+                            }
+                          },
+                        ),
+                        const SizedBox(height: 22),
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF8F8F8),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(color: const Color(0xFFEAEAEA)),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Password strength',
+                                style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(999),
+                                child: LinearProgressIndicator(
+                                  value: _progress,
+                                  minHeight: 8,
+                                  backgroundColor: const Color(0xFFE6E6E6),
+                                  valueColor:
+                                      AlwaysStoppedAnimation<Color>(_barColor),
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                _strengthText,
+                                style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  color: _strengthColor,
+                                ),
+                              ),
+                              const SizedBox(height: 14),
+                              _ruleItem('At least 8 characters', _min8),
+                              const SizedBox(height: 8),
+                              _ruleItem('At least 1 number', _hasNumber),
+                              const SizedBox(height: 8),
+                              _ruleItem('At least 1 symbol', _hasSymbol),
+                              const SizedBox(height: 8),
+                              _ruleItem('At least 1 uppercase letter', _hasUpper),
+                              const SizedBox(height: 8),
+                              _ruleItem('Passwords match', _matches),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 28),
                         SizedBox(
                           width: double.infinity,
-                          height: 54,
+                          height: 50,
                           child: ElevatedButton(
-                            onPressed: _isLoading ? null : _continueWithSupabase,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: brandRed,
-                              elevation: 0,
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(10),
                               ),
                             ),
+                            onPressed: _isLoading ? null : _continueWithSupabase,
                             child: _isLoading
                                 ? const SizedBox(
                                     width: 20,
@@ -672,39 +665,17 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                                     ),
                                   )
                                 : const Text(
-                                    'Continue',
+                                    'Create Account',
                                     style: TextStyle(
                                       fontFamily: 'Poppins',
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
                                       color: Colors.white,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w600,
                                     ),
                                   ),
                           ),
                         ),
-
-                        const SizedBox(height: 120),
-
-                        Row(
-                          children: const [
-                            Expanded(child: Divider(thickness: 1)),
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 12),
-                              child: Text(
-                                'OR',
-                                style: TextStyle(
-                                  fontFamily: 'Poppins',
-                                  color: Colors.grey,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                            Expanded(child: Divider(thickness: 1)),
-                          ],
-                        ),
-
-                        const SizedBox(height: 14),
-
+                        const SizedBox(height: 18),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -718,10 +689,12 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                             ),
                             GestureDetector(
                               onTap: () {
+                                LoginPage.skipAutoRoute = false;
                                 Navigator.pushAndRemoveUntil(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (_) => const LoginPage()),
+                                    builder: (_) => const LoginPage(),
+                                  ),
                                   (route) => false,
                                 );
                               },
@@ -737,7 +710,6 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                             ),
                           ],
                         ),
-
                         const SizedBox(height: 20),
                       ],
                     ),
@@ -751,34 +723,3 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
     );
   }
 }
-
-class _RuleRow extends StatelessWidget {
-  final String text;
-  final bool ok;
-
-  const _RuleRow({required this.text, required this.ok});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(
-          Icons.check_circle,
-          size: 18,
-          color: ok ? const Color(0xFF2E7D32) : const Color(0xFF9E9E9E),
-        ),
-        const SizedBox(width: 10),
-        Text(
-          text,
-          style: TextStyle(
-            fontFamily: 'Poppins',
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-            color: ok ? const Color(0xFF2E7D32) : Colors.black54,
-          ),
-        ),
-      ],
-    );
-  }
-}
-

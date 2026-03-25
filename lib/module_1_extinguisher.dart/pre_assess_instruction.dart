@@ -179,7 +179,7 @@ class PreAssessmentIntroPage extends StatelessWidget {
                                       ),
                                       TextSpan(
                                         text:
-                                            "Module 1: Fire Extinguisher: Safe Use and Emergency Response",
+                                            "Module 1: Fire Extinguisher: Basics, Types, and How to Use",
                                         style: TextStyle(fontWeight: FontWeight.w700),
                                       ),
                                       TextSpan(
