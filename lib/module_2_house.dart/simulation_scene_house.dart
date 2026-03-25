@@ -6,6 +6,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../unity_launcher.dart';
 import '../profile_progress_sync.dart';
 
+const Color kHouseOrange = Color(0xFFF97316);
+const Color kHouseAmber = Color(0xFFF59E0B);
+
 class SimulationScene2 extends StatefulWidget {
   const SimulationScene2({super.key});
 
@@ -14,8 +17,6 @@ class SimulationScene2 extends StatefulWidget {
 }
 
 class _SimulationScene2State extends State<SimulationScene2> {
-  static const accent = Color(0xFF1E3A8A);
-  static const accent2 = Color(0xFF7C3AED);
 
   String _sceneLabelFor(int scene) {
     switch (scene) {
@@ -268,7 +269,7 @@ class _SimulationScene2State extends State<SimulationScene2> {
                                 gradient: const LinearGradient(
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
-                                  colors: [accent, accent2],
+                                  colors: [kHouseOrange, kHouseAmber],
                                 ),
                                 borderRadius: BorderRadius.circular(10),
                                 boxShadow: [
@@ -356,8 +357,6 @@ class _ModuleCard extends StatelessWidget {
     required this.onPressed,
   });
 
-  static const Color brandRed = Color(0xFFB11217);
-
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -400,7 +399,7 @@ class _ModuleCard extends StatelessWidget {
                       title,
                       style: const TextStyle(
                         fontFamily: 'Poppins',
-                        color: brandRed,
+                        color: kHouseOrange,
                         fontSize: 14,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 0.2,
@@ -424,7 +423,7 @@ class _ModuleCard extends StatelessWidget {
                         height: 34,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: brandRed,
+                            backgroundColor: kHouseOrange,
                             elevation: 8,
                             padding: const EdgeInsets.symmetric(horizontal: 18),
                             shape: RoundedRectangleBorder(
@@ -456,7 +455,7 @@ class _ModuleCard extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
             decoration: BoxDecoration(
-              color: brandRed,
+              color: kHouseOrange,
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
@@ -491,8 +490,6 @@ class _ScenePickerPopup extends StatelessWidget {
     required this.onPickScene2,
   });
 
-  static const Color brandRed = Color(0xFFB11217);
-
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -521,10 +518,10 @@ class _ScenePickerPopup extends StatelessWidget {
                   width: 38,
                   height: 38,
                   decoration: BoxDecoration(
-                    color: brandRed.withOpacity(0.10),
+                    color: kHouseOrange.withOpacity(0.10),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(Icons.home_rounded, color: brandRed),
+                  child: const Icon(Icons.home_rounded, color: kHouseOrange),
                 ),
                 const SizedBox(width: 12),
                 const Expanded(
@@ -585,8 +582,6 @@ class _ModernSceneTile extends StatelessWidget {
     required this.onTap,
   });
 
-  static const Color brandRed = Color(0xFFB11217);
-
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -616,15 +611,12 @@ class _ModernSceneTile extends StatelessWidget {
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [
-                    brandRed.withOpacity(0.92),
-                    brandRed.withOpacity(0.72),
-                  ],
+                  colors: [kHouseOrange, kHouseAmber],
                 ),
                 borderRadius: BorderRadius.circular(14),
                 boxShadow: [
                   BoxShadow(
-                    color: brandRed.withOpacity(0.22),
+                    color: kHouseOrange.withOpacity(0.22),
                     blurRadius: 14,
                     offset: const Offset(0, 8),
                   ),
@@ -684,8 +676,6 @@ class _SceneConfirmPopup extends StatelessWidget {
     required this.onStart,
   });
 
-  static const Color brandRed = Color(0xFFB11217);
-
   String get _title => "Chosen Scene: Scene $scene";
 
   String get _body {
@@ -730,10 +720,10 @@ class _SceneConfirmPopup extends StatelessWidget {
                   width: 38,
                   height: 38,
                   decoration: BoxDecoration(
-                    color: brandRed.withOpacity(0.10),
+                    color: kHouseOrange.withOpacity(0.10),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(Icons.check_circle_rounded, color: brandRed),
+                  child: const Icon(Icons.check_circle_rounded, color: kHouseOrange),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -783,7 +773,7 @@ class _SceneConfirmPopup extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: onStart,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: brandRed,
+                  backgroundColor: kHouseOrange,
                   elevation: 10,
                   shadowColor: Colors.black.withOpacity(0.25),
                   shape: RoundedRectangleBorder(

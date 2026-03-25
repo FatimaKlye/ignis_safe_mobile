@@ -10,15 +10,24 @@ import 'module_1_extinguisher.dart/pre_test_module1.dart' as pre1;
 import 'module_1_extinguisher.dart/postassessment_extinguisher.dart';
 import 'module_1_extinguisher.dart/simulation_scene.dart';
 
-// OLD MODULE 2 FILES -> now used as MODULE 2 (HOUSE FIRE)
+
 import 'module_2_house.dart/postassessment_house.dart' as house_post;
 import 'module_2_house.dart/pre_test_module2_house.dart' as house_pre;
 import 'module_2_house.dart/simulation_scene_house.dart' as house_sim;
 
-// OLD MODULE 3 FILES -> now used as MODULE 5 (BUILDING FIRE)
+
 import 'module_3_electrical.dart/post_assessment_electrical.dart' as electrical_post;
 import 'module_3_electrical.dart/pre_test_module3_electrical.dart' as electrical_pre;
 import 'module_3_electrical.dart/simulation_scene_electrical.dart' as electrical_sim;
+
+import 'module_4_kitchen.dart/pre_assessment_kitchen.dart' as kitchen_pre;
+import 'module_4_kitchen.dart/post_assessment_kitchen.dart' as kitchen_post;
+import 'module_4_kitchen.dart/simulation_scene.dart' as kitchen_sim;
+
+import 'module_5_building.dart/pre_assessment_building.dart' as building_pre;
+import 'module_5_building.dart/post_assessment_building.dart' as building_post;
+import 'module_5_building.dart/simulation_scene.dart' as building_sim;
+
 
 enum ModuleFilter { all, pending, inProgress, completed }
 
@@ -67,7 +76,7 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
       title: "HOUSE FIRE",
       description:
           "Learn how household fires begin, recognize home fire hazards, and respond safely and effectively during emergencies at home.",
-      asset: "assets/electrical.png",
+      asset: "assets/house.jpg",
     ),
     _ModuleItem(
       moduleNo: 3,
@@ -91,7 +100,7 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
       title: "BUILDING FIRE",
       description:
           "Understand building fire risks, evacuation procedures, and the correct fire safety response in larger structures and shared spaces.",
-      asset: "assets/kitchen.png",
+      asset: "assets/condo.jpg",
     ),
   ];
 
@@ -326,10 +335,7 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
         await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => const _ModuleUnderConstructionPage(
-              title: "Module 4 - Kitchen Fire",
-              subtitle: "Connect your Kitchen Fire pre-assessment page here.",
-            ),
+           builder: (_) => const kitchen_pre.PreAssessmentKitchenPage(),
           ),
         );
         break;
@@ -338,10 +344,7 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
         await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => const _ModuleUnderConstructionPage(
-              title: "Module 3 - Electrical Fire",
-              subtitle: "Connect your Electrical Fire pre-assessment page here.",
-            ),
+            builder: (_) => const building_pre.PreAssessmentBuildingPage(),
           ),
         );
         break;
@@ -383,10 +386,7 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
         await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => const _ModuleUnderConstructionPage(
-              title: "Module 4 - Kitchen Fire",
-              subtitle: "Connect your Kitchen Fire simulation page here.",
-            ),
+           builder: (_) => const kitchen_sim.SimulationScene4()
           ),
         );
         break;
@@ -395,10 +395,7 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
         await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => const _ModuleUnderConstructionPage(
-              title: "Module 4 - Kitchen Fire",
-              subtitle: "Connect your Kitchen Fire simulation page here.",
-            ),
+           builder: (_) => const building_sim.SimulationScene5()
           ),
         );
         break;
@@ -440,10 +437,7 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
         await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => const _ModuleUnderConstructionPage(
-              title: "Module 4 - Kitchen Fire",
-              subtitle: "Connect your Kitchen Fire post-assessment page here.",
-            ),
+          builder: (_) => const kitchen_post.PostAssessmentKitchenPage(),
           ),
         );
         break;
@@ -452,7 +446,7 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
         await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => const electrical_post.PostAssessmentElectricalPage(),
+            builder: (_) => const building_post.PostAssessmentBuildingPage(),
           ),
         );
         break;

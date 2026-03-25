@@ -12,7 +12,7 @@ class LearningMaterialElectricalPage extends StatefulWidget {
 class _LearningMaterialElectricalPageState
     extends State<LearningMaterialElectricalPage> {
   static const accent = Color(0xFF2563EB); // primary blue
-  static const accent2 = Color(0xFFF59E0B); // caution amber
+  static const accent2 = Color(0xFF2563EB);
 
   final PageController _pageCtrl = PageController();
   final ScrollController _scrollCtrl = ScrollController();
@@ -84,23 +84,21 @@ class _LearningMaterialElectricalPageState
     );
   }
 
- void _goNext() {
-  if (!_canNext && _pageIndex < 2) return;
+  void _goNext() {
+    if (!_canNext && _pageIndex < 2) return;
 
-  if (_pageIndex < 2) {
-    _pageCtrl.nextPage(
-      duration: const Duration(milliseconds: 260),
-      curve: Curves.easeOutCubic,
-    );
-  } else {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const PreAssessmentIntroPage2(),
-      ),
-    );
+    if (_pageIndex < 2) {
+      _pageCtrl.nextPage(
+        duration: const Duration(milliseconds: 260),
+        curve: Curves.easeOutCubic,
+      );
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const PreAssessmentIntroPage2()),
+      );
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -124,132 +122,133 @@ class _LearningMaterialElectricalPageState
               children: [
                 const SizedBox(height: 5),
 
-               
                 // ===== FIXED HEADER =====
-              Padding(
-                padding: const EdgeInsets.only(left: 9, right: 25),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    IconButton(
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                      icon: const Icon(Icons.close, color: Colors.white),
-                      onPressed: () => Navigator.pop(context),
-                    ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 9, right: 25),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      IconButton(
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                        icon: const Icon(Icons.close, color: Colors.white),
+                        onPressed: () => Navigator.pop(context),
+                      ),
 
-                    const SizedBox(height: 10),
+                      const SizedBox(height: 10),
 
-                    const Center(
-                      child: Text(
-                        "Learning Material",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 30,
-                          fontWeight: FontWeight.bold,
+                      const Center(
+                        child: Text(
+                          "Learning Material",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                    ),
 
-                    const SizedBox(height: 15),
+                      const SizedBox(height: 15),
 
-                          Padding(
-                            padding: const EdgeInsets.only(left: 16), // adjust 12/16/20/24
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 18,
-                                    vertical: 10,
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          left: 16,
+                        ), // adjust 12/16/20/24
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 18,
+                                vertical: 10,
+                              ),
+                              decoration: BoxDecoration(
+                                color: accent,
+                                borderRadius: BorderRadius.circular(10),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.18),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 6),
                                   ),
-                                  decoration: BoxDecoration(
-                                    gradient: const LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                      colors: [accent, accent2],
-                                    ),
-                                    borderRadius: BorderRadius.circular(10),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.18),
-                                        blurRadius: 10,
-                                        offset: const Offset(0, 6),
-                                      ),
-                                    ],
+                                ],
+                              ),
+                              child: const Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.bolt_rounded,
+                                    color: Colors.white,
+                                    size: 18,
                                   ),
-                                  child: const Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(Icons.bolt_rounded, color: Colors.white, size: 18),
-                                      SizedBox(width: 8),
-                                      Text(
-                                        "MODULE 3",
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-
-                                const SizedBox(width: 15),
-
-                                const Expanded(
-                                  child: Text(
-                                    "Electrical Fire: Causes, Safe Actions, and Prevention",
+                                  SizedBox(width: 8),
+                                  Text(
+                                    "MODULE 3",
                                     style: TextStyle(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.w600,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          const SizedBox(height: 14),
-
-                          // ===== PROGRESS BAR (small, fixed, on top) =====
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(999),
-                            child: SizedBox(
-                              height: 6,
-                              child: LinearProgressIndicator(
-                                value: _progress,
-                                backgroundColor: Colors.white.withOpacity(0.25),
-                                valueColor: const AlwaysStoppedAnimation(accent2),
+                                ],
                               ),
                             ),
-                          ),
 
-                          const SizedBox(height: 10),
+                            const SizedBox(width: 15),
 
-                          // ===== PAGE DOTS =====
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: List.generate(3, (i) {
-                              final active = i == _pageIndex;
-                              return AnimatedContainer(
-                                duration: const Duration(milliseconds: 200),
-                                margin: const EdgeInsets.symmetric(horizontal: 4),
-                                width: active ? 18 : 8,
-                                height: 8,
-                                decoration: BoxDecoration(
-                                  color: active
-                                      ? Colors.white
-                                      : Colors.white.withOpacity(0.35),
-                                  borderRadius: BorderRadius.circular(999),
+                            const Expanded(
+                              child: Text(
+                                "Electrical Fire: Causes, Safe Actions, and Prevention",
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w600,
                                 ),
-                              );
-                            }),
-                          ),
-
-                          const SizedBox(height: 14),
-                        ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
+
+                      const SizedBox(height: 14),
+
+                      // ===== PROGRESS BAR (small, fixed, on top) =====
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(999),
+                        child: SizedBox(
+                          height: 6,
+                          child: LinearProgressIndicator(
+                            value: _progress,
+                            backgroundColor: Colors.white.withOpacity(0.25),
+                            valueColor: const AlwaysStoppedAnimation(accent2),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      // ===== PAGE DOTS =====
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: List.generate(3, (i) {
+                          final active = i == _pageIndex;
+                          return AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            margin: const EdgeInsets.symmetric(horizontal: 4),
+                            width: active ? 18 : 8,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              color: active
+                                  ? Colors.white
+                                  : Colors.white.withOpacity(0.35),
+                              borderRadius: BorderRadius.circular(999),
+                            ),
+                          );
+                        }),
+                      ),
+
+                      const SizedBox(height: 14),
+                    ],
+                  ),
+                ),
 
                 // ===== PAGE VIEW (scroll per page, progress unlock) =====
                 Expanded(
@@ -624,11 +623,7 @@ class _ModernCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [accent1, accent2],
-              ),
+              color: accent1,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
@@ -662,11 +657,7 @@ class _ImageBox extends StatelessWidget {
       width: 110,
       height: 110,
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [c1.withOpacity(0.12), c2.withOpacity(0.10)],
-        ),
+        color: c1.withOpacity(0.12),
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: Colors.black.withOpacity(0.06)),
       ),
@@ -689,11 +680,7 @@ class _IconBox extends StatelessWidget {
       width: 110,
       height: 110,
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [c1.withOpacity(0.14), c2.withOpacity(0.10)],
-        ),
+        color: c1.withOpacity(0.14),
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: Colors.black.withOpacity(0.06)),
       ),
@@ -702,15 +689,11 @@ class _IconBox extends StatelessWidget {
           width: 58,
           height: 58,
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [c1, c2],
-            ),
+            color: c1,
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: c2.withOpacity(0.28),
+                color: c1.withOpacity(0.28),
                 blurRadius: 14,
                 offset: const Offset(0, 6),
               ),

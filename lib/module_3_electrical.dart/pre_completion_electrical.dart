@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'simulation_scene_electrical.dart';
 
-const Color kBrandRed = Color(0xFFB11217);
 const Color kBrandBlue = Color(0xFF2563EB);
 const Color kDarkText = Color(0xFF1F2937);
 const Color kSoftBg = Color(0xFFF8FAFC);
@@ -21,18 +20,16 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final percent =
-        totalQuestions == 0 ? 0 : ((score / totalQuestions) * 100).round();
+    final percent = totalQuestions == 0
+        ? 0
+        : ((score / totalQuestions) * 100).round();
 
     return Scaffold(
       backgroundColor: kSoftBg,
       body: Stack(
         children: [
           Positioned.fill(
-            child: Image.asset(
-              'assets/bg.png',
-              fit: BoxFit.cover,
-            ),
+            child: Image.asset('assets/bg.png', fit: BoxFit.cover),
           ),
           SafeArea(
             child: Center(
@@ -60,13 +57,11 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
                         height: 78,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          gradient: const LinearGradient(
-                            colors: [kBrandRed, kBrandBlue],
-                          ),
+                          color: kBrandBlue.withOpacity(0.14),
                         ),
                         child: const Icon(
                           Icons.check_rounded,
-                          color: Colors.white,
+                          color: kBrandBlue,
                           size: 42,
                         ),
                       ),
@@ -117,7 +112,7 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
                               style: const TextStyle(
                                 fontSize: 30,
                                 fontWeight: FontWeight.w900,
-                                color: kBrandRed,
+                                color: kBrandBlue,
                               ),
                             ),
                             const SizedBox(height: 4),
@@ -187,7 +182,7 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
                         width: double.infinity,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: kBrandRed,
+                            backgroundColor: kBrandBlue,
                             padding: const EdgeInsets.symmetric(vertical: 15),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(16),

@@ -3,8 +3,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'pre_completion_electrical.dart';
 
-const Color kBrandRed = Color(0xFFB11217);
-const Color kBrandAmber = Color(0xFFF59E0B);
+const Color kBrandBlue = Color(0xFF2563EB);
+const Color kBrandBlueDark = Color(0xFF1D4ED8);
+const Color kBrandBlueSoft = Color(0xFFEFF6FF);
 const Color kDarkText = Color(0xFF1F2937);
 const Color kSoftBg = Color(0xFFF8FAFC);
 
@@ -16,7 +17,8 @@ class PreAssessmentElectricalPage extends StatefulWidget {
       _PreAssessmentElectricalPageState();
 }
 
-class _PreAssessmentElectricalPageState extends State<PreAssessmentElectricalPage> {
+class _PreAssessmentElectricalPageState
+    extends State<PreAssessmentElectricalPage> {
   static const int _moduleNo = 3;
   static const String _assessmentType = 'pre';
 
@@ -32,6 +34,7 @@ class _PreAssessmentElectricalPageState extends State<PreAssessmentElectricalPag
   String? _assessmentId;
   String? _attemptId;
   String _assessmentTitle = 'Pre-Assessment';
+  String _moduleDisplayTitle = '';
   String _instructions = '';
 
   int _currentIndex = 0;
@@ -65,9 +68,7 @@ class _PreAssessmentElectricalPageState extends State<PreAssessmentElectricalPag
 
   Future<void> _loadOrCreateAttempt({bool forceNewAttempt = false}) async {
     try {
-      setState(() {
-        _isLoading = true;
-      });
+      setState(() => _isLoading = true);
 
       final user = _user;
 
@@ -82,6 +83,7 @@ class _PreAssessmentElectricalPageState extends State<PreAssessmentElectricalPag
       }
 
       final moduleId = moduleRow['id'].toString();
+      final moduleDisplayTitle = (moduleRow['title'] ?? '').toString();
 
       final assessmentRow = await _supabase
           .from('assessments')
@@ -97,8 +99,8 @@ class _PreAssessmentElectricalPageState extends State<PreAssessmentElectricalPag
       }
 
       final assessmentId = assessmentRow['id'].toString();
-      final assessmentTitle =
-          (assessmentRow['title'] ?? 'Pre-Assessment').toString();
+      final assessmentTitle = (assessmentRow['title'] ?? 'Pre-Assessment')
+          .toString();
       final instructions = (assessmentRow['instructions'] ?? '').toString();
 
       final questionRows = await _supabase
@@ -112,8 +114,9 @@ class _PreAssessmentElectricalPageState extends State<PreAssessmentElectricalPag
         throw Exception('No active questions found for this assessment.');
       }
 
-      final questionIds =
-          questionRows.map((row) => row['id'].toString()).toList();
+      final questionIds = questionRows
+          .map((row) => row['id'].toString())
+          .toList();
 
       final optionRows = await _supabase
           .from('assessment_options')
@@ -197,8 +200,10 @@ class _PreAssessmentElectricalPageState extends State<PreAssessmentElectricalPag
               questions: baseQuestions,
             );
             orderedQuestions = created.questions;
-            selectedOptionIds =
-                List<String?>.filled(orderedQuestions.length, null);
+            selectedOptionIds = List<String?>.filled(
+              orderedQuestions.length,
+              null,
+            );
             flaggedIndexes = {};
           } else {
             final existingQuestionIds = savedRows
@@ -212,17 +217,19 @@ class _PreAssessmentElectricalPageState extends State<PreAssessmentElectricalPag
             if (missingQuestions.isNotEmpty) {
               final startOrder = savedRows.length;
 
-              await _supabase.from('assessment_attempt_answers').insert(
-                List.generate(
-                  missingQuestions.length,
-                  (index) => {
-                    'attempt_id': attemptId,
-                    'question_id': missingQuestions[index].id,
-                    'display_order': startOrder + index,
-                    'is_flagged': false,
-                  },
-                ),
-              );
+              await _supabase
+                  .from('assessment_attempt_answers')
+                  .insert(
+                    List.generate(
+                      missingQuestions.length,
+                      (index) => {
+                        'attempt_id': attemptId,
+                        'question_id': missingQuestions[index].id,
+                        'display_order': startOrder + index,
+                        'is_flagged': false,
+                      },
+                    ),
+                  );
             }
 
             final refreshedSavedRows = await _supabase
@@ -233,9 +240,7 @@ class _PreAssessmentElectricalPageState extends State<PreAssessmentElectricalPag
                 .eq('attempt_id', attemptId)
                 .order('display_order');
 
-            final questionMap = {
-              for (final q in baseQuestions) q.id: q,
-            };
+            final questionMap = {for (final q in baseQuestions) q.id: q};
 
             orderedQuestions = [];
             selectedOptionIds = [];
@@ -267,8 +272,10 @@ class _PreAssessmentElectricalPageState extends State<PreAssessmentElectricalPag
               );
               attemptId = created.attemptId;
               orderedQuestions = created.questions;
-              selectedOptionIds =
-                  List<String?>.filled(orderedQuestions.length, null);
+              selectedOptionIds = List<String?>.filled(
+                orderedQuestions.length,
+                null,
+              );
               flaggedIndexes = {};
             }
           }
@@ -280,8 +287,10 @@ class _PreAssessmentElectricalPageState extends State<PreAssessmentElectricalPag
           );
           attemptId = created.attemptId;
           orderedQuestions = created.questions;
-          selectedOptionIds =
-              List<String?>.filled(orderedQuestions.length, null);
+          selectedOptionIds = List<String?>.filled(
+            orderedQuestions.length,
+            null,
+          );
           flaggedIndexes = {};
         }
       } else {
@@ -292,8 +301,7 @@ class _PreAssessmentElectricalPageState extends State<PreAssessmentElectricalPag
         );
         attemptId = created.attemptId;
         orderedQuestions = created.questions;
-        selectedOptionIds =
-            List<String?>.filled(orderedQuestions.length, null);
+        selectedOptionIds = List<String?>.filled(orderedQuestions.length, null);
         flaggedIndexes = {};
       }
 
@@ -304,6 +312,7 @@ class _PreAssessmentElectricalPageState extends State<PreAssessmentElectricalPag
         _assessmentId = assessmentId;
         _attemptId = attemptId;
         _assessmentTitle = assessmentTitle;
+        _moduleDisplayTitle = moduleDisplayTitle;
         _instructions = instructions;
         _questions = orderedQuestions;
         _selectedOptionIds = selectedOptionIds;
@@ -324,9 +333,7 @@ class _PreAssessmentElectricalPageState extends State<PreAssessmentElectricalPag
     } catch (e) {
       if (!mounted) return;
 
-      setState(() {
-        _isLoading = false;
-      });
+      setState(() => _isLoading = false);
 
       await _showInfoDialog(
         title: 'Failed to load pre-assessment',
@@ -358,22 +365,21 @@ class _PreAssessmentElectricalPageState extends State<PreAssessmentElectricalPag
 
     final attemptId = insertedAttempt['id'].toString();
 
-    await _supabase.from('assessment_attempt_answers').insert(
-      List.generate(
-        shuffled.length,
-        (index) => {
-          'attempt_id': attemptId,
-          'question_id': shuffled[index].id,
-          'display_order': index,
-          'is_flagged': false,
-        },
-      ),
-    );
+    await _supabase
+        .from('assessment_attempt_answers')
+        .insert(
+          List.generate(
+            shuffled.length,
+            (index) => {
+              'attempt_id': attemptId,
+              'question_id': shuffled[index].id,
+              'display_order': index,
+              'is_flagged': false,
+            },
+          ),
+        );
 
-    return _CreatedAttempt(
-      attemptId: attemptId,
-      questions: shuffled,
-    );
+    return _CreatedAttempt(attemptId: attemptId, questions: shuffled);
   }
 
   Future<_CreatedAttempt> _createAnswerRowsForExistingAttempt({
@@ -382,22 +388,21 @@ class _PreAssessmentElectricalPageState extends State<PreAssessmentElectricalPag
   }) async {
     final shuffled = List<_QuestionVm>.from(questions)..shuffle();
 
-    await _supabase.from('assessment_attempt_answers').insert(
-      List.generate(
-        shuffled.length,
-        (index) => {
-          'attempt_id': attemptId,
-          'question_id': shuffled[index].id,
-          'display_order': index,
-          'is_flagged': false,
-        },
-      ),
-    );
+    await _supabase
+        .from('assessment_attempt_answers')
+        .insert(
+          List.generate(
+            shuffled.length,
+            (index) => {
+              'attempt_id': attemptId,
+              'question_id': shuffled[index].id,
+              'display_order': index,
+              'is_flagged': false,
+            },
+          ),
+        );
 
-    return _CreatedAttempt(
-      attemptId: attemptId,
-      questions: shuffled,
-    );
+    return _CreatedAttempt(attemptId: attemptId, questions: shuffled);
   }
 
   Future<void> _handleRefresh() async {
@@ -472,9 +477,9 @@ class _PreAssessmentElectricalPageState extends State<PreAssessmentElectricalPag
   }
 
   bool _isCorrectSelection(int questionIndex, String optionId) {
-    return _questions[questionIndex]
-        .options
-        .any((opt) => opt.id == optionId && opt.isCorrect);
+    return _questions[questionIndex].options.any(
+      (opt) => opt.id == optionId && opt.isCorrect,
+    );
   }
 
   _OptionVm? _selectedOptionFor(int questionIndex) {
@@ -525,12 +530,8 @@ class _PreAssessmentElectricalPageState extends State<PreAssessmentElectricalPag
 
   String _optionLetter(_QuestionVm question, _OptionVm option) {
     final index = question.options.indexWhere((opt) => opt.id == option.id);
-    if (index >= 0) {
-      return String.fromCharCode(65 + index);
-    }
-    if (option.key.trim().isNotEmpty) {
-      return option.key.trim().toUpperCase();
-    }
+    if (index >= 0) return String.fromCharCode(65 + index);
+    if (option.key.trim().isNotEmpty) return option.key.trim().toUpperCase();
     return 'A';
   }
 
@@ -544,14 +545,14 @@ class _PreAssessmentElectricalPageState extends State<PreAssessmentElectricalPag
     final correct = _correctOptionFor(questionIndex);
 
     if (selected == null) {
-      return 'No answer not ${_optionDisplay(question, correct)}';
+      return 'No answer selected. Correct answer: ${_optionDisplay(question, correct)}';
     }
 
     if (selected.id == correct.id) {
       return _optionDisplay(question, selected);
     }
 
-    return '${_optionDisplay(question, selected)} not ${_optionDisplay(question, correct)}';
+    return '${_optionDisplay(question, selected)}. Correct answer: ${_optionDisplay(question, correct)}';
   }
 
   void _goNext() {
@@ -569,9 +570,7 @@ class _PreAssessmentElectricalPageState extends State<PreAssessmentElectricalPag
         curve: Curves.easeOutCubic,
       );
     } else {
-      setState(() {
-        _showSummary = true;
-      });
+      setState(() => _showSummary = true);
     }
   }
 
@@ -643,10 +642,7 @@ class _PreAssessmentElectricalPageState extends State<PreAssessmentElectricalPag
             children: [
               const Padding(
                 padding: EdgeInsets.only(top: 2),
-                child: Icon(
-                  Icons.info_outline_rounded,
-                  color: Colors.white,
-                ),
+                child: Icon(Icons.info_outline_rounded, color: Colors.white),
               ),
               const SizedBox(width: 10),
               Expanded(
@@ -674,25 +670,23 @@ class _PreAssessmentElectricalPageState extends State<PreAssessmentElectricalPag
     final confirmed = await _showConfirmDialog(
       title: 'Submit Pre-Assessment',
       message:
-          'Answered: $_answeredCount / ${_questions.length}\n\n'
-          'After submission, you will be redirected to the completion page.',
+          'Answered: $_answeredCount / ${_questions.length}\n\nAfter submission, you will be redirected to the completion page.',
       confirmText: 'Submit',
       cancelText: 'Review Again',
     );
 
     if (confirmed != true) return;
 
-    setState(() {
-      _isSubmitting = true;
-    });
+    setState(() => _isSubmitting = true);
 
     try {
       int correctCount = 0;
 
       for (int i = 0; i < _questions.length; i++) {
         final selectedId = _selectedOptionIds[i];
-        final isCorrect =
-            selectedId == null ? false : _isCorrectSelection(i, selectedId);
+        final isCorrect = selectedId == null
+            ? false
+            : _isCorrectSelection(i, selectedId);
 
         if (isCorrect) {
           correctCount++;
@@ -711,33 +705,41 @@ class _PreAssessmentElectricalPageState extends State<PreAssessmentElectricalPag
             .eq('question_id', _questions[i].id);
       }
 
-      final scorePercent =
-          _questions.isEmpty ? 0 : (correctCount / _questions.length) * 100;
+      final scorePercent = _questions.isEmpty
+          ? 0
+          : (correctCount / _questions.length) * 100;
+      final submittedAt = DateTime.now().toIso8601String();
 
-      await _supabase.from('assessment_attempts').update({
-        'submitted_at': DateTime.now().toIso8601String(),
-        'status': 'submitted',
-        'correct_count': correctCount,
-        'score': scorePercent,
-      }).eq('id', _attemptId!);
+      await _supabase
+          .from('assessment_attempts')
+          .update({
+            'submitted_at': submittedAt,
+            'status': 'submitted',
+            'correct_count': correctCount,
+            'score': scorePercent,
+          })
+          .eq('id', _attemptId!);
 
-      final progressRow = await _supabase
-          .from('module_progress')
-          .select('id')
-          .eq('user_id', _user.id)
-          .eq('module_id', _moduleId!)
-          .maybeSingle();
+      if (_moduleId != null) {
+        final progressRow = await _supabase
+            .from('module_progress')
+            .select('id')
+            .eq('user_id', _user.id)
+            .eq('module_id', _moduleId!)
+            .maybeSingle();
 
-      if (progressRow == null) {
-        await _supabase.from('module_progress').insert({
-          'user_id': _user.id,
-          'module_id': _moduleId,
-          'pre_test_completed_at': DateTime.now().toIso8601String(),
-        });
-      } else {
-        await _supabase.from('module_progress').update({
-          'pre_test_completed_at': DateTime.now().toIso8601String(),
-        }).eq('id', progressRow['id']);
+        if (progressRow == null) {
+          await _supabase.from('module_progress').insert({
+            'user_id': _user.id,
+            'module_id': _moduleId,
+            'pre_test_completed_at': submittedAt,
+          });
+        } else {
+          await _supabase
+              .from('module_progress')
+              .update({'pre_test_completed_at': submittedAt})
+              .eq('id', progressRow['id']);
+        }
       }
 
       if (!mounted) return;
@@ -766,10 +768,7 @@ class _PreAssessmentElectricalPageState extends State<PreAssessmentElectricalPag
       );
     } finally {
       if (!mounted) return;
-
-      setState(() {
-        _isSubmitting = false;
-      });
+      setState(() => _isSubmitting = false);
     }
   }
 
@@ -783,14 +782,8 @@ class _PreAssessmentElectricalPageState extends State<PreAssessmentElectricalPag
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: Text(
-          title,
-          style: const TextStyle(fontWeight: FontWeight.w900),
-        ),
-        content: Text(
-          message,
-          style: const TextStyle(height: 1.45),
-        ),
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w900)),
+        content: Text(message, style: const TextStyle(height: 1.45)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -798,7 +791,7 @@ class _PreAssessmentElectricalPageState extends State<PreAssessmentElectricalPag
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: kBrandRed,
+              backgroundColor: kBrandBlue,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -826,18 +819,12 @@ class _PreAssessmentElectricalPageState extends State<PreAssessmentElectricalPag
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: Text(
-          title,
-          style: const TextStyle(fontWeight: FontWeight.w900),
-        ),
-        content: Text(
-          message,
-          style: const TextStyle(height: 1.45),
-        ),
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w900)),
+        content: Text(message, style: const TextStyle(height: 1.45)),
         actions: [
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: kBrandRed,
+              backgroundColor: kBrandBlue,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -872,9 +859,7 @@ class _PreAssessmentElectricalPageState extends State<PreAssessmentElectricalPag
             controller: _pageCtrl,
             itemCount: _questions.length,
             onPageChanged: (index) {
-              setState(() {
-                _currentIndex = index;
-              });
+              setState(() => _currentIndex = index);
             },
             itemBuilder: (context, index) {
               final question = _questions[index];
@@ -970,10 +955,7 @@ class _PreAssessmentElectricalPageState extends State<PreAssessmentElectricalPag
       padding: const EdgeInsets.fromLTRB(24, 0, 24, 18),
       child: Column(
         children: [
-          _ReviewTopCard(
-            score: _score,
-            total: _questions.length,
-          ),
+          _ReviewTopCard(score: _score, total: _questions.length),
           const SizedBox(height: 14),
           Expanded(
             child: ListView.separated(
@@ -1010,7 +992,7 @@ class _PreAssessmentElectricalPageState extends State<PreAssessmentElectricalPag
             Expanded(
               child: OutlinedButton(
                 style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: kBrandRed),
+                  side: const BorderSide(color: kBrandBlue),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18),
                   ),
@@ -1020,7 +1002,7 @@ class _PreAssessmentElectricalPageState extends State<PreAssessmentElectricalPag
                 child: const Text(
                   'Back',
                   style: TextStyle(
-                    color: kBrandRed,
+                    color: kBrandBlue,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -1030,7 +1012,7 @@ class _PreAssessmentElectricalPageState extends State<PreAssessmentElectricalPag
             Expanded(
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: kBrandAmber,
+                  backgroundColor: kBrandBlueDark,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18),
                   ),
@@ -1063,7 +1045,7 @@ class _PreAssessmentElectricalPageState extends State<PreAssessmentElectricalPag
             Expanded(
               child: OutlinedButton(
                 style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: kBrandRed),
+                  side: const BorderSide(color: kBrandBlue),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18),
                   ),
@@ -1078,7 +1060,7 @@ class _PreAssessmentElectricalPageState extends State<PreAssessmentElectricalPag
                 child: const Text(
                   'Back to Questions',
                   style: TextStyle(
-                    color: kBrandRed,
+                    color: kBrandBlue,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -1088,7 +1070,7 @@ class _PreAssessmentElectricalPageState extends State<PreAssessmentElectricalPag
             Expanded(
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: locked ? Colors.grey.shade400 : kBrandAmber,
+                  backgroundColor: locked ? Colors.grey.shade400 : kBrandBlue,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18),
                   ),
@@ -1099,8 +1081,8 @@ class _PreAssessmentElectricalPageState extends State<PreAssessmentElectricalPag
                   _isSubmitting
                       ? 'Submitting...'
                       : locked
-                          ? 'Complete All'
-                          : 'Submit',
+                      ? 'Complete All'
+                      : 'Submit',
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w900,
@@ -1114,8 +1096,9 @@ class _PreAssessmentElectricalPageState extends State<PreAssessmentElectricalPag
     }
 
     final isLast = _currentIndex == _questions.length - 1;
-    final nextLabel =
-        _editingFromSummary ? 'Review Summary' : (isLast ? 'Review Summary' : 'Next');
+    final nextLabel = _editingFromSummary
+        ? 'Review Summary'
+        : (isLast ? 'Review Summary' : 'Next');
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 8, 24, 20),
@@ -1124,7 +1107,7 @@ class _PreAssessmentElectricalPageState extends State<PreAssessmentElectricalPag
           Expanded(
             child: OutlinedButton(
               style: OutlinedButton.styleFrom(
-                side: const BorderSide(color: kBrandRed),
+                side: const BorderSide(color: kBrandBlue),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(18),
                 ),
@@ -1136,7 +1119,7 @@ class _PreAssessmentElectricalPageState extends State<PreAssessmentElectricalPag
                     ? 'Back to Summary'
                     : (_currentIndex == 0 ? 'Exit' : 'Back'),
                 style: const TextStyle(
-                  color: kBrandRed,
+                  color: kBrandBlue,
                   fontWeight: FontWeight.w900,
                 ),
               ),
@@ -1146,7 +1129,7 @@ class _PreAssessmentElectricalPageState extends State<PreAssessmentElectricalPag
           Expanded(
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: kBrandRed,
+                backgroundColor: kBrandBlue,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(18),
                 ),
@@ -1169,15 +1152,16 @@ class _PreAssessmentElectricalPageState extends State<PreAssessmentElectricalPag
 
   @override
   Widget build(BuildContext context) {
+    final headerTitle = _moduleDisplayTitle.trim().isEmpty
+        ? 'Electrical Fire: Causes, Safe Actions, and Prevention'
+        : _moduleDisplayTitle.trim();
+
     return Scaffold(
       backgroundColor: kSoftBg,
       body: Stack(
         children: [
           Positioned.fill(
-            child: Image.asset(
-              'assets/bg.png',
-              fit: BoxFit.cover,
-            ),
+            child: Image.asset('assets/bg.png', fit: BoxFit.cover),
           ),
           SafeArea(
             child: _isLoading
@@ -1195,13 +1179,16 @@ class _PreAssessmentElectricalPageState extends State<PreAssessmentElectricalPag
                               IconButton(
                                 padding: EdgeInsets.zero,
                                 constraints: const BoxConstraints(),
-                                icon: const Icon(Icons.close, color: Colors.white),
+                                icon: const Icon(
+                                  Icons.close,
+                                  color: Colors.white,
+                                ),
                                 onPressed: () => Navigator.pop(context),
                               ),
                               const SizedBox(height: 15),
                               const Center(
                                 child: Text(
-                                  'Pre Assessment',
+                                  'Pre-Assessment',
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 30,
@@ -1225,12 +1212,14 @@ class _PreAssessmentElectricalPageState extends State<PreAssessmentElectricalPag
                                         gradient: const LinearGradient(
                                           begin: Alignment.topLeft,
                                           end: Alignment.bottomRight,
-                                          colors: [kBrandRed, kBrandAmber],
+                                          colors: [kBrandBlue, kBrandBlueDark],
                                         ),
                                         borderRadius: BorderRadius.circular(10),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.black.withOpacity(0.18),
+                                            color: Colors.black.withOpacity(
+                                              0.18,
+                                            ),
                                             blurRadius: 10,
                                             offset: const Offset(0, 6),
                                           ),
@@ -1257,10 +1246,10 @@ class _PreAssessmentElectricalPageState extends State<PreAssessmentElectricalPag
                                       ),
                                     ),
                                     const SizedBox(width: 15),
-                                    const Expanded(
+                                    Expanded(
                                       child: Text(
-                                        'Building Fire Safety (Tenement / Condo)',
-                                        style: TextStyle(
+                                        headerTitle,
+                                        style: const TextStyle(
                                           color: Colors.black,
                                           fontWeight: FontWeight.w600,
                                           fontFamily: 'Poppins',
@@ -1294,8 +1283,8 @@ class _PreAssessmentElectricalPageState extends State<PreAssessmentElectricalPag
                           child: _showReview
                               ? _buildReviewView()
                               : _showSummary
-                                  ? _buildSummaryView()
-                                  : _buildQuizView(),
+                              ? _buildSummaryView()
+                              : _buildQuizView(),
                         ),
                         _buildBottomBar(),
                       ],
@@ -1312,10 +1301,7 @@ class _CreatedAttempt {
   final String attemptId;
   final List<_QuestionVm> questions;
 
-  const _CreatedAttempt({
-    required this.attemptId,
-    required this.questions,
-  });
+  const _CreatedAttempt({required this.attemptId, required this.questions});
 }
 
 class _QuestionVm {
@@ -1377,7 +1363,7 @@ class _StatsRow extends StatelessWidget {
             icon: Icons.outlined_flag_rounded,
             label: 'Flagged',
             value: '$flagged',
-            color: kBrandAmber,
+            color: kBrandBlue,
           ),
         ),
       ],
@@ -1434,10 +1420,7 @@ class _StatChip extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   value,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w900,
-                    color: color,
-                  ),
+                  style: TextStyle(fontWeight: FontWeight.w900, color: color),
                 ),
               ],
             ),
@@ -1486,11 +1469,13 @@ class _QuestionHeaderCard extends StatelessWidget {
           Row(
             children: [
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                    colors: [kBrandRed, kBrandAmber],
+                    colors: [kBrandBlue, kBrandBlueDark],
                   ),
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -1508,15 +1493,17 @@ class _QuestionHeaderCard extends StatelessWidget {
                 onTap: onFlagTap,
                 borderRadius: BorderRadius.circular(999),
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 7,
+                  ),
                   decoration: BoxDecoration(
                     color: isFlagged
-                        ? kBrandAmber.withOpacity(0.12)
+                        ? kBrandBlue.withOpacity(0.12)
                         : Colors.black.withOpacity(0.04),
                     borderRadius: BorderRadius.circular(999),
                     border: Border.all(
-                      color: isFlagged ? kBrandAmber : Colors.black12,
+                      color: isFlagged ? kBrandBlue : Colors.black12,
                     ),
                   ),
                   child: Row(
@@ -1526,14 +1513,14 @@ class _QuestionHeaderCard extends StatelessWidget {
                             ? Icons.flag_rounded
                             : Icons.outlined_flag_rounded,
                         size: 16,
-                        color: isFlagged ? kBrandAmber : kDarkText,
+                        color: isFlagged ? kBrandBlue : kDarkText,
                       ),
                       const SizedBox(width: 6),
                       Text(
                         isFlagged ? 'Flagged' : 'Flag',
                         style: TextStyle(
                           fontWeight: FontWeight.w800,
-                          color: isFlagged ? kBrandAmber : kDarkText,
+                          color: isFlagged ? kBrandBlue : kDarkText,
                         ),
                       ),
                     ],
@@ -1573,8 +1560,8 @@ class _OptionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final borderColor = selected ? kBrandRed : Colors.black.withOpacity(0.08);
-    final bgColor = selected ? kBrandAmber.withOpacity(0.10) : Colors.white;
+    final borderColor = selected ? kBrandBlue : Colors.black.withOpacity(0.08);
+    final bgColor = selected ? kBrandBlue.withOpacity(0.08) : Colors.white;
 
     return Material(
       color: Colors.transparent,
@@ -1586,10 +1573,7 @@ class _OptionCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: bgColor,
             borderRadius: BorderRadius.circular(18),
-            border: Border.all(
-              color: borderColor,
-              width: selected ? 1.4 : 1,
-            ),
+            border: Border.all(color: borderColor, width: selected ? 1.4 : 1),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.05),
@@ -1605,7 +1589,7 @@ class _OptionCard extends StatelessWidget {
                 width: 34,
                 height: 34,
                 decoration: BoxDecoration(
-                  color: selected ? kBrandRed : Colors.grey.shade100,
+                  color: selected ? kBrandBlue : Colors.grey.shade100,
                   shape: BoxShape.circle,
                 ),
                 child: Center(
@@ -1639,10 +1623,7 @@ class _OptionCard extends StatelessWidget {
 }
 
 class _HintCard extends StatelessWidget {
-  const _HintCard({
-    required this.icon,
-    required this.text,
-  });
+  const _HintCard({required this.icon, required this.text});
 
   final IconData icon;
   final String text;
@@ -1652,23 +1633,18 @@ class _HintCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(13),
       decoration: BoxDecoration(
-        color: kBrandAmber.withOpacity(0.10),
+        color: kBrandBlueSoft,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: kBrandAmber.withOpacity(0.24),
-        ),
+        border: Border.all(color: kBrandBlue.withOpacity(0.18)),
       ),
       child: Row(
         children: [
-          Icon(icon, color: kBrandRed, size: 18),
+          Icon(icon, color: kBrandBlue, size: 18),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
               text,
-              style: const TextStyle(
-                height: 1.35,
-                fontWeight: FontWeight.w600,
-              ),
+              style: const TextStyle(height: 1.35, fontWeight: FontWeight.w600),
             ),
           ),
         ],
@@ -1733,11 +1709,7 @@ class _SummaryHeaderCard extends StatelessWidget {
             ),
           ],
           const SizedBox(height: 10),
-          _StatsRow(
-            answered: answered,
-            total: total,
-            flagged: flagged,
-          ),
+          _StatsRow(answered: answered, total: total, flagged: flagged),
         ],
       ),
     );
@@ -1787,24 +1759,28 @@ class _SummaryCard extends StatelessWidget {
           Row(
             children: [
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 7,
+                ),
                 decoration: BoxDecoration(
-                  color: kBrandRed.withOpacity(0.10),
+                  color: kBrandBlue.withOpacity(0.10),
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
                   'Q$questionNumber',
                   style: const TextStyle(
                     fontWeight: FontWeight.w900,
-                    color: kBrandRed,
+                    color: kBrandBlue,
                   ),
                 ),
               ),
               const SizedBox(width: 8),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 7,
+                ),
                 decoration: BoxDecoration(
                   color: statusColor.withOpacity(0.12),
                   borderRadius: BorderRadius.circular(999),
@@ -1821,17 +1797,19 @@ class _SummaryCard extends StatelessWidget {
               if (flagged) ...[
                 const SizedBox(width: 8),
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 7,
+                  ),
                   decoration: BoxDecoration(
-                    color: kBrandAmber.withOpacity(0.16),
+                    color: kBrandBlue.withOpacity(0.12),
                     borderRadius: BorderRadius.circular(999),
                   ),
                   child: const Text(
                     'Flagged',
                     style: TextStyle(
                       fontWeight: FontWeight.w900,
-                      color: Color(0xFF9A6700),
+                      color: kBrandBlue,
                       fontSize: 12,
                     ),
                   ),
@@ -1842,7 +1820,7 @@ class _SummaryCard extends StatelessWidget {
                 onPressed: onFlagTap,
                 icon: Icon(
                   flagged ? Icons.flag_rounded : Icons.outlined_flag_rounded,
-                  color: flagged ? kBrandAmber : Colors.grey.shade600,
+                  color: flagged ? kBrandBlue : Colors.grey.shade600,
                 ),
               ),
             ],
@@ -1871,7 +1849,7 @@ class _SummaryCard extends StatelessWidget {
             alignment: Alignment.centerRight,
             child: ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
-                backgroundColor: kBrandRed,
+                backgroundColor: kBrandBlue,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -1898,10 +1876,7 @@ class _SummaryCard extends StatelessWidget {
 }
 
 class _ReviewTopCard extends StatelessWidget {
-  const _ReviewTopCard({
-    required this.score,
-    required this.total,
-  });
+  const _ReviewTopCard({required this.score, required this.total});
 
   final int score;
   final int total;
@@ -1941,7 +1916,7 @@ class _ReviewTopCard extends StatelessWidget {
             style: const TextStyle(
               fontSize: 30,
               fontWeight: FontWeight.w900,
-              color: kBrandRed,
+              color: kBrandBlue,
             ),
           ),
           const SizedBox(height: 4),
@@ -1950,7 +1925,7 @@ class _ReviewTopCard extends StatelessWidget {
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w800,
-              color: Color(0xFF9A6700),
+              color: kBrandBlueDark,
             ),
           ),
         ],
@@ -1978,7 +1953,7 @@ class _ReviewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final statusColor = isCorrect ? const Color(0xFF16A34A) : kBrandRed;
+    final statusColor = isCorrect ? const Color(0xFF16A34A) : kBrandBlue;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -2000,8 +1975,10 @@ class _ReviewCard extends StatelessWidget {
           Row(
             children: [
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 7,
+                ),
                 decoration: BoxDecoration(
                   color: statusColor.withOpacity(0.12),
                   borderRadius: BorderRadius.circular(999),
@@ -2016,8 +1993,10 @@ class _ReviewCard extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 7,
+                ),
                 decoration: BoxDecoration(
                   color: statusColor.withOpacity(0.12),
                   borderRadius: BorderRadius.circular(999),

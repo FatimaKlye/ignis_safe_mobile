@@ -6,6 +6,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../unity_launcher.dart';
 import '../profile_progress_sync.dart';
 
+const Color kBrandBlue = Color(0xFF2563EB);
+const Color kBrandBlueDark = Color(0xFF1D4ED8);
+
 class SimulationScene3 extends StatefulWidget {
   const SimulationScene3({super.key});
 
@@ -14,9 +17,6 @@ class SimulationScene3 extends StatefulWidget {
 }
 
 class _SimulationScene3State extends State<SimulationScene3> {
-  static const accent = Color(0xFF1E3A8A);
-  static const accent2 = Color(0xFF7C3AED);
-
   static const int _moduleNo = 3;
 
   String _sceneLabelFor(int scene) {
@@ -31,7 +31,7 @@ class _SimulationScene3State extends State<SimulationScene3> {
   String? _unitySceneNameFor(int scene) {
     switch (scene) {
       case 3:
-        return 'Electrical_Fire'; 
+        return 'Electrical_Fire';
       default:
         return null;
     }
@@ -272,7 +272,7 @@ class _SimulationScene3State extends State<SimulationScene3> {
                                 gradient: const LinearGradient(
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
-                                  colors: [accent, accent2],
+                                  colors: [kBrandBlue, kBrandBlueDark],
                                 ),
                                 borderRadius: BorderRadius.circular(10),
                                 boxShadow: [
@@ -303,7 +303,7 @@ class _SimulationScene3State extends State<SimulationScene3> {
                             const SizedBox(width: 15),
                             const Expanded(
                               child: Text(
-                                "Electrical Fire",
+                                "Electrical Fire: Causes, Safe Actions, and Prevention",
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontWeight: FontWeight.w600,
@@ -327,7 +327,7 @@ class _SimulationScene3State extends State<SimulationScene3> {
                         title: "ELECTRICAL FIRE",
                         description:
                             "Learn the correct response during an electrical fire, including shutting off power when safe, using the correct extinguisher, and evacuating if the fire spreads.",
-                        asset: "assets/electricalfire.jpg", // change if needed
+                        asset: "assets/electrical.png",
                         buttonText: "Scene",
                         onPressed: _openSceneFlow,
                       ),
@@ -359,8 +359,6 @@ class _ModuleCard extends StatelessWidget {
     required this.buttonText,
     required this.onPressed,
   });
-
-  static const Color brandRed = Color(0xFFB11217);
 
   @override
   Widget build(BuildContext context) {
@@ -400,11 +398,11 @@ class _ModuleCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      title,
-                      style: const TextStyle(
+                    const Text(
+                      "ELECTRICAL FIRE",
+                      style: TextStyle(
                         fontFamily: 'Poppins',
-                        color: brandRed,
+                        color: kBrandBlueDark,
                         fontSize: 14,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 0.2,
@@ -428,7 +426,7 @@ class _ModuleCard extends StatelessWidget {
                         height: 34,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: brandRed,
+                            backgroundColor: kBrandBlue,
                             elevation: 8,
                             padding: const EdgeInsets.symmetric(horizontal: 18),
                             shape: RoundedRectangleBorder(
@@ -460,7 +458,7 @@ class _ModuleCard extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
             decoration: BoxDecoration(
-              color: brandRed,
+              color: kBrandBlue,
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
@@ -495,8 +493,6 @@ class _ScenePickerPopup extends StatelessWidget {
     required this.onPickScene3,
   });
 
-  static const Color brandRed = Color(0xFFB11217);
-
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -525,12 +521,12 @@ class _ScenePickerPopup extends StatelessWidget {
                   width: 38,
                   height: 38,
                   decoration: BoxDecoration(
-                    color: brandRed.withOpacity(0.10),
+                    color: kBrandBlue.withOpacity(0.10),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Icon(
                     Icons.electrical_services_rounded,
-                    color: brandRed,
+                    color: kBrandBlue,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -592,8 +588,6 @@ class _ModernSceneTile extends StatelessWidget {
     required this.onTap,
   });
 
-  static const Color brandRed = Color(0xFFB11217);
-
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -624,14 +618,14 @@ class _ModernSceneTile extends StatelessWidget {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    brandRed.withOpacity(0.92),
-                    brandRed.withOpacity(0.72),
+                    kBrandBlue,
+                    kBrandBlueDark,
                   ],
                 ),
                 borderRadius: BorderRadius.circular(14),
                 boxShadow: [
                   BoxShadow(
-                    color: brandRed.withOpacity(0.22),
+                    color: kBrandBlue.withOpacity(0.22),
                     blurRadius: 14,
                     offset: const Offset(0, 8),
                   ),
@@ -691,8 +685,6 @@ class _SceneConfirmPopup extends StatelessWidget {
     required this.onStart,
   });
 
-  static const Color brandRed = Color(0xFFB11217);
-
   String get _body {
     switch (scene) {
       case 3:
@@ -735,10 +727,13 @@ class _SceneConfirmPopup extends StatelessWidget {
                   width: 38,
                   height: 38,
                   decoration: BoxDecoration(
-                    color: brandRed.withOpacity(0.10),
+                    color: kBrandBlue.withOpacity(0.10),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(Icons.check_circle_rounded, color: brandRed),
+                  child: const Icon(
+                    Icons.check_circle_rounded,
+                    color: kBrandBlue,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -788,7 +783,7 @@ class _SceneConfirmPopup extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: onStart,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: brandRed,
+                  backgroundColor: kBrandBlue,
                   elevation: 10,
                   shadowColor: Colors.black.withOpacity(0.25),
                   shape: RoundedRectangleBorder(

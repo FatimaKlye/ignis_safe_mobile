@@ -6,30 +6,32 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../unity_launcher.dart';
 import '../profile_progress_sync.dart';
 
-class SimulationScene extends StatefulWidget {
-  const SimulationScene({super.key});
+class SimulationScene5 extends StatefulWidget {
+  const SimulationScene5({super.key});
 
   @override
-  State<SimulationScene> createState() => _SimulationSceneState();
+  State<SimulationScene5> createState() => _SimulationScene5State();
 }
 
-class _SimulationSceneState extends State<SimulationScene> {
-  static const Color accent = Color(0xFFB11217);
-  static const Color accent2 = Color(0xFF7A1014);
+class _SimulationScene5State extends State<SimulationScene5> {
+  static const accent = Color(0xFF7C3AED); // purple
+  static const accent2 = Color(0xFF5B21B6); // darker purple
+
+  static const int _moduleNo = 5;
 
   String _sceneLabelFor(int scene) {
     switch (scene) {
-      case 1:
-        return 'Module 1 - Scene 1';
+      case 5:
+        return 'Module 5 - Scene 5';
       default:
-        return 'Module 1 - Unknown Scene';
+        return 'Module 5 - Scene 5';
     }
   }
 
   String? _unitySceneNameFor(int scene) {
     switch (scene) {
-      case 1:
-        return 'FireExtinguisher_PASS';
+      case 5:
+        return 'Building_Fire';
       default:
         return null;
     }
@@ -57,7 +59,9 @@ class _SimulationSceneState extends State<SimulationScene> {
 
     final existingRow = await supabase
         .from('module_progress')
-        .select('id, pre_test_completed_at, simulation_completed_at, post_test_completed_at')
+        .select(
+          'id, pre_test_completed_at, simulation_completed_at, post_test_completed_at',
+        )
         .eq('user_id', user.id)
         .eq('module_id', moduleId)
         .maybeSingle();
@@ -89,8 +93,8 @@ class _SimulationSceneState extends State<SimulationScene> {
 
     if (unitySceneName == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Scene $picked is not yet available in Unity.'),
+        const SnackBar(
+          content: Text('Scene 5 is not yet available in Unity.'),
         ),
       );
       return;
@@ -104,14 +108,14 @@ class _SimulationSceneState extends State<SimulationScene> {
       await ProfileProgressSync.updateLastSimulation(_sceneLabelFor(picked));
 
       if (unityResult.completed == true) {
-        await _markSimulationCompleted(1);
+        await _markSimulationCompleted(_moduleNo);
         await ProfileProgressSync.syncCompletedSimulations();
 
         if (!mounted) return;
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Module 1 simulation completed. Progress updated.'),
+            content: Text('Module 5 simulation completed. Progress updated.'),
           ),
         );
 
@@ -152,7 +156,7 @@ class _SimulationSceneState extends State<SimulationScene> {
               Center(
                 child: _ScenePickerPopup(
                   onClose: () => Navigator.pop(context),
-                  onPickScene1: () => Navigator.pop(context, 1),
+                  onPickScene5: () => Navigator.pop(context, 5),
                 ),
               ),
             ],
@@ -282,11 +286,11 @@ class _SimulationSceneState extends State<SimulationScene> {
                               child: const Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Icon(Icons.bolt_rounded,
+                                  Icon(Icons.apartment_rounded,
                                       color: Colors.white, size: 18),
                                   SizedBox(width: 8),
                                   Text(
-                                    "MODULE 1",
+                                    "MODULE 5",
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white,
@@ -299,7 +303,7 @@ class _SimulationSceneState extends State<SimulationScene> {
                             const SizedBox(width: 15),
                             const Expanded(
                               child: Text(
-                                "Fire Extinguisher: Basics, Types, and How to Use",
+                                "Tenement Fire: What It Is, Common Causes, and What To Do",
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontWeight: FontWeight.w600,
@@ -319,11 +323,11 @@ class _SimulationSceneState extends State<SimulationScene> {
                     padding: const EdgeInsets.fromLTRB(16, 14, 16, 18),
                     children: [
                       _ModuleCard(
-                        moduleLabel: "MODULE 1",
-                        title: "FIRE EXTINGUISHER",
+                        moduleLabel: "MODULE 5",
+                        title: "TENEMENT FIRE",
                         description:
-                            "Learn the proper and safe use of fire extinguishers for effective response during fire emergencies.",
-                        asset: "assets/fire_ex.png",
+                            "Learn the correct response during a tenement fire, including staying calm, alerting others, using the nearest safe exit, avoiding elevators, staying low if there is smoke, and evacuating to a safe assembly area.",
+                        asset: "assets/condo.jpg",
                         buttonText: "Scene",
                         onPressed: _openSceneFlow,
                       ),
@@ -356,7 +360,7 @@ class _ModuleCard extends StatelessWidget {
     required this.onPressed,
   });
 
-  static const Color brandRed = Color(0xFFB11217);
+  static const Color brandPurple = Color(0xFF7C3AED);
 
   @override
   Widget build(BuildContext context) {
@@ -400,7 +404,7 @@ class _ModuleCard extends StatelessWidget {
                       title,
                       style: const TextStyle(
                         fontFamily: 'Poppins',
-                        color: brandRed,
+                        color: brandPurple,
                         fontSize: 14,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 0.2,
@@ -424,7 +428,7 @@ class _ModuleCard extends StatelessWidget {
                         height: 34,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: brandRed,
+                            backgroundColor: brandPurple,
                             elevation: 8,
                             padding: const EdgeInsets.symmetric(horizontal: 18),
                             shape: RoundedRectangleBorder(
@@ -456,7 +460,7 @@ class _ModuleCard extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
             decoration: BoxDecoration(
-              color: brandRed,
+              color: brandPurple,
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
@@ -484,14 +488,14 @@ class _ModuleCard extends StatelessWidget {
 
 class _ScenePickerPopup extends StatelessWidget {
   final VoidCallback onClose;
-  final VoidCallback onPickScene1;
+  final VoidCallback onPickScene5;
 
   const _ScenePickerPopup({
     required this.onClose,
-    required this.onPickScene1,
+    required this.onPickScene5,
   });
 
-  static const Color brandRed = Color(0xFFB11217);
+  static const Color brandPurple = Color(0xFF7C3AED);
 
   @override
   Widget build(BuildContext context) {
@@ -521,12 +525,12 @@ class _ScenePickerPopup extends StatelessWidget {
                   width: 38,
                   height: 38,
                   decoration: BoxDecoration(
-                    color: brandRed.withOpacity(0.10),
+                    color: brandPurple.withOpacity(0.10),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Icon(
-                    Icons.playlist_add_check_rounded,
-                    color: brandRed,
+                    Icons.apartment_rounded,
+                    color: brandPurple,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -551,7 +555,7 @@ class _ScenePickerPopup extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              "Module 1 (Fire Extinguisher) currently has one scene available.",
+              "Module 5 has one available simulation scene.",
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: 'Poppins',
@@ -563,10 +567,10 @@ class _ScenePickerPopup extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             _ModernSceneTile(
-              title: "Scene 1",
-              subtitle: "PASS Method Tutorial",
-              icon: Icons.school_rounded,
-              onTap: onPickScene1,
+              title: "Scene 5",
+              subtitle: "Building fire emergency response",
+              icon: Icons.apartment_rounded,
+              onTap: onPickScene5,
             ),
           ],
         ),
@@ -588,7 +592,7 @@ class _ModernSceneTile extends StatelessWidget {
     required this.onTap,
   });
 
-  static const Color brandRed = Color(0xFFB11217);
+  static const Color brandPurple = Color(0xFF7C3AED);
 
   @override
   Widget build(BuildContext context) {
@@ -620,14 +624,14 @@ class _ModernSceneTile extends StatelessWidget {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    brandRed.withOpacity(0.92),
-                    brandRed.withOpacity(0.72),
+                    brandPurple.withOpacity(0.92),
+                    brandPurple.withOpacity(0.72),
                   ],
                 ),
                 borderRadius: BorderRadius.circular(14),
                 boxShadow: [
                   BoxShadow(
-                    color: brandRed.withOpacity(0.22),
+                    color: brandPurple.withOpacity(0.22),
                     blurRadius: 14,
                     offset: const Offset(0, 8),
                   ),
@@ -687,19 +691,19 @@ class _SceneConfirmPopup extends StatelessWidget {
     required this.onStart,
   });
 
-  static const Color brandRed = Color(0xFFB11217);
-
-  String get _title => "Chosen Scene: Scene $scene";
+  static const Color brandPurple = Color(0xFF7C3AED);
 
   String get _body {
     switch (scene) {
-      case 1:
-        return "You chose Scene 1: PASS Method Tutorial.\n\n"
-            "In this scene, you will learn the correct steps to use a fire extinguisher:\n"
-            "• Pull the pin\n"
-            "• Aim at the base of the fire\n"
-            "• Squeeze the handle\n"
-            "• Sweep side to side";
+      case 5:
+        return "You chose Scene 5: Building fire.\n\n"
+            "In this scene, you will practice building fire safety:\n"
+            "• Stay calm and alert other people nearby\n"
+            "• Use the nearest safe exit or stairway\n"
+            "• Do NOT use the elevator during a fire\n"
+            "• Stay low if there is smoke\n"
+            "• Go to the designated safe assembly area\n"
+            "• Do not go back inside the building";
       default:
         return "You chose a scene. Press Start to continue.";
     }
@@ -733,15 +737,15 @@ class _SceneConfirmPopup extends StatelessWidget {
                   width: 38,
                   height: 38,
                   decoration: BoxDecoration(
-                    color: brandRed.withOpacity(0.10),
+                    color: brandPurple.withOpacity(0.10),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(Icons.check_circle_rounded, color: brandRed),
+                  child: const Icon(Icons.check_circle_rounded, color: brandPurple),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    _title,
+                    "Chosen Scene: Scene $scene",
                     style: const TextStyle(
                       fontFamily: 'Poppins',
                       fontSize: 16,
@@ -753,7 +757,7 @@ class _SceneConfirmPopup extends StatelessWidget {
                 IconButton(
                   onPressed: onClose,
                   icon: const Icon(Icons.close_rounded),
-                  color: Colors.black.withOpacity(0.45),
+                  color: Colors.black54,
                   splashRadius: 18,
                 ),
               ],
@@ -786,7 +790,7 @@ class _SceneConfirmPopup extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: onStart,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: brandRed,
+                  backgroundColor: brandPurple,
                   elevation: 10,
                   shadowColor: Colors.black.withOpacity(0.25),
                   shape: RoundedRectangleBorder(

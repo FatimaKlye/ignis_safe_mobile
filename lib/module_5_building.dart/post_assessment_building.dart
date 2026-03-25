@@ -2,21 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../profile_progress_sync.dart';
 
-const Color kHouseOrange = Color(0xFFF97316);
-const Color kHouseAmber = Color(0xFFF59E0B);
-const Color kHouseOrangeSoft = Color(0xFFFFF7ED);
+const Color kBuildingPurple = Color(0xFF7C3AED);
+const Color kBuildingPurpleDark = Color(0xFF5B21B6);
+const Color kBuildingPurpleSoft = Color(0xFFF5F3FF);
 const Color kDarkText = Color(0xFF1F2937);
 const Color kSoftBg = Color(0xFFF8FAFC);
 
-class PostAssessmentHousePage extends StatefulWidget {
-  const PostAssessmentHousePage({super.key});
+class PostAssessmentBuildingPage extends StatefulWidget {
+  const PostAssessmentBuildingPage({super.key});
 
   @override
-  State<PostAssessmentHousePage> createState() => _PostAssessmentHousePageState();
+  State<PostAssessmentBuildingPage> createState() =>
+      _PostAssessmentBuildingPageState();
 }
 
-class _PostAssessmentHousePageState extends State<PostAssessmentHousePage> {
-  static const int _moduleNo = 2;
+class _PostAssessmentBuildingPageState
+    extends State<PostAssessmentBuildingPage> {
+  static const int _moduleNo = 5;
   static const String _assessmentType = 'post';
 
   final PageController _pageCtrl = PageController();
@@ -88,6 +90,17 @@ class _PostAssessmentHousePageState extends State<PostAssessmentHousePage> {
   int get _unansweredCount => _questions.length - _answeredCount;
 
   bool get _hasUnansweredQuestions => _unansweredCount > 0;
+
+  List<int> get _unansweredIndexes {
+    final result = <int>[];
+    for (int i = 0; i < _questions.length; i++) {
+      final unanswered = _isEssay(_questions[i])
+          ? (_writtenAnswers[i] ?? '').trim().isEmpty
+          : _selectedOptionIds[i] == null;
+      if (unanswered) result.add(i);
+    }
+    return result;
+  }
 
   void _rebuildEssayControllers(
     List<_QuestionVm> questions,
@@ -250,6 +263,38 @@ class _PostAssessmentHousePageState extends State<PostAssessmentHousePage> {
                 List<String?>.filled(orderedQuestions.length, null);
             flaggedIndexes = {};
           } else {
+            final existingQuestionIds =
+                savedRows.map((row) => row['question_id'].toString()).toSet();
+
+            final missingQuestions = baseQuestions
+                .where((q) => !existingQuestionIds.contains(q.id))
+                .toList();
+
+            if (missingQuestions.isNotEmpty) {
+              final startOrder = savedRows.length;
+              final orderedMissing = _orderedQuestions(missingQuestions);
+
+              await _supabase.from('assessment_attempt_answers').insert(
+                List.generate(
+                  orderedMissing.length,
+                  (index) => {
+                    'attempt_id': attemptId,
+                    'question_id': orderedMissing[index].id,
+                    'display_order': startOrder + index,
+                    'is_flagged': false,
+                  },
+                ),
+              );
+            }
+
+            final refreshedSavedRows = await _supabase
+                .from('assessment_attempt_answers')
+                .select(
+                  'question_id, selected_option_id, answer_text, is_flagged, display_order',
+                )
+                .eq('attempt_id', attemptId)
+                .order('display_order');
+
             final questionMap = {for (final q in baseQuestions) q.id: q};
 
             orderedQuestions = [];
@@ -257,8 +302,8 @@ class _PostAssessmentHousePageState extends State<PostAssessmentHousePage> {
             writtenAnswers = [];
             flaggedIndexes = {};
 
-            for (int i = 0; i < savedRows.length; i++) {
-              final row = savedRows[i];
+            for (int i = 0; i < refreshedSavedRows.length; i++) {
+              final row = refreshedSavedRows[i];
               final questionId = row['question_id'].toString();
               final question = questionMap[questionId];
               if (question == null) continue;
@@ -352,6 +397,7 @@ class _PostAssessmentHousePageState extends State<PostAssessmentHousePage> {
       });
     } catch (e) {
       if (!mounted) return;
+
       setState(() => _isLoading = false);
 
       await _showInfoDialog(
@@ -418,6 +464,32 @@ class _PostAssessmentHousePageState extends State<PostAssessmentHousePage> {
     );
 
     return _CreatedAttempt(attemptId: attemptId, questions: ordered);
+  }
+
+  Future<void> _handleRefresh() async {
+    if (_showReview) {
+      final confirmed = await _showConfirmDialog(
+        title: 'Start new attempt?',
+        message:
+            'You already finished this post-assessment. Starting again will generate a new attempt.',
+        confirmText: 'New Attempt',
+        cancelText: 'Cancel',
+      );
+
+      if (confirmed == true) {
+        await _loadOrCreateAttempt(forceNewAttempt: true);
+      }
+      return;
+    }
+
+    await _showInfoDialog(
+      title: 'Current attempt preserved',
+      message:
+          'This post-assessment is still unfinished, so refresh will keep the same attempt and the same questions.',
+      buttonText: 'OK',
+    );
+
+    await _loadOrCreateAttempt(forceNewAttempt: false);
   }
 
   Future<void> _selectAnswer(int questionIndex, String optionId) async {
@@ -519,10 +591,77 @@ class _PostAssessmentHousePageState extends State<PostAssessmentHousePage> {
     }
 
     if (correct != null) {
-      return 'The correct answer is "${correct.text}" based on the house fire simulation.';
+      return 'The correct answer is "${correct.text}" based on the building fire simulation.';
     }
 
-    return 'Review the house fire simulation steps from this module.';
+    return 'Review the building fire simulation steps from this module.';
+  }
+
+  void _goNext() {
+    if (_editingFromSummary) {
+      setState(() {
+        _showSummary = true;
+        _editingFromSummary = false;
+      });
+      return;
+    }
+
+    if (_currentIndex < _questions.length - 1) {
+      _pageCtrl.nextPage(
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOutCubic,
+      );
+    } else {
+      setState(() => _showSummary = true);
+    }
+  }
+
+  void _goBack() {
+    if (_showReview) {
+      Navigator.pop(context);
+      return;
+    }
+
+    if (_showSummary) {
+      setState(() {
+        _showSummary = false;
+        _editingFromSummary = false;
+      });
+      return;
+    }
+
+    if (_editingFromSummary) {
+      setState(() {
+        _showSummary = true;
+        _editingFromSummary = false;
+      });
+      return;
+    }
+
+    if (_currentIndex == 0) {
+      Navigator.pop(context);
+      return;
+    }
+
+    _pageCtrl.previousPage(
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeOutCubic,
+    );
+  }
+
+  void _openQuestionFromSummary(int index) {
+    setState(() {
+      _showSummary = false;
+      _showReview = false;
+      _editingFromSummary = true;
+      _currentIndex = index;
+    });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_pageCtrl.hasClients) {
+        _pageCtrl.jumpToPage(index);
+      }
+    });
   }
 
   Future<void> _submitAssessment() async {
@@ -633,6 +772,7 @@ class _PostAssessmentHousePageState extends State<PostAssessmentHousePage> {
       });
     } catch (e) {
       if (!mounted) return;
+
       await _showInfoDialog(
         title: 'Submission failed',
         message: '$e',
@@ -663,7 +803,7 @@ class _PostAssessmentHousePageState extends State<PostAssessmentHousePage> {
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: kHouseOrange,
+              backgroundColor: kBuildingPurple,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -696,7 +836,7 @@ class _PostAssessmentHousePageState extends State<PostAssessmentHousePage> {
         actions: [
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: kHouseOrange,
+              backgroundColor: kBuildingPurple,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -713,73 +853,6 @@ class _PostAssessmentHousePageState extends State<PostAssessmentHousePage> {
         ],
       ),
     );
-  }
-
-  void _goNext() {
-    if (_editingFromSummary) {
-      setState(() {
-        _showSummary = true;
-        _editingFromSummary = false;
-      });
-      return;
-    }
-
-    if (_currentIndex < _questions.length - 1) {
-      _pageCtrl.nextPage(
-        duration: const Duration(milliseconds: 250),
-        curve: Curves.easeOutCubic,
-      );
-    } else {
-      setState(() => _showSummary = true);
-    }
-  }
-
-  void _goBack() {
-    if (_showReview) {
-      Navigator.pop(context);
-      return;
-    }
-
-    if (_showSummary) {
-      setState(() {
-        _showSummary = false;
-        _editingFromSummary = false;
-      });
-      return;
-    }
-
-    if (_editingFromSummary) {
-      setState(() {
-        _showSummary = true;
-        _editingFromSummary = false;
-      });
-      return;
-    }
-
-    if (_currentIndex == 0) {
-      Navigator.pop(context);
-      return;
-    }
-
-    _pageCtrl.previousPage(
-      duration: const Duration(milliseconds: 250),
-      curve: Curves.easeOutCubic,
-    );
-  }
-
-  void _openQuestionFromSummary(int index) {
-    setState(() {
-      _showSummary = false;
-      _showReview = false;
-      _editingFromSummary = true;
-      _currentIndex = index;
-    });
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_pageCtrl.hasClients) {
-        _pageCtrl.jumpToPage(index);
-      }
-    });
   }
 
   Widget _buildQuizView() {
@@ -845,7 +918,7 @@ class _PostAssessmentHousePageState extends State<PostAssessmentHousePage> {
                     _HintCard(
                       icon: Icons.info_outline_rounded,
                       text: _isEssay(question)
-                          ? 'Write 1 to 2 sentences about what you learned from the house fire simulation.'
+                          ? 'Write 1 to 2 sentences about what you learned from the building fire simulation.'
                           : 'Use the summary to jump back to any question before submitting.',
                     ),
                   ],
@@ -971,7 +1044,7 @@ class _PostAssessmentHousePageState extends State<PostAssessmentHousePage> {
             Expanded(
               child: OutlinedButton(
                 style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: kHouseOrange),
+                  side: const BorderSide(color: kBuildingPurple),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18),
                   ),
@@ -981,7 +1054,7 @@ class _PostAssessmentHousePageState extends State<PostAssessmentHousePage> {
                 child: const Text(
                   'Back',
                   style: TextStyle(
-                    color: kHouseOrange,
+                    color: kBuildingPurple,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -991,7 +1064,7 @@ class _PostAssessmentHousePageState extends State<PostAssessmentHousePage> {
             Expanded(
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: kHouseAmber,
+                  backgroundColor: kBuildingPurpleDark,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18),
                   ),
@@ -1024,7 +1097,7 @@ class _PostAssessmentHousePageState extends State<PostAssessmentHousePage> {
             Expanded(
               child: OutlinedButton(
                 style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: kHouseOrange),
+                  side: const BorderSide(color: kBuildingPurple),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18),
                   ),
@@ -1039,7 +1112,7 @@ class _PostAssessmentHousePageState extends State<PostAssessmentHousePage> {
                 child: const Text(
                   'Back to Questions',
                   style: TextStyle(
-                    color: kHouseOrange,
+                    color: kBuildingPurple,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -1049,7 +1122,8 @@ class _PostAssessmentHousePageState extends State<PostAssessmentHousePage> {
             Expanded(
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: locked ? Colors.grey.shade400 : kHouseOrange,
+                  backgroundColor:
+                      locked ? Colors.grey.shade400 : kBuildingPurple,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18),
                   ),
@@ -1075,8 +1149,9 @@ class _PostAssessmentHousePageState extends State<PostAssessmentHousePage> {
     }
 
     final isLast = _currentIndex == _questions.length - 1;
-    final nextLabel =
-        _editingFromSummary ? 'Review Summary' : (isLast ? 'Review Summary' : 'Next');
+    final nextLabel = _editingFromSummary
+        ? 'Review Summary'
+        : (isLast ? 'Review Summary' : 'Next');
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 8, 24, 20),
@@ -1085,7 +1160,7 @@ class _PostAssessmentHousePageState extends State<PostAssessmentHousePage> {
           Expanded(
             child: OutlinedButton(
               style: OutlinedButton.styleFrom(
-                side: const BorderSide(color: kHouseOrange),
+                side: const BorderSide(color: kBuildingPurple),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(18),
                 ),
@@ -1097,7 +1172,7 @@ class _PostAssessmentHousePageState extends State<PostAssessmentHousePage> {
                     ? 'Back to Summary'
                     : (_currentIndex == 0 ? 'Exit' : 'Back'),
                 style: const TextStyle(
-                  color: kHouseOrange,
+                  color: kBuildingPurple,
                   fontWeight: FontWeight.w900,
                 ),
               ),
@@ -1107,7 +1182,7 @@ class _PostAssessmentHousePageState extends State<PostAssessmentHousePage> {
           Expanded(
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: kHouseOrange,
+                backgroundColor: kBuildingPurple,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(18),
                 ),
@@ -1131,7 +1206,7 @@ class _PostAssessmentHousePageState extends State<PostAssessmentHousePage> {
   @override
   Widget build(BuildContext context) {
     final headerTitle = _moduleDisplayTitle.trim().isEmpty
-        ? 'House Fire: What To Do During a House Fire'
+        ? 'Building Fire: What To Do During a Building Fire'
         : _moduleDisplayTitle.trim();
 
     return Scaffold(
@@ -1144,118 +1219,122 @@ class _PostAssessmentHousePageState extends State<PostAssessmentHousePage> {
           SafeArea(
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())
-                : Column(
-                    children: [
-                      const SizedBox(height: 15),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 9, right: 25),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            IconButton(
-                              padding: EdgeInsets.zero,
-                              constraints: const BoxConstraints(),
-                              icon: const Icon(Icons.close, color: Colors.white),
-                              onPressed: () => Navigator.pop(context),
-                            ),
-                            const SizedBox(height: 15),
-                            Center(
-                              child: Text(
-                                _showReview ? 'Assessment Review' : 'Post-Assessment',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 30,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'Poppins',
+                : RefreshIndicator(
+                    onRefresh: _handleRefresh,
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 15),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 9, right: 25),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              IconButton(
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(),
+                                icon: const Icon(Icons.close, color: Colors.white),
+                                onPressed: () => Navigator.pop(context),
+                              ),
+                              const SizedBox(height: 15),
+                              Center(
+                                child: Text(
+                                  _showReview ? 'Assessment Review' : 'Post-Assessment',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'Poppins',
+                                  ),
                                 ),
                               ),
-                            ),
-                            const SizedBox(height: 15),
-                            Padding(
-                              padding: const EdgeInsets.only(left: 25),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 18,
-                                      vertical: 10,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: kHouseOrange,
-                                      borderRadius: BorderRadius.circular(10),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withOpacity(0.18),
-                                          blurRadius: 10,
-                                          offset: const Offset(0, 6),
-                                        ),
-                                      ],
-                                    ),
-                                    child: const Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Icon(
-                                          Icons.home_rounded,
-                                          color: Colors.white,
-                                          size: 18,
-                                        ),
-                                        SizedBox(width: 8),
-                                        Text(
-                                          'MODULE 2',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
-                                            fontFamily: 'Poppins',
+                              const SizedBox(height: 15),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 25),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 18,
+                                        vertical: 10,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: kBuildingPurple,
+                                        borderRadius: BorderRadius.circular(10),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black.withOpacity(0.18),
+                                            blurRadius: 10,
+                                            offset: const Offset(0, 6),
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(width: 15),
-                                  Expanded(
-                                    child: Text(
-                                      _showReview
-                                          ? 'Your score for the graded items plus your written reflection'
-                                          : headerTitle,
-                                      style: const TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.w600,
-                                        fontFamily: 'Poppins',
+                                        ],
+                                      ),
+                                      child: const Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(
+                                            Icons.apartment_rounded,
+                                            color: Colors.white,
+                                            size: 18,
+                                          ),
+                                          SizedBox(width: 8),
+                                          Text(
+                                            'MODULE 5',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                              fontFamily: 'Poppins',
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            if (_instructions.trim().isNotEmpty && !_showReview) ...[
-                              const SizedBox(height: 15),
-                              Align(
-                                alignment: Alignment.center,
-                                child: Text(
-                                  _instructions,
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                    color: Colors.black87,
-                                    fontWeight: FontWeight.w600,
-                                    height: 1.35,
-                                  ),
+                                    const SizedBox(width: 15),
+                                    Expanded(
+                                      child: Text(
+                                        _showReview
+                                            ? 'Your score for the graded items plus your written reflection'
+                                            : headerTitle,
+                                        style: const TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.w600,
+                                          fontFamily: 'Poppins',
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
+                              if (_instructions.trim().isNotEmpty &&
+                                  !_showReview) ...[
+                                const SizedBox(height: 15),
+                                Align(
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    _instructions,
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                      color: Colors.black87,
+                                      fontWeight: FontWeight.w600,
+                                      height: 1.35,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ],
-                          ],
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 30),
-                      Expanded(
-                        child: _showReview
-                            ? _buildReviewView()
-                            : _showSummary
-                                ? _buildSummaryView()
-                                : _buildQuizView(),
-                      ),
-                      _buildBottomBar(),
-                    ],
+                        const SizedBox(height: 30),
+                        Expanded(
+                          child: _showReview
+                              ? _buildReviewView()
+                              : _showSummary
+                                  ? _buildSummaryView()
+                                  : _buildQuizView(),
+                        ),
+                        _buildBottomBar(),
+                      ],
+                    ),
                   ),
           ),
         ],
@@ -1335,7 +1414,7 @@ class _StatsRow extends StatelessWidget {
             icon: Icons.outlined_flag_rounded,
             label: 'Flagged',
             value: '$flagged',
-            color: kHouseOrange,
+            color: kBuildingPurple,
           ),
         ),
       ],
@@ -1444,9 +1523,10 @@ class _QuestionHeaderCard extends StatelessWidget {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
-                  color: kHouseOrange,
+                  color: kBuildingPurple,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
@@ -1463,14 +1543,15 @@ class _QuestionHeaderCard extends StatelessWidget {
                 onTap: onFlagTap,
                 borderRadius: BorderRadius.circular(999),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                   decoration: BoxDecoration(
                     color: isFlagged
-                        ? kHouseOrange.withOpacity(0.12)
+                        ? kBuildingPurple.withOpacity(0.12)
                         : Colors.black.withOpacity(0.04),
                     borderRadius: BorderRadius.circular(999),
                     border: Border.all(
-                      color: isFlagged ? kHouseOrange : Colors.black12,
+                      color: isFlagged ? kBuildingPurple : Colors.black12,
                     ),
                   ),
                   child: Row(
@@ -1480,14 +1561,14 @@ class _QuestionHeaderCard extends StatelessWidget {
                             ? Icons.flag_rounded
                             : Icons.outlined_flag_rounded,
                         size: 16,
-                        color: isFlagged ? kHouseOrange : kDarkText,
+                        color: isFlagged ? kBuildingPurple : kDarkText,
                       ),
                       const SizedBox(width: 6),
                       Text(
                         isFlagged ? 'Flagged' : 'Flag',
                         style: TextStyle(
                           fontWeight: FontWeight.w800,
-                          color: isFlagged ? kHouseOrange : kDarkText,
+                          color: isFlagged ? kBuildingPurple : kDarkText,
                         ),
                       ),
                     ],
@@ -1528,8 +1609,8 @@ class _OptionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final borderColor =
-        selected ? kHouseOrange : Colors.black.withOpacity(0.08);
-    final bgColor = selected ? kHouseOrange.withOpacity(0.08) : Colors.white;
+        selected ? kBuildingPurple : Colors.black.withOpacity(0.08);
+    final bgColor = selected ? kBuildingPurple.withOpacity(0.08) : Colors.white;
 
     return Material(
       color: Colors.transparent,
@@ -1541,7 +1622,10 @@ class _OptionCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: bgColor,
             borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: borderColor, width: selected ? 1.4 : 1),
+            border: Border.all(
+              color: borderColor,
+              width: selected ? 1.4 : 1,
+            ),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.05),
@@ -1557,7 +1641,7 @@ class _OptionCard extends StatelessWidget {
                 width: 34,
                 height: 34,
                 decoration: BoxDecoration(
-                  color: selected ? kHouseOrange : Colors.grey.shade100,
+                  color: selected ? kBuildingPurple : Colors.grey.shade100,
                   shape: BoxShape.circle,
                 ),
                 child: Center(
@@ -1606,7 +1690,7 @@ class _EssayAnswerCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: kHouseOrange.withOpacity(0.18)),
+        border: Border.all(color: kBuildingPurple.withOpacity(0.18)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
@@ -1619,11 +1703,11 @@ class _EssayAnswerCard extends StatelessWidget {
         controller: controller,
         maxLines: 5,
         minLines: 4,
-        cursorColor: kHouseOrange,
+        cursorColor: kBuildingPurple,
         onChanged: onChanged,
         decoration: InputDecoration(
           hintText:
-              'Write 1 to 2 sentences about what you learned from the house fire simulation.',
+              'Write 1 to 2 sentences about what you learned from the building fire simulation.',
           hintStyle: TextStyle(
             color: Colors.grey.shade600,
             fontWeight: FontWeight.w500,
@@ -1655,13 +1739,13 @@ class _HintCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(13),
       decoration: BoxDecoration(
-        color: kHouseOrangeSoft,
+        color: kBuildingPurpleSoft,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: kHouseOrange.withOpacity(0.18)),
+        border: Border.all(color: kBuildingPurple.withOpacity(0.18)),
       ),
       child: Row(
         children: [
-          Icon(icon, color: kHouseOrange, size: 18),
+          Icon(icon, color: kBuildingPurple, size: 18),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
@@ -1702,7 +1786,7 @@ class _SummaryHeaderCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
           color: hasUnanswered
-              ? kHouseOrange.withOpacity(0.25)
+              ? kBuildingPurple.withOpacity(0.25)
               : Colors.black.withOpacity(0.06),
         ),
         boxShadow: [
@@ -1728,7 +1812,7 @@ class _SummaryHeaderCard extends StatelessWidget {
             Text(
               '$unansweredCount question(s) still need an answer.',
               style: const TextStyle(
-                color: kHouseOrange,
+                color: kBuildingPurple,
                 fontWeight: FontWeight.w800,
               ),
             ),
@@ -1766,12 +1850,12 @@ class _SummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final statusColor = answered ? const Color(0xFF16A34A) : kHouseOrange;
+    final statusColor = answered ? const Color(0xFF16A34A) : kBuildingPurple;
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: answered ? Colors.white : kHouseOrangeSoft,
+        color: answered ? Colors.white : kBuildingPurpleSoft,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: statusColor.withOpacity(0.22)),
         boxShadow: [
@@ -1788,22 +1872,24 @@ class _SummaryCard extends StatelessWidget {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                 decoration: BoxDecoration(
-                  color: kHouseOrange.withOpacity(0.10),
+                  color: kBuildingPurple.withOpacity(0.10),
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
                   'Q$questionNumber',
                   style: const TextStyle(
                     fontWeight: FontWeight.w900,
-                    color: kHouseOrange,
+                    color: kBuildingPurple,
                   ),
                 ),
               ),
               const SizedBox(width: 8),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                 decoration: BoxDecoration(
                   color: statusColor.withOpacity(0.12),
                   borderRadius: BorderRadius.circular(999),
@@ -1820,16 +1906,17 @@ class _SummaryCard extends StatelessWidget {
               if (flagged) ...[
                 const SizedBox(width: 8),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                   decoration: BoxDecoration(
-                    color: kHouseOrange.withOpacity(0.12),
+                    color: kBuildingPurple.withOpacity(0.12),
                     borderRadius: BorderRadius.circular(999),
                   ),
                   child: const Text(
                     'Flagged',
                     style: TextStyle(
                       fontWeight: FontWeight.w900,
-                      color: kHouseOrange,
+                      color: kBuildingPurple,
                       fontSize: 12,
                     ),
                   ),
@@ -1840,7 +1927,7 @@ class _SummaryCard extends StatelessWidget {
                 onPressed: onFlagTap,
                 icon: Icon(
                   flagged ? Icons.flag_rounded : Icons.outlined_flag_rounded,
-                  color: flagged ? kHouseOrange : Colors.grey.shade600,
+                  color: flagged ? kBuildingPurple : Colors.grey.shade600,
                 ),
               ),
             ],
@@ -1859,7 +1946,7 @@ class _SummaryCard extends StatelessWidget {
           Text(
             selectedAnswer,
             style: TextStyle(
-              color: answered ? Colors.black87 : kHouseOrange,
+              color: answered ? Colors.black87 : kBuildingPurpleDark,
               fontWeight: FontWeight.w600,
               height: 1.35,
             ),
@@ -1869,7 +1956,7 @@ class _SummaryCard extends StatelessWidget {
             alignment: Alignment.centerRight,
             child: ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
-                backgroundColor: kHouseOrange,
+                backgroundColor: kBuildingPurple,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -1939,7 +2026,7 @@ class _ReviewTopCard extends StatelessWidget {
             style: const TextStyle(
               fontSize: 30,
               fontWeight: FontWeight.w900,
-              color: kHouseOrange,
+              color: kBuildingPurple,
             ),
           ),
           const SizedBox(height: 4),
@@ -1948,7 +2035,7 @@ class _ReviewTopCard extends StatelessWidget {
             style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w700,
-              color: kHouseAmber,
+              color: kBuildingPurpleDark,
             ),
           ),
         ],
@@ -1979,8 +2066,8 @@ class _ReviewCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final statusColor = isEssay
-        ? kHouseOrange
-        : (isCorrect ? const Color(0xFF16A34A) : kHouseOrange);
+        ? kBuildingPurple
+        : (isCorrect ? const Color(0xFF16A34A) : kBuildingPurple);
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -2002,7 +2089,8 @@ class _ReviewCard extends StatelessWidget {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                 decoration: BoxDecoration(
                   color: statusColor.withOpacity(0.12),
                   borderRadius: BorderRadius.circular(999),
@@ -2017,7 +2105,8 @@ class _ReviewCard extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                 decoration: BoxDecoration(
                   color: statusColor.withOpacity(0.12),
                   borderRadius: BorderRadius.circular(999),
@@ -2057,7 +2146,7 @@ class _ReviewCard extends StatelessWidget {
             style: TextStyle(
               color: isEssay
                   ? kDarkText
-                  : (isCorrect ? const Color(0xFF16A34A) : kHouseOrange),
+                  : (isCorrect ? const Color(0xFF16A34A) : kBuildingPurple),
               fontWeight: FontWeight.w700,
               height: 1.35,
             ),

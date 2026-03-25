@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'pre_assessment_electrical.dart';
 
-
 class PreAssessmentIntroPage2 extends StatelessWidget {
   const PreAssessmentIntroPage2({super.key});
 
-  static const accent = Color(0xFF1E3A8A); // deep blue
-  static const accent2 = Color(0xFF7C3AED); 
-  static const Color brandRed = Color(0xFFB71C1C);
+  static const accent = Color(0xFF2563EB); // blue
+  static const accent2 = Color(0xFF2563EB);
+  static const Color brandRed = Color(0xFF2563EB);
 
   @override
   Widget build(BuildContext context) {
@@ -65,11 +64,7 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                                 vertical: 10,
                               ),
                               decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                  colors: [accent, accent2],
-                                ),
+                                color: accent,
                                 borderRadius: BorderRadius.circular(10),
                                 boxShadow: [
                                   BoxShadow(
@@ -82,11 +77,14 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                               child: const Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Icon(Icons.bolt_rounded,
-                                      color: Colors.white, size: 18),
+                                  Icon(
+                                    Icons.bolt_rounded,
+                                    color: Colors.white,
+                                    size: 18,
+                                  ),
                                   SizedBox(width: 8),
                                   Text(
-                                    "MODULE 2",
+                                    "MODULE 3",
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white,
@@ -117,7 +115,7 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                 const SizedBox(height: 10),
 
                 // ===== CONTENT (fills space, minimal white space) =====
-// ===== CONTENT (centered vertically) =====
+                // ===== CONTENT (centered vertically) =====
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 18),
@@ -186,7 +184,9 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                                       TextSpan(
                                         text:
                                             "Module 2: Electrical Fire: Causes, Safe Actions, and Prevention",
-                                        style: TextStyle(fontWeight: FontWeight.w700),
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w700,
+                                        ),
                                       ),
                                       TextSpan(
                                         text:
@@ -255,9 +255,18 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: const [
-                              _InfoChip(icon: Icons.timer_outlined, label: "2–3 mins"),
-                              _InfoChip(icon: Icons.quiz_outlined, label: "Practice only"),
-                              _InfoChip(icon: Icons.lock_outline, label: "Not graded"),
+                              _InfoChip(
+                                icon: Icons.timer_outlined,
+                                label: "2–3 mins",
+                              ),
+                              _InfoChip(
+                                icon: Icons.quiz_outlined,
+                                label: "Practice only",
+                              ),
+                              _InfoChip(
+                                icon: Icons.lock_outline,
+                                label: "Not graded",
+                              ),
                             ],
                           ),
                         ],

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'pre_assessment_kitchen.dart';
+import 'pre_assessment_building.dart';
 
 
 class PreAssessmentIntroPage2 extends StatelessWidget {
@@ -86,7 +86,7 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                                       color: Colors.white, size: 18),
                                   SizedBox(width: 8),
                                   Text(
-                                    "MODULE 3",
+                                    "MODULE 5",
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white,
@@ -99,7 +99,7 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                             const SizedBox(width: 15),
                             const Expanded(
                               child: Text(
-                                "Kitchen Fire: What It Is, Common Types, and What To Do",
+                                "Tenement Fire: What It Is, Common Causes, and What To Do",
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontWeight: FontWeight.w600,
@@ -224,7 +224,7 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                                         context,
                                         MaterialPageRoute(
                                           builder: (_) =>
-                                              const PreAssessmentKitchenPage(),
+                                              const PreAssessmentBuildingPage(),
                                         ),
                                       );
                                     },

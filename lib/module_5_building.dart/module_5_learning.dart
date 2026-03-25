@@ -96,7 +96,7 @@ class _LearningMaterialTenementPageState
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => const PreAssessmentIntroPage2(),
+          builder: (_) => const PreAssessmentBuildingPage(),
         ),
       );
     }

@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../profile_progress_sync.dart';
 
-const Color kBrandRed = Color(0xFFB11217);
 const Color kBrandBlue = Color(0xFF2563EB);
+const Color kBrandBlueDark = Color(0xFF1D4ED8);
+const Color kBrandBlueSoft = Color(0xFFEFF6FF);
 const Color kDarkText = Color(0xFF1F2937);
 const Color kSoftBg = Color(0xFFF8FAFC);
 
@@ -15,11 +16,10 @@ class PostAssessmentElectricalPage extends StatefulWidget {
       _PostAssessmentElectricalPageState();
 }
 
-class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalPage> {
+class _PostAssessmentElectricalPageState
+    extends State<PostAssessmentElectricalPage> {
   static const int _moduleNo = 3;
   static const String _assessmentType = 'post';
-  static const accent = Color(0xFF1E3A8A);
-  static const accent2 = Color(0xFF7C3AED);
 
   final PageController _pageCtrl = PageController();
   final Map<int, TextEditingController> _essayControllers = {};
@@ -28,12 +28,13 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
   bool _isSubmitting = false;
   bool _showSummary = false;
   bool _showReview = false;
-  bool _openedFromSummaryEdit = false;
+  bool _editingFromSummary = false;
 
   String? _moduleId;
   String? _assessmentId;
   String? _attemptId;
   String _assessmentTitle = 'Post-Assessment';
+  String _moduleDisplayTitle = '';
   String _instructions = '';
 
   int _currentIndex = 0;
@@ -74,8 +75,6 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
 
   int get _scoredTotal => _questions.where(_isMcq).length;
 
-  bool get _hasUnansweredQuestions => _answeredCount < _questions.length;
-
   int get _answeredCount {
     int count = 0;
     for (int i = 0; i < _questions.length; i++) {
@@ -86,6 +85,21 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
       }
     }
     return count;
+  }
+
+  int get _unansweredCount => _questions.length - _answeredCount;
+
+  bool get _hasUnansweredQuestions => _unansweredCount > 0;
+
+  List<int> get _unansweredIndexes {
+    final result = <int>[];
+    for (int i = 0; i < _questions.length; i++) {
+      final unanswered = _isEssay(_questions[i])
+          ? (_writtenAnswers[i] ?? '').trim().isEmpty
+          : _selectedOptionIds[i] == null;
+      if (unanswered) result.add(i);
+    }
+    return result;
   }
 
   void _rebuildEssayControllers(
@@ -99,9 +113,8 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
 
     for (int i = 0; i < questions.length; i++) {
       if (_isEssay(questions[i])) {
-        _essayControllers[i] = TextEditingController(
-          text: writtenAnswers[i] ?? '',
-        );
+        _essayControllers[i] =
+            TextEditingController(text: writtenAnswers[i] ?? '');
       }
     }
   }
@@ -114,9 +127,7 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
 
   Future<void> _loadOrCreateAttempt({bool forceNewAttempt = false}) async {
     try {
-      setState(() {
-        _isLoading = true;
-      });
+      setState(() => _isLoading = true);
 
       final user = _user;
 
@@ -131,6 +142,7 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
       }
 
       final moduleId = moduleRow['id'].toString();
+      final moduleDisplayTitle = (moduleRow['title'] ?? '').toString();
 
       final assessmentRow = await _supabase
           .from('assessments')
@@ -140,9 +152,7 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
           .maybeSingle();
 
       if (assessmentRow == null) {
-        throw Exception(
-          'Post-assessment for module $_moduleNo was not found.',
-        );
+        throw Exception('Post-assessment for module $_moduleNo was not found.');
       }
 
       final assessmentId = assessmentRow['id'].toString();
@@ -166,25 +176,35 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
 
       final optionRows = await _supabase
           .from('assessment_options')
-          .select('id, question_id, option_key, option_text, is_correct')
-          .inFilter('question_id', questionIds);
+          .select(
+            'id, question_id, option_key, option_text, is_correct, display_order',
+          )
+          .inFilter('question_id', questionIds)
+          .order('question_id')
+          .order('display_order');
 
       final optionsByQuestion = <String, List<_OptionVm>>{};
       for (final row in optionRows) {
         final questionId = row['question_id'].toString();
         optionsByQuestion.putIfAbsent(questionId, () => []);
+        final rawDisplayOrder = row['display_order'];
+        final displayOrder = rawDisplayOrder is num
+            ? rawDisplayOrder.toInt()
+            : int.tryParse((rawDisplayOrder ?? '').toString()) ?? 999;
+
         optionsByQuestion[questionId]!.add(
           _OptionVm(
             id: row['id'].toString(),
             key: (row['option_key'] ?? '').toString().toUpperCase(),
             text: (row['option_text'] ?? '').toString(),
             isCorrect: (row['is_correct'] ?? false) as bool,
+            displayOrder: displayOrder,
           ),
         );
       }
 
       for (final entry in optionsByQuestion.entries) {
-        entry.value.sort((a, b) => a.key.compareTo(b.key));
+        entry.value.sort((a, b) => a.displayOrder.compareTo(b.displayOrder));
       }
 
       final baseQuestions = questionRows.map((row) {
@@ -357,6 +377,7 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
         _assessmentId = assessmentId;
         _attemptId = attemptId;
         _assessmentTitle = assessmentTitle;
+        _moduleDisplayTitle = moduleDisplayTitle;
         _instructions = instructions;
         _questions = orderedQuestions;
         _selectedOptionIds = selectedOptionIds;
@@ -366,7 +387,7 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
         _score = 0;
         _showSummary = false;
         _showReview = false;
-        _openedFromSummaryEdit = false;
+        _editingFromSummary = false;
         _isLoading = false;
       });
 
@@ -378,9 +399,7 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
     } catch (e) {
       if (!mounted) return;
 
-      setState(() {
-        _isLoading = false;
-      });
+      setState(() => _isLoading = false);
 
       await _showInfoDialog(
         title: 'Failed to load post-assessment',
@@ -424,10 +443,7 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
       ),
     );
 
-    return _CreatedAttempt(
-      attemptId: attemptId,
-      questions: ordered,
-    );
+    return _CreatedAttempt(attemptId: attemptId, questions: ordered);
   }
 
   Future<_CreatedAttempt> _createAnswerRowsForExistingAttempt({
@@ -448,10 +464,7 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
       ),
     );
 
-    return _CreatedAttempt(
-      attemptId: attemptId,
-      questions: ordered,
-    );
+    return _CreatedAttempt(attemptId: attemptId, questions: ordered);
   }
 
   Future<void> _handleRefresh() async {
@@ -481,9 +494,7 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
   }
 
   Future<void> _selectAnswer(int questionIndex, String optionId) async {
-    setState(() {
-      _selectedOptionIds[questionIndex] = optionId;
-    });
+    setState(() => _selectedOptionIds[questionIndex] = optionId);
 
     try {
       await _supabase.from('assessment_attempt_answers').upsert(
@@ -501,9 +512,7 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
   }
 
   Future<void> _saveEssayAnswer(int questionIndex, String value) async {
-    setState(() {
-      _writtenAnswers[questionIndex] = value;
-    });
+    setState(() => _writtenAnswers[questionIndex] = value);
 
     try {
       await _supabase.from('assessment_attempt_answers').upsert(
@@ -568,10 +577,10 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
     );
   }
 
-  String? _formatOptionWithKey(_OptionVm? option) {
-    if (option == null) return null;
-    final key = option.key.trim().toUpperCase();
-    return '$key. ${option.text}';
+  String _optionDisplay(_QuestionVm question, _OptionVm option) {
+    final index = question.options.indexWhere((opt) => opt.id == option.id);
+    final letter = index >= 0 ? String.fromCharCode(65 + index) : option.key;
+    return '$letter. ${option.text}';
   }
 
   String _reviewExplanationFor(int questionIndex) {
@@ -583,17 +592,17 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
     }
 
     if (correct != null) {
-      return 'The correct answer is "${correct.text}" based on the lesson for this module.';
+      return 'The correct answer is "${correct.text}" based on the electrical fire simulation.';
     }
 
-    return 'Review the house, electrical, and kitchen fire safety steps from this module.';
+    return 'Review the electrical fire simulation steps from this module.';
   }
 
   void _goNext() {
-    if (_openedFromSummaryEdit) {
+    if (_editingFromSummary) {
       setState(() {
         _showSummary = true;
-        _openedFromSummaryEdit = false;
+        _editingFromSummary = false;
       });
       return;
     }
@@ -604,9 +613,7 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
         curve: Curves.easeOutCubic,
       );
     } else {
-      setState(() {
-        _showSummary = true;
-      });
+      setState(() => _showSummary = true);
     }
   }
 
@@ -619,14 +626,15 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
     if (_showSummary) {
       setState(() {
         _showSummary = false;
+        _editingFromSummary = false;
       });
       return;
     }
 
-    if (_openedFromSummaryEdit) {
+    if (_editingFromSummary) {
       setState(() {
         _showSummary = true;
-        _openedFromSummaryEdit = false;
+        _editingFromSummary = false;
       });
       return;
     }
@@ -645,8 +653,9 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
   void _openQuestionFromSummary(int index) {
     setState(() {
       _showSummary = false;
+      _showReview = false;
+      _editingFromSummary = true;
       _currentIndex = index;
-      _openedFromSummaryEdit = true;
     });
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -670,120 +679,111 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
     final confirmed = await _showConfirmDialog(
       title: 'Submit Post-Assessment',
       message:
-          'Answered: $_answeredCount / ${_questions.length}\n'
-          'Flagged: ${_flaggedIndexes.length}\n\n'
-          'After submission, you will see your score for the 4 multiple-choice questions and your written reflection.',
+          'Answered: $_answeredCount / ${_questions.length}\n\nAfter submission, you will see your score for the 4 multiple-choice questions and your written reflection.',
       confirmText: 'Submit',
       cancelText: 'Review Again',
     );
 
-  if (confirmed != true) return;
+    if (confirmed != true) return;
 
-  setState(() {
-    _isSubmitting = true;
-  });
+    setState(() => _isSubmitting = true);
 
-  try {
-    int correctCount = 0;
+    try {
+      int correctCount = 0;
 
-    for (int i = 0; i < _questions.length; i++) {
-      final question = _questions[i];
+      for (int i = 0; i < _questions.length; i++) {
+        final question = _questions[i];
 
-      if (_isEssay(question)) {
-        final answerText = (_writtenAnswers[i] ?? '').trim();
+        if (_isEssay(question)) {
+          final answerText = (_writtenAnswers[i] ?? '').trim();
 
-        await _supabase.from('assessment_attempt_answers').upsert(
-          {
-            'attempt_id': _attemptId,
-            'question_id': question.id,
-            'selected_option_id': null,
-            'answer_text': answerText.isEmpty ? null : answerText,
-            'is_flagged': _flaggedIndexes.contains(i),
-            'display_order': i,
-            'is_correct': false,
-            'updated_at': DateTime.now().toIso8601String(),
-          },
-          onConflict: 'attempt_id,question_id',
-        );
-      } else {
-        final selectedId = _selectedOptionIds[i];
-        final isCorrect =
-            selectedId == null ? false : _isCorrectSelection(i, selectedId);
+          await _supabase.from('assessment_attempt_answers').upsert(
+            {
+              'attempt_id': _attemptId,
+              'question_id': question.id,
+              'selected_option_id': null,
+              'answer_text': answerText.isEmpty ? null : answerText,
+              'is_flagged': _flaggedIndexes.contains(i),
+              'display_order': i,
+              'is_correct': false,
+              'updated_at': DateTime.now().toIso8601String(),
+            },
+            onConflict: 'attempt_id,question_id',
+          );
+        } else {
+          final selectedId = _selectedOptionIds[i];
+          final isCorrect =
+              selectedId == null ? false : _isCorrectSelection(i, selectedId);
 
-        if (isCorrect) {
-          correctCount++;
+          if (isCorrect) correctCount++;
+
+          await _supabase.from('assessment_attempt_answers').upsert(
+            {
+              'attempt_id': _attemptId,
+              'question_id': question.id,
+              'selected_option_id': selectedId,
+              'answer_text': null,
+              'is_flagged': _flaggedIndexes.contains(i),
+              'display_order': i,
+              'is_correct': isCorrect,
+              'updated_at': DateTime.now().toIso8601String(),
+            },
+            onConflict: 'attempt_id,question_id',
+          );
         }
-
-        await _supabase.from('assessment_attempt_answers').upsert(
-          {
-            'attempt_id': _attemptId,
-            'question_id': question.id,
-            'selected_option_id': selectedId,
-            'answer_text': null,
-            'is_flagged': _flaggedIndexes.contains(i),
-            'display_order': i,
-            'is_correct': isCorrect,
-            'updated_at': DateTime.now().toIso8601String(),
-          },
-          onConflict: 'attempt_id,question_id',
-        );
       }
-    }
 
-    final scorePercent =
-        _scoredTotal == 0 ? 0 : (correctCount / _scoredTotal) * 100;
+      final scorePercent =
+          _scoredTotal == 0 ? 0 : (correctCount / _scoredTotal) * 100;
 
-    await _supabase.from('assessment_attempts').update({
-      'submitted_at': DateTime.now().toIso8601String(),
-      'status': 'submitted',
-      'correct_count': correctCount,
-      'score': scorePercent,
-    }).eq('id', _attemptId!);
+      await _supabase.from('assessment_attempts').update({
+        'submitted_at': DateTime.now().toIso8601String(),
+        'status': 'submitted',
+        'correct_count': correctCount,
+        'score': scorePercent,
+      }).eq('id', _attemptId!);
 
-    final progressRow = await _supabase
-        .from('module_progress')
-        .select('id')
-        .eq('user_id', _user.id)
-        .eq('module_id', _moduleId!)
-        .maybeSingle();
+      final progressRow = await _supabase
+          .from('module_progress')
+          .select('id')
+          .eq('user_id', _user.id)
+          .eq('module_id', _moduleId!)
+          .maybeSingle();
 
-    if (progressRow == null) {
-      await _supabase.from('module_progress').insert({
-        'user_id': _user.id,
-        'module_id': _moduleId,
-        'post_test_completed_at': DateTime.now().toIso8601String(),
+      if (progressRow == null) {
+        await _supabase.from('module_progress').insert({
+          'user_id': _user.id,
+          'module_id': _moduleId,
+          'post_test_completed_at': DateTime.now().toIso8601String(),
+        });
+      } else {
+        await _supabase.from('module_progress').update({
+          'post_test_completed_at': DateTime.now().toIso8601String(),
+        }).eq('id', progressRow['id']);
+      }
+
+      await ProfileProgressSync.syncCompletedSimulations();
+
+      if (!mounted) return;
+
+      setState(() {
+        _score = correctCount;
+        _showSummary = false;
+        _showReview = true;
       });
-    } else {
-      await _supabase.from('module_progress').update({
-        'post_test_completed_at': DateTime.now().toIso8601String(),
-      }).eq('id', progressRow['id']);
+    } catch (e) {
+      if (!mounted) return;
+
+      await _showInfoDialog(
+        title: 'Submission failed',
+        message: '$e',
+        buttonText: 'OK',
+      );
+    } finally {
+      if (!mounted) return;
+      setState(() => _isSubmitting = false);
     }
-
-    await ProfileProgressSync.syncCompletedSimulations();
-
-    if (!mounted) return;
-
-    setState(() {
-      _score = correctCount;
-      _showSummary = false;
-      _showReview = true;
-    });
-  } catch (e) {
-    if (!mounted) return;
-
-    await _showInfoDialog(
-      title: 'Submission failed',
-      message: '$e',
-      buttonText: 'OK',
-    );
-  } finally {
-    if (!mounted) return;
-
-    setState(() {
-      _isSubmitting = false;
-    });
   }
-}
 
   Future<bool?> _showConfirmDialog({
     required String title,
@@ -795,14 +795,8 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: Text(
-          title,
-          style: const TextStyle(fontWeight: FontWeight.w900),
-        ),
-        content: Text(
-          message,
-          style: const TextStyle(height: 1.45),
-        ),
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w900)),
+        content: Text(message, style: const TextStyle(height: 1.45)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -810,7 +804,7 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: kBrandRed,
+              backgroundColor: kBrandBlue,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -838,18 +832,12 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: Text(
-          title,
-          style: const TextStyle(fontWeight: FontWeight.w900),
-        ),
-        content: Text(
-          message,
-          style: const TextStyle(height: 1.45),
-        ),
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w900)),
+        content: Text(message, style: const TextStyle(height: 1.45)),
         actions: [
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: kBrandRed,
+              backgroundColor: kBrandBlue,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -885,9 +873,7 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
             physics: const NeverScrollableScrollPhysics(),
             itemCount: _questions.length,
             onPageChanged: (index) {
-              setState(() {
-                _currentIndex = index;
-              });
+              setState(() => _currentIndex = index);
             },
             itemBuilder: (context, index) {
               final question = _questions[index];
@@ -908,14 +894,15 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
                     ),
                     const SizedBox(height: 16),
                     if (_isMcq(question)) ...[
-                      ...question.options.map((option) {
+                      ...question.options.asMap().entries.map((entry) {
+                        final option = entry.value;
                         final selected = selectedId == option.id;
+                        final label = String.fromCharCode(65 + entry.key);
+
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 12),
                           child: _OptionCard(
-                            label: option.key.isEmpty
-                                ? ''
-                                : option.key.toUpperCase(),
+                            label: label,
                             text: option.text,
                             selected: selected,
                             onTap: () => _selectAnswer(index, option.id),
@@ -932,8 +919,8 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
                     _HintCard(
                       icon: Icons.info_outline_rounded,
                       text: _isEssay(question)
-                          ? 'Write 1 to 2 sentences about what you learned from house, electrical, and kitchen fire safety.'
-                          : 'You can flag a question now and return to it later from the summary.',
+                          ? 'Write 1 to 2 sentences about what you learned from the electrical fire simulation.'
+                          : 'Use the summary to jump back to any question before submitting.',
                     ),
                   ],
                 ),
@@ -954,6 +941,8 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
             answered: _answeredCount,
             total: _questions.length,
             flagged: _flaggedIndexes.length,
+            hasUnanswered: _hasUnansweredQuestions,
+            unansweredCount: _unansweredCount,
           ),
           const SizedBox(height: 14),
           Expanded(
@@ -964,19 +953,23 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
                 final question = _questions[index];
                 final selected = _selectedOptionFor(index);
 
-                final responseText = _isEssay(question)
+                final selectedAnswer = _isEssay(question)
                     ? ((_writtenAnswers[index] ?? '').trim().isEmpty
                         ? 'No reflection written'
                         : _writtenAnswers[index]!.trim())
-                    : (_formatOptionWithKey(selected) ?? 'No answer selected');
+                    : (selected == null
+                        ? 'No answer selected'
+                        : _optionDisplay(question, selected));
+
+                final answered = _isEssay(question)
+                    ? ((_writtenAnswers[index] ?? '').trim().isNotEmpty)
+                    : selected != null;
 
                 return _SummaryCard(
                   questionNumber: index + 1,
-                  question: _questions[index].prompt,
-                  selectedAnswer: responseText,
-                  answered: _isEssay(question)
-                      ? ((_writtenAnswers[index] ?? '').trim().isNotEmpty)
-                      : (selected != null),
+                  question: question.prompt,
+                  selectedAnswer: selectedAnswer,
+                  answered: answered,
                   flagged: _flaggedIndexes.contains(index),
                   onEdit: () => _openQuestionFromSummary(index),
                   onFlagTap: () => _toggleFlag(index),
@@ -994,10 +987,7 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
       padding: const EdgeInsets.fromLTRB(24, 0, 24, 18),
       child: Column(
         children: [
-          _ReviewTopCard(
-            score: _score,
-            total: _scoredTotal,
-          ),
+          _ReviewTopCard(score: _score, total: _scoredTotal),
           const SizedBox(height: 14),
           Expanded(
             child: ListView.separated(
@@ -1010,7 +1000,7 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
                   return _ReviewCard(
                     questionNumber: index + 1,
                     question: question.prompt,
-                    userAnswer: ((_writtenAnswers[index] ?? '').trim().isEmpty)
+                    userAnswer: (_writtenAnswers[index] ?? '').trim().isEmpty
                         ? 'No reflection submitted'
                         : _writtenAnswers[index]!.trim(),
                     correctAnswer: '',
@@ -1023,17 +1013,17 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
                 final selected = _selectedOptionFor(index);
                 final correct = _correctOptionFor(index);
                 final isCorrect =
-                    selected != null &&
-                    correct != null &&
-                    selected.id == correct.id;
+                    selected != null && correct != null && selected.id == correct.id;
 
                 return _ReviewCard(
                   questionNumber: index + 1,
                   question: question.prompt,
-                  userAnswer:
-                      _formatOptionWithKey(selected) ?? 'No answer selected',
-                  correctAnswer: _formatOptionWithKey(correct) ??
-                      'No correct answer configured',
+                  userAnswer: selected == null
+                      ? 'No answer selected'
+                      : _optionDisplay(question, selected),
+                  correctAnswer: correct == null
+                      ? 'No correct answer configured'
+                      : _optionDisplay(question, correct),
                   isCorrect: isCorrect,
                   explanation: isCorrect ? null : _reviewExplanationFor(index),
                   isEssay: false,
@@ -1055,7 +1045,7 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
             Expanded(
               child: OutlinedButton(
                 style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: kBrandRed),
+                  side: const BorderSide(color: kBrandBlue),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18),
                   ),
@@ -1065,7 +1055,7 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
                 child: const Text(
                   'Back',
                   style: TextStyle(
-                    color: kBrandRed,
+                    color: kBrandBlue,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -1075,7 +1065,7 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
             Expanded(
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: kBrandBlue,
+                  backgroundColor: kBrandBlueDark,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18),
                   ),
@@ -1099,6 +1089,8 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
     }
 
     if (_showSummary) {
+      final locked = _hasUnansweredQuestions;
+
       return Padding(
         padding: const EdgeInsets.fromLTRB(24, 8, 24, 20),
         child: Row(
@@ -1106,7 +1098,7 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
             Expanded(
               child: OutlinedButton(
                 style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: kBrandRed),
+                  side: const BorderSide(color: kBrandBlue),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18),
                   ),
@@ -1115,12 +1107,13 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
                 onPressed: () {
                   setState(() {
                     _showSummary = false;
+                    _editingFromSummary = false;
                   });
                 },
                 child: const Text(
                   'Back to Questions',
                   style: TextStyle(
-                    color: kBrandRed,
+                    color: kBrandBlue,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -1130,7 +1123,7 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
             Expanded(
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: kBrandBlue,
+                  backgroundColor: locked ? Colors.grey.shade400 : kBrandBlue,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18),
                   ),
@@ -1138,7 +1131,11 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
                 ),
                 onPressed: _isSubmitting ? null : _submitAssessment,
                 child: Text(
-                  _isSubmitting ? 'Submitting...' : 'Submit',
+                  _isSubmitting
+                      ? 'Submitting...'
+                      : locked
+                          ? 'Complete All'
+                          : 'Submit',
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w900,
@@ -1152,6 +1149,9 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
     }
 
     final isLast = _currentIndex == _questions.length - 1;
+    final nextLabel = _editingFromSummary
+        ? 'Review Summary'
+        : (isLast ? 'Review Summary' : 'Next');
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 8, 24, 20),
@@ -1160,7 +1160,7 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
           Expanded(
             child: OutlinedButton(
               style: OutlinedButton.styleFrom(
-                side: const BorderSide(color: kBrandRed),
+                side: const BorderSide(color: kBrandBlue),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(18),
                 ),
@@ -1168,9 +1168,11 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
               ),
               onPressed: _goBack,
               child: Text(
-                _currentIndex == 0 ? 'Exit' : 'Back',
+                _editingFromSummary
+                    ? 'Back to Summary'
+                    : (_currentIndex == 0 ? 'Exit' : 'Back'),
                 style: const TextStyle(
-                  color: kBrandRed,
+                  color: kBrandBlue,
                   fontWeight: FontWeight.w900,
                 ),
               ),
@@ -1180,7 +1182,7 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
           Expanded(
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: kBrandRed,
+                backgroundColor: kBrandBlue,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(18),
                 ),
@@ -1188,9 +1190,7 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
               ),
               onPressed: _goNext,
               child: Text(
-                _openedFromSummaryEdit
-                    ? 'Review Summary Again'
-                    : (isLast ? 'Review Summary' : 'Next'),
+                nextLabel,
                 style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w900,
@@ -1205,156 +1205,136 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
 
   @override
   Widget build(BuildContext context) {
+    final headerTitle = _moduleDisplayTitle.trim().isEmpty
+        ? 'Electrical Fire: Causes, Safe Actions, and Prevention'
+        : _moduleDisplayTitle.trim();
+
     return Scaffold(
       backgroundColor: kSoftBg,
       body: Stack(
         children: [
           Positioned.fill(
-            child: Image.asset(
-              'assets/bg.png',
-              fit: BoxFit.cover,
-            ),
+            child: Image.asset('assets/bg.png', fit: BoxFit.cover),
           ),
           SafeArea(
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())
-                : Column(
-                    children: [
-                      const SizedBox(height: 15),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 9, right: 25),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                IconButton(
-                                  padding: EdgeInsets.zero,
-                                  constraints: const BoxConstraints(),
-                                  icon: const Icon(
-                                    Icons.close,
+                : RefreshIndicator(
+                    onRefresh: _handleRefresh,
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 15),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 9, right: 25),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              IconButton(
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(),
+                                icon: const Icon(Icons.close, color: Colors.white),
+                                onPressed: () => Navigator.pop(context),
+                              ),
+                              const SizedBox(height: 15),
+                              Center(
+                                child: Text(
+                                  _showReview ? 'Assessment Review' : 'Post-Assessment',
+                                  style: const TextStyle(
                                     color: Colors.white,
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'Poppins',
                                   ),
-                                  onPressed: () => Navigator.pop(context),
                                 ),
-                                const Spacer(),
-                                IconButton(
-                                  padding: EdgeInsets.zero,
-                                  constraints: const BoxConstraints(),
-                                  icon: const Icon(
-                                    Icons.refresh_rounded,
-                                    color: Colors.white,
+                              ),
+                              const SizedBox(height: 15),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 25),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 18,
+                                        vertical: 10,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: kBrandBlue,
+                                        borderRadius: BorderRadius.circular(10),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black.withOpacity(0.18),
+                                            blurRadius: 10,
+                                            offset: const Offset(0, 6),
+                                          ),
+                                        ],
+                                      ),
+                                      child: const Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(
+                                            Icons.bolt_rounded,
+                                            color: Colors.white,
+                                            size: 18,
+                                          ),
+                                          SizedBox(width: 8),
+                                          Text(
+                                            'MODULE 3',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                              fontFamily: 'Poppins',
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(width: 15),
+                                    Expanded(
+                                      child: Text(
+                                        _showReview
+                                            ? 'Your score for the graded items plus your written reflection'
+                                            : headerTitle,
+                                        style: const TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.w600,
+                                          fontFamily: 'Poppins',
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              if (_instructions.trim().isNotEmpty &&
+                                  !_showReview) ...[
+                                const SizedBox(height: 15),
+                                Align(
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    _instructions,
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                      color: Colors.black87,
+                                      fontWeight: FontWeight.w600,
+                                      height: 1.35,
+                                    ),
                                   ),
-                                  onPressed: _handleRefresh,
                                 ),
                               ],
-                            ),
-                            const SizedBox(height: 15),
-                            Center(
-                              child: Text(
-                                _showReview
-                                    ? 'Assessment Review'
-                                    : 'Post Assessment',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 30,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'Poppins',
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 15),
-                            Padding(
-                              padding: const EdgeInsets.only(left: 25),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 18,
-                                      vertical: 10,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      gradient: const LinearGradient(
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                        colors: [accent, accent2],
-                                      ),
-                                      borderRadius: BorderRadius.circular(10),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withOpacity(0.18),
-                                          blurRadius: 10,
-                                          offset: const Offset(0, 6),
-                                        ),
-                                      ],
-                                    ),
-                                    child: const Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Icon(
-                                          Icons.bolt_rounded,
-                                          color: Colors.white,
-                                          size: 18,
-                                        ),
-                                        SizedBox(width: 8),
-                                        Text(
-                                          'MODULE 2',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
-                                            fontFamily: 'Poppins',
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(width: 15),
-                                  Expanded(
-                                    child: Text(
-                                      _showReview
-                                          ? 'Your score for the graded items plus your written reflection'
-                                          : (_assessmentTitle.isEmpty
-                                              ? 'Electrical Fire: Causes, Safe Actions, and Prevention'
-                                              : _assessmentTitle),
-                                      style: const TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.w600,
-                                        fontFamily: 'Poppins',
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            if (_instructions.trim().isNotEmpty &&
-                                !_showReview) ...[
-                              const SizedBox(height: 15),
-                              Align(
-                                alignment: Alignment.center,
-                                child: Text(
-                                  _instructions,
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                    color: Colors.black87,
-                                    fontWeight: FontWeight.w600,
-                                    height: 1.35,
-                                  ),
-                                ),
-                              ),
                             ],
-                          ],
+                          ),
                         ),
-                      ),
-                      Expanded(
-                        child: _showReview
-                            ? _buildReviewView()
-                            : _showSummary
-                                ? _buildSummaryView()
-                                : _buildQuizView(),
-                      ),
-                      _buildBottomBar(),
-                    ],
+                        const SizedBox(height: 30),
+                        Expanded(
+                          child: _showReview
+                              ? _buildReviewView()
+                              : _showSummary
+                                  ? _buildSummaryView()
+                                  : _buildQuizView(),
+                        ),
+                        _buildBottomBar(),
+                      ],
+                    ),
                   ),
           ),
         ],
@@ -1394,12 +1374,14 @@ class _OptionVm {
   final String key;
   final String text;
   final bool isCorrect;
+  final int displayOrder;
 
   const _OptionVm({
     required this.id,
     required this.key,
     required this.text,
     required this.isCorrect,
+    required this.displayOrder,
   });
 }
 
@@ -1544,9 +1526,7 @@ class _QuestionHeaderCard extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [kBrandRed, kBrandBlue],
-                  ),
+                  color: kBrandBlue,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
@@ -1629,8 +1609,8 @@ class _OptionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final borderColor =
-        selected ? kBrandRed : Colors.black.withOpacity(0.08);
-    final bgColor = selected ? kBrandRed.withOpacity(0.08) : Colors.white;
+        selected ? kBrandBlue : Colors.black.withOpacity(0.08);
+    final bgColor = selected ? kBrandBlue.withOpacity(0.08) : Colors.white;
 
     return Material(
       color: Colors.transparent,
@@ -1661,7 +1641,7 @@ class _OptionCard extends StatelessWidget {
                 width: 34,
                 height: 34,
                 decoration: BoxDecoration(
-                  color: selected ? kBrandRed : Colors.grey.shade100,
+                  color: selected ? kBrandBlue : Colors.grey.shade100,
                   shape: BoxShape.circle,
                 ),
                 child: Center(
@@ -1710,7 +1690,7 @@ class _EssayAnswerCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: kBrandRed.withOpacity(0.18)),
+        border: Border.all(color: kBrandBlue.withOpacity(0.18)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
@@ -1723,11 +1703,11 @@ class _EssayAnswerCard extends StatelessWidget {
         controller: controller,
         maxLines: 5,
         minLines: 4,
-        cursorColor: kBrandRed,
+        cursorColor: kBrandBlue,
         onChanged: onChanged,
         decoration: InputDecoration(
           hintText:
-              'Write 1 to 2 sentences about what you learned from house, electrical, and kitchen fire safety.',
+              'Write 1 to 2 sentences about what you learned from the electrical fire simulation.',
           hintStyle: TextStyle(
             color: Colors.grey.shade600,
             fontWeight: FontWeight.w500,
@@ -1759,11 +1739,9 @@ class _HintCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(13),
       decoration: BoxDecoration(
-        color: kBrandBlue.withOpacity(0.08),
+        color: kBrandBlueSoft,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: kBrandBlue.withOpacity(0.18),
-        ),
+        border: Border.all(color: kBrandBlue.withOpacity(0.18)),
       ),
       child: Row(
         children: [
@@ -1789,11 +1767,15 @@ class _SummaryHeaderCard extends StatelessWidget {
     required this.answered,
     required this.total,
     required this.flagged,
+    required this.hasUnanswered,
+    required this.unansweredCount,
   });
 
   final int answered;
   final int total;
   final int flagged;
+  final bool hasUnanswered;
+  final int unansweredCount;
 
   @override
   Widget build(BuildContext context) {
@@ -1802,7 +1784,11 @@ class _SummaryHeaderCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: Colors.black.withOpacity(0.06)),
+        border: Border.all(
+          color: hasUnanswered
+              ? Colors.orange.withOpacity(0.25)
+              : Colors.black.withOpacity(0.06),
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.08),
@@ -1821,6 +1807,16 @@ class _SummaryHeaderCard extends StatelessWidget {
               color: kDarkText,
             ),
           ),
+          if (hasUnanswered) ...[
+            const SizedBox(height: 8),
+            Text(
+              '$unansweredCount question(s) still need an answer.',
+              style: const TextStyle(
+                color: Colors.orange,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ],
           const SizedBox(height: 10),
           _StatsRow(
             answered: answered,
@@ -1859,9 +1855,9 @@ class _SummaryCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: answered ? Colors.white : const Color(0xFFFFFBEB),
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: Colors.black.withOpacity(0.06)),
+        border: Border.all(color: statusColor.withOpacity(0.22)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.07),
@@ -1879,14 +1875,14 @@ class _SummaryCard extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                 decoration: BoxDecoration(
-                  color: kBrandRed.withOpacity(0.10),
+                  color: kBrandBlue.withOpacity(0.10),
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
                   'Q$questionNumber',
                   style: const TextStyle(
                     fontWeight: FontWeight.w900,
-                    color: kBrandRed,
+                    color: kBrandBlue,
                   ),
                 ),
               ),
@@ -1950,7 +1946,7 @@ class _SummaryCard extends StatelessWidget {
           Text(
             selectedAnswer,
             style: TextStyle(
-              color: answered ? Colors.black87 : Colors.grey.shade600,
+              color: answered ? Colors.black87 : Colors.orange.shade800,
               fontWeight: FontWeight.w600,
               height: 1.35,
             ),
@@ -1960,7 +1956,7 @@ class _SummaryCard extends StatelessWidget {
             alignment: Alignment.centerRight,
             child: ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
-                backgroundColor: kBrandRed,
+                backgroundColor: kBrandBlue,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -2030,16 +2026,16 @@ class _ReviewTopCard extends StatelessWidget {
             style: const TextStyle(
               fontSize: 30,
               fontWeight: FontWeight.w900,
-              color: kBrandRed,
+              color: kBrandBlue,
             ),
           ),
           const SizedBox(height: 4),
           Text(
             '$percent% • scored questions only',
             style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w800,
-              color: kBrandBlue,
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+              color: kBrandBlueDark,
             ),
           ),
         ],
@@ -2070,10 +2066,8 @@ class _ReviewCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final statusColor = isEssay
-        ? kBrandRed
-        : (isCorrect ? const Color(0xFF16A34A) : kBrandRed);
-
-    final note = explanation?.trim();
+        ? kBrandBlue
+        : (isCorrect ? const Color(0xFF16A34A) : kBrandBlue);
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -2140,7 +2134,7 @@ class _ReviewCard extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(
-            isEssay ? 'Your Reflection' : 'Your Answer',
+            isEssay ? 'Your Reflection' : 'Answer Review',
             style: const TextStyle(
               fontWeight: FontWeight.w900,
               color: Colors.black54,
@@ -2152,7 +2146,7 @@ class _ReviewCard extends StatelessWidget {
             style: TextStyle(
               color: isEssay
                   ? kDarkText
-                  : (isCorrect ? const Color(0xFF16A34A) : kBrandRed),
+                  : (isCorrect ? const Color(0xFF16A34A) : kBrandBlue),
               fontWeight: FontWeight.w700,
               height: 1.35,
             ),
@@ -2176,7 +2170,7 @@ class _ReviewCard extends StatelessWidget {
               ),
             ),
           ],
-          if (note != null && note.isNotEmpty) ...[
+          if (explanation != null && explanation!.trim().isNotEmpty) ...[
             const SizedBox(height: 12),
             Text(
               isEssay ? 'Reflection Note' : 'Why this is wrong',
@@ -2187,7 +2181,7 @@ class _ReviewCard extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              note,
+              explanation!,
               style: const TextStyle(
                 color: kDarkText,
                 fontWeight: FontWeight.w600,
