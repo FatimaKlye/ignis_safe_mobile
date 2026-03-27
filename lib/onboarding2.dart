@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'onboarding3.dart';
-import 'learning_materials.dart';
+import 'onboarding_helper.dart';
 
 class OnboardingTwoPage extends StatelessWidget {
   const OnboardingTwoPage({super.key});
@@ -17,17 +17,12 @@ class OnboardingTwoPage extends StatelessWidget {
           child: Column(
             children: [
               const SizedBox(height: 70),
-
-              // Image
               Image.asset(
-                'assets/onboard2.png', // <-- your onboarding 2 image
+                'assets/onboard2.png',
                 height: 240,
                 fit: BoxFit.contain,
               ),
-
               const SizedBox(height: 26),
-
-              // Dots (middle active)
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: const [
@@ -38,10 +33,7 @@ class OnboardingTwoPage extends StatelessWidget {
                   _Dot(active: false),
                 ],
               ),
-
               const SizedBox(height: 34),
-
-              // Title
               const Text(
                 'Be Ready, Stay Safe',
                 textAlign: TextAlign.center,
@@ -53,10 +45,7 @@ class OnboardingTwoPage extends StatelessWidget {
                   height: 1.12,
                 ),
               ),
-
               const SizedBox(height: 20),
-
-              // Description
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 22),
                 child: Text(
@@ -71,24 +60,14 @@ class OnboardingTwoPage extends StatelessWidget {
                   ),
                 ),
               ),
-
               const Spacer(),
-
-              // Bottom actions
               Padding(
                 padding: const EdgeInsets.only(bottom: 22),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const LearningMaterialsTab(),
-                          ),
-                        );
-                      },
+                      onTap: () => OnboardingHelper.skipOnboarding(context),
                       child: const Text(
                         'SKIP',
                         style: TextStyle(
@@ -143,7 +122,6 @@ class OnboardingTwoPage extends StatelessWidget {
 
 class _Dot extends StatelessWidget {
   final bool active;
-
   const _Dot({required this.active});
 
   @override

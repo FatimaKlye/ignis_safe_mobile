@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'learning_materials.dart';
+import 'onboarding_helper.dart';
 
 class OnboardingThreePage extends StatelessWidget {
   const OnboardingThreePage({super.key});
@@ -16,17 +16,12 @@ class OnboardingThreePage extends StatelessWidget {
           child: Column(
             children: [
               const SizedBox(height: 70),
-
-              // Image
               Image.asset(
                 'assets/onboard3.png',
                 height: 240,
                 fit: BoxFit.contain,
               ),
-
               const SizedBox(height: 26),
-
-              // Dots (3rd active)
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: const [
@@ -37,12 +32,9 @@ class OnboardingThreePage extends StatelessWidget {
                   _Dot(active: true),
                 ],
               ),
-
               const SizedBox(height: 34),
-
-              // Title
               const Text(
-                "Train Like It’s Real",
+                'Train Like It’s Real',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontFamily: 'Poppins',
@@ -52,14 +44,11 @@ class OnboardingThreePage extends StatelessWidget {
                   height: 1.12,
                 ),
               ),
-
               const SizedBox(height: 20),
-
-              // Description
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 22),
                 child: Text(
-                  "Engage in interactive fire scenarios and\npractice proper response procedures within a\nsafe, controlled simulation environment.",
+                  'Engage in interactive fire scenarios and\npractice proper response procedures within a\nsafe, controlled simulation environment.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontFamily: 'Poppins',
@@ -70,23 +59,15 @@ class OnboardingThreePage extends StatelessWidget {
                   ),
                 ),
               ),
-
               const Spacer(),
-
-              // Bottom buttons
               Padding(
                 padding: const EdgeInsets.only(bottom: 22),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const LearningMaterialsTab(),
-                          ),
-                        );
+                      onTap: () async {
+                        await OnboardingHelper.skipOnboarding(context);
                       },
                       child: const Text(
                         'SKIP',
@@ -101,13 +82,8 @@ class OnboardingThreePage extends StatelessWidget {
                     SizedBox(
                       height: 40,
                       child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const LearningMaterialsTab(),
-                            ),
-                          );
+                        onPressed: () async {
+                          await OnboardingHelper.finishOnboarding(context);
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: brandRed,
@@ -118,7 +94,7 @@ class OnboardingThreePage extends StatelessWidget {
                           ),
                         ),
                         child: const Text(
-                          'NEXT',
+                          'GET STARTED',
                           style: TextStyle(
                             fontFamily: 'Poppins',
                             fontSize: 13,
