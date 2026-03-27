@@ -97,7 +97,7 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
     _ModuleItem(
       moduleNo: 5,
       moduleLabel: "MODULE 5",
-      title: "BUILDING FIRE",
+      title: "TENEMENT FIRE",
       description:
           "Understand building fire risks, evacuation procedures, and the correct fire safety response in larger structures and shared spaces.",
       asset: "assets/condo.jpg",

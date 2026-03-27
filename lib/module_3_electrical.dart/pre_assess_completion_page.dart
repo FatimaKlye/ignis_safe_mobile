@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'pre_assessment_electrical.dart';
 import 'simulation_scene_electrical.dart';
 
 const Color kBrandBlue = Color(0xFF2563EB);
@@ -188,9 +189,16 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
                               borderRadius: BorderRadius.circular(16),
                             ),
                           ),
-                          onPressed: () => Navigator.pop(context),
+                          onPressed: () {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const PreAssessmentElectricalPage(),
+                              ),
+                            );
+                          },
                           child: const Text(
-                            'Continue',
+                            'Retake',
                             style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.w900,

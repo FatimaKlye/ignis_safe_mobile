@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'pre_assessment_building.dart';
 import 'simulation_scene.dart';
 
 const Color kBrandRed = Color(0xFFB11217);
@@ -194,9 +195,16 @@ class PreAssessmentCompletionPage3 extends StatelessWidget {
                               borderRadius: BorderRadius.circular(16),
                             ),
                           ),
-                          onPressed: () => Navigator.pop(context),
+                          onPressed: () {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const PreAssessmentBuildingPage(),
+                              ),
+                            );
+                          },
                           child: const Text(
-                            'Continue',
+                            'Retake',
                             style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.w900,

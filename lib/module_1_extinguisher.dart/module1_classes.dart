@@ -197,22 +197,7 @@ class ClassesOfFirePage extends StatelessWidget {
                                       ),
                                     ),
                                   ),
-                                  ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: const Color(0xFFB11217),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(20),
-                                      ),
-                                    ),
-                                    onPressed: () {},
-                                    child: const Text(
-                                      "Start Pre - Test",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
+                  
                                 ],
                               ),
                             ],

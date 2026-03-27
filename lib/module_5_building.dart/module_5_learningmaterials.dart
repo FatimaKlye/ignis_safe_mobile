@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'pre_assessment_building.dart';
+import 'pre_assess_instruction.dart';
 
 class LearningMaterialTenementPage extends StatefulWidget {
   const LearningMaterialTenementPage({super.key});
@@ -96,7 +96,7 @@ class _LearningMaterialTenementPageState
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => const PreAssessmentBuildingPage(),
+          builder: (_) => const PreAssessmentIntroPage2(),
         ),
       );
     }

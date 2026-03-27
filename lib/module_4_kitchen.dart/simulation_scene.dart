@@ -303,7 +303,7 @@ class _SimulationScene4State extends State<SimulationScene4> {
                             const SizedBox(width: 15),
                             const Expanded(
                               child: Text(
-                                "Kitchen Fire",
+                                "Kitchen Fire: What It Is, Common Types, and What To Do",
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontWeight: FontWeight.w600,
@@ -324,7 +324,7 @@ class _SimulationScene4State extends State<SimulationScene4> {
                     children: [
                       _ModuleCard(
                         moduleLabel: "MODULE 4",
-                        title: "KITCHEN FIRE",
+                        title: "KITCHEN FIRE ",
                         description:
                             "Learn the correct response during a kitchen fire, including turning off the heat if safe, never using water on oil or grease fire, covering small flames with a metal lid, and evacuating if the fire spreads.",
                         asset: "assets/kitchen.png",
