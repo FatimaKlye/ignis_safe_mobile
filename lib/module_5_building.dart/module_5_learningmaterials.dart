@@ -384,7 +384,7 @@ class _LearningMaterialTenementPageState
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _ImageBox(
-                asset: "assets/tenement_overview.png",
+                asset: "assets/condo.jpg",
                 c1: accent,
                 c2: accent2,
               ),

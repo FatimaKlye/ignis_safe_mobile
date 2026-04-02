@@ -53,6 +53,10 @@ flutter:
     - assets/dev_andrei.jpg
     - assets/house.jpg
     - assets/condo.jpg
+    - assets/prevent_kitchen.png
+    - assets/response_kitchen.png
+    - assets/prevent_tenement.png
+    - assets/response_tenement.png
 
   fonts:
     - family: Poppins
@@ -70,3 +74,9 @@ flutter_native_splash:
   color: "#FFFFFF"
   image: assets/logo.png
   android: true
+  ios: true
+  web: false
+
+  android_12:
+    color: "#FFFFFF"
+    image: assets/logo.png

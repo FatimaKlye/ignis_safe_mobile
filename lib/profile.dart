@@ -11,7 +11,7 @@ class ProfilePage extends StatefulWidget {
   const ProfilePage({
     super.key,
     this.name,
-    this.completedSimulations = "0 / 3",
+    this.completedSimulations = "0 / 5",
     this.lastSimulation = "No simulation yet",
   });
 
@@ -27,7 +27,7 @@ class _ProfilePageState extends State<ProfilePage> {
   static const Color brandRed = Color(0xFFB11217);
   static const Color darkText = Color(0xFF222222);
   static const String _kLangKey = "ignis_lang";
-  static const int _totalSimulations = 3;
+  static const int _totalSimulations = 5;
 
   final ImagePicker _picker = ImagePicker();
   final SupabaseClient _supabase = Supabase.instance.client;
@@ -416,7 +416,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 16,
-                    vertical: 14,
+                    vertical: 20,
                   ),
                   child: Row(
                     children: [
@@ -427,7 +427,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.w900,
-                          color: Colors.white,
+                          color: Colors.black,
                         ),
                       ),
                       const Spacer(),

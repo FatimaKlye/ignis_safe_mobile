@@ -58,12 +58,18 @@ class _AppStartPageState extends State<AppStartPage> {
   Future<void> _checkStartPage() async {
     final prefs = await SharedPreferences.getInstance();
     final onboardingDone = prefs.getBool('onboarding_done') ?? false;
+    final session = Supabase.instance.client.auth.currentSession;
 
     if (!mounted) return;
 
     setState(() {
-      _targetPage =
-          onboardingDone ? const LoginPage() : const OnboardingOnePage();
+      if (!onboardingDone) {
+        _targetPage = const OnboardingOnePage();
+      } else if (session != null) {
+        _targetPage = const IgnisHomePage();
+      } else {
+        _targetPage = const LoginPage();
+      }
     });
   }
 

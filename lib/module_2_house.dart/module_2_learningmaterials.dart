@@ -334,7 +334,7 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _ImageBox(
-                asset: "assets/house.png",
+                asset: "assets/house.jpg",
                 c1: accent,
                 c2: accent2,
               ),

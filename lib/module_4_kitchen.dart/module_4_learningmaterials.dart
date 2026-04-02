@@ -394,7 +394,7 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _ImageBox(
-                asset: "assets/kitchen_overview.png",
+                asset: "assets/kitchen.png",
                 c1: accent,
                 c2: accent2,
               ),
@@ -712,17 +712,21 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
             ],
           ),
 
-          const SizedBox(height: 18),
+            const SizedBox(height: 18),
 
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _ImageBox(
-                asset: "assets/response_kitchen.png",
-                c1: const Color(0xFFEA580C),
-                c2: accent,
-              ),
-              const SizedBox(width: 15),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  width: 100,
+                  height: 100,
+                  child: _ImageBox(
+                    asset: "assets/response_kitchen.png",
+                    c1: const Color(0xFFEA580C),
+                    c2: accent,
+                  ),
+                ),
+                const SizedBox(width: 15),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
