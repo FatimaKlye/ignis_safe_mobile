@@ -91,7 +91,7 @@ class _LoginPageState extends State<LoginPage> {
       'email': email.isEmpty ? null : email,
       'first_name': user.userMetadata?['first_name'],
       'last_name': user.userMetadata?['last_name'],
-      'updated_at': DateTime.now().toIso8601String(),
+      'updated_at': DateTime.now().toUtc().toIso8601String(),
     });
   }
 

@@ -1,4 +1,4 @@
-﻿import 'dart:typed_data';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -74,7 +74,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
           'first_name': (metadata['first_name'] ?? '').toString(),
           'last_name': (metadata['last_name'] ?? '').toString(),
           'email': user.email ?? '',
-          'updated_at': DateTime.now().toIso8601String(),
+          'updated_at': DateTime.now().toUtc().toIso8601String(),
         });
       }
 
@@ -198,11 +198,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
     final password = _passwordCtrl.text.trim();
 
     if (first != _originalFirstName) {
-      changes.add('First Name: "$_originalFirstName" → "$first"');
+      changes.add('First Name: "$_originalFirstName" ? "$first"');
     }
 
     if (last != _originalLastName) {
-      changes.add('Last Name: "$_originalLastName" → "$last"');
+      changes.add('Last Name: "$_originalLastName" ? "$last"');
     }
 
     if (_newAvatarBytes != null) {
@@ -313,7 +313,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       'last_name': _lastNameCtrl.text.trim(),
       'email': _emailCtrl.text.trim(),
       'avatar_url': avatarUrl,
-      'updated_at': DateTime.now().toIso8601String(),
+      'updated_at': DateTime.now().toUtc().toIso8601String(),
     });
 
     final pass = _passwordCtrl.text.trim();
@@ -387,7 +387,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           (c) => Padding(
                             padding: const EdgeInsets.only(bottom: 8),
                             child: Text(
-                              '• $c',
+                              '� $c',
                               style: const TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,

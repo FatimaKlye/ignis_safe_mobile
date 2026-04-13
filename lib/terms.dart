@@ -70,8 +70,8 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
     try {
       await supabase.from('profiles').update({
         'terms_accepted': true,
-        'terms_accepted_at': DateTime.now().toIso8601String(),
-        'updated_at': DateTime.now().toIso8601String(),
+        'terms_accepted_at': DateTime.now().toUtc().toIso8601String(),
+        'updated_at': DateTime.now().toUtc().toIso8601String(),
       }).eq('id', widget.userId!);
 
       if (!mounted) return;

@@ -426,7 +426,7 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
           .update({
             'selected_option_id': optionId,
             'is_correct': _isCorrectSelection(questionIndex, optionId),
-            'updated_at': DateTime.now().toIso8601String(),
+            'updated_at': DateTime.now().toUtc().toIso8601String(),
           })
           .eq('attempt_id', _attemptId!)
           .eq('question_id', _questions[questionIndex].id);
@@ -451,7 +451,7 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
           .from('assessment_attempt_answers')
           .update({
             'is_flagged': newFlagState,
-            'updated_at': DateTime.now().toIso8601String(),
+            'updated_at': DateTime.now().toUtc().toIso8601String(),
           })
           .eq('attempt_id', _attemptId!)
           .eq('question_id', _questions[questionIndex].id);
@@ -676,7 +676,7 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
               'is_flagged': _flaggedIndexes.contains(i),
               'display_order': i,
               'is_correct': isCorrect,
-              'updated_at': DateTime.now().toIso8601String(),
+              'updated_at': DateTime.now().toUtc().toIso8601String(),
             })
             .eq('attempt_id', _attemptId!)
             .eq('question_id', _questions[i].id);
@@ -686,7 +686,7 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
           _questions.isEmpty ? 0 : (correctCount / _questions.length) * 100;
 
       await _supabase.from('assessment_attempts').update({
-        'submitted_at': DateTime.now().toIso8601String(),
+        'submitted_at': DateTime.now().toUtc().toIso8601String(),
         'status': 'submitted',
         'correct_count': correctCount,
         'score': scorePercent,
@@ -703,11 +703,11 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
         await _supabase.from('module_progress').insert({
           'user_id': _user.id,
           'module_id': _moduleId,
-          'pre_test_completed_at': DateTime.now().toIso8601String(),
+          'pre_test_completed_at': DateTime.now().toUtc().toIso8601String(),
         });
       } else {
         await _supabase.from('module_progress').update({
-          'pre_test_completed_at': DateTime.now().toIso8601String(),
+          'pre_test_completed_at': DateTime.now().toUtc().toIso8601String(),
         }).eq('id', progressRow['id']);
       }
 

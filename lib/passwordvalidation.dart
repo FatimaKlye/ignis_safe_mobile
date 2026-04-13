@@ -237,7 +237,7 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
         'first_name': widget.firstName.trim(),
         'last_name': widget.lastName.trim(),
         'email': widget.email.trim().toLowerCase(),
-        'updated_at': DateTime.now().toIso8601String(),
+        'updated_at': DateTime.now().toUtc().toIso8601String(),
       });
 
       if (!mounted) return;

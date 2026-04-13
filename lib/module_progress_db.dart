@@ -28,7 +28,7 @@ class ModuleProgressDb {
         .eq('module_id', moduleId)
         .maybeSingle();
 
-    final now = DateTime.now().toIso8601String();
+    final now = DateTime.now().toUtc().toIso8601String();
 
     if (existing != null) {
       await supabase

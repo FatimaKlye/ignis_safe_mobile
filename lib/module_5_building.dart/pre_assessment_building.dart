@@ -425,7 +425,7 @@ class _PreAssessmentBuildingPageState
           .update({
             'selected_option_id': optionId,
             'is_correct': _isCorrectSelection(questionIndex, optionId),
-            'updated_at': DateTime.now().toIso8601String(),
+            'updated_at': DateTime.now().toUtc().toIso8601String(),
           })
           .eq('attempt_id', _attemptId!)
           .eq('question_id', _questions[questionIndex].id);
@@ -450,7 +450,7 @@ class _PreAssessmentBuildingPageState
           .from('assessment_attempt_answers')
           .update({
             'is_flagged': newFlagState,
-            'updated_at': DateTime.now().toIso8601String(),
+            'updated_at': DateTime.now().toUtc().toIso8601String(),
           })
           .eq('attempt_id', _attemptId!)
           .eq('question_id', _questions[questionIndex].id);
@@ -678,7 +678,7 @@ class _PreAssessmentBuildingPageState
               'is_flagged': _flaggedIndexes.contains(i),
               'display_order': i,
               'is_correct': isCorrect,
-              'updated_at': DateTime.now().toIso8601String(),
+              'updated_at': DateTime.now().toUtc().toIso8601String(),
             })
             .eq('attempt_id', _attemptId!)
             .eq('question_id', _questions[i].id);
@@ -687,7 +687,7 @@ class _PreAssessmentBuildingPageState
       final scorePercent = _questions.isEmpty
           ? 0
           : (correctCount / _questions.length) * 100;
-      final submittedAt = DateTime.now().toIso8601String();
+      final submittedAt = DateTime.now().toUtc().toIso8601String();
 
       await _supabase.from('assessment_attempts').update({
         'submitted_at': submittedAt,

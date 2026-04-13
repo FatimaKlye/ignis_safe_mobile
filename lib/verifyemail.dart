@@ -204,7 +204,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       'email': widget.email.trim().toLowerCase(),
       'terms_accepted': false,
       'terms_accepted_at': null,
-      'updated_at': DateTime.now().toIso8601String(),
+      'updated_at': DateTime.now().toUtc().toIso8601String(),
     });
   }
 

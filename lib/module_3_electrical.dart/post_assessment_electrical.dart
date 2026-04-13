@@ -504,7 +504,7 @@ class _PostAssessmentElectricalPageState
           'selected_option_id': optionId,
           'answer_text': null,
           'is_correct': _isCorrectSelection(questionIndex, optionId),
-          'updated_at': DateTime.now().toIso8601String(),
+          'updated_at': DateTime.now().toUtc().toIso8601String(),
         },
         onConflict: 'attempt_id,question_id',
       );
@@ -522,7 +522,7 @@ class _PostAssessmentElectricalPageState
           'selected_option_id': null,
           'answer_text': value.trim().isEmpty ? null : value.trim(),
           'is_correct': false,
-          'updated_at': DateTime.now().toIso8601String(),
+          'updated_at': DateTime.now().toUtc().toIso8601String(),
         },
         onConflict: 'attempt_id,question_id',
       );
@@ -546,7 +546,7 @@ class _PostAssessmentElectricalPageState
           'attempt_id': _attemptId,
           'question_id': _questions[questionIndex].id,
           'is_flagged': newFlagState,
-          'updated_at': DateTime.now().toIso8601String(),
+          'updated_at': DateTime.now().toUtc().toIso8601String(),
         },
         onConflict: 'attempt_id,question_id',
       );
@@ -706,7 +706,7 @@ class _PostAssessmentElectricalPageState
               'is_flagged': _flaggedIndexes.contains(i),
               'display_order': i,
               'is_correct': false,
-              'updated_at': DateTime.now().toIso8601String(),
+              'updated_at': DateTime.now().toUtc().toIso8601String(),
             },
             onConflict: 'attempt_id,question_id',
           );
@@ -726,7 +726,7 @@ class _PostAssessmentElectricalPageState
               'is_flagged': _flaggedIndexes.contains(i),
               'display_order': i,
               'is_correct': isCorrect,
-              'updated_at': DateTime.now().toIso8601String(),
+              'updated_at': DateTime.now().toUtc().toIso8601String(),
             },
             onConflict: 'attempt_id,question_id',
           );
@@ -737,7 +737,7 @@ class _PostAssessmentElectricalPageState
           _scoredTotal == 0 ? 0 : (correctCount / _scoredTotal) * 100;
 
       await _supabase.from('assessment_attempts').update({
-        'submitted_at': DateTime.now().toIso8601String(),
+        'submitted_at': DateTime.now().toUtc().toIso8601String(),
         'status': 'submitted',
         'correct_count': correctCount,
         'score': scorePercent,
@@ -754,11 +754,11 @@ class _PostAssessmentElectricalPageState
         await _supabase.from('module_progress').insert({
           'user_id': _user.id,
           'module_id': _moduleId,
-          'post_test_completed_at': DateTime.now().toIso8601String(),
+          'post_test_completed_at': DateTime.now().toUtc().toIso8601String(),
         });
       } else {
         await _supabase.from('module_progress').update({
-          'post_test_completed_at': DateTime.now().toIso8601String(),
+          'post_test_completed_at': DateTime.now().toUtc().toIso8601String(),
         }).eq('id', progressRow['id']);
       }
 
@@ -2194,3 +2194,4 @@ class _ReviewCard extends StatelessWidget {
     );
   }
 }
+

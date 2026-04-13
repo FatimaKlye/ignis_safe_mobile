@@ -2,9 +2,9 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import '../unity_launcher.dart';
 import '../profile_progress_sync.dart';
+import '../simulation_history_service.dart';
 
 class SimulationScene4 extends StatefulWidget {
   const SimulationScene4({super.key});
@@ -18,7 +18,19 @@ class _SimulationScene4State extends State<SimulationScene4> {
   static const accent2 = Color(0xFFEA580C);
 
   static const int _moduleNo = 4;
-  String? _activeSimulationAttemptId;
+
+  final SimulationHistoryService _simulationHistoryService =
+      SimulationHistoryService();
+
+  String? _moduleId;
+  String? _simulationAttemptId;
+  bool _simulationMarkedComplete = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _startSimulationTracking();
+  }
 
   String _sceneLabelFor(int scene) {
     switch (scene) {
@@ -38,96 +50,31 @@ class _SimulationScene4State extends State<SimulationScene4> {
     }
   }
 
-  Future<String> _moduleIdFor(int moduleNo) async {
-    final moduleRow = await Supabase.instance.client
-        .from('modules')
-        .select('id')
-        .eq('module_no', moduleNo)
-        .maybeSingle();
+  Future<void> _startSimulationTracking() async {
+    final session = await _simulationHistoryService.startAttempt(
+      moduleNo: _moduleNo,
+    );
 
-    if (moduleRow == null) {
-      throw Exception('Module $moduleNo not found in database.');
-    }
+    if (!mounted || session == null) return;
 
-    return moduleRow['id'].toString();
+    _moduleId = session.moduleId;
+    _simulationAttemptId = session.attemptId;
+    _simulationMarkedComplete = false;
   }
 
-  Future<void> _startSimulationAttempt({
-    required String moduleId,
-  }) async {
-    final user = Supabase.instance.client.auth.currentUser;
-    if (user == null) throw Exception('No active user session.');
+  Future<void> _completeSimulationTracking() async {
+    if (_simulationMarkedComplete) return;
+    _simulationMarkedComplete = true;
 
-    final started = await Supabase.instance.client
-        .from('simulation_attempts')
-        .insert({
-          'user_id': user.id,
-          'module_id': moduleId,
-          'status': 'in_progress',
-        })
-        .select('id')
-        .single();
+    final moduleId = _moduleId;
+    final attemptId = _simulationAttemptId;
 
-    _activeSimulationAttemptId = started['id'].toString();
-  }
+    if (moduleId == null || attemptId == null) return;
 
-  Future<void> _finishSimulationAttempt({
-    required dynamic simulationScore,
-  }) async {
-    final attemptId = _activeSimulationAttemptId;
-    if (attemptId == null) return;
-
-    await Supabase.instance.client.from('simulation_attempts').update({
-      'status': 'submitted',
-      'submitted_at': DateTime.now().toIso8601String(),
-      'score': simulationScore,
-    }).eq('id', attemptId);
-
-    _activeSimulationAttemptId = null;
-  }
-
-  Future<void> _markSimulationCompleted(int moduleNo) async {
-    final supabase = Supabase.instance.client;
-    final user = supabase.auth.currentUser;
-
-    if (user == null) {
-      throw Exception('No active user session.');
-    }
-
-    final moduleRow = await supabase
-        .from('modules')
-        .select('id')
-        .eq('module_no', moduleNo)
-        .maybeSingle();
-
-    if (moduleRow == null) {
-      throw Exception('Module $moduleNo not found in database.');
-    }
-
-    final moduleId = moduleRow['id'].toString();
-
-    final existingRow = await supabase
-        .from('module_progress')
-        .select(
-          'id, pre_test_completed_at, simulation_completed_at, post_test_completed_at',
-        )
-        .eq('user_id', user.id)
-        .eq('module_id', moduleId)
-        .maybeSingle();
-
-    final now = DateTime.now().toIso8601String();
-
-    await supabase.from('module_progress').upsert(
-      {
-        if (existingRow != null && existingRow['id'] != null)
-          'id': existingRow['id'],
-        'user_id': user.id,
-        'module_id': moduleId,
-        'pre_test_completed_at': existingRow?['pre_test_completed_at'],
-        'simulation_completed_at': now,
-        'post_test_completed_at': existingRow?['post_test_completed_at'],
-      },
-      onConflict: 'user_id,module_id',
+    await _simulationHistoryService.completeAttempt(
+      moduleId: moduleId,
+      attemptId: attemptId,
+      score: null,
     );
   }
 
@@ -150,8 +97,9 @@ class _SimulationScene4State extends State<SimulationScene4> {
     }
 
     try {
-      final moduleId = await _moduleIdFor(_moduleNo);
-      await _startSimulationAttempt(moduleId: moduleId);
+      if (_moduleId == null || _simulationAttemptId == null) {
+        await _startSimulationTracking();
+      }
 
       final unityResult = await UnityLauncher.openScene(unitySceneName);
 
@@ -160,8 +108,7 @@ class _SimulationScene4State extends State<SimulationScene4> {
       await ProfileProgressSync.updateLastSimulation(_sceneLabelFor(picked));
 
       if (unityResult.completed == true) {
-        await _finishSimulationAttempt(simulationScore: null);
-        await _markSimulationCompleted(_moduleNo);
+        await _completeSimulationTracking();
         await ProfileProgressSync.syncCompletedSimulations();
 
         if (!mounted) return;
