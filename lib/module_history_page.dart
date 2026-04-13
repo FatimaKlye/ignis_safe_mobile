@@ -13,6 +13,7 @@ class ModuleHistoryPage extends StatefulWidget {
 class _ModuleHistoryPageState extends State<ModuleHistoryPage> {
   static const Color brandRed = Color(0xFFB11217);
   final SupabaseClient _supabase = Supabase.instance.client;
+  RealtimeChannel? _modulesChannel;
 
   bool _isLoading = true;
   final List<Map<String, dynamic>> _modules = [];
@@ -20,7 +21,39 @@ class _ModuleHistoryPageState extends State<ModuleHistoryPage> {
   @override
   void initState() {
     super.initState();
-    _loadModules();
+    _initializePage();
+  }
+
+  Future<void> _initializePage() async {
+    await _loadModules();
+    _subscribeToModules();
+  }
+
+  void _subscribeToModules() {
+    if (_modulesChannel != null) {
+      _supabase.removeChannel(_modulesChannel!);
+    }
+
+    _modulesChannel = _supabase
+        .channel('module_history_modules_live')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'modules',
+          callback: (_) async {
+            if (!mounted) return;
+            await _loadModules();
+          },
+        )
+        .subscribe();
+  }
+
+  @override
+  void dispose() {
+    if (_modulesChannel != null) {
+      _supabase.removeChannel(_modulesChannel!);
+    }
+    super.dispose();
   }
 
   Future<void> _loadModules() async {

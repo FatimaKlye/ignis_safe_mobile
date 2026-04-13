@@ -52,6 +52,8 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
 
   bool _isProgressLoading = true;
 
+  RealtimeChannel? _moduleProgressChannel;
+
   final Map<int, String> _moduleDbIdByNo = {};
   final Map<int, ModuleProgress> _progressByModuleNo = {
     1: const ModuleProgress(preDone: false, simDone: false, postDone: false),
@@ -107,8 +109,44 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
   @override
   void initState() {
     super.initState();
-    _loadProfile();
-    _loadModuleProgressFromDatabase();
+    _initializePage();
+  }
+
+  Future<void> _initializePage() async {
+    await _loadProfile();
+    await _loadModuleProgressFromDatabase();
+    _subscribeToModuleProgress();
+  }
+
+  void _subscribeToModuleProgress() {
+    final user = Supabase.instance.client.auth.currentUser;
+    if (user == null) return;
+
+    _moduleProgressChannel?.unsubscribe();
+
+    _moduleProgressChannel = Supabase.instance.client
+        .channel('module_progress_live_${user.id}')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'module_progress',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'user_id',
+            value: user.id,
+          ),
+          callback: (payload) async {
+            if (!mounted) return;
+            await _loadModuleProgressFromDatabase();
+          },
+        )
+        .subscribe();
+  }
+
+  @override
+  void dispose() {
+    _moduleProgressChannel?.unsubscribe();
+    super.dispose();
   }
 
   void _onSearchChanged(String v) => setState(() => _searchQuery = v);

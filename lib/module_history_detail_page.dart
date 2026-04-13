@@ -19,12 +19,14 @@ class ModuleHistoryDetailPage extends StatefulWidget {
 
 class _ModuleHistoryDetailPageState extends State<ModuleHistoryDetailPage> {
   final SupabaseClient _supabase = Supabase.instance.client;
+  RealtimeChannel? _progressChannel;
+  RealtimeChannel? _assessmentAttemptsChannel;
+  RealtimeChannel? _simulationAttemptsChannel;
 
   bool _isLoading = true;
 
   List<Map<String, dynamic>> _preAttempts = [];
   List<Map<String, dynamic>> _postAttempts = [];
-  List<Map<String, dynamic>> _simulationAttempts = [];
 
   bool _preDone = false;
   bool _simDone = false;
@@ -33,7 +35,95 @@ class _ModuleHistoryDetailPageState extends State<ModuleHistoryDetailPage> {
   @override
   void initState() {
     super.initState();
-    _loadHistory();
+    _initializePage();
+  }
+
+  Future<void> _initializePage() async {
+    await _loadHistory();
+    _subscribeToRealtime();
+  }
+
+  void _subscribeToRealtime() {
+    final user = _supabase.auth.currentUser;
+    if (user == null) return;
+
+    if (_progressChannel != null) {
+      _supabase.removeChannel(_progressChannel!);
+    }
+    if (_assessmentAttemptsChannel != null) {
+      _supabase.removeChannel(_assessmentAttemptsChannel!);
+    }
+    if (_simulationAttemptsChannel != null) {
+      _supabase.removeChannel(_simulationAttemptsChannel!);
+    }
+
+    _progressChannel = _supabase
+        .channel('module_history_progress_${user.id}_${widget.moduleId}')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'module_progress',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'user_id',
+            value: user.id,
+          ),
+          callback: (_) async {
+            if (!mounted) return;
+            await _loadHistory();
+          },
+        )
+        .subscribe();
+
+    _assessmentAttemptsChannel = _supabase
+        .channel('module_history_assessment_attempts_${user.id}_${widget.moduleId}')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'assessment_attempts',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'user_id',
+            value: user.id,
+          ),
+          callback: (_) async {
+            if (!mounted) return;
+            await _loadHistory();
+          },
+        )
+        .subscribe();
+
+    _simulationAttemptsChannel = _supabase
+        .channel('module_history_sim_attempts_${user.id}_${widget.moduleId}')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'simulation_attempts',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'user_id',
+            value: user.id,
+          ),
+          callback: (_) async {
+            if (!mounted) return;
+            await _loadHistory();
+          },
+        )
+        .subscribe();
+  }
+
+  @override
+  void dispose() {
+    if (_progressChannel != null) {
+      _supabase.removeChannel(_progressChannel!);
+    }
+    if (_assessmentAttemptsChannel != null) {
+      _supabase.removeChannel(_assessmentAttemptsChannel!);
+    }
+    if (_simulationAttemptsChannel != null) {
+      _supabase.removeChannel(_simulationAttemptsChannel!);
+    }
+    super.dispose();
   }
 
   Future<void> _loadHistory() async {
@@ -68,7 +158,6 @@ class _ModuleHistoryDetailPageState extends State<ModuleHistoryDetailPage> {
 
       List<Map<String, dynamic>> preAttempts = [];
       List<Map<String, dynamic>> postAttempts = [];
-      List<Map<String, dynamic>> simulationAttempts = [];
 
       if (preAssessment != null) {
         final rows = await _supabase
@@ -96,20 +185,10 @@ class _ModuleHistoryDetailPageState extends State<ModuleHistoryDetailPage> {
         postAttempts = List<Map<String, dynamic>>.from(rows);
       }
 
-      final simRows = await _supabase
-          .from('simulation_attempts')
-          .select('id, score, status, started_at, submitted_at, created_at')
-          .eq('user_id', user.id)
-          .eq('module_id', widget.moduleId)
-          .order('created_at', ascending: false);
-
-      simulationAttempts = List<Map<String, dynamic>>.from(simRows);
-
       if (!mounted) return;
       setState(() {
         _preAttempts = preAttempts;
         _postAttempts = postAttempts;
-        _simulationAttempts = simulationAttempts;
 
         _preDone = progressRow?['pre_test_completed_at'] != null;
         _simDone = progressRow?['simulation_completed_at'] != null;
@@ -157,12 +236,6 @@ class _ModuleHistoryDetailPageState extends State<ModuleHistoryDetailPage> {
     }
 
     return '—';
-  }
-
-  String _formatSimulationScore(Map<String, dynamic> item) {
-    final status = (item['status'] ?? '').toString().toLowerCase();
-    if (status != 'submitted') return '—';
-    return 'N/A';
   }
 
   @override
@@ -249,12 +322,9 @@ class _ModuleHistoryDetailPageState extends State<ModuleHistoryDetailPage> {
                               ),
                             ),
                             const SizedBox(height: 14),
-                            _HistorySectionCard(
+                            _SimulationStatusCard(
                               title: "Simulation",
                               done: _simDone,
-                              attempts: _simulationAttempts,
-                              formatDate: _formatDate,
-                              formatScore: _formatSimulationScore,
                             ),
                             const SizedBox(height: 14),
                             _HistorySectionCard(
@@ -300,7 +370,6 @@ class _HistorySectionCard extends StatelessWidget {
     final retakes = attempts.isEmpty ? 0 : attempts.length - 1;
 
     return Container(
-      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
@@ -312,10 +381,24 @@ class _HistorySectionCard extends StatelessWidget {
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          dividerColor: Colors.transparent,
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+        ),
+        child: ExpansionTile(
+          tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+          collapsedShape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+          iconColor: Colors.black,
+          collapsedIconColor: Colors.black,
+          title: Row(
             children: [
               Expanded(
                 child: Text(
@@ -343,71 +426,169 @@ class _HistorySectionCard extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 10),
-          Text(
-            "Total Attempts: ${attempts.length}",
-            style: const TextStyle(fontWeight: FontWeight.w800),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            "Retakes: $retakes",
-            style: const TextStyle(fontWeight: FontWeight.w800),
-          ),
-          const SizedBox(height: 12),
-          if (attempts.isEmpty)
-            const Text(
-              "No attempts yet.",
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                color: Colors.grey,
+          children: [
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "Total Attempts: ${attempts.length}",
+                style: const TextStyle(fontWeight: FontWeight.w800),
               ),
-            )
-          else
-            Column(
-              children: List.generate(attempts.length, (index) {
-                final item = attempts[index];
-                final attemptNo = attempts.length - index;
-
-                return Container(
-                  width: double.infinity,
-                  constraints: const BoxConstraints(minHeight: 110),
-                  margin: const EdgeInsets.only(bottom: 10),
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF6F6F6),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Attempt $attemptNo",
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w900,
-                          fontSize: 14,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        "Score: ${formatScore(item)}",
-                        style: const TextStyle(fontWeight: FontWeight.w700),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        "Status: ${item['status'] ?? 'N/A'}",
-                        style: const TextStyle(fontWeight: FontWeight.w700),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        "Submitted: ${formatDate(item['submitted_at'])}",
-                        style: const TextStyle(fontWeight: FontWeight.w700),
-                      ),
-                    ],
-                  ),
-                );
-              }),
             ),
+            const SizedBox(height: 4),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "Retakes: $retakes",
+                style: const TextStyle(fontWeight: FontWeight.w800),
+              ),
+            ),
+            const SizedBox(height: 12),
+            if (attempts.isEmpty)
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "No attempts yet.",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: Colors.grey,
+                  ),
+                ),
+              )
+            else
+              Column(
+                children: List.generate(attempts.length, (index) {
+                  final item = attempts[index];
+                  final attemptNo = attempts.length - index;
+
+                  return Container(
+                    width: double.infinity,
+                    constraints: const BoxConstraints(minHeight: 110),
+                    margin: const EdgeInsets.only(bottom: 10),
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF6F6F6),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Attempt $attemptNo",
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w900,
+                            fontSize: 14,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          "Score: ${formatScore(item)}",
+                          style: const TextStyle(fontWeight: FontWeight.w700),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          "Status: ${item['status'] ?? 'N/A'}",
+                          style: const TextStyle(fontWeight: FontWeight.w700),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          "Submitted: ${formatDate(item['submitted_at'])}",
+                          style: const TextStyle(fontWeight: FontWeight.w700),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SimulationStatusCard extends StatelessWidget {
+  const _SimulationStatusCard({
+    required this.title,
+    required this.done,
+  });
+
+  final String title;
+  final bool done;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
+          ),
         ],
+      ),
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          dividerColor: Colors.transparent,
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+        ),
+        child: ExpansionTile(
+          tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+          collapsedShape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+          iconColor: Colors.black,
+          collapsedIconColor: Colors.black,
+          title: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                decoration: BoxDecoration(
+                  color: done ? const Color(0x142EB872) : const Color(0x14B11217),
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: Text(
+                  done ? "DONE" : "NOT DONE",
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w900,
+                    color: done ? const Color(0xFF2EB872) : const Color(0xFFB11217),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          children: [
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                done
+                    ? "The simulation for this module is already completed."
+                    : "The simulation for this module is not completed yet.",
+                style: const TextStyle(
+                  fontWeight: FontWeight.w700,
+                  height: 1.4,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

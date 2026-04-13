@@ -1,4 +1,4 @@
-name: IGNIS SAFE
+name: ignis_safe
 description: "A new Flutter project."
 publish_to: 'none'
 version: 1.0.0+1
@@ -75,7 +75,7 @@ flutter_native_splash:
   color: "#FFFFFF"
   image: assets/logo.png
   android: true
-  ios: true
+  ios: false
   web: false
 
   android_12:

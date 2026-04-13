@@ -66,7 +66,7 @@ class SimulationHistoryService {
       await _supabase
           .from('simulation_attempts')
           .update({
-            'status': 'submitted',
+            'status': 'done',
             'submitted_at': now,
             'score': score,
           })
