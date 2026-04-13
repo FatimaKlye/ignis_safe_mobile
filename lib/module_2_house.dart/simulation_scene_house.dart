@@ -17,6 +17,7 @@ class SimulationScene2 extends StatefulWidget {
 }
 
 class _SimulationScene2State extends State<SimulationScene2> {
+  String? _activeSimulationAttemptId;
 
   String _sceneLabelFor(int scene) {
     switch (scene) {
@@ -34,6 +35,54 @@ class _SimulationScene2State extends State<SimulationScene2> {
       default:
         return null;
     }
+  }
+
+  Future<String> _moduleIdFor(int moduleNo) async {
+    final moduleRow = await Supabase.instance.client
+        .from('modules')
+        .select('id')
+        .eq('module_no', moduleNo)
+        .maybeSingle();
+
+    if (moduleRow == null) {
+      throw Exception('Module $moduleNo not found in database.');
+    }
+
+    return moduleRow['id'].toString();
+  }
+
+  Future<void> _startSimulationAttempt({
+    required String moduleId,
+  }) async {
+    final user = Supabase.instance.client.auth.currentUser;
+    if (user == null) throw Exception('No active user session.');
+
+    final started = await Supabase.instance.client
+        .from('simulation_attempts')
+        .insert({
+          'user_id': user.id,
+          'module_id': moduleId,
+          'status': 'in_progress',
+        })
+        .select('id')
+        .single();
+
+    _activeSimulationAttemptId = started['id'].toString();
+  }
+
+  Future<void> _finishSimulationAttempt({
+    required dynamic simulationScore,
+  }) async {
+    final attemptId = _activeSimulationAttemptId;
+    if (attemptId == null) return;
+
+    await Supabase.instance.client.from('simulation_attempts').update({
+      'status': 'submitted',
+      'submitted_at': DateTime.now().toIso8601String(),
+      'score': simulationScore,
+    }).eq('id', attemptId);
+
+    _activeSimulationAttemptId = null;
   }
 
   Future<void> _markSimulationCompleted(int moduleNo) async {
@@ -98,6 +147,9 @@ class _SimulationScene2State extends State<SimulationScene2> {
     }
 
     try {
+      final moduleId = await _moduleIdFor(2);
+      await _startSimulationAttempt(moduleId: moduleId);
+
       final unityResult = await UnityLauncher.openScene(unitySceneName);
 
       if (!mounted) return;
@@ -105,6 +157,7 @@ class _SimulationScene2State extends State<SimulationScene2> {
       await ProfileProgressSync.updateLastSimulation(_sceneLabelFor(picked));
 
       if (unityResult.completed == true) {
+        await _finishSimulationAttempt(simulationScore: null);
         await _markSimulationCompleted(2);
         await ProfileProgressSync.syncCompletedSimulations();
 

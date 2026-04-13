@@ -1,11 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// FloatingNavBar — floating pill nav w/ concave dip + smooth dot motion
-///
-/// Notes:
-/// - Uses InkResponse (Material ripple)
-/// - Adds a subtle "press" animation
-/// - More stable math, fewer edge cases when layout changes
+
 class FloatingNavBar extends StatefulWidget {
   final int selectedIndex;
   final ValueChanged<int> onItemTapped;
@@ -241,7 +236,7 @@ class _FloatingNavBarState extends State<FloatingNavBar>
   }
 
   String _getLabel(int index) {
-    const labels = ['Learn', 'Simulation', 'Profile', 'About'];
+    const labels = ['Learn', 'Fire Module', 'Profile', 'About'];
     return index < labels.length ? labels[index] : '';
   }
 }

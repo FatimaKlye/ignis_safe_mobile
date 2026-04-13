@@ -1,11 +1,10 @@
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'editprofile.dart';
 import 'login.dart';
+import 'module_history_page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({
@@ -28,12 +27,7 @@ class _ProfilePageState extends State<ProfilePage> {
   static const Color darkText = Color(0xFF222222);
   static const String _kLangKey = "ignis_lang";
   static const int _totalSimulations = 5;
-
-  final ImagePicker _picker = ImagePicker();
   final SupabaseClient _supabase = Supabase.instance.client;
-
-  Uint8List? _avatarBytes;
-  bool _isUploadingAvatar = false;
   bool _isLoadingProfile = true;
   bool _isLoggingOut = false;
 
@@ -195,98 +189,6 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Future<void> _pickAvatar() async {
-    if (_isUploadingAvatar) return;
-
-    try {
-      final image = await _picker.pickImage(
-        source: ImageSource.gallery,
-        imageQuality: 85,
-      );
-
-      if (image == null) return;
-
-      final user = _supabase.auth.currentUser;
-
-      if (user == null) {
-        if (!mounted) return;
-        _showDialogBox(
-          title: "Error",
-          message: "No active user session.",
-        );
-        return;
-      }
-
-      final bytes = await image.readAsBytes();
-
-      const bucketName = 'profile_pic';
-      final ext = image.name.contains('.')
-          ? image.name.split('.').last.toLowerCase()
-          : 'jpg';
-      final filePath = '${user.id}/avatar.$ext';
-
-      if (!mounted) return;
-
-      setState(() {
-        _avatarBytes = bytes;
-        _isUploadingAvatar = true;
-      });
-
-      await _supabase.storage.from(bucketName).uploadBinary(
-        filePath,
-        bytes,
-        fileOptions: FileOptions(
-          upsert: true,
-          contentType: _getContentType(ext),
-        ),
-      );
-
-      final rawUrl = _supabase.storage.from(bucketName).getPublicUrl(filePath);
-      final avatarUrl = '$rawUrl?v=${DateTime.now().millisecondsSinceEpoch}';
-
-      await _supabase.from('profiles').update({
-        'avatar_url': avatarUrl,
-        'updated_at': DateTime.now().toIso8601String(),
-      }).eq('id', user.id);
-
-      if (!mounted) return;
-
-      setState(() {
-        _avatarUrl = avatarUrl;
-        _avatarBytes = null;
-        _isUploadingAvatar = false;
-      });
-    } catch (e) {
-      debugPrint('PROFILE IMAGE ERROR: $e');
-
-      if (!mounted) return;
-
-      setState(() {
-        _isUploadingAvatar = false;
-      });
-
-      _showDialogBox(
-        title: "Error",
-        message: "Could not upload profile image.\n$e",
-      );
-    }
-  }
-
-  String _getContentType(String ext) {
-    switch (ext) {
-      case 'png':
-        return 'image/png';
-      case 'webp':
-        return 'image/webp';
-      case 'gif':
-        return 'image/gif';
-      case 'jpg':
-      case 'jpeg':
-      default:
-        return 'image/jpeg';
-    }
-  }
-
   Future<void> _logout() async {
     if (_isLoggingOut) return;
 
@@ -320,17 +222,93 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void _showFAQ() {
-    final isEnglish = _language == "English";
-
-    final text = isEnglish
-        ? "• Edit Profile → Update your information.\n\n"
-            "• Change Password → Inside Edit Profile.\n\n"
-            "• Simulations → Complete Pre → Simulation → Post."
-        : "• I-edit ang Profile → I-update ang impormasyon.\n\n"
-            "• Palitan ang Password → Sa loob ng Edit Profile.\n\n"
-            "• Simulation → Pre → Simulation → Post.";
-
-    _showDialogBox(title: "FAQ", message: text);
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: const Text(
+          "FAQ",
+          style: TextStyle(
+            fontWeight: FontWeight.w900,
+          ),
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: const [
+              Text(
+                "1. What does IGNIS SAFE do?",
+                style: TextStyle(
+                  fontWeight: FontWeight.w900,
+                  fontSize: 15,
+                ),
+              ),
+              SizedBox(height: 6),
+              Text(
+                "IGNIS SAFE helps users learn fire safety through learning materials, assessments, and interactive fire scenario simulations. It is designed to improve awareness, preparedness, and proper response during fire emergencies.",
+                style: TextStyle(
+                  height: 1.4,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(height: 16),
+              Text(
+                "2. Why do we need to learn fire scenarios?",
+                style: TextStyle(
+                  fontWeight: FontWeight.w900,
+                  fontSize: 15,
+                ),
+              ),
+              SizedBox(height: 6),
+              Text(
+                "Learning fire scenarios helps people understand what to do in real emergency situations. It builds correct decision-making, reduces panic, and teaches safe actions that can help protect lives and property.",
+                style: TextStyle(
+                  height: 1.4,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(height: 16),
+              Text(
+                "3. What is the purpose of this app?",
+                style: TextStyle(
+                  fontWeight: FontWeight.w900,
+                  fontSize: 15,
+                ),
+              ),
+              SizedBox(height: 6),
+              Text(
+                "The purpose of this app is to provide an engaging and practical way to learn fire safety. It combines education and simulation so users can gain knowledge and apply it in realistic fire emergency situations.",
+                style: TextStyle(
+                  height: 1.4,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: brandRed,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            onPressed: () => Navigator.pop(context),
+            child: const Text(
+              "OK",
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   void _showDialogBox({
@@ -379,10 +357,6 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   ImageProvider? _getAvatarImage() {
-    if (_avatarBytes != null) {
-      return MemoryImage(_avatarBytes!);
-    }
-
     if (_avatarUrl != null && _avatarUrl!.trim().isNotEmpty) {
       if (_avatarUrl!.startsWith('http')) {
         return NetworkImage(_avatarUrl!);
@@ -441,36 +415,33 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: Column(
                       children: [
                         const SizedBox(height: 10),
-                        GestureDetector(
-                          onTap: _pickAvatar,
-                          child: Container(
-                            width: 180,
-                            height: 180,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.grey.shade200,
-                              image: avatarImage != null
-                                  ? DecorationImage(
-                                      image: avatarImage,
-                                      fit: BoxFit.cover,
-                                    )
-                                  : null,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.15),
-                                  blurRadius: 18,
-                                  offset: const Offset(0, 10),
-                                ),
-                              ],
-                            ),
-                            child: avatarImage == null
-                                ? Icon(
-                                    Icons.person,
-                                    size: 70,
-                                    color: Colors.grey.shade500,
+                        Container(
+                          width: 180,
+                          height: 180,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.grey.shade200,
+                            image: avatarImage != null
+                                ? DecorationImage(
+                                    image: avatarImage,
+                                    fit: BoxFit.cover,
                                   )
                                 : null,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.15),
+                                blurRadius: 18,
+                                offset: const Offset(0, 10),
+                              ),
+                            ],
                           ),
+                          child: avatarImage == null
+                              ? Icon(
+                                  Icons.person,
+                                  size: 70,
+                                  color: Colors.grey.shade500,
+                                )
+                              : null,
                         ),
                         const SizedBox(height: 18),
                         _isLoadingProfile
@@ -528,6 +499,19 @@ class _ProfilePageState extends State<ProfilePage> {
                               });
                               await _loadProfile();
                             }
+                          },
+                        ),
+                        const SizedBox(height: 14),
+                        _BigButton(
+                          icon: Icons.history,
+                          label: "Module History",
+                          onTap: () async {
+                            await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const ModuleHistoryPage(),
+                              ),
+                            );
                           },
                         ),
                         const SizedBox(height: 14),

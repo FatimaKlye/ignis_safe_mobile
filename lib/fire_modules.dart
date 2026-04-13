@@ -992,7 +992,7 @@ class _ModuleActionPopup extends StatelessWidget {
       color: Colors.transparent,
       child: Container(
         margin: const EdgeInsets.fromLTRB(18, 0, 18, 18),
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(18),
@@ -1007,22 +1007,16 @@ class _ModuleActionPopup extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              width: 42,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.15),
-                borderRadius: BorderRadius.circular(999),
-              ),
-            ),
-            const SizedBox(height: 10),
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                const SizedBox(width: 40),
                 Expanded(
                   child: Column(
                     children: [
                       Text(
                         moduleLabel,
+                        textAlign: TextAlign.center,
                         style: const TextStyle(
                           fontWeight: FontWeight.w900,
                           fontSize: 14,
@@ -1031,12 +1025,12 @@ class _ModuleActionPopup extends StatelessWidget {
                       const SizedBox(height: 2),
                       Text(
                         moduleTitle,
+                        textAlign: TextAlign.center,
                         style: const TextStyle(
                           fontWeight: FontWeight.w700,
                           fontSize: 12.5,
                           color: Color(0xFF444444),
                         ),
-                        textAlign: TextAlign.center,
                       ),
                     ],
                   ),
@@ -1048,7 +1042,7 @@ class _ModuleActionPopup extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
             Row(
               children: [
                 Expanded(
