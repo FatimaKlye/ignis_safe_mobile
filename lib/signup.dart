@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'forgotpass.dart';
@@ -15,6 +16,7 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   static const Color brandRed = Color(0xFFB71C1C);
   final supabase = Supabase.instance.client;
+  static final RegExp _namePattern = RegExp(r"^[A-Za-z]+(?:[ '\-][A-Za-z]+)*$");
 
   final _formKey = GlobalKey<FormState>();
   final firstNameCtrl = TextEditingController();
@@ -39,12 +41,18 @@ class _RegisterPageState extends State<RegisterPage> {
   String? _validateFirstName(String? v) {
     final value = (v ?? '').trim();
     if (value.isEmpty) return 'First name is required';
+    if (!_namePattern.hasMatch(value)) {
+      return 'First name should contain letters only';
+    }
     return null;
   }
 
   String? _validateLastName(String? v) {
     final value = (v ?? '').trim();
     if (value.isEmpty) return 'Last name is required';
+    if (!_namePattern.hasMatch(value)) {
+      return 'Last name should contain letters only';
+    }
     return null;
   }
 
@@ -70,19 +78,14 @@ class _RegisterPageState extends State<RegisterPage> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: const Text(
           'This email already has an account',
           style: TextStyle(fontWeight: FontWeight.w900),
         ),
         content: Text(
           '$email already has an account.\n\nWould you like to reset your password or go to login?',
-          style: const TextStyle(
-            fontWeight: FontWeight.w600,
-            height: 1.4,
-          ),
+          style: const TextStyle(fontWeight: FontWeight.w600, height: 1.4),
         ),
         actions: [
           TextButton(
@@ -150,26 +153,26 @@ class _RegisterPageState extends State<RegisterPage> {
       );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not check email: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Could not check email: $e')));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
   }
 
   Widget _inputLabel(String label) => Align(
-        alignment: Alignment.centerLeft,
-        child: Text(
-          label,
-          style: const TextStyle(
-            fontFamily: 'Poppins',
-            color: brandRed,
-            fontWeight: FontWeight.bold,
-            fontSize: 13,
-          ),
-        ),
-      );
+    alignment: Alignment.centerLeft,
+    child: Text(
+      label,
+      style: const TextStyle(
+        fontFamily: 'Poppins',
+        color: brandRed,
+        fontWeight: FontWeight.bold,
+        fontSize: 13,
+      ),
+    ),
+  );
 
   Widget _buildValidatedField({
     required String hint,
@@ -178,6 +181,8 @@ class _RegisterPageState extends State<RegisterPage> {
     TextInputType? keyboardType,
     TextInputAction? textInputAction,
     ValueChanged<String>? onSubmitted,
+    List<TextInputFormatter>? inputFormatters,
+    TextCapitalization textCapitalization = TextCapitalization.none,
   }) {
     return FormField<String>(
       validator: (_) => validator(controller.text),
@@ -204,6 +209,8 @@ class _RegisterPageState extends State<RegisterPage> {
                 keyboardType: keyboardType,
                 textInputAction: textInputAction,
                 onSubmitted: onSubmitted,
+                inputFormatters: inputFormatters,
+                textCapitalization: textCapitalization,
                 style: const TextStyle(fontFamily: 'Poppins'),
                 onChanged: (_) => state.didChange(controller.text),
                 decoration: InputDecoration(
@@ -237,91 +244,89 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Widget _buildRegisterButton() => SizedBox(
-        width: double.infinity,
-        height: 50,
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: brandRed,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
+    width: double.infinity,
+    height: 50,
+    child: ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: brandRed,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      ),
+      onPressed: _isLoading ? null : _continueToVerifyEmail,
+      child: _isLoading
+          ? const SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: Colors.white,
+              ),
+            )
+          : const Text(
+              'Verify Email Address',
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
             ),
-          ),
-          onPressed: _isLoading ? null : _continueToVerifyEmail,
-          child: _isLoading
-              ? const SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: Colors.white,
-                  ),
-                )
-              : const Text(
-                  'Verify Email Address',
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-        ),
-      );
+    ),
+  );
 
   Widget _buildFooter() => Column(
-        children: [
-          const SizedBox(height: 55),
-          Row(
-            children: const [
-              Expanded(child: Divider(thickness: 1)),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 12),
-                child: Text(
-                  'OR',
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    color: Colors.grey,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+    children: [
+      const SizedBox(height: 55),
+      Row(
+        children: const [
+          Expanded(child: Divider(thickness: 1)),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 12),
+            child: Text(
+              'OR',
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                color: Colors.grey,
+                fontWeight: FontWeight.w600,
               ),
-              Expanded(child: Divider(thickness: 1)),
-            ],
+            ),
           ),
-          const SizedBox(height: 10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                "Already have an account? ",
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 13,
-                  color: Colors.grey,
-                ),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (_) => const LoginPage()),
-                  );
-                },
-                child: const Text(
-                  'Login',
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    color: brandRed,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 13,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
+          Expanded(child: Divider(thickness: 1)),
         ],
-      );
+      ),
+      const SizedBox(height: 10),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Text(
+            "Already have an account? ",
+            style: TextStyle(
+              fontFamily: 'Poppins',
+              fontSize: 13,
+              color: Colors.grey,
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => const LoginPage()),
+              );
+            },
+            child: const Text(
+              'Login',
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                color: brandRed,
+                fontWeight: FontWeight.bold,
+                fontSize: 13,
+              ),
+            ),
+          ),
+        ],
+      ),
+      const SizedBox(height: 10),
+    ],
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -389,6 +394,12 @@ class _RegisterPageState extends State<RegisterPage> {
                             hint: 'Enter your first name',
                             controller: firstNameCtrl,
                             validator: _validateFirstName,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(
+                                RegExp(r"[A-Za-z '\-]"),
+                              ),
+                            ],
+                            textCapitalization: TextCapitalization.words,
                             textInputAction: TextInputAction.next,
                           ),
                           const SizedBox(height: 25),
@@ -397,6 +408,12 @@ class _RegisterPageState extends State<RegisterPage> {
                             hint: 'Enter your last name',
                             controller: lastNameCtrl,
                             validator: _validateLastName,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(
+                                RegExp(r"[A-Za-z '\-]"),
+                              ),
+                            ],
+                            textCapitalization: TextCapitalization.words,
                             textInputAction: TextInputAction.next,
                           ),
                           const SizedBox(height: 25),
