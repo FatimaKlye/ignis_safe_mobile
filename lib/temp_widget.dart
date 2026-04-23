@@ -1,0 +1,1 @@
+class TempWidget { const TempWidget(); }

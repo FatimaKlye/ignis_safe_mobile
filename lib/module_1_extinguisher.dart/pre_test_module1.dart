@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'pre_assessment_extinguisher.dart';
 
+String _t(BuildContext context, String en, String tl) {
+  return Localizations.localeOf(context).languageCode == 'tl' ? tl : en;
+}
 
 class PreAssessmentIntroPage extends StatelessWidget {
   const PreAssessmentIntroPage({super.key});
@@ -40,10 +43,10 @@ class PreAssessmentIntroPage extends StatelessWidget {
                         onPressed: () => Navigator.pop(context),
                       ),
                       const SizedBox(height: 15),
-                      const Center(
+                      Center(
                         child: Text(
-                          "Pre-Assessment",
-                          style: TextStyle(
+                          _t(context, "Pre-Assessment", "Paunang Pagsusulit"),
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 30,
                             fontWeight: FontWeight.bold,
@@ -76,8 +79,11 @@ class PreAssessmentIntroPage extends StatelessWidget {
                               child: const Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Icon(Icons.bolt_rounded,
-                                      color: Colors.white, size: 18),
+                                  Icon(
+                                    Icons.bolt_rounded,
+                                    color: Colors.white,
+                                    size: 18,
+                                  ),
                                   SizedBox(width: 8),
                                   Text(
                                     "MODULE 1",
@@ -91,10 +97,14 @@ class PreAssessmentIntroPage extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(width: 15),
-                            const Expanded(
+                            Expanded(
                               child: Text(
-                                "Fire Extinguisher: Basics, Types, and How to Use",
-                                style: TextStyle(
+                                _t(
+                                  context,
+                                  "Fire Extinguisher: Basics, Types, and How to Use",
+                                  "Pamatay-Sunog: Mga Batayan, Uri, at Paano Gamitin",
+                                ),
+                                style: const TextStyle(
                                   color: Colors.black,
                                   fontWeight: FontWeight.w600,
                                   fontFamily: 'Poppins',
@@ -111,7 +121,7 @@ class PreAssessmentIntroPage extends StatelessWidget {
                 const SizedBox(height: 10),
 
                 // ===== CONTENT (fills space, minimal white space) =====
-// ===== CONTENT (centered vertically) =====
+                // ===== CONTENT (centered vertically) =====
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 18),
@@ -142,20 +152,24 @@ class PreAssessmentIntroPage extends StatelessWidget {
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                const Text(
-                                  "Pre-Assessment",
+                                Text(
+                                  _t(
+                                    context,
+                                    "Pre-Assessment",
+                                    "Paunang Pagsusulit",
+                                  ),
                                   textAlign: TextAlign.center,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 28,
                                     fontWeight: FontWeight.w800,
                                     fontFamily: 'Poppins',
                                   ),
                                 ),
                                 const SizedBox(height: 6),
-                                const Text(
-                                  "INSTRUCTION",
+                                Text(
+                                  _t(context, "INSTRUCTION", "PANUTO"),
                                   textAlign: TextAlign.center,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.w900,
                                     letterSpacing: 1,
@@ -165,7 +179,7 @@ class PreAssessmentIntroPage extends StatelessWidget {
                                 const SizedBox(height: 18),
                                 RichText(
                                   textAlign: TextAlign.center,
-                                  text: const TextSpan(
+                                  text: TextSpan(
                                     style: TextStyle(
                                       fontSize: 15,
                                       height: 1.5,
@@ -174,17 +188,28 @@ class PreAssessmentIntroPage extends StatelessWidget {
                                     ),
                                     children: [
                                       TextSpan(
-                                        text:
-                                            "This quiz is designed to check your basic knowledge about ",
+                                        text: _t(
+                                          context,
+                                          "This quiz is designed to check your basic knowledge about ",
+                                          "Ang pagsusulit na ito ay idinisenyo upang suriin ang iyong pangunahing kaalaman tungkol sa ",
+                                        ),
                                       ),
                                       TextSpan(
-                                        text:
-                                            "Module 1: Fire Extinguisher: Safe Use and Emergency Response",
-                                        style: TextStyle(fontWeight: FontWeight.w700),
+                                        text: _t(
+                                          context,
+                                          "Module 1: Fire Extinguisher: Safe Use and Emergency Response",
+                                          "Modyul 1: Pamatay-Sunog: Ligtas na Paggamit at Pagtugon sa Emerhensiya",
+                                        ),
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w700,
+                                        ),
                                       ),
                                       TextSpan(
-                                        text:
-                                            ". It helps us see what you already know before starting the lesson.",
+                                        text: _t(
+                                          context,
+                                          ". It helps us see what you already know before starting the lesson.",
+                                          ". Nakatutulong itong makita kung ano na ang alam mo bago simulan ang aralin.",
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -197,8 +222,11 @@ class PreAssessmentIntroPage extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 18),
                                 Text(
-                                  "This pre-test is not graded. It is for practice and learning purposes only. "
-                                  "The goal is to prepare you for the topics discussed in this module.",
+                                  _t(
+                                    context,
+                                    "This pre-test is not graded. It is for practice and learning purposes only. The goal is to prepare you for the topics discussed in this module.",
+                                    "Hindi ito graded. Para lamang ito sa pagsasanay at pagkatuto. Layunin nitong ihanda ka sa mga paksang tatalakayin sa modyul na ito.",
+                                  ),
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     fontSize: 13.5,
@@ -229,9 +257,13 @@ class PreAssessmentIntroPage extends StatelessWidget {
                                       ),
                                       elevation: 6,
                                     ),
-                                    child: const Text(
-                                      "Proceed to Questions",
-                                      style: TextStyle(
+                                    child: Text(
+                                      _t(
+                                        context,
+                                        "Proceed to Questions",
+                                        "Magpatuloy sa mga Tanong",
+                                      ),
+                                      style: const TextStyle(
                                         fontWeight: FontWeight.w800,
                                         fontSize: 15,
                                         fontFamily: 'Poppins',
@@ -248,10 +280,27 @@ class PreAssessmentIntroPage extends StatelessWidget {
 
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: const [
-                              _InfoChip(icon: Icons.timer_outlined, label: "2–3 mins"),
-                              _InfoChip(icon: Icons.quiz_outlined, label: "Practice only"),
-                              _InfoChip(icon: Icons.lock_outline, label: "Not graded"),
+                            children: [
+                              _InfoChip(
+                                icon: Icons.timer_outlined,
+                                label: _t(context, "2–3 mins", "2–3 minuto"),
+                              ),
+                              _InfoChip(
+                                icon: Icons.quiz_outlined,
+                                label: _t(
+                                  context,
+                                  "Practice only",
+                                  "Pagsasanay lamang",
+                                ),
+                              ),
+                              _InfoChip(
+                                icon: Icons.lock_outline,
+                                label: _t(
+                                  context,
+                                  "Not graded",
+                                  "Hindi graded",
+                                ),
+                              ),
                             ],
                           ),
                         ],
@@ -315,9 +364,15 @@ class PreAssessmentQuestionsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       body: Center(
-        child: Text("Pre-Assessment Questions Page (replace this)"),
+        child: Text(
+          _t(
+            context,
+            "Pre-Assessment Questions Page (replace this)",
+            "Pahina ng Paunang Pagsusulit (palitan ito)",
+          ),
+        ),
       ),
     );
   }

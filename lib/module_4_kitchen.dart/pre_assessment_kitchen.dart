@@ -242,9 +242,7 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
 
               orderedQuestions.add(question);
               selectedOptionIds.add(
-                row['selected_option_id'] == null
-                    ? null
-                    : row['selected_option_id'].toString(),
+                row['selected_option_id']?.toString(),
               );
 
               if ((row['is_flagged'] ?? false) as bool) {

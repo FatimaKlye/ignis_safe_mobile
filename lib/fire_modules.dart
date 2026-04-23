@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'login.dart';
+import 'localization/app_text.dart';
 
 import 'module_1_extinguisher.dart/pre_assess_instruction.dart' as pre1;
 import 'module_1_extinguisher.dart/post_assessment_extinguisher.dart';
@@ -63,48 +64,43 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
     5: const ModuleProgress(preDone: false, simDone: false, postDone: false),
   };
 
-  final List<_ModuleItem> _modules = const [
-    _ModuleItem(
-      moduleNo: 1,
-      moduleLabel: "MODULE 1",
-      title: "FIRE EXTINGUISHER",
-      description:
-          "Learn the proper and safe use of fire extinguishers for effective response during fire emergencies.",
-      asset: "assets/fire_ex.png",
-    ),
-    _ModuleItem(
-      moduleNo: 2,
-      moduleLabel: "MODULE 2",
-      title: "HOUSE FIRE",
-      description:
-          "Learn how household fires begin, recognize home fire hazards, and respond safely and effectively during emergencies at home.",
-      asset: "assets/house.jpg",
-    ),
-    _ModuleItem(
-      moduleNo: 3,
-      moduleLabel: "MODULE 3",
-      title: "ELECTRICAL FIRE",
-      description:
-          "Learn how electrical fires start, identify common hazards, and apply the correct fire safety response for electrical-related incidents.",
-      asset: "assets/electrical.png",
-    ),
-    _ModuleItem(
-      moduleNo: 4,
-      moduleLabel: "MODULE 4",
-      title: "KITCHEN FIRE",
-      description:
-          "Understand common kitchen fire risks and learn the proper fire safety practices and emergency response steps in cooking areas.",
-      asset: "assets/kitchen.png",
-    ),
-    _ModuleItem(
-      moduleNo: 5,
-      moduleLabel: "MODULE 5",
-      title: "TENEMENT FIRE",
-      description:
-          "Understand building fire risks, evacuation procedures, and the correct fire safety response in larger structures and shared spaces.",
-      asset: "assets/condo.jpg",
-    ),
-  ];
+  List<_ModuleItem> _modules(BuildContext context) => [
+        _ModuleItem(
+          moduleNo: 1,
+          moduleLabel: context.tr('module_1'),
+          title: context.tr('title_fire_extinguisher'),
+          description: context.tr('desc_m1'),
+          asset: "assets/fire_ex.png",
+        ),
+        _ModuleItem(
+          moduleNo: 2,
+          moduleLabel: context.tr('module_2'),
+          title: context.tr('title_house_fire'),
+          description: context.tr('desc_m2_fire_modules'),
+          asset: "assets/house.jpg",
+        ),
+        _ModuleItem(
+          moduleNo: 3,
+          moduleLabel: context.tr('module_3'),
+          title: context.tr('title_electrical_fire'),
+          description: context.tr('desc_m3_fire_modules'),
+          asset: "assets/electrical.png",
+        ),
+        _ModuleItem(
+          moduleNo: 4,
+          moduleLabel: context.tr('module_4'),
+          title: context.tr('title_kitchen_fire'),
+          description: context.tr('desc_m4_fire_modules'),
+          asset: "assets/kitchen.png",
+        ),
+        _ModuleItem(
+          moduleNo: 5,
+          moduleLabel: context.tr('module_5'),
+          title: context.tr('title_tenement_fire'),
+          description: context.tr('desc_m5_fire_modules'),
+          asset: "assets/condo.jpg",
+        ),
+      ];
 
   @override
   void initState() {
@@ -497,19 +493,19 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
     final selected = await showMenu<ModuleFilter>(
       context: context,
       position: const RelativeRect.fromLTRB(9999, 120, 16, 0),
-      items: const [
-        PopupMenuItem(value: ModuleFilter.all, child: Text("All")),
+      items: [
+        PopupMenuItem(value: ModuleFilter.all, child: Text(context.tr('all'))),
         PopupMenuItem(
           value: ModuleFilter.pending,
-          child: Text("Pending / Not Started"),
+          child: Text(context.tr('pending_not_started')),
         ),
         PopupMenuItem(
           value: ModuleFilter.inProgress,
-          child: Text("In Progress"),
+          child: Text(context.tr('in_progress')),
         ),
         PopupMenuItem(
           value: ModuleFilter.completed,
-          child: Text("Completed"),
+          child: Text(context.tr('completed')),
         ),
       ],
     );
@@ -546,7 +542,7 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
   Widget build(BuildContext context) {
     final q = _searchQuery.trim().toLowerCase();
 
-    final searchedModules = _modules.where((m) {
+    final searchedModules = _modules(context).where((m) {
       if (q.isEmpty) return true;
       return m.title.toLowerCase().contains(q) ||
           m.moduleLabel.toLowerCase().contains(q);
@@ -588,14 +584,14 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
                             return;
                           }
                         },
-                        itemBuilder: (context) => const [
+                        itemBuilder: (context) => [
                           PopupMenuItem(
                             value: "profile",
                             child: Row(
                               children: [
                                 Icon(Icons.person_outline_rounded),
                                 SizedBox(width: 8),
-                                Text("Profile"),
+                                Text(context.tr('profile')),
                               ],
                             ),
                           ),
@@ -605,7 +601,7 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
                               children: [
                                 Icon(Icons.logout_rounded),
                                 SizedBox(width: 8),
-                                Text("Log Out"),
+                                Text(context.tr('log_out')),
                               ],
                             ),
                           ),
@@ -629,8 +625,11 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
                         children: [
                           Text(
                             _firstName.isEmpty && _lastName.isEmpty
-                                ? 'Hi!'
-                                : 'Hi, $_firstName $_lastName'.trim(),
+                                ? context.tr('hi')
+                                : context.tr(
+                                    'hi_name',
+                                    params: {'name': '$_firstName $_lastName'.trim()},
+                                  ),
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 12,
@@ -638,8 +637,8 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
                             ),
                           ),
                           const SizedBox(height: 2),
-                          const Text(
-                            "Welcome to Ignis Safe",
+                          Text(
+                            context.tr('welcome_to_ignis_safe_short'),
                             style: TextStyle(
                               color: Colors.black,
                               fontSize: 14,
@@ -651,9 +650,9 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
                     ],
                   ),
                   const SizedBox(height: 30),
-                  const Center(
+                  Center(
                     child: Text(
-                      "Fire Scenario Module",
+                      context.tr('fire_scenario_module'),
                       style: TextStyle(
                         fontSize: 30,
                         fontWeight: FontWeight.w800,
@@ -683,8 +682,8 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
                         Expanded(
                           child: TextField(
                             onChanged: _onSearchChanged,
-                            decoration: const InputDecoration(
-                              hintText: "Search",
+                            decoration: InputDecoration(
+                              hintText: context.tr('search'),
                               hintStyle: TextStyle(color: Colors.grey),
                               border: InputBorder.none,
                               isDense: true,
@@ -692,7 +691,7 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
                           ),
                         ),
                         IconButton(
-                          tooltip: "Filter",
+                          tooltip: context.tr('filter'),
                           onPressed: () => _openFilterMenu(context),
                           icon: Icon(
                             Icons.filter_list_rounded,
@@ -954,8 +953,8 @@ class _ModuleCard extends StatelessWidget {
                               ),
                             ),
                             onPressed: onPressed,
-                            child: const Text(
-                              "View",
+                            child: Text(
+                              context.tr('view'),
                               style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
@@ -1085,7 +1084,7 @@ class _ModuleActionPopup extends StatelessWidget {
               children: [
                 Expanded(
                   child: _OutlineActionButton(
-                    label: "PRE -\nASSESSMENT",
+                    label: context.tr('pre_assessment'),
                     enabled: true,
                     locked: false,
                     onTap: onPreTap,
@@ -1094,7 +1093,7 @@ class _ModuleActionPopup extends StatelessWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: _OutlineActionButton(
-                    label: "SIMULATION",
+                    label: context.tr('simulation'),
                     enabled: true,
                     locked: false,
                     onTap: onSimTap,
@@ -1103,7 +1102,7 @@ class _ModuleActionPopup extends StatelessWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: _OutlineActionButton(
-                    label: "POST -\nASSESSMENT",
+                    label: context.tr('post_assessment'),
                     enabled: !postLocked,
                     locked: postLocked,
                     onTap: onPostTap,
@@ -1115,7 +1114,7 @@ class _ModuleActionPopup extends StatelessWidget {
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(16),
                                 ),
-                                title: const Row(
+                                title: Row(
                                   children: [
                                     Icon(
                                       Icons.lock_outline,
@@ -1124,7 +1123,7 @@ class _ModuleActionPopup extends StatelessWidget {
                                     SizedBox(width: 10),
                                     Expanded(
                                       child: Text(
-                                        "Simulation Required",
+                                        context.tr('simulation_required'),
                                         style: TextStyle(
                                           fontWeight: FontWeight.w900,
                                         ),
@@ -1132,9 +1131,8 @@ class _ModuleActionPopup extends StatelessWidget {
                                     ),
                                   ],
                                 ),
-                                content: const Text(
-                                  "You need to finish the simulation first before the post-assessment will open.\n\n"
-                                  "The questions on the post-assessment are connected to the simulation.",
+                                content: Text(
+                                  context.tr('simulation_required_message'),
                                   style: TextStyle(
                                     fontWeight: FontWeight.w600,
                                     height: 1.4,
@@ -1152,8 +1150,8 @@ class _ModuleActionPopup extends StatelessWidget {
                                     ),
                                     onPressed: () =>
                                         Navigator.pop(context),
-                                    child: const Text(
-                                      "OK",
+                                    child: Text(
+                                      context.tr('ok'),
                                       style: TextStyle(
                                         color: Colors.white,
                                         fontWeight: FontWeight.w900,

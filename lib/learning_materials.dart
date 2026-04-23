@@ -8,6 +8,7 @@ import 'module_3_electrical.dart/module_3_learningmaterials.dart' as electrical_
 import 'module_4_kitchen.dart/module_4_learningmaterials.dart' as kitchen_learning;
 import 'module_5_building.dart/module_5_learningmaterials.dart' as building_learning;
 import 'login.dart';
+import 'localization/app_text.dart';
 
 class LearningMaterialsTab extends StatefulWidget {
   const LearningMaterialsTab({super.key, this.onRequestTabChange});
@@ -50,49 +51,6 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
       });
     } catch (_) {}
   }
-
-  final List<_ModuleItem> modules = const [
-    _ModuleItem(
-      moduleLabel: "MODULE 1",
-      title: "FIRE EXTINGUISHER",
-      description:
-          "Learn the proper and safe use of fire extinguishers for effective response during fire emergencies.",
-      asset: "assets/fire_ex.png",
-      moduleNo: 1,
-    ),
-    _ModuleItem(
-      moduleLabel: "MODULE 2",
-      title: "HOUSE FIRE",
-      description:
-          "Learn the common causes of house fires and the correct actions to take during a residential fire emergency.",
-      asset: "assets/house.jpg",
-      moduleNo: 2,
-    ),
-    _ModuleItem(
-      moduleLabel: "MODULE 3",
-      title: "ELECTRICAL FIRE",
-      description:
-          "Learn how electrical fires occur and the correct actions to take during an electrical fire emergency.",
-      asset: "assets/electrical.png",
-      moduleNo: 3,
-    ),
-    _ModuleItem(
-      moduleLabel: "MODULE 4",
-      title: "KITCHEN FIRE",
-      description:
-          "Understand safe cooking practices and proper response to grease and oil fires.",
-      asset: "assets/kitchen.png",
-      moduleNo: 4,
-    ),
-    _ModuleItem(
-      moduleLabel: "MODULE 5",
-      title: "BUILDING FIRE",
-      description:
-          "Learn how to respond safely during building fire incidents, including evacuation and hazard awareness.",
-      asset: "assets/condo.jpg",
-      moduleNo: 5,
-    ),
-  ];
 
   Future<void> _logout() async {
     final prefs = await SharedPreferences.getInstance();
@@ -158,6 +116,44 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
 
   @override
   Widget build(BuildContext context) {
+    final modules = [
+      _ModuleItem(
+        moduleLabel: context.tr('module_1'),
+        title: context.tr('title_fire_extinguisher'),
+        description: context.tr('desc_m1'),
+        asset: "assets/fire_ex.png",
+        moduleNo: 1,
+      ),
+      _ModuleItem(
+        moduleLabel: context.tr('module_2'),
+        title: context.tr('title_house_fire'),
+        description: context.tr('desc_m2_learning'),
+        asset: "assets/house.jpg",
+        moduleNo: 2,
+      ),
+      _ModuleItem(
+        moduleLabel: context.tr('module_3'),
+        title: context.tr('title_electrical_fire'),
+        description: context.tr('desc_m3_learning'),
+        asset: "assets/electrical.png",
+        moduleNo: 3,
+      ),
+      _ModuleItem(
+        moduleLabel: context.tr('module_4'),
+        title: context.tr('title_kitchen_fire'),
+        description: context.tr('desc_m4_learning'),
+        asset: "assets/kitchen.png",
+        moduleNo: 4,
+      ),
+      _ModuleItem(
+        moduleLabel: context.tr('module_5'),
+        title: context.tr('title_building_fire'),
+        description: context.tr('desc_m5_learning'),
+        asset: "assets/condo.jpg",
+        moduleNo: 5,
+      ),
+    ];
+
     final q = searchQuery.trim().toLowerCase();
     final filtered = modules.where((m) {
       if (q.isEmpty) return true;
@@ -166,7 +162,9 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
     }).toList();
 
     final greetingName = '$_firstName $_lastName'.trim();
-    final greeting = greetingName.isEmpty ? 'Hi!' : 'Hi, $greetingName';
+    final greeting = greetingName.isEmpty
+        ? context.tr('hi')
+        : context.tr('hi_name', params: {'name': greetingName});
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -205,14 +203,14 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
                             return;
                           }
                         },
-                        itemBuilder: (context) => const [
+                        itemBuilder: (context) => [
                           PopupMenuItem(
                             value: "profile",
                             child: Row(
                               children: [
                                 Icon(Icons.person_outline_rounded),
                                 SizedBox(width: 8),
-                                Text("Profile"),
+                                Text(context.tr('profile')),
                               ],
                             ),
                           ),
@@ -222,7 +220,7 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
                               children: [
                                 Icon(Icons.logout_rounded),
                                 SizedBox(width: 8),
-                                Text("Log Out"),
+                                Text(context.tr('log_out')),
                               ],
                             ),
                           ),
@@ -256,8 +254,8 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
                             ),
                           ),
                           const SizedBox(height: 2),
-                          const Text(
-                            "Welcome to Ignis Safe",
+                          Text(
+                            context.tr('welcome_to_ignis_safe_short'),
                             style: TextStyle(
                               color: Colors.black,
                               fontSize: 14,
@@ -270,9 +268,9 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
                   ),
 
                   const SizedBox(height: 30),
-                  const Center(
+                  Center(
                     child: Text(
-                      "Learning Materials",
+                      context.tr('learning_materials'),
                       style: TextStyle(
                         fontSize: 30,
                         fontWeight: FontWeight.w800,
@@ -303,8 +301,8 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
                         Expanded(
                           child: TextField(
                             onChanged: (v) => setState(() => searchQuery = v),
-                            decoration: const InputDecoration(
-                              hintText: "Search",
+                            decoration: InputDecoration(
+                              hintText: context.tr('search'),
                               hintStyle: TextStyle(color: Colors.grey),
                               border: InputBorder.none,
                               isDense: true,
@@ -461,8 +459,8 @@ class _ModuleCard extends StatelessWidget {
                               ),
                             ),
                             onPressed: onPressed,
-                            child: const Text(
-                              "View",
+                            child: Text(
+                              context.tr('view'),
                               style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,

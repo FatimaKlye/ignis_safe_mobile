@@ -310,14 +310,10 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
 
               orderedQuestions.add(question);
               selectedOptionIds.add(
-                row['selected_option_id'] == null
-                    ? null
-                    : row['selected_option_id'].toString(),
+                row['selected_option_id']?.toString(),
               );
               writtenAnswers.add(
-                row['answer_text'] == null
-                    ? null
-                    : row['answer_text'].toString(),
+                row['answer_text']?.toString(),
               );
 
               if ((row['is_flagged'] ?? false) as bool) {

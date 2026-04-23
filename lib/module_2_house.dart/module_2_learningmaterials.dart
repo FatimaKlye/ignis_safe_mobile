@@ -21,6 +21,10 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
   double _progress = 0.0;
   bool _canNext = false;
 
+  String _t(BuildContext context, String en, String tl) {
+    return Localizations.localeOf(context).languageCode == 'tl' ? tl : en;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -132,9 +136,9 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
                         onPressed: () => Navigator.pop(context),
                       ),
                       const SizedBox(height: 10),
-                      const Center(
+                      Center(
                         child: Text(
-                          "Learning Material",
+                          _t(context, "Learning Material", "Materyal sa Pag-aaral"),
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 30,
@@ -168,14 +172,14 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
                                   ),
                                 ],
                               ),
-                              child: const Row(
+                              child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Icon(Icons.home_rounded,
                                       color: Colors.white, size: 18),
                                   SizedBox(width: 8),
                                   Text(
-                                    "MODULE 2",
+                                    _t(context, "MODULE 2", "MODYUL 2"),
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white,
@@ -185,9 +189,13 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
                               ),
                             ),
                             const SizedBox(width: 15),
-                            const Expanded(
+                            Expanded(
                               child: Text(
-                                "House Fire: How to Get Out Safely During a Fire",
+                                _t(
+                                  context,
+                                  "House Fire: How to Get Out Safely During a Fire",
+                                  "Sunog sa Bahay: Paano Makalabas nang Ligtas",
+                                ),
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontWeight: FontWeight.w600,
@@ -260,8 +268,8 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
                           ),
                         ),
                         onPressed: _goBack,
-                        child: const Text(
-                          "« BACK",
+                        child: Text(
+                          _t(context, "« BACK", "« BALIK"),
                           style: TextStyle(
                             color: Color(0xFFF97316),
                             fontWeight: FontWeight.bold,
@@ -277,7 +285,9 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
                         ),
                         onPressed: (_canNext || isLast) ? _goNext : null,
                         child: Text(
-                          isLast ? "Start pre test" : "NEXT »",
+                          isLast
+                              ? _t(context, "Start pre test", "Simulan ang paunang pagsusulit")
+                              : _t(context, "NEXT »", "SUNOD »"),
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
@@ -314,13 +324,17 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
     return _ModernCard(
       accent1: accent,
       accent2: accent2,
-      pageTitle: "PAGE 1 – HOUSE FIRE OVERVIEW",
+      pageTitle: _t(
+        context,
+        "PAGE 1 – HOUSE FIRE OVERVIEW",
+        "PAHINA 1 – PANGKALAHATANG TINGIN SA SUNOG SA BAHAY",
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Center(
+          Center(
             child: Text(
-              "What is a House Fire?",
+              _t(context, "What is a House Fire?", "Ano ang Sunog sa Bahay?"),
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -339,9 +353,13 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
                 c2: accent2,
               ),
               const SizedBox(width: 15),
-              const Expanded(
+              Expanded(
                 child: Text(
-                  "A house fire is a dangerous emergency that can spread very quickly through rooms, ceilings, and hallways. Smoke, heat, and flames can block exits in just a few minutes, so every second matters.",
+                  _t(
+                    context,
+                    "A house fire is a dangerous emergency that can spread very quickly through rooms, ceilings, and hallways. Smoke, heat, and flames can block exits in just a few minutes, so every second matters.",
+                    "Ang sunog sa bahay ay mapanganib na emerhensiya na mabilis kumalat sa mga silid, kisame, at pasilyo. Ang usok, init, at apoy ay maaaring humarang sa labasan sa loob lamang ng ilang minuto.",
+                  ),
                   style: TextStyle(
                     fontSize: 14,
                     height: 1.5,
@@ -352,56 +370,73 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
             ],
           ),
           const SizedBox(height: 16),
-          const _Callout(
+          _Callout(
             icon: Icons.warning_rounded,
             color: Color(0xFFDC2626),
-            title: "Why house fires are dangerous",
+            title: _t(context, "Why house fires are dangerous", "Bakit mapanganib ang sunog sa bahay"),
             lines: [
-              "Smoke can make it hard to see and breathe.",
-              "Fire spreads fast through curtains, wood, and furniture.",
-              "Heat can make doors and escape paths unsafe.",
+              _t(context, "Smoke can make it hard to see and breathe.", "Maaaring pahirapan ng usok ang paningin at paghinga."),
+              _t(context, "Fire spreads fast through curtains, wood, and furniture.", "Mabilis kumalat ang apoy sa kurtina, kahoy, at muwebles."),
+              _t(context, "Heat can make doors and escape paths unsafe.", "Maaaring maging delikado ang mga pinto at daanan dahil sa matinding init."),
             ],
           ),
           const SizedBox(height: 14),
-          const _ChipLine(
+          _ChipLine(
             icon: Icons.access_time_rounded,
             color: Color(0xFFB11217),
-            text:
-                "When a house is on fire, leave immediately. Do not stop to collect belongings.",
+            text: _t(
+              context,
+              "When a house is on fire, leave immediately. Do not stop to collect belongings.",
+              "Kapag may sunog sa bahay, lumikas agad. Huwag nang huminto para kumuha ng gamit.",
+            ),
           ),
           const SizedBox(height: 24),
-          const _SectionTitle("Common Signs of a House Fire"),
+          _SectionTitle(
+            _t(context, "Common Signs of a House Fire", "Karaniwang Palatandaan ng Sunog sa Bahay"),
+          ),
           const SizedBox(height: 12),
-          const _MiniTile(
+          _MiniTile(
             color: Color(0xFFF59E0B),
             icon: Icons.smoke_free_rounded,
-            title: "Smoke",
-            desc:
-                "Thick smoke in a room or hallway is an early sign that a fire is spreading nearby.",
+            title: _t(context, "Smoke", "Usok"),
+            desc: _t(
+              context,
+              "Thick smoke in a room or hallway is an early sign that a fire is spreading nearby.",
+              "Ang makapal na usok sa silid o pasilyo ay maagang palatandaan na may kumakalat na apoy sa malapit.",
+            ),
           ),
           const SizedBox(height: 10),
-          const _MiniTile(
+          _MiniTile(
             color: Color(0xFFFB923C),
             icon: Icons.campaign_rounded,
-            title: "Smoke Alarm",
-            desc:
-                "If the alarm sounds, treat it as a real emergency and begin evacuating at once.",
+            title: _t(context, "Smoke Alarm", "Smoke Alarm"),
+            desc: _t(
+              context,
+              "If the alarm sounds, treat it as a real emergency and begin evacuating at once.",
+              "Kapag tumunog ang alarm, ituring itong tunay na emerhensiya at agad na lumikas.",
+            ),
           ),
           const SizedBox(height: 10),
-          const _MiniTile(
+          _MiniTile(
             color: Color(0xFFEA580C),
             icon: Icons.local_fire_department_rounded,
-            title: "Visible Flames",
-            desc:
-                "Flames from appliances, curtains, walls, or ceilings mean the fire is already active and dangerous.",
+            title: _t(context, "Visible Flames", "Nakikitang Apoy"),
+            desc: _t(
+              context,
+              "Flames from appliances, curtains, walls, or ceilings mean the fire is already active and dangerous.",
+              "Kapag may apoy mula sa appliances, kurtina, pader, o kisame, aktibo at mapanganib na ang sunog.",
+            ),
           ),
           const SizedBox(height: 10),
-          const _MiniTile(
+          _MiniTile(
             color: Color(0xFFF97316),
             icon: Icons.whatshot_rounded,
-            title: "Hot Doors or Walls",
-            desc:
-                "A hot door may mean fire is on the other side. Do not open it right away.",
+            title: _t(context, "Hot Doors or Walls", "Mainit na Pinto o Pader"),
+            desc: _t(
+              context,
+              "A hot door may mean fire is on the other side. Do not open it right away.",
+              "Ang mainit na pinto ay maaaring senyales na may apoy sa kabilang panig. Huwag agad buksan.",
+            ),
           ),
         ],
       ),
@@ -412,13 +447,17 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
     return _ModernCard(
       accent1: accent2,
       accent2: accent,
-      pageTitle: "PAGE 2 – HOW TO GET OUT SAFELY",
+      pageTitle: _t(
+        context,
+        "PAGE 2 – HOW TO GET OUT SAFELY",
+        "PAHINA 2 – PAANO MAKALABAS NANG LIGTAS",
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Center(
+          Center(
             child: Text(
-              "Steps to Escape from a House Fire",
+              _t(context, "Steps to Escape from a House Fire", "Mga Hakbang sa Paglikas mula sa Sunog sa Bahay"),
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -430,7 +469,7 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
           const SizedBox(height: 18),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
+            children: [
               _IconBox(
                 icon: Icons.directions_run_rounded,
                 c1: accent2,
@@ -440,44 +479,49 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
               Expanded(
                 child: _Bullets(
                   items: [
-                    "Stay calm and move quickly to the nearest safe exit.",
-                    "Check doors with the back of your hand before opening.",
-                    "If the door is hot, do not open it. Use another way out.",
-                    "Crawl low under smoke where the air is cleaner.",
-                    "Help children, older persons, and others who need assistance.",
-                    "Do not use elevators if you are in a multi-level home or building.",
+                    _t(context, "Stay calm and move quickly to the nearest safe exit.", "Manatiling kalmado at kumilos agad papunta sa pinakamalapit na ligtas na labasan."),
+                    _t(context, "Check doors with the back of your hand before opening.", "Suriin ang pinto gamit ang likod ng kamay bago ito buksan."),
+                    _t(context, "If the door is hot, do not open it. Use another way out.", "Kung mainit ang pinto, huwag itong buksan. Humanap ng ibang labasan."),
+                    _t(context, "Crawl low under smoke where the air is cleaner.", "Gumapang nang mababa sa ilalim ng usok kung saan mas malinis ang hangin."),
+                    _t(context, "Help children, older persons, and others who need assistance.", "Tulungan ang mga bata, nakatatanda, at iba pang nangangailangan ng tulong."),
+                    _t(context, "Do not use elevators if you are in a multi-level home or building.", "Huwag gumamit ng elevator kung nasa multi-level na bahay o gusali."),
                   ],
                 ),
               ),
             ],
           ),
           const SizedBox(height: 14),
-          const _ChipLine(
+          _ChipLine(
             icon: Icons.health_and_safety_rounded,
             color: Color(0xFFF97316),
-            text:
-                "Stay low, move fast, and head outside using the safest exit.",
+            text: _t(
+              context,
+              "Stay low, move fast, and head outside using the safest exit.",
+              "Manatiling mababa, kumilos nang mabilis, at lumabas gamit ang pinakaligtas na daan.",
+            ),
           ),
           const SizedBox(height: 26),
-          const _SectionTitle("Important Escape Reminders"),
+          _SectionTitle(
+            _t(context, "Important Escape Reminders", "Mahahalagang Paalala sa Paglikas"),
+          ),
           const SizedBox(height: 12),
-          const _Bullets(
+          _Bullets(
             items: [
-              "Do not hide during a fire.",
-              "Do not go back inside for phones, bags, or valuables.",
-              "Close doors behind you if possible to slow the spread of fire.",
-              "Use windows only if doors are blocked and it is safe to do so.",
-              "If your clothes catch fire: Stop, Drop, and Roll.",
-              "Once outside, keep moving away from the house.",
+              _t(context, "Do not hide during a fire.", "Huwag magtago kapag may sunog."),
+              _t(context, "Do not go back inside for phones, bags, or valuables.", "Huwag nang bumalik sa loob para sa telepono, bag, o mahahalagang gamit."),
+              _t(context, "Close doors behind you if possible to slow the spread of fire.", "Isara ang pinto sa likod mo kung kaya upang bumagal ang pagkalat ng apoy."),
+              _t(context, "Use windows only if doors are blocked and it is safe to do so.", "Gamitin lamang ang bintana kung barado ang pinto at ligtas itong gawin."),
+              _t(context, "If your clothes catch fire: Stop, Drop, and Roll.", "Kung magliyab ang damit: Tumigil, Humiga, at Gumulong."),
+              _t(context, "Once outside, keep moving away from the house.", "Kapag nasa labas na, lumayo pa sa bahay."),
             ],
           ),
           const SizedBox(height: 14),
-          const _Callout(
+          _Callout(
             icon: Icons.block_rounded,
             color: Color(0xFFDC2626),
-            title: "Never do this",
+            title: _t(context, "Never do this", "Huwag itong gawin"),
             lines: [
-              "Never go back into a burning house after you have escaped.",
+              _t(context, "Never go back into a burning house after you have escaped.", "Huwag kailanman bumalik sa nasusunog na bahay kapag nakalabas ka na."),
             ],
           ),
         ],
@@ -489,13 +533,17 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
     return _ModernCard(
       accent1: Color(0xFFF59E0B),
       accent2: accent,
-      pageTitle: "PAGE 3 – AFTER YOU GET OUT",
+      pageTitle: _t(
+        context,
+        "PAGE 3 – AFTER YOU GET OUT",
+        "PAHINA 3 – PAGKATAPOS MONG MAKALABAS",
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Center(
+          Center(
             child: Text(
-              "What to Do After Escaping",
+              _t(context, "What to Do After Escaping", "Ano ang Gagawin Pagkatapos Makalikas"),
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -507,7 +555,7 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
           const SizedBox(height: 18),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
+            children: [
               _IconBox(
                 icon: Icons.support_agent_rounded,
                 c1: Color(0xFFF59E0B),
@@ -517,33 +565,33 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
               Expanded(
                 child: _Bullets(
                   items: [
-                    "Go to a safe meeting place outside the house.",
-                    "Call emergency services immediately.",
-                    "Tell firefighters if someone may still be inside.",
-                    "Stay outside and wait for professional help.",
-                    "Do not re-enter the house for any reason.",
-                    "Follow instructions from firefighters or responders.",
+                    _t(context, "Go to a safe meeting place outside the house.", "Pumunta sa ligtas na tagpuan sa labas ng bahay."),
+                    _t(context, "Call emergency services immediately.", "Tumawag agad sa emergency services."),
+                    _t(context, "Tell firefighters if someone may still be inside.", "Sabihin sa mga bumbero kung may maaaring naiwan pa sa loob."),
+                    _t(context, "Stay outside and wait for professional help.", "Manatili sa labas at hintayin ang mga propesyonal na responder."),
+                    _t(context, "Do not re-enter the house for any reason.", "Huwag nang pumasok muli sa bahay anuman ang dahilan."),
+                    _t(context, "Follow instructions from firefighters or responders.", "Sundin ang utos ng mga bumbero o responder."),
                   ],
                 ),
               ),
             ],
           ),
           const SizedBox(height: 14),
-          const _Callout(
+          _Callout(
             icon: Icons.groups_rounded,
             color: Color(0xFFF97316),
-            title: "Meeting Place",
+            title: _t(context, "Meeting Place", "Tagpuan"),
             lines: [
-              "Choose a safe family meeting place outside, such as near a gate, tree, or neighbor’s house.",
+              _t(context, "Choose a safe family meeting place outside, such as near a gate, tree, or neighbor’s house.", "Pumili ng ligtas na tagpuan ng pamilya sa labas, tulad ng malapit sa gate, puno, o bahay ng kapitbahay."),
             ],
           ),
           const SizedBox(height: 14),
-          const _Callout(
+          _Callout(
             icon: Icons.phone_in_talk_rounded,
             color: Color(0xFFEA580C),
-            title: "Call for Help",
+            title: _t(context, "Call for Help", "Tumawag ng Tulong"),
             lines: [
-              "Call your local fire department or emergency hotline as soon as you are safe.",
+              _t(context, "Call your local fire department or emergency hotline as soon as you are safe.", "Tumawag sa lokal na bumbero o emergency hotline sa sandaling ligtas ka na."),
             ],
           ),
         ],

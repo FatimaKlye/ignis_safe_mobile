@@ -3,6 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'login.dart';
 
+String _t(BuildContext context, String en, String tl) {
+  return Localizations.localeOf(context).languageCode == 'tl' ? tl : en;
+}
+
 class ForgotPassPage extends StatefulWidget {
   const ForgotPassPage({super.key});
 
@@ -69,9 +73,9 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
   Future<void> _sendOtp() async {
     final emailError = _validateEmail(_emailCtrl.text);
     if (emailError != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(emailError)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(emailError)));
       return;
     }
 
@@ -91,15 +95,13 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
       );
     } on AuthException catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.message)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.message)));
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Failed to send OTP. Please try again.'),
-        ),
+        const SnackBar(content: Text('Failed to send OTP. Please try again.')),
       );
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -109,9 +111,9 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
   Future<void> _verifyOtp() async {
     final otpError = _validateOtp(_otpCtrl.text);
     if (otpError != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(otpError)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(otpError)));
       return;
     }
 
@@ -142,16 +144,14 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
       );
     } on AuthException catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.message)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.message)));
     } catch (_) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Invalid or expired OTP.'),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Invalid or expired OTP.')));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -160,9 +160,9 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
   Future<void> _updatePassword() async {
     final passwordError = _validatePassword(_newPasswordCtrl.text);
     if (passwordError != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(passwordError)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(passwordError)));
       return;
     }
 
@@ -174,9 +174,9 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
     }
 
     if (_newPasswordCtrl.text.trim() != _confirmPasswordCtrl.text.trim()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Passwords do not match.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Passwords do not match.')));
       return;
     }
 
@@ -202,13 +202,13 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
       );
     } on AuthException catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.message)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.message)));
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Unable to update password.')),
+        SnackBar(content: Text(_t(context, 'Unable to update password.', 'Hindi ma-update ang password.'))),
       );
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -237,9 +237,7 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
             labelText: 'Email',
             hintText: 'Enter your email',
             prefixIcon: const Icon(Icons.email_outlined),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-            ),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
               borderSide: const BorderSide(color: Colors.black12),
@@ -318,9 +316,7 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
             counterText: '',
             labelText: 'OTP Code',
             hintText: '------',
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-            ),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
               borderSide: const BorderSide(color: Colors.black12),
@@ -409,9 +405,7 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
                 setState(() => _showNewPassword = !_showNewPassword);
               },
             ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-            ),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
               borderSide: const BorderSide(color: Colors.black12),
@@ -434,14 +428,10 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
                 _showConfirmPassword ? Icons.visibility_off : Icons.visibility,
               ),
               onPressed: () {
-                setState(
-                  () => _showConfirmPassword = !_showConfirmPassword,
-                );
+                setState(() => _showConfirmPassword = !_showConfirmPassword);
               },
             ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-            ),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
               borderSide: const BorderSide(color: Colors.black12),
@@ -475,9 +465,9 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
                       color: Colors.white,
                     ),
                   )
-                : const Text(
-                    'Update Password',
-                    style: TextStyle(
+                : Text(
+                    _t(context, 'Update Password', 'I-update ang Password'),
+                    style: const TextStyle(
                       fontFamily: 'Poppins',
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -491,9 +481,13 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
 
   @override
   Widget build(BuildContext context) {
-    String title = 'Forgot Password';
-    if (_stage == _ForgotStage.otp) title = 'Verify OTP';
-    if (_stage == _ForgotStage.password) title = 'Reset Password';
+    String title = _t(context, 'Forgot Password', 'Nakalimutang Password');
+    if (_stage == _ForgotStage.otp) {
+      title = _t(context, 'Verify OTP', 'I-verify ang OTP');
+    }
+    if (_stage == _ForgotStage.password) {
+      title = _t(context, 'Reset Password', 'I-reset ang Password');
+    }
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -546,7 +540,8 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
 
                           if (_stage == _ForgotStage.email) _buildEmailStep(),
                           if (_stage == _ForgotStage.otp) _buildOtpStep(),
-                          if (_stage == _ForgotStage.password) _buildPasswordStep(),
+                          if (_stage == _ForgotStage.password)
+                            _buildPasswordStep(),
 
                           const SizedBox(height: 18),
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'localization/app_text.dart';
 
 
 class FloatingNavBar extends StatefulWidget {
@@ -49,7 +50,7 @@ class _FloatingNavBarState extends State<FloatingNavBar>
     duration: const Duration(milliseconds: 180),
   );
 
-  late Animation<double> _posAnim = CurvedAnimation(
+  late final Animation<double> _posAnim = CurvedAnimation(
     parent: _posCtrl,
     curve: Curves.easeOutCubic,
   );
@@ -236,7 +237,12 @@ class _FloatingNavBarState extends State<FloatingNavBar>
   }
 
   String _getLabel(int index) {
-    const labels = ['Learn', 'Fire Module', 'Profile', 'About'];
+    final labels = [
+      context.tr('learn'),
+      context.tr('fire_module'),
+      context.tr('profile'),
+      context.tr('about'),
+    ];
     return index < labels.length ? labels[index] : '';
   }
 }

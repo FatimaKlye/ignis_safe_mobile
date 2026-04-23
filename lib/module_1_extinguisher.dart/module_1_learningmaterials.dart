@@ -21,6 +21,7 @@ class _LearningMaterialExtinguisherPageState
   double _progress = 0.0;
   bool _canNext = false;
 
+
   @override
   void initState() {
     super.initState();
@@ -94,9 +95,7 @@ class _LearningMaterialExtinguisherPageState
     } else {
       Navigator.push(
         context,
-        MaterialPageRoute(
-          builder: (_) => const PreAssessmentIntroPage(),
-        ),
+        MaterialPageRoute(builder: (_) => const PreAssessmentIntroPage()),
       );
     }
   }
@@ -126,10 +125,7 @@ class _LearningMaterialExtinguisherPageState
             Expanded(
               child: Text(
                 title,
-                style: TextStyle(
-                  fontWeight: FontWeight.w900,
-                  color: color,
-                ),
+                style: TextStyle(fontWeight: FontWeight.w900, color: color),
               ),
             ),
           ],
@@ -141,7 +137,7 @@ class _LearningMaterialExtinguisherPageState
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text("OK"),
+            child: Text(_tStatic(context, "OK", "Sige")),
           ),
         ],
       ),
@@ -150,29 +146,47 @@ class _LearningMaterialExtinguisherPageState
 
   void _showPASSPopup() {
     _showInfoPopup(
-      title: "PASS Method",
+      title: _tStatic(context, "PASS Method", "Paraan ng PASS"),
       icon: Icons.checklist_rounded,
       color: const Color(0xFFD62828),
-      message:
-          "P — Pull the pin\n"
-          "A — Aim at the base of the fire\n"
-          "S — Squeeze the handle\n"
-          "S — Sweep side to side\n\n"
-          "Stop if the fire grows or you feel unsafe.",
+      message: _tStatic(
+        context,
+        "P — Pull the pin\n"
+            "A — Aim at the base of the fire\n"
+            "S — Squeeze the handle\n"
+            "S — Sweep side to side\n\n"
+            "Stop if the fire grows or you feel unsafe.",
+        "P — Hilahin ang pin\n"
+            "A — Itutok sa pinagmumulan ng apoy\n"
+            "S — Pisilin ang hawakan\n"
+            "S — Iwasiwas pakaliwa't pakanan\n\n"
+            "Huminto kung lumalaki ang apoy o delikado na.",
+      ),
     );
   }
 
   void _showWhenNotToUsePopup() {
     _showInfoPopup(
-      title: "Do NOT use an extinguisher if…",
+      title: _tStatic(
+        context,
+        "Do NOT use an extinguisher if…",
+        "HUWAG gumamit ng pamatay-sunog kung…",
+      ),
       icon: Icons.block_rounded,
       color: const Color(0xFFDC2626),
-      message:
-          "• The fire is too large or spreading fast\n"
-          "• Thick smoke is building up\n"
-          "• You do not have a clear exit behind you\n"
-          "• You are unsure what is burning\n\n"
-          "Evacuate and call emergency services.",
+      message: _tStatic(
+        context,
+        "• The fire is too large or spreading fast\n"
+            "• Thick smoke is building up\n"
+            "• You do not have a clear exit behind you\n"
+            "• You are unsure what is burning\n\n"
+            "Evacuate and call emergency services.",
+        "• Masyadong malaki o mabilis kumalat ang apoy\n"
+            "• Makapal na usok ang namumuo\n"
+            "• Wala kang malinaw na daan palabas sa likod mo\n"
+            "• Hindi ka sigurado kung ano ang nasusunog\n\n"
+            "Lumikas at tumawag sa emergency services.",
+      ),
     );
   }
 
@@ -209,9 +223,13 @@ class _LearningMaterialExtinguisherPageState
                         onPressed: () => Navigator.pop(context),
                       ),
                       const SizedBox(height: 10),
-                      const Center(
+                      Center(
                         child: Text(
-                          "Learning Material",
+                          _tStatic(
+                            context,
+                            "Learning Material",
+                            "Materyal sa Pag-aaral",
+                          ),
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 30,
@@ -245,14 +263,17 @@ class _LearningMaterialExtinguisherPageState
                                   ),
                                 ],
                               ),
-                              child: const Row(
+                              child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Icon(Icons.bolt_rounded,
-                                      color: Colors.white, size: 18),
+                                  Icon(
+                                    Icons.bolt_rounded,
+                                    color: Colors.white,
+                                    size: 18,
+                                  ),
                                   SizedBox(width: 8),
                                   Text(
-                                    "MODULE 1",
+                                    _tStatic(context, "MODULE 1", "MODYUL 1"),
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white,
@@ -262,9 +283,13 @@ class _LearningMaterialExtinguisherPageState
                               ),
                             ),
                             const SizedBox(width: 15),
-                            const Expanded(
+                            Expanded(
                               child: Text(
-                                "Fire Extinguisher: Basics, Types, and How to Use",
+                                _tStatic(
+                                  context,
+                                  "Fire Extinguisher: Basics, Types, and How to Use",
+                                  "Pamatay-Sunog: Mga Batayan, Uri, at Paano Gamitin",
+                                ),
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontWeight: FontWeight.w600,
@@ -282,8 +307,7 @@ class _LearningMaterialExtinguisherPageState
                           child: LinearProgressIndicator(
                             value: _progress,
                             backgroundColor: Colors.white.withOpacity(0.25),
-                            valueColor:
-                                const AlwaysStoppedAnimation(accent2),
+                            valueColor: const AlwaysStoppedAnimation(accent2),
                           ),
                         ),
                       ),
@@ -339,8 +363,8 @@ class _LearningMaterialExtinguisherPageState
                           ),
                         ),
                         onPressed: _goBack,
-                        child: const Text(
-                          "« BACK",
+                        child: Text(
+                          _tStatic(context, "« BACK", "« BALIK"),
                           style: TextStyle(
                             color: accent,
                             fontWeight: FontWeight.bold,
@@ -356,7 +380,13 @@ class _LearningMaterialExtinguisherPageState
                         ),
                         onPressed: _canNext ? _goNext : null,
                         child: Text(
-                          isLast ? "Start pre test" : "NEXT »",
+                          isLast
+                              ? _tStatic(
+                                  context,
+                                  "Start pre test",
+                                  "Simulan ang paunang pagsusulit",
+                                )
+                              : _tStatic(context, "NEXT »", "SUNOD »"),
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
@@ -393,13 +423,21 @@ class _LearningMaterialExtinguisherPageState
     return _ModernCard(
       accent1: accent,
       accent2: accent2,
-      pageTitle: "PAGE 1 · FIRE EXTINGUISHER BASICS",
+      pageTitle: _tStatic(
+        context,
+        "PAGE 1 · FIRE EXTINGUISHER BASICS",
+        "PAHINA 1 · MGA BATAYAN NG PAMATAY-SUNOG",
+      ),
       icon: Icons.lightbulb_rounded,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            "What is a Fire Extinguisher?",
+          Text(
+            _tStatic(
+              context,
+              "What is a Fire Extinguisher?",
+              "Ano ang Pamatay-Sunog?",
+            ),
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.w900,
@@ -407,8 +445,12 @@ class _LearningMaterialExtinguisherPageState
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
-            "A fire extinguisher is a portable safety device used to control small fires before they spread.",
+          Text(
+            _tStatic(
+              context,
+              "A fire extinguisher is a portable safety device used to control small fires before they spread.",
+              "Ang pamatay-sunog ay isang portable na kagamitang pangkaligtasan na ginagamit upang mapigil ang maliliit na apoy bago ito kumalat.",
+            ),
             style: TextStyle(
               fontSize: 14,
               height: 1.55,
@@ -416,10 +458,13 @@ class _LearningMaterialExtinguisherPageState
             ),
           ),
           const SizedBox(height: 16),
-          const _LessonIntroStrip(
+          _LessonIntroStrip(
             icon: Icons.menu_book_rounded,
-            text:
-                "In this lesson, you will learn what a fire extinguisher does, when to use it, and when to stop and evacuate.",
+            text: _tStatic(
+              context,
+              "In this lesson, you will learn what a fire extinguisher does, when to use it, and when to stop and evacuate.",
+              "Sa araling ito, malalaman mo kung ano ang ginagawa ng pamatay-sunog, kailan ito gagamitin, at kailan ka dapat huminto at lumikas.",
+            ),
           ),
           const SizedBox(height: 18),
           Row(
@@ -432,14 +477,20 @@ class _LearningMaterialExtinguisherPageState
                 fallbackIcon: Icons.fire_extinguisher_rounded,
               ),
               const SizedBox(width: 14),
-              const Expanded(
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _MiniHeadline("How does it work?"),
+                    _MiniHeadline(
+                      _tStatic(context, "How does it work?", "Paano ito gumagana?"),
+                    ),
                     SizedBox(height: 8),
                     Text(
-                      "It releases an extinguishing agent that removes heat, reduces oxygen, or interrupts the chemical reaction of a fire.",
+                      _tStatic(
+                        context,
+                        "It releases an extinguishing agent that removes heat, reduces oxygen, or interrupts the chemical reaction of a fire.",
+                        "Naglalabas ito ng sangkap na pumapawi ng apoy sa pamamagitan ng pag-alis ng init, pagbawas ng oxygen, o pagpigil sa reaksiyong kemikal ng apoy.",
+                      ),
                       style: TextStyle(
                         fontSize: 14,
                         height: 1.55,
@@ -452,14 +503,26 @@ class _LearningMaterialExtinguisherPageState
             ],
           ),
           const SizedBox(height: 18),
-          const _Callout(
+          _Callout(
             icon: Icons.warning_amber_rounded,
             color: Color(0xFFDC2626),
-            title: "Important reminder",
+            title: _tStatic(context, "Important reminder", "Mahalagang paalala"),
             lines: [
-              "Use extinguishers only on small, early-stage fires.",
-              "Always choose the correct extinguisher type.",
-              "If the situation feels unsafe, evacuate first.",
+              _tStatic(
+                context,
+                "Use extinguishers only on small, early-stage fires.",
+                "Gamitin lamang ang pamatay-sunog sa maliliit at nagsisimula pa lang na apoy.",
+              ),
+              _tStatic(
+                context,
+                "Always choose the correct extinguisher type.",
+                "Palaging pumili ng tamang uri ng pamatay-sunog.",
+              ),
+              _tStatic(
+                context,
+                "If the situation feels unsafe, evacuate first.",
+                "Kung hindi ligtas ang sitwasyon, lumikas muna.",
+              ),
             ],
           ),
           const SizedBox(height: 16),
@@ -468,7 +531,7 @@ class _LearningMaterialExtinguisherPageState
               Expanded(
                 child: _ActionPill(
                   icon: Icons.checklist_rounded,
-                  label: "PASS method",
+                  label: _tStatic(context, "PASS method", "Paraan ng PASS"),
                   onTap: _showPASSPopup,
                 ),
               ),
@@ -476,17 +539,25 @@ class _LearningMaterialExtinguisherPageState
               Expanded(
                 child: _ActionPill(
                   icon: Icons.block_rounded,
-                  label: "When NOT to use",
+                  label: _tStatic(
+                    context,
+                    "When NOT to use",
+                    "Kailan HINDI gagamitin",
+                  ),
                   onTap: _showWhenNotToUsePopup,
                 ),
               ),
             ],
           ),
           const SizedBox(height: 18),
-          const _ChipLine(
+          _ChipLine(
             icon: Icons.flag_rounded,
             color: Color(0xFFB11217),
-            text: "Goal: use the right extinguisher, quickly and safely.",
+            text: _tStatic(
+              context,
+              "Goal: use the right extinguisher, quickly and safely.",
+              "Layunin: gamitin ang tamang pamatay-sunog, nang mabilis at ligtas.",
+            ),
           ),
         ],
       ),
@@ -497,13 +568,21 @@ class _LearningMaterialExtinguisherPageState
     return _ModernCard(
       accent1: accent2,
       accent2: accent,
-      pageTitle: "PAGE 2 · TYPES OF FIRE EXTINGUISHERS",
+      pageTitle: _tStatic(
+        context,
+        "PAGE 2 · TYPES OF FIRE EXTINGUISHERS",
+        "PAHINA 2 · MGA URI NG PAMATAY-SUNOG",
+      ),
       icon: Icons.category_rounded,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            "Different Fires Need Different Extinguishers",
+          Text(
+            _tStatic(
+              context,
+              "Different Fires Need Different Extinguishers",
+              "Magkakaibang apoy ay nangangailangan ng magkakaibang pamatay-sunog",
+            ),
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.w900,
@@ -511,8 +590,12 @@ class _LearningMaterialExtinguisherPageState
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
-            "Using the wrong extinguisher can make a fire worse. Learn the common classes and what they are used for.",
+          Text(
+            _tStatic(
+              context,
+              "Using the wrong extinguisher can make a fire worse. Learn the common classes and what they are used for.",
+              "Kapag mali ang ginamit na pamatay-sunog, maaari pang lumala ang apoy. Alamin ang karaniwang mga klase at kung para saan ang mga ito.",
+            ),
             style: TextStyle(
               fontSize: 14,
               height: 1.55,
@@ -520,47 +603,70 @@ class _LearningMaterialExtinguisherPageState
             ),
           ),
           const SizedBox(height: 16),
-          const _LessonIntroStrip(
+          _LessonIntroStrip(
             icon: Icons.touch_app_rounded,
-            text:
-                "Read the guide below, then tap through the fire classes to understand what type matches each situation.",
+            text: _tStatic(
+              context,
+              "Read the guide below, then tap through the fire classes to understand what type matches each situation.",
+              "Basahin ang gabay sa ibaba, tapos i-tap ang bawat klase ng apoy upang malaman kung alin ang akma sa bawat sitwasyon.",
+            ),
           ),
           const SizedBox(height: 18),
-          const _SectionTitle("Quick guide"),
+          _SectionTitle(_tStatic(context, "Quick guide", "Mabilis na gabay")),
           const SizedBox(height: 12),
-          const _MiniTile(
+          _MiniTile(
             color: Color(0xFF16A34A),
             icon: Icons.park_rounded,
             title: "Class A",
-            desc: "For paper, wood, cloth, and ordinary combustible materials.",
+            desc: _tStatic(
+              context,
+              "For paper, wood, cloth, and ordinary combustible materials.",
+              "Para sa papel, kahoy, tela, at karaniwang nasusunog na materyales.",
+            ),
           ),
           const SizedBox(height: 10),
-          const _MiniTile(
+          _MiniTile(
             color: Color(0xFFF59E0B),
             icon: Icons.local_gas_station_rounded,
             title: "Class B",
-            desc: "For flammable liquids like oil, gasoline, paint, and solvents.",
+            desc: _tStatic(
+              context,
+              "For flammable liquids like oil, gasoline, paint, and solvents.",
+              "Para sa madaling magliyab na likido tulad ng langis, gasolina, pintura, at solvents.",
+            ),
           ),
           const SizedBox(height: 10),
-          const _MiniTile(
+          _MiniTile(
             color: Color(0xFF2563EB),
             icon: Icons.bolt_rounded,
             title: "Class C",
-            desc: "For energized electrical equipment such as wiring and appliances.",
+            desc: _tStatic(
+              context,
+              "For energized electrical equipment such as wiring and appliances.",
+              "Para sa mga kagamitang elektrikal na may kuryente tulad ng mga kable at appliances.",
+            ),
           ),
           const SizedBox(height: 10),
-          const _MiniTile(
+          _MiniTile(
             color: Color(0xFF4B5563),
             icon: Icons.precision_manufacturing_rounded,
             title: "Class D",
-            desc: "For combustible metals such as magnesium, sodium, or lithium.",
+            desc: _tStatic(
+              context,
+              "For combustible metals such as magnesium, sodium, or lithium.",
+              "Para sa mga metal na madaling masunog tulad ng magnesium, sodium, o lithium.",
+            ),
           ),
           const SizedBox(height: 10),
-          const _MiniTile(
+          _MiniTile(
             color: accent,
             icon: Icons.restaurant_rounded,
             title: "Class K",
-            desc: "For kitchen fires involving cooking oils, fats, and grease.",
+            desc: _tStatic(
+              context,
+              "For kitchen fires involving cooking oils, fats, and grease.",
+              "Para sa mga apoy sa kusina na may kinalaman sa mantika, taba, at grasa.",
+            ),
           ),
           const SizedBox(height: 18),
           Row(
@@ -568,16 +674,26 @@ class _LearningMaterialExtinguisherPageState
               Expanded(
                 child: _ActionPill(
                   icon: Icons.search_rounded,
-                  label: "How to choose",
+                  label: _tStatic(context, "How to choose", "Paano pumili"),
                   onTap: () => _showInfoPopup(
-                    title: "How to choose fast",
+                    title: _tStatic(
+                      context,
+                      "How to choose fast",
+                      "Paano pumili nang mabilis",
+                    ),
                     icon: Icons.search_rounded,
                     color: const Color(0xFFB11217),
-                    message:
-                        "1) Identify what is burning.\n"
-                        "2) Match the extinguisher class label.\n"
-                        "3) Keep an exit behind you.\n"
-                        "4) If unsure, evacuate.",
+                    message: _tStatic(
+                      context,
+                      "1) Identify what is burning.\n"
+                          "2) Match the extinguisher class label.\n"
+                          "3) Keep an exit behind you.\n"
+                          "4) If unsure, evacuate.",
+                      "1) Tukuyin kung ano ang nasusunog.\n"
+                          "2) Itugma ang label ng klase ng pamatay-sunog.\n"
+                          "3) Panatilihing may daan palabas sa likod mo.\n"
+                          "4) Kapag hindi sigurado, lumikas.",
+                    ),
                   ),
                 ),
               ),
@@ -585,13 +701,16 @@ class _LearningMaterialExtinguisherPageState
               Expanded(
                 child: _ActionPill(
                   icon: Icons.label_important_rounded,
-                  label: "Read the label",
+                  label: _tStatic(context, "Read the label", "Basahin ang label"),
                   onTap: () => _showInfoPopup(
-                    title: "Read the label",
+                    title: _tStatic(context, "Read the label", "Basahin ang label"),
                     icon: Icons.label_important_rounded,
                     color: const Color(0xFFD62828),
-                    message:
-                        "Look for the fire class letters A, B, C, D, or K on the extinguisher body.",
+                    message: _tStatic(
+                      context,
+                      "Look for the fire class letters A, B, C, D, or K on the extinguisher body.",
+                      "Hanapin ang mga letrang A, B, C, D, o K sa katawan ng pamatay-sunog.",
+                    ),
                   ),
                 ),
               ),
@@ -600,14 +719,20 @@ class _LearningMaterialExtinguisherPageState
           const SizedBox(height: 14),
           _ActionWideCard(
             icon: Icons.local_fire_department_rounded,
-            title: "Open fire class guide",
-            subtitle: "Tap to view the detailed classes of fire page.",
+            title: _tStatic(
+              context,
+              "Open fire class guide",
+              "Buksan ang gabay sa klase ng apoy",
+            ),
+            subtitle: _tStatic(
+              context,
+              "Tap to view the detailed classes of fire page.",
+              "I-tap upang tingnan ang detalyadong pahina ng mga klase ng apoy.",
+            ),
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (_) => const ClassesOfFirePage(),
-                ),
+                MaterialPageRoute(builder: (_) => const ClassesOfFirePage()),
               );
             },
           ),
@@ -620,13 +745,21 @@ class _LearningMaterialExtinguisherPageState
     return _ModernCard(
       accent1: const Color(0xFFD62828),
       accent2: accent,
-      pageTitle: "PAGE 3 · HOW TO USE & SAFETY",
+      pageTitle: _tStatic(
+        context,
+        "PAGE 3 · HOW TO USE & SAFETY",
+        "PAHINA 3 · PAANO GAMITIN AT KALIGTASAN",
+      ),
       icon: Icons.shield_rounded,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            "How to Use a Fire Extinguisher",
+          Text(
+            _tStatic(
+              context,
+              "How to Use a Fire Extinguisher",
+              "Paano Gumamit ng Pamatay-Sunog",
+            ),
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.w900,
@@ -634,8 +767,12 @@ class _LearningMaterialExtinguisherPageState
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
-            "Using an extinguisher properly can help stop a small fire from growing. Learn the PASS method and the safety rules before acting.",
+          Text(
+            _tStatic(
+              context,
+              "Using an extinguisher properly can help stop a small fire from growing. Learn the PASS method and the safety rules before acting.",
+              "Ang tamang paggamit ng pamatay-sunog ay makatutulong pigilan ang maliit na apoy bago ito lumaki. Alamin muna ang PASS method at mga panuntunang pangkaligtasan bago kumilos.",
+            ),
             style: TextStyle(
               fontSize: 14,
               height: 1.55,
@@ -643,36 +780,61 @@ class _LearningMaterialExtinguisherPageState
             ),
           ),
           const SizedBox(height: 16),
-          const _LessonIntroStrip(
+          _LessonIntroStrip(
             icon: Icons.verified_user_rounded,
-            text:
-                "Follow the PASS method and stop immediately if the fire cannot be controlled within a few seconds.",
+            text: _tStatic(
+              context,
+              "Follow the PASS method and stop immediately if the fire cannot be controlled within a few seconds.",
+              "Sundin ang PASS method at huminto agad kung hindi makontrol ang apoy sa loob ng ilang segundo.",
+            ),
           ),
           const SizedBox(height: 18),
-          const _SectionTitle("PASS in 4 simple steps"),
+          _SectionTitle(
+            _tStatic(
+              context,
+              "PASS in 4 simple steps",
+              "PASS sa 4 na simpleng hakbang",
+            ),
+          ),
           const SizedBox(height: 12),
-          const _PassStepCard(
+          _PassStepCard(
             letter: "P",
-            word: "Pull",
-            desc: "Pull the safety pin.",
+            word: _tStatic(context, "Pull", "Hilahin"),
+            desc: _tStatic(
+              context,
+              "Pull the safety pin.",
+              "Hilahin ang safety pin.",
+            ),
           ),
           const SizedBox(height: 10),
-          const _PassStepCard(
+          _PassStepCard(
             letter: "A",
-            word: "Aim",
-            desc: "Aim at the base of the fire, not the flames.",
+            word: _tStatic(context, "Aim", "Itutok"),
+            desc: _tStatic(
+              context,
+              "Aim at the base of the fire, not the flames.",
+              "Itutok sa pinakailalim ng apoy, hindi sa mga liyab.",
+            ),
           ),
           const SizedBox(height: 10),
-          const _PassStepCard(
+          _PassStepCard(
             letter: "S",
-            word: "Squeeze",
-            desc: "Squeeze the handle in a controlled way.",
+            word: _tStatic(context, "Squeeze", "Pisilin"),
+            desc: _tStatic(
+              context,
+              "Squeeze the handle in a controlled way.",
+              "Pisilin ang hawakan nang kontrolado.",
+            ),
           ),
           const SizedBox(height: 10),
-          const _PassStepCard(
+          _PassStepCard(
             letter: "S",
-            word: "Sweep",
-            desc: "Sweep side to side until the fire is out.",
+            word: _tStatic(context, "Sweep", "Iwasiwas"),
+            desc: _tStatic(
+              context,
+              "Sweep side to side until the fire is out.",
+              "Iwasiwas pakaliwa at pakanan hanggang mamatay ang apoy.",
+            ),
           ),
           const SizedBox(height: 18),
           Row(
@@ -680,7 +842,11 @@ class _LearningMaterialExtinguisherPageState
               Expanded(
                 child: _ActionPill(
                   icon: Icons.checklist_rounded,
-                  label: "Show PASS steps",
+                  label: _tStatic(
+                    context,
+                    "Show PASS steps",
+                    "Ipakita ang mga hakbang ng PASS",
+                  ),
                   onTap: _showPASSPopup,
                 ),
               ),
@@ -688,37 +854,72 @@ class _LearningMaterialExtinguisherPageState
               Expanded(
                 child: _ActionPill(
                   icon: Icons.security_rounded,
-                  label: "Safety rule",
+                  label: _tStatic(
+                    context,
+                    "Safety rule",
+                    "Panuntunang pangkaligtasan",
+                  ),
                   onTap: () => _showInfoPopup(
-                    title: "Safety rule",
+                    title: _tStatic(
+                      context,
+                      "Safety rule",
+                      "Panuntunang pangkaligtasan",
+                    ),
                     icon: Icons.security_rounded,
                     color: const Color(0xFFD62828),
-                    message:
-                        "If you cannot control the fire within a few seconds, stop and evacuate. Close doors behind you and call for help.",
+                    message: _tStatic(
+                      context,
+                      "If you cannot control the fire within a few seconds, stop and evacuate. Close doors behind you and call for help.",
+                      "Kung hindi mo makontrol ang apoy sa loob ng ilang segundo, huminto at lumikas. Isara ang mga pinto sa likod mo at humingi ng tulong.",
+                    ),
                   ),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 18),
-          const _Callout(
+          _Callout(
             icon: Icons.info_outline_rounded,
             color: Color(0xFFB11217),
-            title: "Before using an extinguisher",
+            title: _tStatic(
+              context,
+              "Before using an extinguisher",
+              "Bago gumamit ng pamatay-sunog",
+            ),
             lines: [
-              "Check the pressure gauge if present.",
-              "Keep your back toward an exit.",
-              "Make sure the extinguisher matches the fire class.",
-              "Watch for re-ignition and be ready to evacuate.",
+              _tStatic(
+                context,
+                "Check the pressure gauge if present.",
+                "Suriin ang pressure gauge kung mayroon.",
+              ),
+              _tStatic(
+                context,
+                "Keep your back toward an exit.",
+                "Panatilihing nakaharap sa labasan ang iyong likod.",
+              ),
+              _tStatic(
+                context,
+                "Make sure the extinguisher matches the fire class.",
+                "Siguraduhing tugma ang pamatay-sunog sa klase ng apoy.",
+              ),
+              _tStatic(
+                context,
+                "Watch for re-ignition and be ready to evacuate.",
+                "Bantayan kung muling sisiklab ang apoy at maging handang lumikas.",
+              ),
             ],
           ),
           const SizedBox(height: 14),
-          const _Callout(
+          _Callout(
             icon: Icons.block_rounded,
             color: Color(0xFFDC2626),
-            title: "Remember",
+            title: _tStatic(context, "Remember", "Tandaan"),
             lines: [
-              "Never risk your life for property. If it feels unsafe, evacuate immediately.",
+              _tStatic(
+                context,
+                "Never risk your life for property. If it feels unsafe, evacuate immediately.",
+                "Huwag isugal ang iyong buhay para sa ari-arian. Kung hindi ligtas, lumikas agad.",
+              ),
             ],
           ),
         ],
@@ -837,11 +1038,7 @@ class _ImageBox extends StatelessWidget {
       child: Image.asset(
         asset,
         fit: BoxFit.contain,
-        errorBuilder: (_, __, ___) => Icon(
-          fallbackIcon,
-          size: 42,
-          color: c1,
-        ),
+        errorBuilder: (_, __, ___) => Icon(fallbackIcon, size: 42, color: c1),
       ),
     );
   }
@@ -868,10 +1065,7 @@ class _LessonIntroStrip extends StatelessWidget {
   final IconData icon;
   final String text;
 
-  const _LessonIntroStrip({
-    required this.icon,
-    required this.text,
-  });
+  const _LessonIntroStrip({required this.icon, required this.text});
 
   @override
   Widget build(BuildContext context) {
@@ -1172,9 +1366,7 @@ class _ActionWideCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: const Color(0xFFFFF4F4),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: const Color(0xFFB11217).withOpacity(0.10),
-          ),
+          border: Border.all(color: const Color(0xFFB11217).withOpacity(0.10)),
         ),
         child: Row(
           children: [
@@ -1213,8 +1405,11 @@ class _ActionWideCard extends StatelessWidget {
                 ],
               ),
             ),
-            const Icon(Icons.arrow_forward_ios_rounded,
-                size: 16, color: Color(0xFFB11217)),
+            const Icon(
+              Icons.arrow_forward_ios_rounded,
+              size: 16,
+              color: Color(0xFFB11217),
+            ),
           ],
         ),
       ),
@@ -1335,16 +1530,22 @@ class ClassesOfFirePage extends StatelessWidget {
                               color: const Color(0xFFFFC73C),
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: const Text(
-                              "MODULE 1",
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                            child: Text(
+                              _tStatic(context, "MODULE 1", "MODYUL 1"),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                           const SizedBox(width: 15),
-                          const Flexible(
+                          Flexible(
                             child: Text(
-                              "Fire Extinguisher: Safe Use and Emergency Response",
-                              style: TextStyle(
+                              _tStatic(
+                                context,
+                                "Fire Extinguisher: Safe Use and Emergency Response",
+                                "Pamatay-Sunog: Ligtas na Paggamit at Pagtugon sa Emerhensiya",
+                              ),
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.w500,
                               ),
@@ -1378,10 +1579,14 @@ class ClassesOfFirePage extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Center(
+                              Center(
                                 child: Text(
-                                  "Classes of Fire Extinguisher",
-                                  style: TextStyle(
+                                  _tStatic(
+                                    context,
+                                    "Classes of Fire Extinguisher",
+                                    "Mga Klase ng Pamatay-Sunog",
+                                  ),
+                                  style: const TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.w900,
                                     color: Color(0xFFB11217),
@@ -1389,8 +1594,12 @@ class ClassesOfFirePage extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(height: 12),
-                              const Text(
-                                "Fires are classified based on the type of fuel involved. Using the correct extinguisher is critical.",
+                              Text(
+                                _tStatic(
+                                  context,
+                                  "Fires are classified based on the type of fuel involved. Using the correct extinguisher is critical.",
+                                  "Ang mga apoy ay inuuri batay sa uri ng nasusunog na materyal. Mahalaga ang paggamit ng tamang pamatay-sunog.",
+                                ),
                                 style: TextStyle(
                                   height: 1.55,
                                   color: Color(0xFF4B5563),
@@ -1398,15 +1607,15 @@ class ClassesOfFirePage extends StatelessWidget {
                               ),
                               const SizedBox(height: 22),
                               Row(
-                                children: const [
-                                  Expanded(
+                                children: [
+                                  const Expanded(
                                     child: _ClassCard(
                                       label: "Class A",
                                       image: "assets/class_a.png",
                                     ),
                                   ),
-                                  SizedBox(width: 16),
-                                  Expanded(
+                                  const SizedBox(width: 16),
+                                  const Expanded(
                                     child: _ClassCard(
                                       label: "Class B",
                                       image: "assets/class_b.png",
@@ -1416,15 +1625,15 @@ class ClassesOfFirePage extends StatelessWidget {
                               ),
                               const SizedBox(height: 16),
                               Row(
-                                children: const [
-                                  Expanded(
+                                children: [
+                                  const Expanded(
                                     child: _ClassCard(
                                       label: "Class C",
                                       image: "assets/class_c.png",
                                     ),
                                   ),
-                                  SizedBox(width: 16),
-                                  Expanded(
+                                  const SizedBox(width: 16),
+                                  const Expanded(
                                     child: _ClassCard(
                                       label: "Class D",
                                       image: "assets/class_d.png",
@@ -1444,8 +1653,12 @@ class ClassesOfFirePage extends StatelessWidget {
                                 ],
                               ),
                               const SizedBox(height: 28),
-                              const Text(
-                                "Importance of Fire Extinguisher Training",
+                              Text(
+                                _tStatic(
+                                  context,
+                                  "Importance of Fire Extinguisher Training",
+                                  "Kahalagahan ng Pagsasanay sa Pamatay-Sunog",
+                                ),
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w900,
@@ -1453,8 +1666,12 @@ class ClassesOfFirePage extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(height: 10),
-                              const Text(
-                                "Learning how to use a fire extinguisher helps improve emergency preparedness, reduce injuries, and protect lives during fire incidents.",
+                              Text(
+                                _tStatic(
+                                  context,
+                                  "Learning how to use a fire extinguisher helps improve emergency preparedness, reduce injuries, and protect lives during fire incidents.",
+                                  "Ang pag-aaral kung paano gumamit ng pamatay-sunog ay nakatutulong mapabuti ang kahandaan sa emerhensiya, mabawasan ang pinsala, at maprotektahan ang buhay sa mga insidente ng sunog.",
+                                ),
                                 style: TextStyle(
                                   height: 1.55,
                                   color: Color(0xFF4B5563),
@@ -1462,7 +1679,8 @@ class ClassesOfFirePage extends StatelessWidget {
                               ),
                               const SizedBox(height: 25),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   OutlinedButton(
                                     style: OutlinedButton.styleFrom(
@@ -1474,9 +1692,9 @@ class ClassesOfFirePage extends StatelessWidget {
                                       ),
                                     ),
                                     onPressed: () => Navigator.pop(context),
-                                    child: const Text(
-                                      "« BACK",
-                                      style: TextStyle(
+                                    child: Text(
+                                      _tStatic(context, "« BACK", "« BALIK"),
+                                      style: const TextStyle(
                                         color: Color(0xFFB11217),
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -1490,9 +1708,13 @@ class ClassesOfFirePage extends StatelessWidget {
                                       ),
                                     ),
                                     onPressed: () {},
-                                    child: const Text(
-                                      "Start Pre - Test",
-                                      style: TextStyle(
+                                    child: Text(
+                                      _tStatic(
+                                        context,
+                                        "Start Pre - Test",
+                                        "Simulan ang Paunang Pagsusulit",
+                                      ),
+                                      style: const TextStyle(
                                         fontWeight: FontWeight.bold,
                                         color: Colors.white,
                                       ),
@@ -1525,6 +1747,10 @@ class _ClassCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final displayLabel = Localizations.localeOf(context).languageCode == 'tl'
+        ? label.replaceFirst('Class', 'Klase')
+        : label;
+
     return InkWell(
       borderRadius: BorderRadius.circular(20),
       onTap: () => _showModernClassSheet(context, label: label, image: image),
@@ -1544,22 +1770,20 @@ class _ClassCard extends StatelessWidget {
         child: Column(
           children: [
             Text(
-              label,
+              displayLabel,
               style: const TextStyle(
                 fontWeight: FontWeight.w900,
                 color: Color(0xFFB11217),
               ),
             ),
             const SizedBox(height: 14),
-            Image.asset(
-              image,
-              height: 86,
-              fit: BoxFit.contain,
-            ),
+            Image.asset(image, height: 86, fit: BoxFit.contain),
             const SizedBox(height: 10),
-            const Text(
-              "Tap to explore",
-              style: TextStyle(
+            Text(
+              Localizations.localeOf(context).languageCode == 'tl'
+                  ? "I-tap upang tingnan"
+                  : "Tap to explore",
+              style: const TextStyle(
                 fontSize: 12,
                 color: Color(0xFF6B7280),
                 fontWeight: FontWeight.w700,
@@ -1577,7 +1801,7 @@ void _showModernClassSheet(
   required String label,
   required String image,
 }) {
-  final data = _ClassPopupData.fromLabel(label);
+  final data = _ClassPopupData.fromLabel(context, label);
 
   showModalBottomSheet(
     context: context,
@@ -1640,11 +1864,7 @@ void _showModernClassSheet(
                               color: Colors.white.withOpacity(0.25),
                             ),
                           ),
-                          child: Icon(
-                            data.icon,
-                            color: Colors.white,
-                            size: 24,
-                          ),
+                          child: Icon(data.icon, color: Colors.white, size: 24),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
@@ -1740,8 +1960,11 @@ void _showModernClassSheet(
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Icon(Icons.info_outline,
-                                  color: data.accent, size: 18),
+                              Icon(
+                                Icons.info_outline,
+                                color: data.accent,
+                                size: 18,
+                              ),
                               const SizedBox(width: 10),
                               Expanded(
                                 child: Text(
@@ -1803,8 +2026,10 @@ class _SectionCard extends StatelessWidget {
               Container(
                 width: 8,
                 height: 8,
-                decoration:
-                    BoxDecoration(color: accent, shape: BoxShape.circle),
+                decoration: BoxDecoration(
+                  color: accent,
+                  shape: BoxShape.circle,
+                ),
               ),
               const SizedBox(width: 8),
               Expanded(
@@ -1825,10 +2050,7 @@ class _SectionCard extends StatelessWidget {
               children: [
                 Text(
                   "• ",
-                  style: TextStyle(
-                    fontWeight: FontWeight.w900,
-                    color: accent,
-                  ),
+                  style: TextStyle(fontWeight: FontWeight.w900, color: accent),
                 ),
                 Expanded(
                   child: Text(
@@ -1879,14 +2101,25 @@ class _ClassPopupData {
     this.note,
   });
 
-  static _ClassPopupData fromLabel(String label) {
+  static _ClassPopupData fromLabel(BuildContext context, String label) {
     switch (label) {
       case "Class A":
         return _ClassPopupData(
-          title: "Class A Fire Extinguisher",
-          description:
-              "Used for fires involving ordinary combustible materials. These are common in homes, schools, and offices.",
-          section1Title: "What is a Class A Fire?",
+          title: _tStatic(
+            context,
+            "Class A Fire Extinguisher",
+            "Pamatay-Sunog para sa Class A",
+          ),
+          description: _tStatic(
+            context,
+            "Used for fires involving ordinary combustible materials. These are common in homes, schools, and offices.",
+            "Ginagamit para sa apoy na may karaniwang nasusunog na materyales. Karaniwan ito sa mga bahay, paaralan, at opisina.",
+          ),
+          section1Title: _tStatic(
+            context,
+            "What is a Class A Fire?",
+            "Ano ang Class A na Apoy?",
+          ),
           section1Bullets: const [
             "Paper",
             "Wood",
@@ -1894,25 +2127,40 @@ class _ClassPopupData {
             "Cardboard",
             "Plastics",
           ],
-          section2Title: "Common Extinguishing Agents",
-          section2Bullets: const [
-            "Water",
-            "Foam",
-            "Dry chemical (ABC type)",
-          ],
+          section2Title: _tStatic(
+            context,
+            "Common Extinguishing Agents",
+            "Karaniwang Pampatay ng Apoy",
+          ),
+          section2Bullets: const ["Water", "Foam", "Dry chemical (ABC type)"],
           headerGradient: const [Color(0xFFB11217), Color(0xFFE84C3D)],
           accent: const Color(0xFFB11217),
           softTint: const Color(0xFFFFF1F1),
           borderTint: const Color(0xFFFFD6D6),
           icon: Icons.local_fire_department_rounded,
-          note: "Tip: Do not use water on electrical or flammable liquid fires.",
+          note: _tStatic(
+            context,
+            "Tip: Do not use water on electrical or flammable liquid fires.",
+            "Paalala: Huwag gumamit ng tubig sa apoy na elektrikal o sa madaling magliyab na likido.",
+          ),
         );
       case "Class B":
         return _ClassPopupData(
-          title: "Class B Fire Extinguisher",
-          description:
-              "Used for fires involving flammable liquids and gases. These fires spread fast and must be smothered, not soaked.",
-          section1Title: "What is a Class B Fire?",
+          title: _tStatic(
+            context,
+            "Class B Fire Extinguisher",
+            "Pamatay-Sunog para sa Class B",
+          ),
+          description: _tStatic(
+            context,
+            "Used for fires involving flammable liquids and gases. These fires spread fast and must be smothered, not soaked.",
+            "Ginagamit para sa apoy na may madaling magliyab na likido at gas. Mabilis kumalat ang mga ito at dapat tabunan, hindi binabaha.",
+          ),
+          section1Title: _tStatic(
+            context,
+            "What is a Class B Fire?",
+            "Ano ang Class B na Apoy?",
+          ),
           section1Bullets: const [
             "Gasoline",
             "Oil",
@@ -1920,10 +2168,14 @@ class _ClassPopupData {
             "Alcohol",
             "Propane",
           ],
-          section2Title: "Common Extinguishing Agents",
+          section2Title: _tStatic(
+            context,
+            "Common Extinguishing Agents",
+            "Karaniwang Pampatay ng Apoy",
+          ),
           section2Bullets: const [
             "Foam",
-            "Carbon dioxide (CO₂)",
+            "Carbon dioxide (CO2)",
             "Dry chemical (ABC or BC type)",
           ],
           headerGradient: const [Color(0xFF7B1FA2), Color(0xFF512DA8)],
@@ -1931,24 +2183,42 @@ class _ClassPopupData {
           softTint: const Color(0xFFF6EEFF),
           borderTint: const Color(0xFFE3D2FF),
           icon: Icons.water_drop_rounded,
-          note:
-              "Tip: Never use water on flammable liquid fires—it can spread the fuel.",
+          note: _tStatic(
+            context,
+            "Tip: Never use water on flammable liquid fires—it can spread the fuel.",
+            "Paalala: Huwag kailanman gumamit ng tubig sa apoy ng madaling magliyab na likido dahil maaari nitong ikalat ang gasolina o likido.",
+          ),
         );
       case "Class C":
         return _ClassPopupData(
-          title: "Class C Fire Extinguisher",
-          description:
-              "Designed for fires involving energized electrical equipment. The agent must not conduct electricity.",
-          section1Title: "What is a Class C Fire?",
+          title: _tStatic(
+            context,
+            "Class C Fire Extinguisher",
+            "Pamatay-Sunog para sa Class C",
+          ),
+          description: _tStatic(
+            context,
+            "Designed for fires involving energized electrical equipment. The agent must not conduct electricity.",
+            "Idinisenyo para sa apoy na may kagamitang elektrikal na may kuryente. Dapat hindi nakakapagpadaloy ng kuryente ang gamit na sangkap.",
+          ),
+          section1Title: _tStatic(
+            context,
+            "What is a Class C Fire?",
+            "Ano ang Class C na Apoy?",
+          ),
           section1Bullets: const [
             "Wiring",
             "Electrical panels",
             "Circuit breakers",
             "Appliances",
           ],
-          section2Title: "Common Extinguishing Agents",
+          section2Title: _tStatic(
+            context,
+            "Common Extinguishing Agents",
+            "Karaniwang Pampatay ng Apoy",
+          ),
           section2Bullets: const [
-            "Carbon dioxide (CO₂)",
+            "Carbon dioxide (CO2)",
             "Dry chemical (ABC or BC type)",
           ],
           headerGradient: const [Color(0xFF0D47A1), Color(0xFF1976D2)],
@@ -1956,15 +2226,29 @@ class _ClassPopupData {
           softTint: const Color(0xFFEEF6FF),
           borderTint: const Color(0xFFD3E9FF),
           icon: Icons.bolt_rounded,
-          note:
-              "Safety: If power is turned off, the fire may become Class A or B depending on the fuel.",
+          note: _tStatic(
+            context,
+            "Safety: If power is turned off, the fire may become Class A or B depending on the fuel.",
+            "Kaligtasan: Kapag naputol ang kuryente, maaaring maging Class A o B ang apoy depende sa nasusunog na materyal.",
+          ),
         );
       case "Class D":
         return _ClassPopupData(
-          title: "Class D Fire Extinguisher",
-          description:
-              "Used for fires involving combustible metals. These require special agents and procedures.",
-          section1Title: "What is a Class D Fire?",
+          title: _tStatic(
+            context,
+            "Class D Fire Extinguisher",
+            "Pamatay-Sunog para sa Class D",
+          ),
+          description: _tStatic(
+            context,
+            "Used for fires involving combustible metals. These require special agents and procedures.",
+            "Ginagamit para sa apoy na may mga metal na madaling masunog. Nangangailangan ito ng espesyal na sangkap at pamamaraan.",
+          ),
+          section1Title: _tStatic(
+            context,
+            "What is a Class D Fire?",
+            "Ano ang Class D na Apoy?",
+          ),
           section1Bullets: const [
             "Magnesium",
             "Titanium",
@@ -1972,7 +2256,11 @@ class _ClassPopupData {
             "Potassium",
             "Lithium",
           ],
-          section2Title: "Common Extinguishing Agents",
+          section2Title: _tStatic(
+            context,
+            "Common Extinguishing Agents",
+            "Karaniwang Pampatay ng Apoy",
+          ),
           section2Bullets: const [
             "Special dry powder agents designed for metal fires",
           ],
@@ -1981,21 +2269,35 @@ class _ClassPopupData {
           softTint: const Color(0xFFF2F5F7),
           borderTint: const Color(0xFFDCE3E7),
           icon: Icons.precision_manufacturing_rounded,
-          note:
-              "Warning: Do not use water on metal fires—it can react violently.",
+          note: _tStatic(
+            context,
+            "Warning: Do not use water on metal fires—it can react violently.",
+            "Babala: Huwag gumamit ng tubig sa apoy ng metal dahil maaari itong mag-react nang marahas.",
+          ),
         );
       case "Class K":
         return _ClassPopupData(
-          title: "Class K Fire Extinguisher",
-          description:
-              "Designed for kitchen fires involving cooking oils and fats. Common in commercial kitchens.",
-          section1Title: "What is a Class K Fire?",
-          section1Bullets: const [
-            "Vegetable oil",
-            "Animal fats",
-            "Grease",
-          ],
-          section2Title: "Common Extinguishing Agents",
+          title: _tStatic(
+            context,
+            "Class K Fire Extinguisher",
+            "Pamatay-Sunog para sa Class K",
+          ),
+          description: _tStatic(
+            context,
+            "Designed for kitchen fires involving cooking oils and fats. Common in commercial kitchens.",
+            "Idinisenyo para sa apoy sa kusina na may mantika at taba. Karaniwan ito sa mga komersyal na kusina.",
+          ),
+          section1Title: _tStatic(
+            context,
+            "What is a Class K Fire?",
+            "Ano ang Class K na Apoy?",
+          ),
+          section1Bullets: const ["Vegetable oil", "Animal fats", "Grease"],
+          section2Title: _tStatic(
+            context,
+            "Common Extinguishing Agents",
+            "Karaniwang Pampatay ng Apoy",
+          ),
           section2Bullets: const [
             "Wet chemical agents that cool and form a foam layer to prevent re-ignition",
           ],
@@ -2004,12 +2306,15 @@ class _ClassPopupData {
           softTint: const Color(0xFFEEFFF1),
           borderTint: const Color(0xFFD1F2D7),
           icon: Icons.restaurant_rounded,
-          note:
-              "Tip: For kitchen fires, turn off heat if safe before using an extinguisher.",
+          note: _tStatic(
+            context,
+            "Tip: For kitchen fires, turn off heat if safe before using an extinguisher.",
+            "Paalala: Para sa apoy sa kusina, patayin ang init kung ligtas bago gumamit ng pamatay-sunog.",
+          ),
         );
       default:
         return _ClassPopupData(
-          title: "Fire Class",
+          title: _tStatic(context, "Fire Class", "Klase ng Apoy"),
           description: "",
           section1Title: "",
           section1Bullets: const [],
@@ -2023,4 +2328,8 @@ class _ClassPopupData {
         );
     }
   }
+}
+
+String _tStatic(BuildContext context, String en, String tl) {
+  return Localizations.localeOf(context).languageCode == 'tl' ? tl : en;
 }

@@ -303,7 +303,7 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
 
 class _Title extends StatelessWidget {
   final String text;
-  const _Title(this.text, {super.key});
+  const _Title(this.text);
 
   @override
   Widget build(BuildContext context) {
@@ -321,7 +321,7 @@ class _Title extends StatelessWidget {
 
 class _SectionTitle extends StatelessWidget {
   final String text;
-  const _SectionTitle(this.text, {super.key});
+  const _SectionTitle(this.text);
 
   @override
   Widget build(BuildContext context) {
@@ -342,7 +342,7 @@ class _SectionTitle extends StatelessWidget {
 
 class _BodyText extends StatelessWidget {
   final String text;
-  const _BodyText(this.text, {super.key});
+  const _BodyText(this.text);
 
   @override
   Widget build(BuildContext context) {

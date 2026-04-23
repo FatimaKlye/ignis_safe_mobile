@@ -22,6 +22,10 @@ class _LearningMaterialTenementPageState
   double _progress = 0.0;
   bool _canNext = false;
 
+  String _t(BuildContext context, String en, String tl) {
+    return Localizations.localeOf(context).languageCode == 'tl' ? tl : en;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -129,7 +133,7 @@ class _LearningMaterialTenementPageState
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text("OK"),
+            child: Text(_t(context, "OK", "Sige")),
           ),
         ],
       ),
@@ -138,16 +142,24 @@ class _LearningMaterialTenementPageState
 
   void _showDoThisNowPopup() {
     _showInfoPopup(
-      title: "If there is a fire in a tenement building",
+      title: _t(context, "If there is a fire in a tenement building", "Kung may sunog sa tenement building"),
       icon: Icons.local_fire_department_rounded,
       color: const Color(0xFFDC2626),
-      message:
-          "1) Alert other occupants immediately.\n"
-          "2) Leave through the nearest safe exit.\n"
-          "3) Stay low if there is smoke.\n"
-          "4) Do NOT use elevators.\n"
-          "5) Close doors behind you if possible.\n"
-          "6) Go to the assembly area and call for help.",
+      message: _t(
+        context,
+        "1) Alert other occupants immediately.\n"
+            "2) Leave through the nearest safe exit.\n"
+            "3) Stay low if there is smoke.\n"
+            "4) Do NOT use elevators.\n"
+            "5) Close doors behind you if possible.\n"
+            "6) Go to the assembly area and call for help.",
+        "1) Ipaalam agad sa ibang nakatira.\n"
+            "2) Lumabas sa pinakamalapit na ligtas na daan.\n"
+            "3) Yumuko kung may usok.\n"
+            "4) HUWAG gumamit ng elevator.\n"
+            "5) Isara ang pinto sa likod kung maaari.\n"
+            "6) Pumunta sa assembly area at tumawag ng tulong.",
+      ),
     );
   }
 
@@ -182,9 +194,9 @@ class _LearningMaterialTenementPageState
                         onPressed: () => Navigator.pop(context),
                       ),
                       const SizedBox(height: 10),
-                      const Center(
+                      Center(
                         child: Text(
-                          "Learning Material",
+                          _t(context, "Learning Material", "Materyal sa Pag-aaral"),
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 30,
@@ -218,14 +230,14 @@ class _LearningMaterialTenementPageState
                                   ),
                                 ],
                               ),
-                              child: const Row(
+                              child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Icon(Icons.apartment_rounded,
                                       color: Colors.white, size: 18),
                                   SizedBox(width: 8),
                                   Text(
-                                    "MODULE 5",
+                                    _t(context, "MODULE 5", "MODYUL 5"),
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white,
@@ -235,9 +247,13 @@ class _LearningMaterialTenementPageState
                               ),
                             ),
                             const SizedBox(width: 15),
-                            const Expanded(
+                            Expanded(
                               child: Text(
-                                "Tenement Fire: What It Is, Common Causes, and What To Do",
+                                _t(
+                                  context,
+                                  "Tenement Fire: What It Is, Common Causes, and What To Do",
+                                  "Sunog sa Tenement: Ano Ito, Karaniwang Sanhi, at Ano ang Gagawin",
+                                ),
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontWeight: FontWeight.w600,
@@ -309,8 +325,8 @@ class _LearningMaterialTenementPageState
                           ),
                         ),
                         onPressed: _goBack,
-                        child: const Text(
-                          "« BACK",
+                        child: Text(
+                          _t(context, "« BACK", "« BALIK"),
                           style: TextStyle(
                             color: Color(0xFF7C3AED),
                             fontWeight: FontWeight.bold,
@@ -326,7 +342,9 @@ class _LearningMaterialTenementPageState
                         ),
                         onPressed: _canNext ? _goNext : null,
                         child: Text(
-                          isLast ? "Start pre test" : "NEXT »",
+                          isLast
+                              ? _t(context, "Start pre test", "Simulan ang paunang pagsusulit")
+                              : _t(context, "NEXT »", "SUNOD »"),
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
@@ -364,13 +382,17 @@ class _LearningMaterialTenementPageState
     return _ModernCard(
       accent1: accent,
       accent2: accent2,
-      pageTitle: "PAGE 1 – TENEMENT FIRE OVERVIEW",
+      pageTitle: _t(
+        context,
+        "PAGE 1 – TENEMENT FIRE OVERVIEW",
+        "PAHINA 1 – PANGKALAHATANG TINGIN SA SUNOG SA TENEMENT",
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Center(
+          Center(
             child: Text(
-              "What is a Tenement Fire?",
+              _t(context, "What is a Tenement Fire?", "Ano ang Sunog sa Tenement?"),
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -405,18 +427,18 @@ class _LearningMaterialTenementPageState
           _Callout(
             icon: Icons.warning_rounded,
             color: const Color(0xFFDC2626),
-            title: "Why it is dangerous",
-            lines: const [
-              "Many people may need to escape at the same time.",
-              "Smoke can rise fast to upper floors.",
-              "Narrow exits and blocked hallways increase risk.",
+            title: _t(context, "Why it is dangerous", "Bakit ito mapanganib"),
+            lines: [
+              _t(context, "Many people may need to escape at the same time.", "Maraming tao ang maaaring kailangang lumikas nang sabay-sabay."),
+              _t(context, "Smoke can rise fast to upper floors.", "Mabilis umakyat ang usok sa mas matataas na palapag."),
+              _t(context, "Narrow exits and blocked hallways increase risk.", "Mas tumataas ang panganib kapag makitid ang labasan at barado ang pasilyo."),
             ],
           ),
           const SizedBox(height: 14),
           _ChipLine(
             icon: Icons.menu_book_rounded,
             color: const Color(0xFF7C3AED),
-            text: "Tap the buttons below for quick pop-ups.",
+            text: _t(context, "Tap the buttons below for quick pop-ups.", "Pindutin ang mga button sa ibaba para sa mabilis na impormasyon."),
           ),
           const SizedBox(height: 12),
           Row(
@@ -424,11 +446,14 @@ class _LearningMaterialTenementPageState
               Expanded(
                 child: _ActionPill(
                   icon: Icons.help_rounded,
-                  label: "Why it spreads",
+                  label: _t(context, "Why it spreads", "Bakit ito kumakalat"),
                   onTap: () => _showInfoPopup(
-                    title: "Why tenement fires spread fast",
-                    message:
-                        "Fire can move from one room or floor to another through open doors, windows, stairways, electrical lines, and flammable materials stored close together.",
+                    title: _t(context, "Why tenement fires spread fast", "Bakit mabilis kumalat ang sunog sa tenement"),
+                    message: _t(
+                      context,
+                      "Fire can move from one room or floor to another through open doors, windows, stairways, electrical lines, and flammable materials stored close together.",
+                      "Maaaring kumalat ang apoy mula sa isang silid o palapag papunta sa iba sa pamamagitan ng bukas na pinto, bintana, hagdanan, linya ng kuryente, at magkakadikit na madaling masunog na gamit.",
+                    ),
                   ),
                 ),
               ),
@@ -436,45 +461,41 @@ class _LearningMaterialTenementPageState
               Expanded(
                 child: _ActionPill(
                   icon: Icons.local_fire_department_rounded,
-                  label: "If fire starts",
+                  label: _t(context, "If fire starts", "Kung magsimula ang sunog"),
                   onTap: _showDoThisNowPopup,
                 ),
               ),
             ],
           ),
           const SizedBox(height: 24),
-          const _SectionTitle("Common Types of Tenement Fires"),
+          _SectionTitle(_t(context, "Common Types of Tenement Fires", "Karaniwang Uri ng Sunog sa Tenement")),
           const SizedBox(height: 12),
-          const _MiniTile(
+          _MiniTile(
             color: Color(0xFF7C3AED),
             icon: Icons.electrical_services_rounded,
-            title: "Electrical Fire",
-            desc:
-                "Faulty wiring, overloaded outlets, or illegal connections cause ignition.",
+            title: _t(context, "Electrical Fire", "Sunog sa Kuryente"),
+            desc: _t(context, "Faulty wiring, overloaded outlets, or illegal connections cause ignition.", "Sirang wiring, overloaded outlets, o ilegal na koneksyon ang nagdudulot ng sindi."),
           ),
           const SizedBox(height: 10),
-          const _MiniTile(
+          _MiniTile(
             color: Color(0xFF6366F1),
             icon: Icons.local_fire_department_rounded,
-            title: "Cooking Fire",
-            desc:
-                "Unattended stoves or open flames inside small living spaces start fires.",
+            title: _t(context, "Cooking Fire", "Sunog sa Pagluluto"),
+            desc: _t(context, "Unattended stoves or open flames inside small living spaces start fires.", "Napabayaang kalan o bukas na apoy sa masisikip na tirahan ang nagdudulot ng sunog."),
           ),
           const SizedBox(height: 10),
-          const _MiniTile(
+          _MiniTile(
             color: Color(0xFF7C3AED),
             icon: Icons.smoking_rooms_rounded,
-            title: "Open Flame Fire",
-            desc:
-                "Candles, matches, or cigarettes ignite curtains, bedding, or trash.",
+            title: _t(context, "Open Flame Fire", "Sunog mula sa Bukas na Apoy"),
+            desc: _t(context, "Candles, matches, or cigarettes ignite curtains, bedding, or trash.", "Kandila, posporo, o sigarilyo ang nagsisindi sa kurtina, kama, o basura."),
           ),
           const SizedBox(height: 10),
-          const _MiniTile(
+          _MiniTile(
             color: Color(0xFF8B5CF6),
             icon: Icons.apartment_rounded,
-            title: "Multi-floor Spread",
-            desc:
-                "A small fire grows and spreads upward through stairs, hallways, and nearby rooms.",
+            title: _t(context, "Multi-floor Spread", "Pagkalat sa Maraming Palapag"),
+            desc: _t(context, "A small fire grows and spreads upward through stairs, hallways, and nearby rooms.", "Ang maliit na apoy ay lumalaki at kumakalat paitaas sa hagdanan, pasilyo, at katabing silid."),
           ),
         ],
       ),
@@ -486,13 +507,17 @@ class _LearningMaterialTenementPageState
     return _ModernCard(
       accent1: accent2,
       accent2: accent,
-      pageTitle: "PAGE 2 – CAUSES & PREVENTION",
+      pageTitle: _t(
+        context,
+        "PAGE 2 – CAUSES & PREVENTION",
+        "PAHINA 2 – MGA SANHI AT PAG-IWAS",
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Center(
+          Center(
             child: Text(
-              "Common Causes of Tenement Fires",
+              _t(context, "Common Causes of Tenement Fires", "Karaniwang Sanhi ng Sunog sa Tenement"),
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -504,7 +529,7 @@ class _LearningMaterialTenementPageState
           const SizedBox(height: 18),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
+            children: [
               _IconBox(
                 icon: Icons.apartment_rounded,
                 c1: accent2,
@@ -514,12 +539,12 @@ class _LearningMaterialTenementPageState
               Expanded(
                 child: _Bullets(
                   items: [
-                    "Overloaded outlets and tangled extension cords",
-                    "Illegal or unsafe electrical wiring",
-                    "Unattended cooking inside rooms or shared areas",
-                    "Candles or cigarettes left burning",
-                    "Flammable items stored in narrow spaces",
-                    "Blocked exits, stairs, or hallways",
+                    _t(context, "Overloaded outlets and tangled extension cords", "Sobrang daming nakakabit sa saksakan at nagusot na extension cords"),
+                    _t(context, "Illegal or unsafe electrical wiring", "Ilegal o hindi ligtas na electrical wiring"),
+                    _t(context, "Unattended cooking inside rooms or shared areas", "Napabayaang pagluluto sa silid o common area"),
+                    _t(context, "Candles or cigarettes left burning", "Naiwang nakasindi ang kandila o sigarilyo"),
+                    _t(context, "Flammable items stored in narrow spaces", "Madaling masunog na bagay na nakaimbak sa masisikip na lugar"),
+                    _t(context, "Blocked exits, stairs, or hallways", "Nakaharang na labasan, hagdan, o pasilyo"),
                   ],
                 ),
               ),
@@ -531,13 +556,13 @@ class _LearningMaterialTenementPageState
               Expanded(
                 child: _ActionPill(
                   icon: Icons.quiz_rounded,
-                  label: "Quick check",
+                  label: _t(context, "Quick check", "Mabilisang pagsusuri"),
                   onTap: () => _showInfoPopup(
-                    title: "Quick Check",
+                    title: _t(context, "Quick Check", "Mabilisang Pagsusuri"),
                     icon: Icons.check_circle_rounded,
                     color: const Color(0xFF4338CA),
                     message:
-                        "In crowded buildings, one unsafe outlet or blocked exit can put many families at risk, not just one room.",
+                        _t(context, "In crowded buildings, one unsafe outlet or blocked exit can put many families at risk, not just one room.", "Sa mataong gusali, isang delikadong saksakan o baradong labasan ay maaaring maglagay sa panganib sa maraming pamilya, hindi lang isang silid."),
                   ),
                 ),
               ),
@@ -545,9 +570,9 @@ class _LearningMaterialTenementPageState
               Expanded(
                 child: _ActionPill(
                   icon: Icons.tips_and_updates_rounded,
-                  label: "Safety tips",
+                  label: _t(context, "Safety tips", "Mga tip sa kaligtasan"),
                   onTap: () => _showInfoPopup(
-                    title: "Safety Tips",
+                    title: _t(context, "Safety Tips", "Mga Tip sa Kaligtasan"),
                     icon: Icons.tips_and_updates_rounded,
                     color: const Color(0xFF6366F1),
                     message:
@@ -562,13 +587,13 @@ class _LearningMaterialTenementPageState
             ],
           ),
           const SizedBox(height: 18),
-          const _ChipLine(
+          _ChipLine(
             icon: Icons.fact_check_rounded,
             color: Color(0xFF7C3AED),
-            text: "Prevention protects the whole building, not only one room.",
+            text: _t(context, "Prevention protects the whole building, not only one room.", "Ang pag-iwas ay nagpoprotekta sa buong gusali, hindi lang sa isang silid."),
           ),
           const SizedBox(height: 24),
-          const _SectionTitle("Prevention (Simple Steps)"),
+          _SectionTitle(_t(context, "Prevention (Simple Steps)", "Pag-iwas (Simpleng Hakbang)")),
           const SizedBox(height: 12),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -579,27 +604,27 @@ class _LearningMaterialTenementPageState
                 c2: accent,
               ),
               const SizedBox(width: 15),
-              const Expanded(
+              Expanded(
                 child: _Bullets(
                   items: [
-                    "Do not overload electrical outlets.",
-                    "Repair unsafe wiring immediately.",
-                    "Keep hallways, exits, and stairs clear.",
-                    "Store flammable items away from heat.",
-                    "Turn off appliances when not in use.",
-                    "Teach everyone the evacuation route.",
+                    _t(context, "Do not overload electrical outlets.", "Huwag sobrahan ang nakakabit sa electrical outlets."),
+                    _t(context, "Repair unsafe wiring immediately.", "Ayusin agad ang delikadong wiring."),
+                    _t(context, "Keep hallways, exits, and stairs clear.", "Panatilihing malinis at walang harang ang pasilyo, labasan, at hagdan."),
+                    _t(context, "Store flammable items away from heat.", "Itabi ang madaling masunog na gamit palayo sa init."),
+                    _t(context, "Turn off appliances when not in use.", "Patayin ang appliances kapag hindi ginagamit."),
+                    _t(context, "Teach everyone the evacuation route.", "Ituro sa lahat ang ruta ng paglikas."),
                   ],
                 ),
               ),
             ],
           ),
           const SizedBox(height: 14),
-          const _Callout(
+          _Callout(
             icon: Icons.shield_rounded,
             color: Color(0xFF4338CA),
-            title: "Prevention goal",
+            title: _t(context, "Prevention goal", "Layunin ng pag-iwas"),
             lines: [
-              "Reduce ignition sources, keep escape paths open, and make evacuation easier for everyone.",
+              _t(context, "Reduce ignition sources, keep escape paths open, and make evacuation easier for everyone.", "Bawasan ang pinagmumulan ng apoy, panatilihing bukas ang daanan ng paglikas, at gawing mas madali ang paglikas para sa lahat."),
             ],
           ),
         ],
@@ -612,13 +637,17 @@ class _LearningMaterialTenementPageState
     return _ModernCard(
       accent1: const Color(0xFF6366F1),
       accent2: accent,
-      pageTitle: "PAGE 3 – WHAT TO DO DURING A TENEMENT FIRE",
+      pageTitle: _t(
+        context,
+        "PAGE 3 – WHAT TO DO DURING A TENEMENT FIRE",
+        "PAHINA 3 – ANO ANG GAGAWIN KAPAG MAY SUNOG SA TENEMENT",
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Center(
+          Center(
             child: Text(
-              "Emergency Response",
+              _t(context, "Emergency Response", "Pagtugon sa Emerhensiya"),
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -630,7 +659,7 @@ class _LearningMaterialTenementPageState
           const SizedBox(height: 18),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
+            children: [
               _IconBox(
                 icon: Icons.fire_extinguisher_rounded,
                 c1: Color(0xFF6366F1),
@@ -640,12 +669,12 @@ class _LearningMaterialTenementPageState
               Expanded(
                 child: _Bullets(
                   items: [
-                    "Alert nearby occupants immediately.",
-                    "Leave using the nearest safe stairway or exit.",
-                    "Stay low if smoke is present.",
-                    "Do NOT use elevators.",
-                    "Close doors behind you if possible.",
-                    "Go to a safe open area and wait for responders.",
+                    _t(context, "Alert nearby occupants immediately.", "Ipaalam agad sa mga taong nasa paligid."),
+                    _t(context, "Leave using the nearest safe stairway or exit.", "Lumabas gamit ang pinakamalapit na ligtas na hagdan o labasan."),
+                    _t(context, "Stay low if smoke is present.", "Yumuko kung may usok."),
+                    _t(context, "Do NOT use elevators.", "HUWAG gumamit ng elevator."),
+                    _t(context, "Close doors behind you if possible.", "Isara ang pinto sa likod kung maaari."),
+                    _t(context, "Go to a safe open area and wait for responders.", "Pumunta sa ligtas na bukas na lugar at hintayin ang responders."),
                   ],
                 ),
               ),
@@ -657,13 +686,13 @@ class _LearningMaterialTenementPageState
               Expanded(
                 child: _ActionPill(
                   icon: Icons.smoke_free_rounded,
-                  label: "Smoke rule",
+                  label: _t(context, "Smoke rule", "Patakaran sa usok"),
                   onTap: () => _showInfoPopup(
-                    title: "Smoke Rule",
+                    title: _t(context, "Smoke Rule", "Patakaran sa Usok"),
                     icon: Icons.block_rounded,
                     color: const Color(0xFFDC2626),
                     message:
-                        "Smoke rises and spreads fast in multi-floor buildings. Stay low to breathe cleaner air and move carefully toward the nearest safe exit.",
+                        _t(context, "Smoke rises and spreads fast in multi-floor buildings. Stay low to breathe cleaner air and move carefully toward the nearest safe exit.", "Mabilis umakyat at kumalat ang usok sa multi-floor na gusali. Yumuko para makahinga ng mas malinis na hangin at maingat na kumilos papunta sa pinakamalapit na ligtas na labasan."),
                   ),
                 ),
               ),
@@ -671,13 +700,13 @@ class _LearningMaterialTenementPageState
               Expanded(
                 child: _ActionPill(
                   icon: Icons.help_center_rounded,
-                  label: "When trapped",
+                  label: _t(context, "When trapped", "Kapag na-trap"),
                   onTap: () => _showInfoPopup(
-                    title: "If you are trapped",
+                    title: _t(context, "If you are trapped", "Kung na-trap ka"),
                     icon: Icons.warning_amber_rounded,
                     color: const Color(0xFFDC2626),
                     message:
-                        "Stay inside a room if the hallway is full of smoke or fire. Close the door, block gaps if possible, signal from a window, and call for help.",
+                        _t(context, "Stay inside a room if the hallway is full of smoke or fire. Close the door, block gaps if possible, signal from a window, and call for help.", "Manatili sa silid kung puno ng usok o apoy ang pasilyo. Isara ang pinto, harangan ang mga siwang kung kaya, magsenyas sa bintana, at tumawag ng tulong."),
                   ),
                 ),
               ),
@@ -697,20 +726,20 @@ class _LearningMaterialTenementPageState
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const _SectionTitle("One-minute plan"),
+                    _SectionTitle(_t(context, "One-minute plan", "Isang minutong plano")),
                     const SizedBox(height: 10),
-                    const _Bullets(
+                    _Bullets(
                       items: [
-                        "Warn others.",
-                        "Use the safest exit.",
-                        "Stay low in smoke.",
-                        "Do not go back inside.",
+                        _t(context, "Warn others.", "Babalaan ang iba."),
+                        _t(context, "Use the safest exit.", "Gamitin ang pinakaligtas na labasan."),
+                        _t(context, "Stay low in smoke.", "Yumuko kung may usok."),
+                        _t(context, "Do not go back inside.", "Huwag nang bumalik sa loob."),
                       ],
                     ),
                     const SizedBox(height: 8),
                     _ActionPill(
                       icon: Icons.play_circle_rounded,
-                      label: "Show steps",
+                      label: _t(context, "Show steps", "Ipakita ang mga hakbang"),
                       onTap: _showDoThisNowPopup,
                     ),
                   ],
@@ -719,12 +748,12 @@ class _LearningMaterialTenementPageState
             ],
           ),
           const SizedBox(height: 14),
-          const _Callout(
+          _Callout(
             icon: Icons.block_rounded,
             color: Color(0xFFDC2626),
-            title: "Remember",
+            title: _t(context, "Remember", "Tandaan"),
             lines: [
-              "In a crowded multi-floor building, evacuation must be fast and orderly. Your safety comes first.",
+              _t(context, "In a crowded multi-floor building, evacuation must be fast and orderly. Your safety comes first.", "Sa mataong gusaling may maraming palapag, dapat mabilis at maayos ang paglikas. Kaligtasan mo ang nauuna."),
             ],
           ),
         ],

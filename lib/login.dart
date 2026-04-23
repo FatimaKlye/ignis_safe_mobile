@@ -1,12 +1,15 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'signup.dart';
 import 'home.dart';
 import 'terms.dart';
 import 'forgotpass.dart';
+import 'localization/app_text.dart';
+import 'localization/language_controller.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -71,15 +74,15 @@ class _LoginPageState extends State<LoginPage> {
 
   String? _validateEmail(String? v) {
     final value = (v ?? '').trim();
-    if (value.isEmpty) return 'Email is required';
-    if (!_isValidEmail(value)) return 'Enter a valid email';
+    if (value.isEmpty) return context.tr('email_required');
+    if (!_isValidEmail(value)) return context.tr('email_invalid');
     return null;
   }
 
   String? _validatePassword(String? v) {
     final value = v ?? '';
-    if (value.isEmpty) return 'Password is required';
-    if (value.length < 8) return 'Password must be at least 8 characters';
+    if (value.isEmpty) return context.tr('password_required');
+    if (value.length < 8) return context.tr('password_min_8');
     return null;
   }
 
@@ -126,13 +129,10 @@ class _LoginPageState extends State<LoginPage> {
         _goNext();
       } else {
         await supabase.auth.signOut();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'You must read and agree to the Terms and Conditions before logging in.',
-            ),
-          ),
-        );
+        if (!mounted) return;
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(context.tr('must_accept_terms'))));
       }
       return;
     }
@@ -160,13 +160,13 @@ class _LoginPageState extends State<LoginPage> {
       final user = res.user;
       if (user == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Login failed.')),
+          SnackBar(content: Text(context.tr('login_failed'))),
         );
         return;
       }
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Login successful.')),
+        SnackBar(content: Text(context.tr('login_success'))),
       );
 
       await _handlePostLogin(user);
@@ -178,7 +178,7 @@ class _LoginPageState extends State<LoginPage> {
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Unexpected error.')),
+        SnackBar(content: Text(context.tr('unexpected_error'))),
       );
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -199,7 +199,7 @@ class _LoginPageState extends State<LoginPage> {
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Google sign-in failed.')),
+        SnackBar(content: Text(context.tr('google_signin_failed'))),
       );
     }
   }
@@ -234,8 +234,8 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             ),
                           ),
-                          const Text(
-                            'Login',
+                          Text(
+                            context.tr('login'),
                             style: TextStyle(
                               fontFamily: 'Poppins',
                               fontSize: 28,
@@ -254,8 +254,8 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ),
                           const SizedBox(height: 8),
-                          const Text(
-                            'Welcome to, IGNIS SAFE',
+                          Text(
+                            context.tr('welcome_to_ignis_safe'),
                             style: TextStyle(
                               fontFamily: 'Poppins',
                               fontSize: 12,
@@ -264,25 +264,29 @@ class _LoginPageState extends State<LoginPage> {
                               height: 1.1,
                             ),
                           ),
-                          const SizedBox(height: 80),
-                          _inputLabel('EMAIL ADDRESS:'),
+                          const SizedBox(height: 24),
+                          _languageSelector(),
+                          const SizedBox(height: 24),
+                          _inputLabel(context.tr('email_address')),
                           _buildValidatedField(
-                            hint: 'Enter your email address',
+                            hint: context.tr('enter_email'),
                             controller: emailCtrl,
                             keyboardType: TextInputType.emailAddress,
                             validator: _validateEmail,
                             textInputAction: TextInputAction.next,
                           ),
                           const SizedBox(height: 25),
-                          _inputLabel('PASSWORD:'),
+                          _inputLabel(context.tr('password')),
                           _buildValidatedField(
-                            hint: 'Enter your password',
+                            hint: context.tr('enter_password'),
                             controller: passCtrl,
                             validator: _validatePassword,
                             textInputAction: TextInputAction.done,
                             isPassword: true,
                             showPassword: _showPassword,
-                            suffixText: _showPassword ? 'HIDE' : 'SHOW',
+                            suffixText: _showPassword
+                                ? context.tr('hide')
+                                : context.tr('show'),
                             onSuffixTap: () =>
                                 setState(() => _showPassword = !_showPassword),
                             onSubmitted: (_) => _isLoading ? null : _login(),
@@ -297,8 +301,8 @@ class _LoginPageState extends State<LoginPage> {
                                   ),
                                 );
                               },
-                              child: const Text(
-                                'Forgot Password?',
+                              child: Text(
+                                context.tr('forgot_password'),
                                 style: TextStyle(
                                   fontFamily: 'Poppins',
                                   color: brandRed,
@@ -448,8 +452,8 @@ class _LoginPageState extends State<LoginPage> {
                     color: Colors.white,
                   ),
                 )
-              : const Text(
-                  'Login',
+              : Text(
+                  context.tr('login'),
                   style: TextStyle(
                     fontFamily: 'Poppins',
                     color: Colors.white,
@@ -477,12 +481,12 @@ class _LoginPageState extends State<LoginPage> {
               );
               if (agreed == true && mounted && user != null) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Terms accepted.')),
+                  SnackBar(content: Text(context.tr('terms_accepted'))),
                 );
               }
             },
-            child: const Text(
-              'Terms and Conditions and Privacy Policy.',
+            child: Text(
+              context.tr('terms_privacy'),
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: 'Poppins',
@@ -494,12 +498,12 @@ class _LoginPageState extends State<LoginPage> {
           ),
           const SizedBox(height: 16),
           Row(
-            children: const [
+            children: [
               Expanded(child: Divider(thickness: 1)),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 12),
                 child: Text(
-                  'OR',
+                  context.tr('or'),
                   style: TextStyle(
                     fontFamily: 'Poppins',
                     color: Colors.grey,
@@ -514,8 +518,8 @@ class _LoginPageState extends State<LoginPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text(
-                "Don't have an account? ",
+              Text(
+                "${context.tr('no_account')} ",
                 style: TextStyle(
                   fontFamily: 'Poppins',
                   fontSize: 13,
@@ -528,8 +532,8 @@ class _LoginPageState extends State<LoginPage> {
                     MaterialPageRoute(builder: (_) => const RegisterPage()),
                   );
                 },
-                child: const Text(
-                  'Sign Up',
+                child: Text(
+                  context.tr('sign_up'),
                   style: TextStyle(
                     fontFamily: 'Poppins',
                     color: brandRed,
@@ -542,4 +546,50 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ],
       );
+
+  Widget _languageSelector() {
+    final languageController = context.watch<LanguageController>();
+
+    Widget buildOption({
+      required String code,
+      required String labelKey,
+    }) {
+      final selected = languageController.locale.languageCode == code;
+      return Expanded(
+        child: OutlinedButton(
+          onPressed: () => languageController.setLanguage(code),
+          style: OutlinedButton.styleFrom(
+            backgroundColor: selected ? brandRed : Colors.white,
+            side: BorderSide(color: selected ? brandRed : Colors.black26),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+          child: Text(
+            context.tr(labelKey),
+            style: TextStyle(
+              fontFamily: 'Poppins',
+              color: selected ? Colors.white : Colors.black87,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _inputLabel('${context.tr('language')}:'),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            buildOption(code: 'tl', labelKey: 'tagalog'),
+            const SizedBox(width: 10),
+            buildOption(code: 'en', labelKey: 'english'),
+          ],
+        ),
+      ],
+    );
+  }
 }

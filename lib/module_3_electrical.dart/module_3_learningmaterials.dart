@@ -22,6 +22,10 @@ class _LearningMaterialElectricalPageState
   double _progress = 0.0; // 0.0 -> 1.0 (per page scroll)
   bool _canNext = false;
 
+  String _t(BuildContext context, String en, String tl) {
+    return Localizations.localeOf(context).languageCode == 'tl' ? tl : en;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -137,9 +141,9 @@ class _LearningMaterialElectricalPageState
 
                       const SizedBox(height: 10),
 
-                      const Center(
+                      Center(
                         child: Text(
-                          "Learning Material",
+                          _t(context, "Learning Material", "Materyal sa Pag-aaral"),
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 30,
@@ -173,7 +177,7 @@ class _LearningMaterialElectricalPageState
                                   ),
                                 ],
                               ),
-                              child: const Row(
+                              child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Icon(
@@ -183,7 +187,7 @@ class _LearningMaterialElectricalPageState
                                   ),
                                   SizedBox(width: 8),
                                   Text(
-                                    "MODULE 3",
+                                    _t(context, "MODULE 3", "MODYUL 3"),
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white,
@@ -195,9 +199,13 @@ class _LearningMaterialElectricalPageState
 
                             const SizedBox(width: 15),
 
-                            const Expanded(
+                            Expanded(
                               child: Text(
-                                "Electrical Fire: Causes, Safe Actions, and Prevention",
+                                _t(
+                                  context,
+                                  "Electrical Fire: Causes, Safe Actions, and Prevention",
+                                  "Sunog sa Kuryente: Sanhi, Ligtas na Aksyon, at Pag-iwas",
+                                ),
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontWeight: FontWeight.w600,
@@ -280,8 +288,8 @@ class _LearningMaterialElectricalPageState
                           ),
                         ),
                         onPressed: _goBack,
-                        child: const Text(
-                          "« BACK",
+                        child: Text(
+                          _t(context, "« BACK", "« BALIK"),
                           style: TextStyle(
                             color: Color(0xFF2563EB),
                             fontWeight: FontWeight.bold,
@@ -297,7 +305,9 @@ class _LearningMaterialElectricalPageState
                         ),
                         onPressed: (_canNext || isLast) ? _goNext : null,
                         child: Text(
-                          isLast ? "Start pre test" : "NEXT »",
+                          isLast
+                              ? _t(context, "Start pre test", "Simulan ang paunang pagsusulit")
+                              : _t(context, "NEXT »", "SUNOD »"),
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
@@ -335,13 +345,17 @@ class _LearningMaterialElectricalPageState
     return _ModernCard(
       accent1: accent,
       accent2: accent2,
-      pageTitle: "PAGE 1 – ELECTRICAL FIRE OVERVIEW",
+      pageTitle: _t(
+        context,
+        "PAGE 1 – ELECTRICAL FIRE OVERVIEW",
+        "PAHINA 1 – PANGKALAHATANG TINGIN SA SUNOG SA KURYENTE",
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Center(
+          Center(
             child: Text(
-              "What is an Electrical Fire?",
+              _t(context, "What is an Electrical Fire?", "Ano ang Sunog sa Kuryente?"),
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -376,61 +390,76 @@ class _LearningMaterialElectricalPageState
 
           const SizedBox(height: 16),
 
-          const _Callout(
+          _Callout(
             icon: Icons.warning_rounded,
             color: Color(0xFFDC2626),
-            title: "Why electrical fires are dangerous",
+            title: _t(context, "Why electrical fires are dangerous", "Bakit mapanganib ang sunog sa kuryente"),
             lines: [
-              "They can spread inside walls.",
-              "They may reignite if power is not disconnected.",
-              "Water cannot be used to extinguish them.",
+              _t(context, "They can spread inside walls.", "Maaari itong kumalat sa loob ng mga pader."),
+              _t(context, "They may reignite if power is not disconnected.", "Maaari itong muling magliyab kung hindi mapuputol ang kuryente."),
+              _t(context, "Water cannot be used to extinguish them.", "Hindi maaaring gamitan ng tubig para apulahin ito."),
             ],
           ),
 
           const SizedBox(height: 14),
 
-          const _ChipLine(
+          _ChipLine(
             icon: Icons.class_rounded,
             color: Color(0xFF1E3A8A),
-            text:
-                "Electrical fires are classified as Class C fires in standard fire classifications.",
+            text: _t(
+              context,
+              "Electrical fires are classified as Class C fires in standard fire classifications.",
+              "Ang sunog sa kuryente ay kabilang sa Class C sa karaniwang pag-uuri ng sunog.",
+            ),
           ),
 
           const SizedBox(height: 24),
 
-          const _SectionTitle("Types of Electrical Fire"),
+          _SectionTitle(_t(context, "Types of Electrical Fire", "Mga Uri ng Sunog sa Kuryente")),
           const SizedBox(height: 12),
 
-          const _MiniTile(
+          _MiniTile(
             color: Color(0xFF2563EB),
             icon: Icons.flash_on_rounded,
-            title: "Short Circuit Fire",
-            desc:
-                "Occurs when live wires touch due to damaged insulation, creating sparks and intense heat.",
+            title: _t(context, "Short Circuit Fire", "Sunog dahil sa Short Circuit"),
+            desc: _t(
+              context,
+              "Occurs when live wires touch due to damaged insulation, creating sparks and intense heat.",
+              "Nangyayari kapag nagdikit ang live wires dahil sa sirang insulation, na nagdudulot ng spark at matinding init.",
+            ),
           ),
           const SizedBox(height: 10),
-          const _MiniTile(
+          _MiniTile(
             color: Color(0xFF1D4ED8),
             icon: Icons.power_rounded,
-            title: "Overloaded Circuit Fire",
-            desc:
-                "Happens when too many devices are connected to one outlet or extension cord, causing overheating.",
+            title: _t(context, "Overloaded Circuit Fire", "Sunog dahil sa Overloaded Circuit"),
+            desc: _t(
+              context,
+              "Happens when too many devices are connected to one outlet or extension cord, causing overheating.",
+              "Nangyayari kapag masyadong maraming device ang nakakabit sa iisang saksakan o extension cord kaya umiinit nang husto.",
+            ),
           ),
           const SizedBox(height: 10),
-          const _MiniTile(
+          _MiniTile(
             color: Color(0xFFF59E0B),
             icon: Icons.electrical_services_rounded,
-            title: "Faulty Appliance Fire",
-            desc:
-                "Caused by defective internal wiring inside appliances such as electric fans, heaters, or chargers.",
+            title: _t(context, "Faulty Appliance Fire", "Sunog dahil sa Sirang Appliance"),
+            desc: _t(
+              context,
+              "Caused by defective internal wiring inside appliances such as electric fans, heaters, or chargers.",
+              "Dulot ng sirang internal wiring ng appliance tulad ng electric fan, heater, o charger.",
+            ),
           ),
           const SizedBox(height: 10),
-          const _MiniTile(
+          _MiniTile(
             color: Color(0xFFEA580C),
             icon: Icons.cable_rounded,
-            title: "Loose Wiring Fire",
-            desc:
-                "Loose electrical connections generate heat due to resistance and may ignite nearby materials.",
+            title: _t(context, "Loose Wiring Fire", "Sunog dahil sa Maluwag na Wiring"),
+            desc: _t(
+              context,
+              "Loose electrical connections generate heat due to resistance and may ignite nearby materials.",
+              "Ang maluwag na koneksyon sa kuryente ay lumilikha ng init dahil sa resistance at maaaring magsindi ng katabing materyales.",
+            ),
           ),
         ],
       ),
@@ -442,13 +471,17 @@ class _LearningMaterialElectricalPageState
     return _ModernCard(
       accent1: accent2,
       accent2: accent,
-      pageTitle: "PAGE 2 – CAUSES OF ELECTRICAL FIRE",
+      pageTitle: _t(
+        context,
+        "PAGE 2 – CAUSES OF ELECTRICAL FIRE",
+        "PAHINA 2 – MGA SANHI NG SUNOG SA KURYENTE",
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Center(
+          Center(
             child: Text(
-              "Common Causes of Electrical Fires",
+              _t(context, "Common Causes of Electrical Fires", "Karaniwang Sanhi ng Sunog sa Kuryente"),
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -461,7 +494,7 @@ class _LearningMaterialElectricalPageState
 
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
+            children: [
               _IconBox(
                 icon: Icons.inventory_2_rounded,
                 c1: accent2,
@@ -471,12 +504,12 @@ class _LearningMaterialElectricalPageState
               Expanded(
                 child: _Bullets(
                   items: [
-                    "Overloaded power strips and outlets",
-                    "Old or damaged wiring",
-                    "Using substandard extension cords",
-                    "Poor electrical installation",
-                    "Leaving appliances plugged in for long periods",
-                    "Improper use of electrical equipment",
+                    _t(context, "Overloaded power strips and outlets", "Sobrang daming nakakabit sa power strip at saksakan"),
+                    _t(context, "Old or damaged wiring", "Luma o sirang wiring"),
+                    _t(context, "Using substandard extension cords", "Paggamit ng substandard na extension cord"),
+                    _t(context, "Poor electrical installation", "Maling electrical installation"),
+                    _t(context, "Leaving appliances plugged in for long periods", "Pag-iiwang nakasaksak ang appliances nang matagal"),
+                    _t(context, "Improper use of electrical equipment", "Maling paggamit ng electrical equipment"),
                   ],
                 ),
               ),
@@ -485,37 +518,40 @@ class _LearningMaterialElectricalPageState
 
           const SizedBox(height: 14),
 
-          const _ChipLine(
+          _ChipLine(
             icon: Icons.fact_check_rounded,
             color: Color(0xFFF59E0B),
-            text:
-                "Regular inspection and proper usage significantly reduce risk.",
+            text: _t(
+              context,
+              "Regular inspection and proper usage significantly reduce risk.",
+              "Ang regular na inspeksyon at tamang paggamit ay malaking nakakabawas sa panganib.",
+            ),
           ),
 
           const SizedBox(height: 26),
 
-          const _SectionTitle("How to Prevent Electrical Fires"),
+          _SectionTitle(_t(context, "How to Prevent Electrical Fires", "Paano Maiiwasan ang Sunog sa Kuryente")),
           const SizedBox(height: 12),
 
-          const _Bullets(
+          _Bullets(
             items: [
-              "Do not overload outlets or extension cords.",
-              "Replace damaged cords immediately.",
-              "Avoid running cords under carpets.",
-              "Use certified and standard electrical devices.",
-              "Turn off and unplug appliances when not in use.",
-              "Have licensed electricians check faulty wiring.",
+              _t(context, "Do not overload outlets or extension cords.", "Huwag sobrahan ang nakakabit sa saksakan o extension cord."),
+              _t(context, "Replace damaged cords immediately.", "Palitan agad ang mga sirang kable."),
+              _t(context, "Avoid running cords under carpets.", "Iwasang ilagay ang kable sa ilalim ng carpet."),
+              _t(context, "Use certified and standard electrical devices.", "Gumamit ng sertipikado at standard na electrical devices."),
+              _t(context, "Turn off and unplug appliances when not in use.", "Patayin at tanggalin sa saksakan ang appliances kapag hindi gamit."),
+              _t(context, "Have licensed electricians check faulty wiring.", "Magpasuri ng sirang wiring sa lisensyadong electrician."),
             ],
           ),
 
           const SizedBox(height: 14),
 
-          const _Callout(
+          _Callout(
             icon: Icons.shield_rounded,
             color: Color(0xFF2563EB),
-            title: "Prevention",
+            title: _t(context, "Prevention", "Pag-iwas"),
             lines: [
-              "Prevention reduces ignition sources and electrical overheating.",
+              _t(context, "Prevention reduces ignition sources and electrical overheating.", "Ang pag-iwas ay nakababawas sa pinagmumulan ng sindi at sobrang init sa kuryente."),
             ],
           ),
         ],
@@ -528,13 +564,17 @@ class _LearningMaterialElectricalPageState
     return _ModernCard(
       accent1: Color(0xFF1D4ED8),
       accent2: accent,
-      pageTitle: "PAGE 3 – WHAT TO DO DURING AN ELECTRICAL FIRE",
+      pageTitle: _t(
+        context,
+        "PAGE 3 – WHAT TO DO DURING AN ELECTRICAL FIRE",
+        "PAHINA 3 – ANO ANG GAGAWIN KAPAG MAY SUNOG SA KURYENTE",
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Center(
+          Center(
             child: Text(
-              "Emergency Response for Electrical Fire",
+              _t(context, "Emergency Response for Electrical Fire", "Pagtugon sa Emerhensiya sa Sunog sa Kuryente"),
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -547,7 +587,7 @@ class _LearningMaterialElectricalPageState
 
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
+            children: [
               _IconBox(
                 icon: Icons.fire_extinguisher_rounded,
                 c1: Color(0xFF2563EB),
@@ -557,12 +597,12 @@ class _LearningMaterialElectricalPageState
               Expanded(
                 child: _Bullets(
                   items: [
-                    "Do NOT use water.",
-                    "Turn off the power supply if it is safe to do so.",
-                    "Use a Class C or ABC fire extinguisher.",
-                    "Evacuate immediately if the fire spreads.",
-                    "Call emergency services.",
-                    "Never touch burning electrical equipment directly.",
+                    _t(context, "Do NOT use water.", "HUWAG gumamit ng tubig."),
+                    _t(context, "Turn off the power supply if it is safe to do so.", "Patayin ang power supply kung ligtas gawin."),
+                    _t(context, "Use a Class C or ABC fire extinguisher.", "Gumamit ng Class C o ABC fire extinguisher."),
+                    _t(context, "Evacuate immediately if the fire spreads.", "Lumikas agad kung kumakalat ang apoy."),
+                    _t(context, "Call emergency services.", "Tumawag sa emergency services."),
+                    _t(context, "Never touch burning electrical equipment directly.", "Huwag direktang hawakan ang nasusunog na electrical equipment."),
                   ],
                 ),
               ),
@@ -571,12 +611,12 @@ class _LearningMaterialElectricalPageState
 
           const SizedBox(height: 14),
 
-          const _Callout(
+          _Callout(
             icon: Icons.block_rounded,
             color: Color(0xFFDC2626),
-            title: "Remember",
+            title: _t(context, "Remember", "Tandaan"),
             lines: [
-              "If you cannot safely disconnect power, evacuate and call for help.",
+              _t(context, "If you cannot safely disconnect power, evacuate and call for help.", "Kung hindi ligtas putulin ang kuryente, lumikas at tumawag ng tulong."),
             ],
           ),
         ],

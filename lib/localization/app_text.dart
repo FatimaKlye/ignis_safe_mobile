@@ -1,0 +1,306 @@
+import 'package:flutter/widgets.dart';
+
+const Map<String, Map<String, String>> _strings = {
+  'app_title': {
+    'en': 'Ignis Safe',
+    'tl': 'Ignis Safe',
+  },
+  'language': {
+    'en': 'Language',
+    'tl': 'Wika',
+  },
+  'english': {
+    'en': 'English',
+    'tl': 'Ingles',
+  },
+  'tagalog': {
+    'en': 'Tagalog',
+    'tl': 'Tagalog',
+  },
+  'login': {
+    'en': 'Login',
+    'tl': 'Mag-login',
+  },
+  'welcome_to_ignis_safe': {
+    'en': 'Welcome to, IGNIS SAFE',
+    'tl': 'Maligayang pagdating sa IGNIS SAFE',
+  },
+  'email_address': {
+    'en': 'EMAIL ADDRESS:',
+    'tl': 'EMAIL ADDRESS:',
+  },
+  'enter_email': {
+    'en': 'Enter your email address',
+    'tl': 'Ilagay ang iyong email address',
+  },
+  'password': {
+    'en': 'PASSWORD:',
+    'tl': 'PASSWORD:',
+  },
+  'enter_password': {
+    'en': 'Enter your password',
+    'tl': 'Ilagay ang iyong password',
+  },
+  'show': {
+    'en': 'SHOW',
+    'tl': 'IPAKITA',
+  },
+  'hide': {
+    'en': 'HIDE',
+    'tl': 'ITAGO',
+  },
+  'forgot_password': {
+    'en': 'Forgot Password?',
+    'tl': 'Nakalimutan ang Password?',
+  },
+  'or': {
+    'en': 'OR',
+    'tl': 'O',
+  },
+  'no_account': {
+    'en': "Don't have an account?",
+    'tl': 'Wala ka pang account?',
+  },
+  'sign_up': {
+    'en': 'Sign Up',
+    'tl': 'Mag-sign up',
+  },
+  'terms_privacy': {
+    'en': 'Terms and Conditions and Privacy Policy.',
+    'tl': 'Mga Tuntunin at Kundisyon at Patakaran sa Privacy.',
+  },
+  'email_required': {
+    'en': 'Email is required',
+    'tl': 'Kailangan ang email',
+  },
+  'email_invalid': {
+    'en': 'Enter a valid email',
+    'tl': 'Maglagay ng wastong email',
+  },
+  'password_required': {
+    'en': 'Password is required',
+    'tl': 'Kailangan ang password',
+  },
+  'password_min_8': {
+    'en': 'Password must be at least 8 characters',
+    'tl': 'Ang password ay dapat may hindi bababa sa 8 character',
+  },
+  'login_failed': {
+    'en': 'Login failed.',
+    'tl': 'Hindi nagtagumpay ang pag-login.',
+  },
+  'login_success': {
+    'en': 'Login successful.',
+    'tl': 'Matagumpay ang pag-login.',
+  },
+  'unexpected_error': {
+    'en': 'Unexpected error.',
+    'tl': 'May hindi inaasahang error.',
+  },
+  'google_signin_failed': {
+    'en': 'Google sign-in failed.',
+    'tl': 'Hindi nagtagumpay ang Google sign-in.',
+  },
+  'must_accept_terms': {
+    'en': 'You must read and agree to the Terms and Conditions before logging in.',
+    'tl': 'Kailangan mong basahin at tanggapin ang Mga Tuntunin at Kundisyon bago mag-login.',
+  },
+  'terms_accepted': {
+    'en': 'Terms accepted.',
+    'tl': 'Tinanggap ang mga tuntunin.',
+  },
+  'learn': {
+    'en': 'Learn',
+    'tl': 'Aralin',
+  },
+  'fire_module': {
+    'en': 'Fire Module',
+    'tl': 'Modulong Sunog',
+  },
+  'profile': {
+    'en': 'Profile',
+    'tl': 'Profile',
+  },
+  'about': {
+    'en': 'About',
+    'tl': 'Tungkol',
+  },
+  'log_out': {
+    'en': 'Log Out',
+    'tl': 'Mag-logout',
+  },
+  'welcome_to_ignis_safe_short': {
+    'en': 'Welcome to Ignis Safe',
+    'tl': 'Maligayang pagdating sa Ignis Safe',
+  },
+  'learning_materials': {
+    'en': 'Learning Materials',
+    'tl': 'Mga Materyal sa Pag-aaral',
+  },
+  'fire_scenario_module': {
+    'en': 'Fire Scenario Module',
+    'tl': 'Modyul ng Senaryo ng Sunog',
+  },
+  'search': {
+    'en': 'Search',
+    'tl': 'Maghanap',
+  },
+  'filter': {
+    'en': 'Filter',
+    'tl': 'Salain',
+  },
+  'view': {
+    'en': 'View',
+    'tl': 'Tingnan',
+  },
+  'all': {
+    'en': 'All',
+    'tl': 'Lahat',
+  },
+  'pending_not_started': {
+    'en': 'Pending / Not Started',
+    'tl': 'Nakahinto / Hindi pa nasisimulan',
+  },
+  'in_progress': {
+    'en': 'In Progress',
+    'tl': 'Kasalukuyang ginagawa',
+  },
+  'completed': {
+    'en': 'Completed',
+    'tl': 'Nakumpleto',
+  },
+  'pre_assessment': {
+    'en': 'PRE -\nASSESSMENT',
+    'tl': 'PAUNANG -\nPAGSUSULIT',
+  },
+  'simulation': {
+    'en': 'SIMULATION',
+    'tl': 'SIMULASYON',
+  },
+  'post_assessment': {
+    'en': 'POST -\nASSESSMENT',
+    'tl': 'PANGWAKAS -\nPAGSUSULIT',
+  },
+  'simulation_required': {
+    'en': 'Simulation Required',
+    'tl': 'Kailangan ang Simulasyon',
+  },
+  'simulation_required_message': {
+    'en': 'You need to finish the simulation first before the post-assessment will open.\n\nThe questions on the post-assessment are connected to the simulation.',
+    'tl': 'Kailangan mo munang tapusin ang simulasyon bago mabuksan ang pangwakas na pagsusulit.\n\nAng mga tanong sa pangwakas na pagsusulit ay konektado sa simulasyon.',
+  },
+  'ok': {
+    'en': 'OK',
+    'tl': 'Sige',
+  },
+  'hi': {
+    'en': 'Hi!',
+    'tl': 'Kumusta!',
+  },
+  'hi_name': {
+    'en': 'Hi, {name}',
+    'tl': 'Kumusta, {name}',
+  },
+  'module_1': {
+    'en': 'MODULE 1',
+    'tl': 'MODYUL 1',
+  },
+  'module_2': {
+    'en': 'MODULE 2',
+    'tl': 'MODYUL 2',
+  },
+  'module_3': {
+    'en': 'MODULE 3',
+    'tl': 'MODYUL 3',
+  },
+  'module_4': {
+    'en': 'MODULE 4',
+    'tl': 'MODYUL 4',
+  },
+  'module_5': {
+    'en': 'MODULE 5',
+    'tl': 'MODYUL 5',
+  },
+  'title_fire_extinguisher': {
+    'en': 'FIRE EXTINGUISHER',
+    'tl': 'PAMATAY-SUNOG',
+  },
+  'title_house_fire': {
+    'en': 'HOUSE FIRE',
+    'tl': 'SUNOG SA BAHAY',
+  },
+  'title_electrical_fire': {
+    'en': 'ELECTRICAL FIRE',
+    'tl': 'SUNOG SA KURYENTE',
+  },
+  'title_kitchen_fire': {
+    'en': 'KITCHEN FIRE',
+    'tl': 'SUNOG SA KUSINA',
+  },
+  'title_building_fire': {
+    'en': 'BUILDING FIRE',
+    'tl': 'SUNOG SA GUSALI',
+  },
+  'title_tenement_fire': {
+    'en': 'TENEMENT FIRE',
+    'tl': 'SUNOG SA TENEMENT',
+  },
+  'desc_m1': {
+    'en': 'Learn the proper and safe use of fire extinguishers for effective response during fire emergencies.',
+    'tl': 'Alamin ang tama at ligtas na paggamit ng pamatay-sunog para sa epektibong pagtugon sa mga emerhensiyang may sunog.',
+  },
+  'desc_m2_learning': {
+    'en': 'Learn the common causes of house fires and the correct actions to take during a residential fire emergency.',
+    'tl': 'Alamin ang karaniwang sanhi ng sunog sa bahay at ang tamang mga hakbang sa oras ng emerhensiya sa tahanan.',
+  },
+  'desc_m2_fire_modules': {
+    'en': 'Learn how household fires begin, recognize home fire hazards, and respond safely and effectively during emergencies at home.',
+    'tl': 'Alamin kung paano nagsisimula ang sunog sa bahay, kilalanin ang mga panganib, at tumugon nang ligtas at epektibo sa emerhensiya.',
+  },
+  'desc_m3_learning': {
+    'en': 'Learn how electrical fires occur and the correct actions to take during an electrical fire emergency.',
+    'tl': 'Alamin kung paano nagkakaroon ng sunog dahil sa kuryente at ang tamang aksyon sa ganitong emerhensiya.',
+  },
+  'desc_m3_fire_modules': {
+    'en': 'Learn how electrical fires start, identify common hazards, and apply the correct fire safety response for electrical-related incidents.',
+    'tl': 'Alamin kung paano nagsisimula ang sunog sa kuryente, tukuyin ang karaniwang panganib, at ilapat ang tamang tugon sa kaligtasan sa sunog.',
+  },
+  'desc_m4_learning': {
+    'en': 'Understand safe cooking practices and proper response to grease and oil fires.',
+    'tl': 'Unawain ang ligtas na gawi sa pagluluto at tamang pagtugon sa sunog ng mantika at langis.',
+  },
+  'desc_m4_fire_modules': {
+    'en': 'Understand common kitchen fire risks and learn the proper fire safety practices and emergency response steps in cooking areas.',
+    'tl': 'Unawain ang karaniwang panganib ng sunog sa kusina at ang tamang hakbang sa kaligtasan at pagtugon sa emerhensiya.',
+  },
+  'desc_m5_learning': {
+    'en': 'Learn how to respond safely during building fire incidents, including evacuation and hazard awareness.',
+    'tl': 'Alamin kung paano tumugon nang ligtas sa sunog sa gusali, kabilang ang paglikas at pag-iwas sa panganib.',
+  },
+  'desc_m5_fire_modules': {
+    'en': 'Understand building fire risks, evacuation procedures, and the correct fire safety response in larger structures and shared spaces.',
+    'tl': 'Unawain ang panganib ng sunog sa gusali, proseso ng paglikas, at tamang tugon sa kaligtasan sa malalaking istruktura at pinaghahatiang lugar.',
+  },
+};
+
+String appText(
+  BuildContext context,
+  String key, {
+  Map<String, String> params = const {},
+}) {
+  final code = Localizations.localeOf(context).languageCode;
+  final values = _strings[key];
+  if (values == null) return key;
+
+  var text = values[code] ?? values['en'] ?? key;
+  for (final entry in params.entries) {
+    text = text.replaceAll('{${entry.key}}', entry.value);
+  }
+  return text;
+}
+
+extension AppTextX on BuildContext {
+  String tr(String key, {Map<String, String> params = const {}}) {
+    return appText(this, key, params: params);
+  }
+}

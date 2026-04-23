@@ -3,7 +3,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'login.dart';
-import 'profile.dart';
 
 enum AboutFilter { all, about, team, bfpDasmarinas , contacts }
 

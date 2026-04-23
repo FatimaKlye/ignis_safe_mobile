@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'editprofile.dart';
+import 'edit_profile_page.dart';
 import 'login.dart';
 import 'module_history_page.dart';
+
+String _t(BuildContext context, String en, String tl) {
+  return Localizations.localeOf(context).languageCode == 'tl' ? tl : en;
+}
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({
@@ -48,10 +52,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _initializePage() async {
-    await Future.wait([
-      _loadLanguage(),
-      _loadProfile(),
-    ]);
+    await Future.wait([_loadLanguage(), _loadProfile()]);
   }
 
   Future<void> _loadProfile() async {
@@ -114,7 +115,8 @@ class _ProfilePageState extends State<ProfilePage> {
         final rawCompleted = profileData['completed_simulations'];
         if (rawCompleted != null) {
           if (rawCompleted is num) {
-            completedSimulations = '${rawCompleted.toInt()} / $_totalSimulations';
+            completedSimulations =
+                '${rawCompleted.toInt()} / $_totalSimulations';
           } else {
             final rawText = rawCompleted.toString().trim();
             if (rawText.isNotEmpty) {
@@ -130,8 +132,9 @@ class _ProfilePageState extends State<ProfilePage> {
           }
         }
 
-        final dbLastSimulation =
-            (profileData['last_simulation'] ?? '').toString().trim();
+        final dbLastSimulation = (profileData['last_simulation'] ?? '')
+            .toString()
+            .trim();
         if (dbLastSimulation.isNotEmpty) {
           lastSimulation = dbLastSimulation;
         }
@@ -182,10 +185,12 @@ class _ProfilePageState extends State<ProfilePage> {
     });
 
     _showDialogBox(
-      title: value == "English" ? "Language Updated" : "Na-update ang Wika",
-      message: value == "English"
-          ? "System language set to English."
-          : "Ang system language ay Tagalog na.",
+      title: _t(context, "Language Updated", "Na-update ang Wika"),
+      message: _t(
+        context,
+        "System language set to English.",
+        "Ang system language ay Tagalog na.",
+      ),
     );
   }
 
@@ -213,10 +218,12 @@ class _ProfilePageState extends State<ProfilePage> {
       });
 
       _showDialogBox(
-        title: _language == "English" ? "Logout Failed" : "Hindi Makapag-logout",
-        message: _language == "English"
-            ? "Something went wrong while logging out. Please try again."
-            : "May problema sa pag-log out. Pakisubukang muli.",
+        title: _t(context, "Logout Failed", "Hindi Makapag-logout"),
+        message: _t(
+          context,
+          "Something went wrong while logging out. Please try again.",
+          "May problema sa pag-log out. Pakisubukang muli.",
+        ),
       );
     }
   }
@@ -225,63 +232,83 @@ class _ProfilePageState extends State<ProfilePage> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        title: const Text(
-          "FAQ",
-          style: TextStyle(
-            fontWeight: FontWeight.w900,
-          ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          _t(context, "FAQ", "Mga Madalas Itanong"),
+          style: const TextStyle(fontWeight: FontWeight.w900),
         ),
         content: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
-            children: const [
+            children: [
               Text(
-                "1. What does IGNIS SAFE do?",
-                style: TextStyle(
+                _t(
+                  context,
+                  "1. What does IGNIS SAFE do?",
+                  "1. Ano ang ginagawa ng IGNIS SAFE?",
+                ),
+                style: const TextStyle(
                   fontWeight: FontWeight.w900,
                   fontSize: 15,
                 ),
               ),
               SizedBox(height: 6),
               Text(
-                "IGNIS SAFE helps users learn fire safety through learning materials, assessments, and interactive fire scenario simulations. It is designed to improve awareness, preparedness, and proper response during fire emergencies.",
-                style: TextStyle(
+                _t(
+                  context,
+                  "IGNIS SAFE helps users learn fire safety through learning materials, assessments, and interactive fire scenario simulations. It is designed to improve awareness, preparedness, and proper response during fire emergencies.",
+                  "Tinutulungan ng IGNIS SAFE ang mga gumagamit na matuto tungkol sa kaligtasan sa sunog sa pamamagitan ng mga materyales sa pagkatuto, pagsusulit, at interaktibong simulation ng sitwasyon ng sunog. Layunin nitong mapabuti ang kamalayan, paghahanda, at tamang pagtugon sa mga emerhensiyang sunog.",
+                ),
+                style: const TextStyle(
                   height: 1.4,
                   fontWeight: FontWeight.w600,
                 ),
               ),
               SizedBox(height: 16),
               Text(
-                "2. Why do we need to learn fire scenarios?",
-                style: TextStyle(
+                _t(
+                  context,
+                  "2. Why do we need to learn fire scenarios?",
+                  "2. Bakit kailangan nating pag-aralan ang mga sitwasyon ng sunog?",
+                ),
+                style: const TextStyle(
                   fontWeight: FontWeight.w900,
                   fontSize: 15,
                 ),
               ),
               SizedBox(height: 6),
               Text(
-                "Learning fire scenarios helps people understand what to do in real emergency situations. It builds correct decision-making, reduces panic, and teaches safe actions that can help protect lives and property.",
-                style: TextStyle(
+                _t(
+                  context,
+                  "Learning fire scenarios helps people understand what to do in real emergency situations. It builds correct decision-making, reduces panic, and teaches safe actions that can help protect lives and property.",
+                  "Ang pag-aaral ng mga sitwasyon ng sunog ay tumutulong sa mga tao na malaman ang dapat gawin sa totoong emerhensiya. Pinahuhusay nito ang tamang pagpapasya, binabawasan ang panic, at nagtuturo ng ligtas na mga kilos na makatutulong protektahan ang buhay at ari-arian.",
+                ),
+                style: const TextStyle(
                   height: 1.4,
                   fontWeight: FontWeight.w600,
                 ),
               ),
               SizedBox(height: 16),
               Text(
-                "3. What is the purpose of this app?",
-                style: TextStyle(
+                _t(
+                  context,
+                  "3. What is the purpose of this app?",
+                  "3. Ano ang layunin ng app na ito?",
+                ),
+                style: const TextStyle(
                   fontWeight: FontWeight.w900,
                   fontSize: 15,
                 ),
               ),
               SizedBox(height: 6),
               Text(
-                "The purpose of this app is to provide an engaging and practical way to learn fire safety. It combines education and simulation so users can gain knowledge and apply it in realistic fire emergency situations.",
-                style: TextStyle(
+                _t(
+                  context,
+                  "The purpose of this app is to provide an engaging and practical way to learn fire safety. It combines education and simulation so users can gain knowledge and apply it in realistic fire emergency situations.",
+                  "Layunin ng app na ito na magbigay ng kaakit-akit at praktikal na paraan para matuto ng kaligtasan sa sunog. Pinagsasama nito ang edukasyon at simulation upang makakuha ng kaalaman ang mga gumagamit at mailapat ito sa makatotohanang sitwasyon ng emerhensiyang sunog.",
+                ),
+                style: const TextStyle(
                   height: 1.4,
                   fontWeight: FontWeight.w600,
                 ),
@@ -311,28 +338,15 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  void _showDialogBox({
-    required String title,
-    required String message,
-  }) {
+  void _showDialogBox({required String title, required String message}) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        title: Text(
-          title,
-          style: const TextStyle(
-            fontWeight: FontWeight.w900,
-          ),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w900)),
         content: Text(
           message,
-          style: const TextStyle(
-            fontWeight: FontWeight.w600,
-            height: 1.4,
-          ),
+          style: const TextStyle(fontWeight: FontWeight.w600, height: 1.4),
         ),
         actions: [
           ElevatedButton(
@@ -369,7 +383,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    final isEnglish = _language == "English";
     final avatarImage = _getAvatarImage();
 
     return Scaffold(
@@ -396,9 +409,9 @@ class _ProfilePageState extends State<ProfilePage> {
                     children: [
                       const SizedBox(width: 48),
                       const Spacer(),
-                      const Text(
-                        "Profile",
-                        style: TextStyle(
+                      Text(
+                        _t(context, "Profile", "Profile"),
+                        style: const TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.w900,
                           color: Colors.black,
@@ -473,18 +486,22 @@ class _ProfilePageState extends State<ProfilePage> {
                         _InfoTile(
                           icon: Icons.check_box_outlined,
                           text:
-                              "${isEnglish ? "Completed Modules" : "Natapos na Module"}: $_completedSimulations",
+                              "${_t(context, "Completed Modules", "Natapos na Module")}: $_completedSimulations",
                         ),
                         const SizedBox(height: 12),
                         _InfoTile(
                           icon: Icons.local_fire_department_outlined,
                           text:
-                              "${isEnglish ? "Last Simulation" : "Huling Simulation"}: $_lastSimulation",
+                              "${_t(context, "Last Simulation", "Huling Simulation")}: $_lastSimulation",
                         ),
                         const SizedBox(height: 26),
                         _BigButton(
                           icon: Icons.edit,
-                          label: isEnglish ? "Edit Profile" : "I-edit ang Profile",
+                          label: _t(
+                            context,
+                            "Edit Profile",
+                            "I-edit ang Profile",
+                          ),
                           onTap: () async {
                             await Navigator.push(
                               context,
@@ -504,7 +521,11 @@ class _ProfilePageState extends State<ProfilePage> {
                         const SizedBox(height: 14),
                         _BigButton(
                           icon: Icons.history,
-                          label: "Module History",
+                          label: _t(
+                            context,
+                            "Module History",
+                            "Kasaysayan ng Modyul",
+                          ),
                           onTap: () async {
                             await Navigator.push(
                               context,
@@ -522,15 +543,19 @@ class _ProfilePageState extends State<ProfilePage> {
                         // const SizedBox(height: 14),
                         _BigButton(
                           icon: Icons.help_outline,
-                          label: "FAQ",
+                          label: _t(context, "FAQ", "Mga Madalas Itanong"),
                           onTap: _showFAQ,
                         ),
                         const SizedBox(height: 14),
                         _BigButton(
                           icon: Icons.logout_rounded,
                           label: _isLoggingOut
-                              ? (isEnglish ? "Logging Out..." : "Nagla-log out...")
-                              : (isEnglish ? "Log Out" : "Mag Log Out"),
+                              ? _t(
+                                  context,
+                                  "Logging Out...",
+                                  "Nagla-log out...",
+                                )
+                              : _t(context, "Log Out", "Mag Log Out"),
                           onTap: _isLoggingOut ? null : _logout,
                           color: brandRed,
                         ),
@@ -549,10 +574,7 @@ class _ProfilePageState extends State<ProfilePage> {
 }
 
 class _InfoTile extends StatelessWidget {
-  const _InfoTile({
-    required this.icon,
-    required this.text,
-  });
+  const _InfoTile({required this.icon, required this.text});
 
   final IconData icon;
   final String text;
@@ -560,10 +582,7 @@ class _InfoTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 14,
-        vertical: 14,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
       decoration: BoxDecoration(
         color: Colors.grey.shade200,
         borderRadius: BorderRadius.circular(10),
@@ -575,10 +594,7 @@ class _InfoTile extends StatelessWidget {
           Expanded(
             child: Text(
               text,
-              style: const TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
-              ),
+              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
             ),
           ),
         ],
@@ -643,10 +659,7 @@ class _BigButton extends StatelessWidget {
 }
 
 class _LanguageSelector extends StatelessWidget {
-  const _LanguageSelector({
-    required this.selected,
-    required this.onChanged,
-  });
+  const _LanguageSelector({required this.selected, required this.onChanged});
 
   final String selected;
   final ValueChanged<String> onChanged;
@@ -673,24 +686,15 @@ class _LanguageSelector extends StatelessWidget {
           const SizedBox(width: 12),
           const Text(
             "Language",
-            style: TextStyle(
-              fontWeight: FontWeight.w900,
-              fontSize: 16,
-            ),
+            style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
           ),
           const Spacer(),
           DropdownButton<String>(
             value: selected,
             underline: const SizedBox(),
             items: const [
-              DropdownMenuItem(
-                value: "English",
-                child: Text("English"),
-              ),
-              DropdownMenuItem(
-                value: "Tagalog",
-                child: Text("Tagalog"),
-              ),
+              DropdownMenuItem(value: "English", child: Text("English")),
+              DropdownMenuItem(value: "Tagalog", child: Text("Tagalog")),
             ],
             onChanged: (value) {
               if (value != null) {
