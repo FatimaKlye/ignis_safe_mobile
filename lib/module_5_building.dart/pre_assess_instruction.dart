@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import '../localization/app_text.dart';
 import 'pre_assessment_building.dart';
-
 
 class PreAssessmentIntroPage2 extends StatelessWidget {
   const PreAssessmentIntroPage2({super.key});
@@ -11,6 +11,7 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isTl = Localizations.localeOf(context).languageCode == 'tl';
     return Scaffold(
       body: Stack(
         children: [
@@ -42,9 +43,9 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                         onPressed: () => Navigator.pop(context),
                       ),
                       const SizedBox(height: 15),
-                      const Center(
+                      Center(
                         child: Text(
-                          "Pre-Assessment",
+                          context.tr('pre_assessment').replaceAll('\n', ' '),
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 30,
@@ -79,14 +80,17 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                                   ),
                                 ],
                               ),
-                              child: const Row(
+                              child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Icon(Icons.bolt_rounded,
-                                      color: Colors.white, size: 18),
+                                  Icon(
+                                    Icons.bolt_rounded,
+                                    color: Colors.white,
+                                    size: 18,
+                                  ),
                                   SizedBox(width: 8),
                                   Text(
-                                    "MODULE 5",
+                                    context.tr('module_5'),
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white,
@@ -97,9 +101,9 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(width: 15),
-                            const Expanded(
+                            Expanded(
                               child: Text(
-                                "Tenement Fire: What It Is, Common Causes, and What To Do",
+                                context.tr('title_tenement_fire'),
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontWeight: FontWeight.w600,
@@ -117,7 +121,7 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                 const SizedBox(height: 10),
 
                 // ===== CONTENT (fills space, minimal white space) =====
-// ===== CONTENT (centered vertically) =====
+                // ===== CONTENT (centered vertically) =====
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 18),
@@ -148,8 +152,10 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                const Text(
-                                  "Pre-Assessment",
+                                Text(
+                                  context
+                                      .tr('pre_assessment')
+                                      .replaceAll('\n', ' '),
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     fontSize: 28,
@@ -158,8 +164,8 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                                   ),
                                 ),
                                 const SizedBox(height: 6),
-                                const Text(
-                                  "INSTRUCTION",
+                                Text(
+                                  isTl ? 'PANUTO' : 'INSTRUCTION',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     fontSize: 20,
@@ -171,7 +177,7 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                                 const SizedBox(height: 18),
                                 RichText(
                                   textAlign: TextAlign.center,
-                                  text: const TextSpan(
+                                  text: TextSpan(
                                     style: TextStyle(
                                       fontSize: 15,
                                       height: 1.5,
@@ -180,17 +186,22 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                                     ),
                                     children: [
                                       TextSpan(
-                                        text:
-                                            "This quiz is designed to check your basic knowledge about ",
+                                        text: isTl
+                                            ? 'Ang pagsusulit na ito ay ginawa upang suriin ang iyong pangunahing kaalaman tungkol sa '
+                                            : 'This quiz is designed to check your basic knowledge about ',
                                       ),
                                       TextSpan(
-                                        text:
-                                            "Module 5: Tenement Fire: What It Is, Common Causes, and What To Do",
-                                        style: TextStyle(fontWeight: FontWeight.w700),
+                                        text: isTl
+                                            ? 'Modyul 5: Sunog sa Tenement'
+                                            : 'Module 5: Tenement Fire',
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w700,
+                                        ),
                                       ),
                                       TextSpan(
-                                        text:
-                                            ". It helps us see what you already know before starting the lesson.",
+                                        text: isTl
+                                            ? '. Tinutulungan tayo nitong makita kung ano na ang alam mo bago simulan ang aralin.'
+                                            : '. It helps us see what you already know before starting the lesson.',
                                       ),
                                     ],
                                   ),
@@ -203,8 +214,9 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 18),
                                 Text(
-                                  "This pre-test is not graded. It is for practice and learning purposes only. "
-                                  "The goal is to prepare you for the topics discussed in this module.",
+                                  isTl
+                                      ? 'Ang paunang pagsusulit na ito ay hindi graded. Para lamang ito sa pagsasanay at pagkatuto. Layunin nitong ihanda ka sa mga paksang tatalakayin sa modyul na ito.'
+                                      : 'This pre-test is not graded. It is for practice and learning purposes only. The goal is to prepare you for the topics discussed in this module.',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     fontSize: 13.5,
@@ -235,8 +247,10 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                                       ),
                                       elevation: 6,
                                     ),
-                                    child: const Text(
-                                      "Proceed to Questions",
+                                    child: Text(
+                                      isTl
+                                          ? 'Magpatuloy sa mga Tanong'
+                                          : 'Proceed to Questions',
                                       style: TextStyle(
                                         fontWeight: FontWeight.w800,
                                         fontSize: 15,
@@ -254,10 +268,21 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
 
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: const [
-                              _InfoChip(icon: Icons.timer_outlined, label: "2–3 mins"),
-                              _InfoChip(icon: Icons.quiz_outlined, label: "Practice only"),
-                              _InfoChip(icon: Icons.lock_outline, label: "Not graded"),
+                            children: [
+                              const _InfoChip(
+                                icon: Icons.timer_outlined,
+                                label: "2–3 mins",
+                              ),
+                              _InfoChip(
+                                icon: Icons.quiz_outlined,
+                                label: isTl
+                                    ? 'Pang-practice lang'
+                                    : 'Practice only',
+                              ),
+                              _InfoChip(
+                                icon: Icons.lock_outline,
+                                label: isTl ? 'Hindi graded' : 'Not graded',
+                              ),
                             ],
                           ),
                         ],

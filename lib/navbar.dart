@@ -50,7 +50,7 @@ class _FloatingNavBarState extends State<FloatingNavBar>
     duration: const Duration(milliseconds: 180),
   );
 
-  late final Animation<double> _posAnim = CurvedAnimation(
+  late Animation<double> _posAnim = CurvedAnimation(
     parent: _posCtrl,
     curve: Curves.easeOutCubic,
   );

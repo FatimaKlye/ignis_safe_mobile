@@ -219,7 +219,6 @@ class _ModuleHistoryDetailPageState extends State<ModuleHistoryDetailPage> {
     if (status != 'submitted') return '—';
 
     final correctCount = item['correct_count'];
-    final totalQuestions = item['total_questions'];
 
     if (type == 'pre') {
       final correct = correctCount is num

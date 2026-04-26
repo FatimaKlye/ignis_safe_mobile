@@ -24,6 +24,7 @@ class _SimulationSceneState extends State<SimulationScene> {
   String? _moduleId;
   String? _simulationAttemptId;
   bool _simulationMarkedComplete = false;
+  bool get _isTl => Localizations.localeOf(context).languageCode == 'tl';
 
   @override
   void initState() {
@@ -89,7 +90,11 @@ class _SimulationSceneState extends State<SimulationScene> {
     if (unitySceneName == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Scene $picked is not yet available in Unity.'),
+          content: Text(
+            _isTl
+                ? 'Ang Scene $picked ay hindi pa available sa Unity.'
+                : 'Scene $picked is not yet available in Unity.',
+          ),
         ),
       );
       return;
@@ -113,8 +118,12 @@ class _SimulationSceneState extends State<SimulationScene> {
         if (!mounted) return;
 
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Module 1 simulation completed. Progress updated.'),
+          SnackBar(
+            content: Text(
+              _isTl
+                  ? 'Nakumpleto ang simulasyon ng Modyul 1. Na-update ang progreso.'
+                  : 'Module 1 simulation completed. Progress updated.',
+            ),
           ),
         );
 
@@ -124,14 +133,22 @@ class _SimulationSceneState extends State<SimulationScene> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to open Unity: ${e.message ?? e.code}'),
+          content: Text(
+            _isTl
+                ? 'Hindi mabuksan ang Unity: ${e.message ?? e.code}'
+                : 'Failed to open Unity: ${e.message ?? e.code}',
+          ),
         ),
       );
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to save simulation progress: $e'),
+          content: Text(
+            _isTl
+                ? 'Hindi ma-save ang progreso ng simulasyon: $e'
+                : 'Failed to save simulation progress: $e',
+          ),
         ),
       );
     }
@@ -156,6 +173,7 @@ class _SimulationSceneState extends State<SimulationScene> {
                 child: _ScenePickerPopup(
                   onClose: () => Navigator.pop(context),
                   onPickScene1: () => Navigator.pop(context, 1),
+                  isTl: _isTl,
                 ),
               ),
             ],
@@ -163,8 +181,10 @@ class _SimulationSceneState extends State<SimulationScene> {
         );
       },
       transitionBuilder: (_, anim, __, child) {
-        final curved =
-            CurvedAnimation(parent: anim, curve: Curves.easeOutCubic);
+        final curved = CurvedAnimation(
+          parent: anim,
+          curve: Curves.easeOutCubic,
+        );
         return FadeTransition(
           opacity: curved,
           child: ScaleTransition(
@@ -196,6 +216,7 @@ class _SimulationSceneState extends State<SimulationScene> {
                   scene: scene,
                   onClose: () => Navigator.pop(context, false),
                   onStart: () => Navigator.pop(context, true),
+                  isTl: _isTl,
                 ),
               ),
             ],
@@ -203,8 +224,10 @@ class _SimulationSceneState extends State<SimulationScene> {
         );
       },
       transitionBuilder: (_, anim, __, child) {
-        final curved =
-            CurvedAnimation(parent: anim, curve: Curves.easeOutCubic);
+        final curved = CurvedAnimation(
+          parent: anim,
+          curve: Curves.easeOutCubic,
+        );
         return FadeTransition(
           opacity: curved,
           child: ScaleTransition(
@@ -245,9 +268,11 @@ class _SimulationSceneState extends State<SimulationScene> {
                         onPressed: () => Navigator.pop(context),
                       ),
                       const SizedBox(height: 15),
-                      const Center(
+                      Center(
                         child: Text(
-                          "Simulation Scenes",
+                          _isTl
+                              ? "Mga Scene ng Simulasyon"
+                              : "Simulation Scenes",
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 30,
@@ -282,14 +307,17 @@ class _SimulationSceneState extends State<SimulationScene> {
                                   ),
                                 ],
                               ),
-                              child: const Row(
+                              child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Icon(Icons.bolt_rounded,
-                                      color: Colors.white, size: 18),
+                                  Icon(
+                                    Icons.bolt_rounded,
+                                    color: Colors.white,
+                                    size: 18,
+                                  ),
                                   SizedBox(width: 8),
                                   Text(
-                                    "MODULE 1",
+                                    _isTl ? "MODYUL 1" : "MODULE 1",
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white,
@@ -300,9 +328,11 @@ class _SimulationSceneState extends State<SimulationScene> {
                               ),
                             ),
                             const SizedBox(width: 15),
-                            const Expanded(
+                            Expanded(
                               child: Text(
-                                "Fire Extinguisher: Basics, Types, and How to Use",
+                                _isTl
+                                    ? "Pamatay-Sunog: Mga Batayan, Uri, at Tamang Paggamit"
+                                    : "Fire Extinguisher: Basics, Types, and How to Use",
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontWeight: FontWeight.w600,
@@ -322,12 +352,13 @@ class _SimulationSceneState extends State<SimulationScene> {
                     padding: const EdgeInsets.fromLTRB(16, 14, 16, 18),
                     children: [
                       _ModuleCard(
-                        moduleLabel: "MODULE 1",
-                        title: "FIRE EXTINGUISHER",
-                        description:
-                            "Learn the proper and safe use of fire extinguishers for effective response during fire emergencies.",
+                        moduleLabel: _isTl ? "MODYUL 1" : "MODULE 1",
+                        title: _isTl ? "PAMATAY-SUNOG" : "FIRE EXTINGUISHER",
+                        description: _isTl
+                            ? "Alamin ang tama at ligtas na paggamit ng pamatay-sunog para sa epektibong pagtugon sa emerhensiyang may sunog."
+                            : "Learn the proper and safe use of fire extinguishers for effective response during fire emergencies.",
                         asset: "assets/fire_ex.png",
-                        buttonText: "Scene",
+                        buttonText: _isTl ? "Scene" : "Scene",
                         onPressed: _openSceneFlow,
                       ),
                     ],
@@ -488,10 +519,12 @@ class _ModuleCard extends StatelessWidget {
 class _ScenePickerPopup extends StatelessWidget {
   final VoidCallback onClose;
   final VoidCallback onPickScene1;
+  final bool isTl;
 
   const _ScenePickerPopup({
     required this.onClose,
     required this.onPickScene1,
+    required this.isTl,
   });
 
   static const Color brandRed = Color(0xFFB11217);
@@ -533,9 +566,9 @@ class _ScenePickerPopup extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 12),
-                const Expanded(
+                Expanded(
                   child: Text(
-                    "Choose a Scene",
+                    isTl ? "Pumili ng Scene" : "Choose a Scene",
                     style: TextStyle(
                       fontFamily: 'Poppins',
                       fontSize: 16,
@@ -554,7 +587,9 @@ class _ScenePickerPopup extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              "Module 1 (Fire Extinguisher) currently has one scene available.",
+              isTl
+                  ? "Ang Modyul 1 (Pamatay-Sunog) ay kasalukuyang may isang available na scene."
+                  : "Module 1 (Fire Extinguisher) currently has one scene available.",
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: 'Poppins',
@@ -567,7 +602,9 @@ class _ScenePickerPopup extends StatelessWidget {
             const SizedBox(height: 16),
             _ModernSceneTile(
               title: "Scene 1",
-              subtitle: "PASS Method Tutorial",
+              subtitle: isTl
+                  ? "Tutorial ng Paraang PASS"
+                  : "PASS Method Tutorial",
               icon: Icons.school_rounded,
               onTap: onPickScene1,
             ),
@@ -683,28 +720,40 @@ class _SceneConfirmPopup extends StatelessWidget {
   final int scene;
   final VoidCallback onClose;
   final VoidCallback onStart;
+  final bool isTl;
 
   const _SceneConfirmPopup({
     required this.scene,
     required this.onClose,
     required this.onStart,
+    required this.isTl,
   });
 
   static const Color brandRed = Color(0xFFB11217);
 
-  String get _title => "Chosen Scene: Scene $scene";
+  String get _title =>
+      isTl ? "Napiling Scene: Scene $scene" : "Chosen Scene: Scene $scene";
 
   String get _body {
     switch (scene) {
       case 1:
-        return "You chose Scene 1: PASS Method Tutorial.\n\n"
-            "In this scene, you will learn the correct steps to use a fire extinguisher:\n"
-            "• Pull the pin\n"
-            "• Aim at the base of the fire\n"
-            "• Squeeze the handle\n"
-            "• Sweep side to side";
+        return isTl
+            ? "Pinili mo ang Scene 1: Tutorial ng Paraang PASS.\n\n"
+                  "Sa scene na ito, matututuhan mo ang tamang hakbang sa paggamit ng pamatay-sunog:\n"
+                  "• Hilahin ang pin\n"
+                  "• Itutok sa pinakailalim ng apoy\n"
+                  "• Pisilin ang hawakan\n"
+                  "• Iwasiwas pakanan at pakaliwa"
+            : "You chose Scene 1: PASS Method Tutorial.\n\n"
+                  "In this scene, you will learn the correct steps to use a fire extinguisher:\n"
+                  "• Pull the pin\n"
+                  "• Aim at the base of the fire\n"
+                  "• Squeeze the handle\n"
+                  "• Sweep side to side";
       default:
-        return "You chose a scene. Press Start to continue.";
+        return isTl
+            ? "May pinili kang scene. Pindutin ang Start upang magpatuloy."
+            : "You chose a scene. Press Start to continue.";
     }
   }
 
@@ -739,7 +788,10 @@ class _SceneConfirmPopup extends StatelessWidget {
                     color: brandRed.withOpacity(0.10),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(Icons.check_circle_rounded, color: brandRed),
+                  child: const Icon(
+                    Icons.check_circle_rounded,
+                    color: brandRed,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -796,8 +848,8 @@ class _SceneConfirmPopup extends StatelessWidget {
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                child: const Text(
-                  "START SIMULATION",
+                child: Text(
+                  isTl ? "SIMULAN ANG SIMULASYON" : "START SIMULATION",
                   style: TextStyle(
                     fontFamily: 'Poppins',
                     fontSize: 14.5,
@@ -810,7 +862,9 @@ class _SceneConfirmPopup extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              "This button will redirect you to the Unity simulation.",
+              isTl
+                  ? "Ididirekta ka ng button na ito sa Unity simulation."
+                  : "This button will redirect you to the Unity simulation.",
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: 'Poppins',

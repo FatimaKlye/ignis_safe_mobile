@@ -18,6 +18,7 @@ class SimulationScene3 extends StatefulWidget {
 
 class _SimulationScene3State extends State<SimulationScene3> {
   static const int _moduleNo = 3;
+  bool get _isTl => Localizations.localeOf(context).languageCode == 'tl';
 
   final SimulationHistoryService _simulationHistoryService =
       SimulationHistoryService();
@@ -89,8 +90,12 @@ class _SimulationScene3State extends State<SimulationScene3> {
 
     if (unitySceneName == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Scene 3 is not yet available in Unity.'),
+        SnackBar(
+          content: Text(
+            _isTl
+                ? 'Ang Scene 3 ay hindi pa available sa Unity.'
+                : 'Scene 3 is not yet available in Unity.',
+          ),
         ),
       );
       return;
@@ -114,8 +119,12 @@ class _SimulationScene3State extends State<SimulationScene3> {
         if (!mounted) return;
 
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Module 3 simulation completed. Progress updated.'),
+          SnackBar(
+            content: Text(
+              _isTl
+                  ? 'Nakumpleto ang simulasyon ng Modyul 3. Na-update ang progreso.'
+                  : 'Module 3 simulation completed. Progress updated.',
+            ),
           ),
         );
 
@@ -125,14 +134,22 @@ class _SimulationScene3State extends State<SimulationScene3> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to open Unity: ${e.message ?? e.code}'),
+          content: Text(
+            _isTl
+                ? 'Hindi mabuksan ang Unity: ${e.message ?? e.code}'
+                : 'Failed to open Unity: ${e.message ?? e.code}',
+          ),
         ),
       );
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to save simulation progress: $e'),
+          content: Text(
+            _isTl
+                ? 'Hindi ma-save ang progreso ng simulasyon: $e'
+                : 'Failed to save simulation progress: $e',
+          ),
         ),
       );
     }
@@ -164,8 +181,10 @@ class _SimulationScene3State extends State<SimulationScene3> {
         );
       },
       transitionBuilder: (_, anim, __, child) {
-        final curved =
-            CurvedAnimation(parent: anim, curve: Curves.easeOutCubic);
+        final curved = CurvedAnimation(
+          parent: anim,
+          curve: Curves.easeOutCubic,
+        );
         return FadeTransition(
           opacity: curved,
           child: ScaleTransition(
@@ -204,8 +223,10 @@ class _SimulationScene3State extends State<SimulationScene3> {
         );
       },
       transitionBuilder: (_, anim, __, child) {
-        final curved =
-            CurvedAnimation(parent: anim, curve: Curves.easeOutCubic);
+        final curved = CurvedAnimation(
+          parent: anim,
+          curve: Curves.easeOutCubic,
+        );
         return FadeTransition(
           opacity: curved,
           child: ScaleTransition(
@@ -286,8 +307,11 @@ class _SimulationScene3State extends State<SimulationScene3> {
                               child: const Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Icon(Icons.bolt_rounded,
-                                      color: Colors.white, size: 18),
+                                  Icon(
+                                    Icons.bolt_rounded,
+                                    color: Colors.white,
+                                    size: 18,
+                                  ),
                                   SizedBox(width: 8),
                                   Text(
                                     "MODULE 3",
@@ -488,10 +512,7 @@ class _ScenePickerPopup extends StatelessWidget {
   final VoidCallback onClose;
   final VoidCallback onPickScene3;
 
-  const _ScenePickerPopup({
-    required this.onClose,
-    required this.onPickScene3,
-  });
+  const _ScenePickerPopup({required this.onClose, required this.onPickScene3});
 
   @override
   Widget build(BuildContext context) {
@@ -617,10 +638,7 @@ class _ModernSceneTile extends StatelessWidget {
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [
-                    kBrandBlue,
-                    kBrandBlueDark,
-                  ],
+                  colors: [kBrandBlue, kBrandBlueDark],
                 ),
                 borderRadius: BorderRadius.circular(14),
                 boxShadow: [

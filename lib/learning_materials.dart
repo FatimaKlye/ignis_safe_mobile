@@ -186,6 +186,7 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
                   const SizedBox(height: 20),
 
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       PopupMenuButton<String>(
                         tooltip: "",
@@ -242,27 +243,33 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
                         ),
                       ),
                       const SizedBox(width: 10),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            greeting,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              greeting,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            context.tr('welcome_to_ignis_safe_short'),
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700,
+                            const SizedBox(height: 2),
+                            Text(
+                              context.tr('welcome_to_ignis_safe_short'),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ],
                   ),

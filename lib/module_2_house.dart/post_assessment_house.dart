@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../localization/localized_db_text.dart';
 import '../profile_progress_sync.dart';
 
 const Color kHouseOrange = Color(0xFFF97316);
@@ -120,7 +121,7 @@ class _PostAssessmentHousePageState extends State<PostAssessmentHousePage> {
 
       final moduleRow = await _supabase
           .from('modules')
-          .select('id, title')
+          .select('id, title, title_tl, subtitle, subtitle_tl')
           .eq('module_no', _moduleNo)
           .maybeSingle();
 
@@ -129,11 +130,17 @@ class _PostAssessmentHousePageState extends State<PostAssessmentHousePage> {
       }
 
       final moduleId = moduleRow['id'].toString();
-      final moduleDisplayTitle = (moduleRow['title'] ?? '').toString();
+      final moduleDisplayTitle = LocalizedDbText.pick(
+        context,
+        moduleRow,
+        'title',
+        'title_tl',
+        fallback: 'Module $_moduleNo',
+      );
 
       final assessmentRow = await _supabase
           .from('assessments')
-          .select('id, title, instructions')
+          .select('id, title, title_tl, instructions, instructions_tl')
           .eq('module_id', moduleId)
           .eq('type', _assessmentType)
           .maybeSingle();
@@ -143,13 +150,24 @@ class _PostAssessmentHousePageState extends State<PostAssessmentHousePage> {
       }
 
       final assessmentId = assessmentRow['id'].toString();
-      final assessmentTitle =
-          (assessmentRow['title'] ?? 'Post-Assessment').toString();
-      final instructions = (assessmentRow['instructions'] ?? '').toString();
+      final assessmentTitle = LocalizedDbText.pick(
+        context,
+        assessmentRow,
+        'title',
+        'title_tl',
+        fallback: _assessmentType == 'post' ? 'Post-Assessment' : 'Pre-Assessment',
+      );
+
+      final instructions = LocalizedDbText.pick(
+        context,
+        assessmentRow,
+        'instructions',
+        'instructions_tl',
+      );
 
       final questionRows = await _supabase
           .from('assessment_questions')
-          .select('id, question_no, prompt, explanation, question_type')
+          .select('id, question_no, prompt, prompt_tl, explanation, explanation_tl, question_type')
           .eq('assessment_id', assessmentId)
           .eq('is_active', true)
           .order('question_no');
@@ -164,7 +182,7 @@ class _PostAssessmentHousePageState extends State<PostAssessmentHousePage> {
       final optionRows = await _supabase
           .from('assessment_options')
           .select(
-            'id, question_id, option_key, option_text, is_correct, display_order',
+            'id, question_id, option_key, option_text, option_text_tl, is_correct, display_order',
           )
           .inFilter('question_id', questionIds)
           .order('question_id')
@@ -183,7 +201,12 @@ class _PostAssessmentHousePageState extends State<PostAssessmentHousePage> {
           _OptionVm(
             id: row['id'].toString(),
             key: (row['option_key'] ?? '').toString().toUpperCase(),
-            text: (row['option_text'] ?? '').toString(),
+            text: LocalizedDbText.pick(
+              context,
+              row,
+              'option_text',
+              'option_text_tl',
+            ),
             isCorrect: (row['is_correct'] ?? false) as bool,
             displayOrder: displayOrder,
           ),
@@ -198,8 +221,18 @@ class _PostAssessmentHousePageState extends State<PostAssessmentHousePage> {
         final questionId = row['id'].toString();
         return _QuestionVm(
           id: questionId,
-          prompt: (row['prompt'] ?? '').toString(),
-          explanation: (row['explanation'] ?? '').toString(),
+          prompt: LocalizedDbText.pick(
+            context,
+            row,
+            'prompt',
+            'prompt_tl',
+          ),
+          explanation: LocalizedDbText.pick(
+            context,
+            row,
+            'explanation',
+            'explanation_tl',
+          ),
           type: ((row['question_type'] ?? 'multiple_choice').toString()),
           options: optionsByQuestion[questionId] ?? [],
         );

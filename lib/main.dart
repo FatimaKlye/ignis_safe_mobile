@@ -102,9 +102,7 @@ class _AppStartPageState extends State<AppStartPage> {
     if (_targetPage == null) {
       return const Scaffold(
         backgroundColor: Colors.white,
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
+        body: Center(child: CircularProgressIndicator()),
       );
     }
 

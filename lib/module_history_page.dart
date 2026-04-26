@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'localization/localized_db_text.dart';
 
 import 'module_history_detail_page.dart';
 
@@ -60,7 +61,7 @@ class _ModuleHistoryPageState extends State<ModuleHistoryPage> {
     try {
       final rows = await _supabase
           .from('modules')
-          .select('id, module_no, title')
+          .select('id, module_no, title, title_tl')
           .order('module_no', ascending: true);
 
       if (!mounted) return;
@@ -138,7 +139,13 @@ class _ModuleHistoryPageState extends State<ModuleHistoryPage> {
                             final module = _modules[index];
                             final moduleId = module['id'].toString();
                             final moduleNo = module['module_no'] as int;
-                            final title = module['title'].toString();
+                            final title = LocalizedDbText.pick(
+                              context,
+                              module,
+                              'title',
+                              'title_tl',
+                              fallback: 'Module $moduleNo',
+                            );
 
                             return InkWell(
                               borderRadius: BorderRadius.circular(14),
@@ -175,7 +182,7 @@ class _ModuleHistoryPageState extends State<ModuleHistoryPage> {
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            "MODULE $moduleNo",
+                                            LocalizedDbText.moduleLabel(context, moduleNo),
                                             style: const TextStyle(
                                               color: Color(0xFFB11217),
                                               fontWeight: FontWeight.w900,

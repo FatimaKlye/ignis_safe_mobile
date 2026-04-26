@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
+import 'localization/language_controller.dart';
 import 'forgotpass.dart';
 import 'passwordvalidation.dart';
 import 'login.dart';
-
-String _t(BuildContext context, String en, String tl) {
-  return Localizations.localeOf(context).languageCode == 'tl' ? tl : en;
-}
 
 class VerifyEmailPage extends StatefulWidget {
   final String email;
@@ -93,18 +89,26 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text(
-          'This email already has an account',
-          style: TextStyle(fontWeight: FontWeight.w900),
+        title: Text(
+          t(
+            context,
+            'This email already has an account',
+            'Mayroon nang account ang email na ito',
+          ),
+          style: const TextStyle(fontWeight: FontWeight.w900),
         ),
         content: Text(
-          '$email already has an account.\n\nWould you like to reset your password or go to login?',
+          t(
+            context,
+            '$email already has an account.\n\nWould you like to reset your password or go to login?',
+            '$email ay mayroon nang account.\n\nNais mo bang i-reset ang iyong password o mag-login?',
+          ),
           style: const TextStyle(fontWeight: FontWeight.w600, height: 1.4),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(t(context, 'Cancel', 'Kanselahin')),
           ),
           TextButton(
             onPressed: () {
@@ -114,7 +118,9 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                 MaterialPageRoute(builder: (_) => const ForgotPassPage()),
               );
             },
-            child: const Text('Forgot Password'),
+            child: Text(
+              t(context, 'Forgot Password', 'Nakalimutan ang Password'),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
@@ -126,7 +132,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                 (route) => false,
               );
             },
-            child: const Text('Login'),
+            child: Text(t(context, 'Login', 'Mag-login')),
           ),
         ],
       ),
@@ -149,9 +155,17 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       await _sendOtp(showToast: showToast);
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Could not check email: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            t(
+              context,
+              'Could not check email: $e',
+              'Hindi masuri ang email: $e',
+            ),
+          ),
+        ),
+      );
     }
   }
 
@@ -167,16 +181,25 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       await supabase.auth.signInWithOtp(
         email: email,
         shouldCreateUser: true,
-        data: {'first_name': widget.firstName, 'last_name': widget.lastName},
+        data: {
+          'first_name': widget.firstName,
+          'last_name': widget.lastName,
+          'app_language_code':
+              Localizations.localeOf(context).languageCode == 'tl' ? 'tl' : 'en',
+        },
       );
 
       if (!mounted) return;
 
       if (showToast) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text(
-              'Verification code sent. Check your email inbox/spam.',
+              t(
+                context,
+                'Verification code sent. Check your email inbox/spam.',
+                'Naipadala ang verification code. Tingnan ang iyong email inbox/spam.',
+              ),
             ),
           ),
         );
@@ -188,9 +211,17 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       ).showSnackBar(SnackBar(content: Text(e.message)));
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error sending code: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            t(
+              context,
+              'Error sending code: $e',
+              'Nagkaroon ng error sa pagpapadala ng code: $e',
+            ),
+          ),
+        ),
+      );
     } finally {
       if (mounted) setState(() => _isSending = false);
     }
@@ -204,6 +235,8 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       'email': widget.email.trim().toLowerCase(),
       'terms_accepted': false,
       'terms_accepted_at': null,
+      'app_language_code':
+          Localizations.localeOf(context).languageCode == 'tl' ? 'tl' : 'en',
       'updated_at': DateTime.now().toUtc().toIso8601String(),
     });
   }
@@ -216,7 +249,15 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
 
     if (!_codeComplete) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Enter a valid 6-digit numeric code.')),
+        SnackBar(
+          content: Text(
+            t(
+              context,
+              'Enter a valid 6-digit numeric code.',
+              'Maglagay ng wastong 6-digit na numeric code.',
+            ),
+          ),
+        ),
       );
       return;
     }
@@ -254,9 +295,17 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       ).showSnackBar(SnackBar(content: Text(e.message)));
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error verifying code: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            t(
+              context,
+              'Error verifying code: $e',
+              'Nagkaroon ng error sa pag-verify ng code: $e',
+            ),
+          ),
+        ),
+      );
     } finally {
       if (mounted) setState(() => _isVerifying = false);
     }
@@ -288,10 +337,10 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    _t(context, 'Email is required before verification.', 'Kailangan ang email bago mag-verify.'),
+                  const Text(
+                    'Email is required before verification.',
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: 'Poppins',
                       fontSize: 13,
                       color: Colors.black54,
@@ -307,9 +356,9 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                       ),
                     ),
                     onPressed: () => Navigator.pop(context),
-                    child: Text(
-                      _t(context, 'Go back', 'Bumalik'),
-                      style: const TextStyle(
+                    child: const Text(
+                      'Go back',
+                      style: TextStyle(
                         fontFamily: 'Poppins',
                         color: Colors.white,
                         fontWeight: FontWeight.w600,
@@ -350,9 +399,9 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                             ),
                           ),
                         ),
-                        Text(
-                          _t(context, 'Verify Email Address', 'I-verify ang Email Address'),
-                          style: const TextStyle(
+                        const Text(
+                          'Verify Email Address',
+                          style: TextStyle(
                             fontFamily: 'Poppins',
                             fontSize: 28,
                             fontWeight: FontWeight.w700,
@@ -370,9 +419,9 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                           ),
                         ),
                         const SizedBox(height: 8),
-                        Text(
-                          _t(context, 'Welcome to, IGNIS SAFE', 'Maligayang pagdating sa IGNIS SAFE'),
-                          style: const TextStyle(
+                        const Text(
+                          'Welcome to, IGNIS SAFE',
+                          style: TextStyle(
                             fontFamily: 'Poppins',
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
@@ -391,9 +440,9 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                               ),
                             ),
                             const SizedBox(width: 4),
-                            Text(
-                              _t(context, 'Verify your email', 'I-verify ang iyong email'),
-                              style: const TextStyle(
+                            const Text(
+                              'Verify your email',
+                              style: TextStyle(
                                 fontFamily: 'Poppins',
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
@@ -438,11 +487,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 4),
                           child: Text(
-                            _t(
-                              context,
-                              'We just sent a 6-digit code to\n$email\nEnter it below:',
-                              'Nagpadala kami ng 6-digit code sa\n$email\nIlagay ito sa ibaba:',
-                            ),
+                            'We just sent a 6-digit code to\n$email\nEnter it below:',
                             textAlign: TextAlign.center,
                             style: const TextStyle(
                               fontFamily: 'Poppins',
@@ -490,9 +535,9 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                               onPressed: (_isVerifying || _isSending)
                                   ? null
                                   : _clearOtp,
-                                child: Text(
-                                  _t(context, 'Clear', 'Burahin'),
-                                  style: const TextStyle(
+                              child: const Text(
+                                'Clear',
+                                style: TextStyle(
                                   fontFamily: 'Poppins',
                                   fontSize: 12,
                                   fontWeight: FontWeight.w700,
@@ -505,9 +550,9 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                               onPressed: (_isVerifying || _isSending)
                                   ? null
                                   : () => _sendCode(showToast: true),
-                                child: Text(
-                                  _t(context, 'Resend code', 'Ipadala muli ang code'),
-                                  style: const TextStyle(
+                              child: const Text(
+                                'Resend code',
+                                style: TextStyle(
                                   fontFamily: 'Poppins',
                                   fontSize: 12,
                                   fontWeight: FontWeight.w700,
@@ -542,11 +587,9 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                                     ),
                                   )
                                 : Text(
-                                    _t(
-                                      context,
-                                      _codeComplete ? 'Verify email' : 'Enter code',
-                                      _codeComplete ? 'I-verify ang email' : 'Ilagay ang code',
-                                    ),
+                                    _codeComplete
+                                        ? 'Verify email'
+                                        : 'Enter code',
                                     style: const TextStyle(
                                       fontFamily: 'Poppins',
                                       fontSize: 14,
@@ -560,9 +603,9 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(
-                              _t(context, 'Already have an account? ', 'Mayroon ka nang account? '),
-                              style: const TextStyle(
+                            const Text(
+                              'Already have an account? ',
+                              style: TextStyle(
                                 fontFamily: 'Poppins',
                                 fontSize: 12,
                                 color: Colors.black38,
@@ -578,9 +621,9 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                                   (route) => false,
                                 );
                               },
-                              child: Text(
-                                _t(context, 'Log in', 'Mag-login'),
-                                style: const TextStyle(
+                              child: const Text(
+                                'Log in',
+                                style: TextStyle(
                                   fontFamily: 'Poppins',
                                   fontSize: 12,
                                   fontWeight: FontWeight.w700,

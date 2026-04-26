@@ -4,6 +4,10 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'forgotpass.dart';
 import 'login.dart';
 
+String _t(BuildContext context, String en, String tl) {
+  return Localizations.localeOf(context).languageCode == 'tl' ? tl : en;
+}
+
 class CreatePasswordPage extends StatefulWidget {
   final String email;
   final String firstName;
@@ -60,8 +64,9 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
 
     final min8 = password.length >= 8;
     final hasNumber = RegExp(r'\d').hasMatch(password);
-    final hasSymbol =
-        RegExp(r'[!@#$%^&*(),.?":{}|<>_\-\[\]\\/~`+=;]').hasMatch(password);
+    final hasSymbol = RegExp(
+      r'[!@#$%^&*(),.?":{}|<>_\-\[\]\\/~`+=;]',
+    ).hasMatch(password);
     final hasUpper = RegExp(r'[A-Z]').hasMatch(password);
     final matches = confirm.isNotEmpty && password == confirm;
 
@@ -103,10 +108,14 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
   }
 
   String get _strengthText {
-    if (_isEmpty) return 'Password is weak';
-    if (_passedRules <= 1) return 'Password is weak';
-    if (_passedRules <= 3) return 'Password is medium';
-    return 'Password is strong';
+    if (_isEmpty) return _t(context, 'Password is weak', 'Mahina ang password');
+    if (_passedRules <= 1) {
+      return _t(context, 'Password is weak', 'Mahina ang password');
+    }
+    if (_passedRules <= 3) {
+      return _t(context, 'Password is medium', 'Katamtaman ang password');
+    }
+    return _t(context, 'Password is strong', 'Malakas ang password');
   }
 
   Color get _strengthColor {
@@ -118,21 +127,19 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
 
   bool get _allOk => _passedRules == 4 && _matches;
 
-  Future<void> _showPopup(String message, {String title = 'Notice'}) async {
+  Future<void> _showPopup(String message, {String? title}) async {
     if (!mounted) return;
 
     await showDialog<void>(
       context: context,
       builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        title: Text(title),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(title ?? _t(context, 'Notice', 'Paalala')),
         content: Text(message),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
+            child: Text(_t(context, 'OK', 'Sige')),
           ),
         ],
       ),
@@ -143,24 +150,27 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        title: const Text(
-          'This email already has an account',
-          style: TextStyle(fontWeight: FontWeight.w900),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          _t(
+            context,
+            'This email already has an account',
+            'Mayroon nang account ang email na ito',
+          ),
+          style: const TextStyle(fontWeight: FontWeight.w900),
         ),
         content: Text(
-          '$email already has an account.\n\nWould you like to reset your password or go to login?',
-          style: const TextStyle(
-            fontWeight: FontWeight.w600,
-            height: 1.4,
+          _t(
+            context,
+            '$email already has an account.\n\nWould you like to reset your password or go to login?',
+            '$email ay mayroon nang account.\n\nNais mo bang i-reset ang iyong password o mag-login?',
           ),
+          style: const TextStyle(fontWeight: FontWeight.w600, height: 1.4),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(_t(context, 'Cancel', 'Kanselahin')),
           ),
           TextButton(
             onPressed: () {
@@ -170,7 +180,9 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                 MaterialPageRoute(builder: (_) => const ForgotPassPage()),
               );
             },
-            child: const Text('Forgot Password'),
+            child: Text(
+              _t(context, 'Forgot Password', 'Nakalimutan ang Password'),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
@@ -182,7 +194,7 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                 (route) => false,
               );
             },
-            child: const Text('Login'),
+            child: Text(_t(context, 'Login', 'Mag-login')),
           ),
         ],
       ),
@@ -194,16 +206,24 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
 
     if (!_matches) {
       await _showPopup(
-        'Passwords do not match.',
-        title: 'Invalid Password',
+        _t(
+          context,
+          'Passwords do not match.',
+          'Hindi magkatugma ang mga password.',
+        ),
+        title: _t(context, 'Invalid Password', 'Hindi Wastong Password'),
       );
       return;
     }
 
     if (!_allOk) {
       await _showPopup(
-        'Password does not meet all requirements.',
-        title: 'Invalid Password',
+        _t(
+          context,
+          'Password does not meet all requirements.',
+          'Hindi natutugunan ng password ang lahat ng kinakailangan.',
+        ),
+        title: _t(context, 'Invalid Password', 'Hindi Wastong Password'),
       );
       return;
     }
@@ -237,6 +257,8 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
         'first_name': widget.firstName.trim(),
         'last_name': widget.lastName.trim(),
         'email': widget.email.trim().toLowerCase(),
+        'app_language_code':
+            Localizations.localeOf(context).languageCode == 'tl' ? 'tl' : 'en',
         'updated_at': DateTime.now().toUtc().toIso8601String(),
       });
 
@@ -259,8 +281,8 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                 size: 64,
               ),
               const SizedBox(height: 16),
-              const Text(
-                'Account Created!',
+              Text(
+                _t(context, 'Account Created!', 'Nagawa na ang Account!'),
                 style: TextStyle(
                   fontFamily: 'Poppins',
                   fontSize: 20,
@@ -269,8 +291,12 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                 ),
               ),
               const SizedBox(height: 8),
-              const Text(
-                'Your account has been successfully created.',
+              Text(
+                _t(
+                  context,
+                  'Your account has been successfully created.',
+                  'Matagumpay na nagawa ang iyong account.',
+                ),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontFamily: 'Poppins',
@@ -302,8 +328,8 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                       (route) => false,
                     );
                   },
-                  child: const Text(
-                    'Go to Login',
+                  child: Text(
+                    _t(context, 'Go to Login', 'Pumunta sa Login'),
                     style: TextStyle(
                       fontFamily: 'Poppins',
                       fontSize: 14,
@@ -320,17 +346,33 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
     } on AuthException catch (e) {
       final msg = e.message.toLowerCase();
 
-      if (msg.contains('already registered') || msg.contains('already exists')) {
+      if (msg.contains('already registered') ||
+          msg.contains('already exists')) {
         if (mounted) {
           _showExistingAccountDialog(widget.email.trim().toLowerCase());
         }
       } else {
-        await _showPopup(e.message, title: 'Account Setup Failed');
+        await _showPopup(
+          e.message,
+          title: _t(
+            context,
+            'Account Setup Failed',
+            'Hindi Natapos ang Pag-set up ng Account',
+          ),
+        );
       }
     } catch (e) {
       await _showPopup(
-        'Something went wrong while creating your account.\n\n$e',
-        title: 'Account Setup Failed',
+        _t(
+          context,
+          'Something went wrong while creating your account.\n\n$e',
+          'May nangyaring mali habang ginagawa ang iyong account.\n\n$e',
+        ),
+        title: _t(
+          context,
+          'Account Setup Failed',
+          'Hindi Natapos ang Pag-set up ng Account',
+        ),
       );
     } finally {
       if (mounted) {
@@ -379,11 +421,7 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(15),
         boxShadow: const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 8,
-            offset: Offset(0, 4),
-          ),
+          BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 4)),
         ],
       ),
       child: TextField(
@@ -463,8 +501,8 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                             ),
                           ),
                         ),
-                        const Text(
-                          'Create Password',
+                        Text(
+                          _t(context, 'Create Password', 'Gumawa ng Password'),
                           style: TextStyle(
                             fontFamily: 'Poppins',
                             fontSize: 28,
@@ -483,8 +521,12 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                           ),
                         ),
                         const SizedBox(height: 8),
-                        const Text(
-                          'Welcome to, IGNIS SAFE',
+                        Text(
+                          _t(
+                            context,
+                            'Welcome to, IGNIS SAFE',
+                            'Maligayang pagdating sa IGNIS SAFE',
+                          ),
                           style: TextStyle(
                             fontFamily: 'Poppins',
                             fontSize: 12,
@@ -500,11 +542,18 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                               onPressed: _isLoading
                                   ? null
                                   : () => Navigator.pop(context),
-                              icon: const Icon(Icons.arrow_back_ios_new, size: 18),
+                              icon: const Icon(
+                                Icons.arrow_back_ios_new,
+                                size: 18,
+                              ),
                             ),
                             const SizedBox(width: 4),
-                            const Text(
-                              'Set your password',
+                            Text(
+                              _t(
+                                context,
+                                'Set your password',
+                                'I-set ang iyong password',
+                              ),
                               style: TextStyle(
                                 fontFamily: 'Poppins',
                                 fontSize: 16,
@@ -558,24 +607,42 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                           ),
                         ),
                         const SizedBox(height: 28),
-                        _inputLabel('PASSWORD:'),
+                        _inputLabel(_t(context, 'PASSWORD:', 'PASSWORD:')),
                         _passwordField(
-                          hint: 'Enter your password',
+                          hint: _t(
+                            context,
+                            'Enter your password',
+                            'Ilagay ang iyong password',
+                          ),
                           controller: passCtrl,
                           obscureText: !_showPassword,
-                          suffixText: _showPassword ? 'HIDE' : 'SHOW',
+                          suffixText: _showPassword
+                              ? _t(context, 'HIDE', 'ITAGO')
+                              : _t(context, 'SHOW', 'IPAKITA'),
                           onSuffixTap: () {
                             setState(() => _showPassword = !_showPassword);
                           },
                           textInputAction: TextInputAction.next,
                         ),
                         const SizedBox(height: 20),
-                        _inputLabel('CONFIRM PASSWORD:'),
+                        _inputLabel(
+                          _t(
+                            context,
+                            'CONFIRM PASSWORD:',
+                            'KUMPIRMAHIN ANG PASSWORD:',
+                          ),
+                        ),
                         _passwordField(
-                          hint: 'Confirm your password',
+                          hint: _t(
+                            context,
+                            'Confirm your password',
+                            'Kumpirmahin ang iyong password',
+                          ),
                           controller: confirmPassCtrl,
                           obscureText: !_showConfirmPassword,
-                          suffixText: _showConfirmPassword ? 'HIDE' : 'SHOW',
+                          suffixText: _showConfirmPassword
+                              ? _t(context, 'HIDE', 'ITAGO')
+                              : _t(context, 'SHOW', 'IPAKITA'),
                           onSuffixTap: () {
                             setState(() {
                               _showConfirmPassword = !_showConfirmPassword;
@@ -600,8 +667,12 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
-                                'Password strength',
+                              Text(
+                                _t(
+                                  context,
+                                  'Password strength',
+                                  'Lakas ng password',
+                                ),
                                 style: TextStyle(
                                   fontFamily: 'Poppins',
                                   fontSize: 13,
@@ -616,8 +687,9 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                                   value: _progress,
                                   minHeight: 8,
                                   backgroundColor: const Color(0xFFE6E6E6),
-                                  valueColor:
-                                      AlwaysStoppedAnimation<Color>(_barColor),
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    _barColor,
+                                  ),
                                 ),
                               ),
                               const SizedBox(height: 8),
@@ -631,15 +703,50 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                                 ),
                               ),
                               const SizedBox(height: 14),
-                              _ruleItem('At least 8 characters', _min8),
+                              _ruleItem(
+                                _t(
+                                  context,
+                                  'At least 8 characters',
+                                  'Hindi bababa sa 8 character',
+                                ),
+                                _min8,
+                              ),
                               const SizedBox(height: 8),
-                              _ruleItem('At least 1 number', _hasNumber),
+                              _ruleItem(
+                                _t(
+                                  context,
+                                  'At least 1 number',
+                                  'Hindi bababa sa 1 numero',
+                                ),
+                                _hasNumber,
+                              ),
                               const SizedBox(height: 8),
-                              _ruleItem('At least 1 symbol', _hasSymbol),
+                              _ruleItem(
+                                _t(
+                                  context,
+                                  'At least 1 symbol',
+                                  'Hindi bababa sa 1 simbolo',
+                                ),
+                                _hasSymbol,
+                              ),
                               const SizedBox(height: 8),
-                              _ruleItem('At least 1 uppercase letter', _hasUpper),
+                              _ruleItem(
+                                _t(
+                                  context,
+                                  'At least 1 uppercase letter',
+                                  'Hindi bababa sa 1 malaking titik',
+                                ),
+                                _hasUpper,
+                              ),
                               const SizedBox(height: 8),
-                              _ruleItem('Passwords match', _matches),
+                              _ruleItem(
+                                _t(
+                                  context,
+                                  'Passwords match',
+                                  'Magkatugma ang mga password',
+                                ),
+                                _matches,
+                              ),
                             ],
                           ),
                         ),
@@ -654,7 +761,9 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),
-                            onPressed: _isLoading ? null : _continueWithSupabase,
+                            onPressed: _isLoading
+                                ? null
+                                : _continueWithSupabase,
                             child: _isLoading
                                 ? const SizedBox(
                                     width: 20,
@@ -664,8 +773,12 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                                       color: Colors.white,
                                     ),
                                   )
-                                : const Text(
-                                    'Create Account',
+                                : Text(
+                                    _t(
+                                      context,
+                                      'Create Account',
+                                      'Gumawa ng Account',
+                                    ),
                                     style: TextStyle(
                                       fontFamily: 'Poppins',
                                       color: Colors.white,
@@ -679,8 +792,12 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Text(
-                              'Already have an account? ',
+                            Text(
+                              _t(
+                                context,
+                                'Already have an account? ',
+                                'Mayroon ka nang account? ',
+                              ),
                               style: TextStyle(
                                 fontFamily: 'Poppins',
                                 fontSize: 12,
@@ -698,8 +815,8 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                                   (route) => false,
                                 );
                               },
-                              child: const Text(
-                                'Log in',
+                              child: Text(
+                                _t(context, 'Log in', 'Mag-login'),
                                 style: TextStyle(
                                   fontFamily: 'Poppins',
                                   fontSize: 12,

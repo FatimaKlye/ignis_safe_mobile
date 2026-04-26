@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
+import 'localization/language_controller.dart';
 import 'forgotpass.dart';
 import 'login.dart';
 import 'verifyemail.dart';
-
-String _t(BuildContext context, String en, String tl) {
-  return Localizations.localeOf(context).languageCode == 'tl' ? tl : en;
-}
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -44,26 +40,28 @@ class _RegisterPageState extends State<RegisterPage> {
 
   String? _validateFirstName(String? v) {
     final value = (v ?? '').trim();
-    if (value.isEmpty) return _t(context, 'First name is required', 'Kailangan ang unang pangalan');
-    if (!_namePattern.hasMatch(value.trim())) {
-      return _t(context, 'First name should contain letters only', 'Mga titik lamang ang dapat laman ng unang pangalan');
+    if (value.isEmpty) return 'First name is required';
+    if (!_namePattern.hasMatch(value)) {
+      return 'First name should contain letters only';
     }
     return null;
   }
 
   String? _validateLastName(String? v) {
     final value = (v ?? '').trim();
-    if (value.isEmpty) return _t(context, 'Last name is required', 'Kailangan ang apelyido');
-    if (!_namePattern.hasMatch(value.trim())) {
-      return _t(context, 'Last name should contain letters only', 'Mga titik lamang ang dapat laman ng apelyido');
+    if (value.isEmpty) return 'Last name is required';
+    if (!_namePattern.hasMatch(value)) {
+      return 'Last name should contain letters only';
     }
     return null;
   }
 
   String? _validateEmail(String? v) {
     final value = (v ?? '').trim();
-    if (value.isEmpty) return 'Email is required';
-    if (!_isValidEmail(value)) return 'Enter a valid email';
+    if (value.isEmpty)
+      return t(context, 'Email is required', 'Kailangan ang email');
+    if (!_isValidEmail(value))
+      return t(context, 'Enter a valid email', 'Maglagay ng wastong email');
     return null;
   }
 
@@ -83,22 +81,18 @@ class _RegisterPageState extends State<RegisterPage> {
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(
-          _t(context, 'This email already has an account', 'Mayroon nang account ang email na ito'),
-          style: const TextStyle(fontWeight: FontWeight.w900),
+        title: const Text(
+          'This email already has an account',
+          style: TextStyle(fontWeight: FontWeight.w900),
         ),
         content: Text(
-          _t(
-            context,
-            '$email already has an account.\n\nWould you like to reset your password or go to login?',
-            '$email ay mayroon nang account.\n\nNais mo bang i-reset ang iyong password o mag-login?',
-          ),
+          '$email already has an account.\n\nWould you like to reset your password or go to login?',
           style: const TextStyle(fontWeight: FontWeight.w600, height: 1.4),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(_t(context, 'Cancel', 'Kanselahin')),
+            child: Text(t(context, 'Cancel', 'Kanselahin')),
           ),
           TextButton(
             onPressed: () {
@@ -108,7 +102,9 @@ class _RegisterPageState extends State<RegisterPage> {
                 MaterialPageRoute(builder: (_) => const ForgotPassPage()),
               );
             },
-            child: Text(_t(context, 'Forgot Password', 'Nakalimutan ang Password')),
+            child: Text(
+              t(context, 'Forgot Password', 'Nakalimutan ang Password'),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
@@ -120,7 +116,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 (route) => false,
               );
             },
-            child: Text(_t(context, 'Login', 'Mag-login')),
+            child: Text(t(context, 'Login', 'Mag-login')),
           ),
         ],
       ),
@@ -161,12 +157,14 @@ class _RegisterPageState extends State<RegisterPage> {
       );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            _t(context, 'Could not check email: $e', 'Hindi masuri ang email: $e'),
+            t(
+              context,
+              'Could not check email: $e',
+              'Hindi masuri ang email: $e',
+            ),
           ),
         ),
       );
@@ -275,9 +273,9 @@ class _RegisterPageState extends State<RegisterPage> {
                 color: Colors.white,
               ),
             )
-          : Text(
-              _t(context, 'Verify Email Address', 'I-verify ang Email Address'),
-              style: const TextStyle(
+          : const Text(
+              'Verify Email Address',
+              style: TextStyle(
                 fontFamily: 'Poppins',
                 color: Colors.white,
                 fontSize: 18,
@@ -291,12 +289,12 @@ class _RegisterPageState extends State<RegisterPage> {
     children: [
       const SizedBox(height: 55),
       Row(
-        children: [
+        children: const [
           Expanded(child: Divider(thickness: 1)),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 12),
             child: Text(
-              _t(context, 'OR', 'O'),
+              'OR',
               style: TextStyle(
                 fontFamily: 'Poppins',
                 color: Colors.grey,
@@ -311,8 +309,12 @@ class _RegisterPageState extends State<RegisterPage> {
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text(
-            "Already have an account? ",
+          Text(
+            t(
+              context,
+              'Already have an account? ',
+              'Mayroon ka nang account? ',
+            ),
             style: TextStyle(
               fontFamily: 'Poppins',
               fontSize: 13,
@@ -326,8 +328,8 @@ class _RegisterPageState extends State<RegisterPage> {
                 MaterialPageRoute(builder: (_) => const LoginPage()),
               );
             },
-            child: Text(
-              _t(context, 'Login', 'Mag-login'),
+            child: const Text(
+              'Login',
               style: TextStyle(
                 fontFamily: 'Poppins',
                 color: brandRed,
@@ -372,9 +374,9 @@ class _RegisterPageState extends State<RegisterPage> {
                               ),
                             ),
                           ),
-                          Text(
-                            _t(context, 'Sign Up', 'Mag-sign up'),
-                            style: const TextStyle(
+                          const Text(
+                            'Sign Up',
+                            style: TextStyle(
                               fontFamily: 'Poppins',
                               fontSize: 28,
                               fontWeight: FontWeight.w700,
@@ -392,9 +394,9 @@ class _RegisterPageState extends State<RegisterPage> {
                             ),
                           ),
                           const SizedBox(height: 8),
-                          Text(
-                            _t(context, 'Welcome to, IGNIS SAFE', 'Maligayang pagdating sa IGNIS SAFE'),
-                            style: const TextStyle(
+                          const Text(
+                            'Welcome to, IGNIS SAFE',
+                            style: TextStyle(
                               fontFamily: 'Poppins',
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
@@ -403,9 +405,9 @@ class _RegisterPageState extends State<RegisterPage> {
                             ),
                           ),
                           const SizedBox(height: 80),
-                          _inputLabel(_t(context, 'FIRST NAME:', 'UNANG PANGALAN:')),
+                          _inputLabel('FIRST NAME:'),
                           _buildValidatedField(
-                            hint: _t(context, 'Enter your first name', 'Ilagay ang iyong unang pangalan'),
+                            hint: 'Enter your first name',
                             controller: firstNameCtrl,
                             validator: _validateFirstName,
                             inputFormatters: [
@@ -417,9 +419,9 @@ class _RegisterPageState extends State<RegisterPage> {
                             textInputAction: TextInputAction.next,
                           ),
                           const SizedBox(height: 25),
-                          _inputLabel(_t(context, 'LAST NAME:', 'APELYIDO:')),
+                          _inputLabel('LAST NAME:'),
                           _buildValidatedField(
-                            hint: _t(context, 'Enter your last name', 'Ilagay ang iyong apelyido'),
+                            hint: 'Enter your last name',
                             controller: lastNameCtrl,
                             validator: _validateLastName,
                             inputFormatters: [
@@ -431,9 +433,9 @@ class _RegisterPageState extends State<RegisterPage> {
                             textInputAction: TextInputAction.next,
                           ),
                           const SizedBox(height: 25),
-                          _inputLabel(_t(context, 'EMAIL ADDRESS:', 'EMAIL ADDRESS:')),
+                          _inputLabel('EMAIL ADDRESS:'),
                           _buildValidatedField(
-                            hint: _t(context, 'Enter your email address', 'Ilagay ang iyong email address'),
+                            hint: 'Enter your email address',
                             controller: emailCtrl,
                             keyboardType: TextInputType.emailAddress,
                             validator: _validateEmail,

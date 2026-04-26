@@ -18,6 +18,7 @@ class _SimulationScene5State extends State<SimulationScene5> {
   static const accent2 = Color(0xFF5B21B6); // darker purple
 
   static const int _moduleNo = 5;
+  bool get _isTl => Localizations.localeOf(context).languageCode == 'tl';
 
   final SimulationHistoryService _simulationHistoryService =
       SimulationHistoryService();
@@ -89,8 +90,12 @@ class _SimulationScene5State extends State<SimulationScene5> {
 
     if (unitySceneName == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Scene 5 is not yet available in Unity.'),
+        SnackBar(
+          content: Text(
+            _isTl
+                ? 'Ang Scene 5 ay hindi pa available sa Unity.'
+                : 'Scene 5 is not yet available in Unity.',
+          ),
         ),
       );
       return;
@@ -114,8 +119,12 @@ class _SimulationScene5State extends State<SimulationScene5> {
         if (!mounted) return;
 
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Module 5 simulation completed. Progress updated.'),
+          SnackBar(
+            content: Text(
+              _isTl
+                  ? 'Nakumpleto ang simulasyon ng Modyul 5. Na-update ang progreso.'
+                  : 'Module 5 simulation completed. Progress updated.',
+            ),
           ),
         );
 
@@ -125,14 +134,22 @@ class _SimulationScene5State extends State<SimulationScene5> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to open Unity: ${e.message ?? e.code}'),
+          content: Text(
+            _isTl
+                ? 'Hindi mabuksan ang Unity: ${e.message ?? e.code}'
+                : 'Failed to open Unity: ${e.message ?? e.code}',
+          ),
         ),
       );
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to save simulation progress: $e'),
+          content: Text(
+            _isTl
+                ? 'Hindi ma-save ang progreso ng simulasyon: $e'
+                : 'Failed to save simulation progress: $e',
+          ),
         ),
       );
     }
@@ -164,8 +181,10 @@ class _SimulationScene5State extends State<SimulationScene5> {
         );
       },
       transitionBuilder: (_, anim, __, child) {
-        final curved =
-            CurvedAnimation(parent: anim, curve: Curves.easeOutCubic);
+        final curved = CurvedAnimation(
+          parent: anim,
+          curve: Curves.easeOutCubic,
+        );
         return FadeTransition(
           opacity: curved,
           child: ScaleTransition(
@@ -204,8 +223,10 @@ class _SimulationScene5State extends State<SimulationScene5> {
         );
       },
       transitionBuilder: (_, anim, __, child) {
-        final curved =
-            CurvedAnimation(parent: anim, curve: Curves.easeOutCubic);
+        final curved = CurvedAnimation(
+          parent: anim,
+          curve: Curves.easeOutCubic,
+        );
         return FadeTransition(
           opacity: curved,
           child: ScaleTransition(
@@ -286,8 +307,11 @@ class _SimulationScene5State extends State<SimulationScene5> {
                               child: const Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Icon(Icons.apartment_rounded,
-                                      color: Colors.white, size: 18),
+                                  Icon(
+                                    Icons.apartment_rounded,
+                                    color: Colors.white,
+                                    size: 18,
+                                  ),
                                   SizedBox(width: 8),
                                   Text(
                                     "MODULE 5",
@@ -490,10 +514,7 @@ class _ScenePickerPopup extends StatelessWidget {
   final VoidCallback onClose;
   final VoidCallback onPickScene5;
 
-  const _ScenePickerPopup({
-    required this.onClose,
-    required this.onPickScene5,
-  });
+  const _ScenePickerPopup({required this.onClose, required this.onPickScene5});
 
   static const Color brandPurple = Color(0xFF7C3AED);
 
@@ -740,7 +761,10 @@ class _SceneConfirmPopup extends StatelessWidget {
                     color: brandPurple.withOpacity(0.10),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(Icons.check_circle_rounded, color: brandPurple),
+                  child: const Icon(
+                    Icons.check_circle_rounded,
+                    color: brandPurple,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(

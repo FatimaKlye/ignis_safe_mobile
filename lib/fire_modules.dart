@@ -1234,6 +1234,7 @@ class _OutlineActionButton extends StatelessWidget {
   }
 }
 
+// ignore: unused_element
 class _ModuleUnderConstructionPage extends StatelessWidget {
   final String title;
   final String subtitle;

@@ -88,12 +88,14 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> _ensureProfile(User user) async {
     final email = (user.email ?? '').trim().toLowerCase();
+    final languageCode = context.read<LanguageController>().locale.languageCode;
 
     await supabase.from('profiles').upsert({
       'id': user.id,
       'email': email.isEmpty ? null : email,
       'first_name': user.userMetadata?['first_name'],
       'last_name': user.userMetadata?['last_name'],
+      'app_language_code': languageCode == 'tl' ? 'tl' : 'en',
       'updated_at': DateTime.now().toUtc().toIso8601String(),
     });
   }
@@ -185,6 +187,7 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  // ignore: unused_element
   Future<void> _googleSignIn() async {
     try {
       await supabase.auth.signInWithOAuth(

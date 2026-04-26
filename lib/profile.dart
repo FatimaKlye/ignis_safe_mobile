@@ -1,14 +1,13 @@
-import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'dart:typed_data';
 
-import 'edit_profile_page.dart';
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'localization/language_controller.dart';
 import 'login.dart';
 import 'module_history_page.dart';
 
-String _t(BuildContext context, String en, String tl) {
-  return Localizations.localeOf(context).languageCode == 'tl' ? tl : en;
-}
+part 'edit_profile_page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({
@@ -29,13 +28,11 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   static const Color brandRed = Color(0xFFB11217);
   static const Color darkText = Color(0xFF222222);
-  static const String _kLangKey = "ignis_lang";
   static const int _totalSimulations = 5;
   final SupabaseClient _supabase = Supabase.instance.client;
   bool _isLoadingProfile = true;
   bool _isLoggingOut = false;
 
-  String _language = "English";
   String _displayName = '';
   String _email = '';
   String? _avatarUrl;
@@ -52,7 +49,11 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _initializePage() async {
-    await Future.wait([_loadLanguage(), _loadProfile()]);
+    await _loadProfile();
+  }
+
+  String _t(BuildContext context, String en, String tl) {
+    return t(context, en, tl);
   }
 
   Future<void> _loadProfile() async {
@@ -161,37 +162,6 @@ class _ProfilePageState extends State<ProfilePage> {
         _isLoadingProfile = false;
       });
     }
-  }
-
-  Future<void> _loadLanguage() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      if (!mounted) return;
-
-      setState(() {
-        _language = prefs.getString(_kLangKey) ?? "English";
-      });
-    } catch (_) {}
-  }
-
-  Future<void> _changeLanguage(String value) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_kLangKey, value);
-
-    if (!mounted) return;
-
-    setState(() {
-      _language = value;
-    });
-
-    _showDialogBox(
-      title: _t(context, "Language Updated", "Na-update ang Wika"),
-      message: _t(
-        context,
-        "System language set to English.",
-        "Ang system language ay Tagalog na.",
-      ),
-    );
   }
 
   Future<void> _logout() async {
@@ -658,6 +628,7 @@ class _BigButton extends StatelessWidget {
   }
 }
 
+// ignore: unused_element
 class _LanguageSelector extends StatelessWidget {
   const _LanguageSelector({required this.selected, required this.onChanged});
 

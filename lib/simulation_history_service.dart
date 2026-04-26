@@ -18,7 +18,8 @@ class SimulationHistoryService {
     required int moduleNo,
   }) async {
     try {
-      final user = _supabase.auth.currentUser;
+      final session = _supabase.auth.currentSession;
+      final user = session?.user ?? _supabase.auth.currentUser;
       if (user == null) return null;
 
       final moduleRow = await _supabase
@@ -32,15 +33,35 @@ class SimulationHistoryService {
 
       final moduleId = moduleRow['id'].toString();
 
-      final inserted = await _supabase
-          .from('simulation_attempts')
-          .insert({
-            'user_id': user.id,
-            'module_id': moduleId,
-            'status': 'in_progress',
-          })
-          .select('id')
-          .single();
+      Map<String, dynamic> inserted;
+      final payload = {
+        'user_id': user.id,
+        'module_id': moduleId,
+        'status': 'in_progress',
+      };
+
+      try {
+        inserted = await _supabase
+            .from('simulation_attempts')
+            .insert(payload)
+            .select('id')
+            .single();
+      } on PostgrestException catch (e) {
+        final isRlsViolation =
+            e.code == '42501' || e.message.contains('row-level security');
+
+        if (!isRlsViolation) rethrow;
+
+        // Some setups derive user_id from auth.uid() via default/trigger.
+        inserted = await _supabase
+            .from('simulation_attempts')
+            .insert({
+              'module_id': moduleId,
+              'status': 'in_progress',
+            })
+            .select('id')
+            .single();
+      }
 
       return SimulationTrackingSession(
         moduleId: moduleId,
@@ -70,7 +91,8 @@ class SimulationHistoryService {
             'submitted_at': now,
             'score': score,
           })
-          .eq('id', attemptId);
+          .eq('id', attemptId)
+          .eq('user_id', user.id);
 
       final progressRow = await _supabase
           .from('module_progress')

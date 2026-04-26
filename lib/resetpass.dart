@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'login.dart';
 
+String _t(BuildContext context, String en, String tl) {
+  return Localizations.localeOf(context).languageCode == 'tl' ? tl : en;
+}
+
 class ResetPasswordPage extends StatefulWidget {
   const ResetPasswordPage({super.key});
 
@@ -56,7 +60,15 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Password updated successfully. Please log in again.')),
+        SnackBar(
+          content: Text(
+            _t(
+              context,
+              'Password updated successfully. Please log in again.',
+              'Matagumpay na na-update ang password. Mag-login muli.',
+            ),
+          ),
+        ),
       );
 
       Navigator.pushAndRemoveUntil(
@@ -66,13 +78,21 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
       );
     } on AuthException catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.message)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.message)));
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Unable to update password.')),
+        SnackBar(
+          content: Text(
+            _t(
+              context,
+              'Unable to update password.',
+              'Hindi ma-update ang password.',
+            ),
+          ),
+        ),
       );
     } finally {
       if (mounted) setState(() => _isSaving = false);
@@ -81,11 +101,33 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
 
   String? _validatePassword(String? value) {
     final password = value?.trim() ?? '';
-    if (password.isEmpty) return 'Please enter a new password.';
-    if (password.length < 8) return 'Password must be at least 8 characters.';
-    if (!RegExp(r'\d').hasMatch(password)) return 'Password must contain a number.';
+    if (password.isEmpty) {
+      return _t(
+        context,
+        'Please enter a new password.',
+        'Mangyaring maglagay ng bagong password.',
+      );
+    }
+    if (password.length < 8) {
+      return _t(
+        context,
+        'Password must be at least 8 characters.',
+        'Ang password ay dapat may hindi bababa sa 8 character.',
+      );
+    }
+    if (!RegExp(r'\d').hasMatch(password)) {
+      return _t(
+        context,
+        'Password must contain a number.',
+        'Ang password ay dapat may numero.',
+      );
+    }
     if (!RegExp(r'[!@#$%^&*(),.?":{}|<>_\-\\/\[\]=+]').hasMatch(password)) {
-      return 'Password must contain a symbol.';
+      return _t(
+        context,
+        'Password must contain a symbol.',
+        'Ang password ay dapat may simbolo.',
+      );
     }
     return null;
   }
@@ -120,8 +162,12 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                               ),
                             ),
                           ),
-                          const Text(
-                            'Reset Password',
+                          Text(
+                            _t(
+                              context,
+                              'Reset Password',
+                              'I-reset ang Password',
+                            ),
                             style: TextStyle(
                               fontFamily: 'Poppins',
                               fontSize: 28,
@@ -140,8 +186,12 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                             ),
                           ),
                           const SizedBox(height: 12),
-                          const Text(
-                            'Create a new password for your account.',
+                          Text(
+                            _t(
+                              context,
+                              'Create a new password for your account.',
+                              'Gumawa ng bagong password para sa iyong account.',
+                            ),
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontFamily: 'Poppins',
@@ -155,7 +205,11 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                             controller: _passwordCtrl,
                             obscureText: !_showPassword,
                             decoration: InputDecoration(
-                              labelText: 'New Password',
+                              labelText: _t(
+                                context,
+                                'New Password',
+                                'Bagong Password',
+                              ),
                               prefixIcon: const Icon(Icons.lock_outline),
                               suffixIcon: IconButton(
                                 icon: Icon(
@@ -164,7 +218,9 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                                       : Icons.visibility,
                                 ),
                                 onPressed: () {
-                                  setState(() => _showPassword = !_showPassword);
+                                  setState(
+                                    () => _showPassword = !_showPassword,
+                                  );
                                 },
                               ),
                               border: OutlineInputBorder(
@@ -178,7 +234,11 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                             controller: _confirmPasswordCtrl,
                             obscureText: !_showConfirmPassword,
                             decoration: InputDecoration(
-                              labelText: 'Confirm Password',
+                              labelText: _t(
+                                context,
+                                'Confirm Password',
+                                'Kumpirmahin ang Password',
+                              ),
                               prefixIcon: const Icon(Icons.lock_outline),
                               suffixIcon: IconButton(
                                 icon: Icon(
@@ -188,7 +248,8 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                                 ),
                                 onPressed: () {
                                   setState(() {
-                                    _showConfirmPassword = !_showConfirmPassword;
+                                    _showConfirmPassword =
+                                        !_showConfirmPassword;
                                   });
                                 },
                               ),
@@ -198,10 +259,18 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                             ),
                             validator: (value) {
                               if ((value ?? '').trim().isEmpty) {
-                                return 'Please confirm your password.';
+                                return _t(
+                                  context,
+                                  'Please confirm your password.',
+                                  'Mangyaring kumpirmahin ang iyong password.',
+                                );
                               }
                               if (value!.trim() != _passwordCtrl.text.trim()) {
-                                return 'Passwords do not match.';
+                                return _t(
+                                  context,
+                                  'Passwords do not match.',
+                                  'Hindi magkatugma ang mga password.',
+                                );
                               }
                               return null;
                             },
@@ -228,8 +297,12 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                                         color: Colors.white,
                                       ),
                                     )
-                                  : const Text(
-                                      'Update Password',
+                                  : Text(
+                                      _t(
+                                        context,
+                                        'Update Password',
+                                        'I-update ang Password',
+                                      ),
                                       style: TextStyle(
                                         fontFamily: 'Poppins',
                                         fontSize: 16,
@@ -241,7 +314,9 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                           const SizedBox(height: 12),
                           TextButton(
                             onPressed: _goToLogin,
-                            child: const Text('Back to Login'),
+                            child: Text(
+                              _t(context, 'Back to Login', 'Bumalik sa Login'),
+                            ),
                           ),
                           const SizedBox(height: 30),
                         ],

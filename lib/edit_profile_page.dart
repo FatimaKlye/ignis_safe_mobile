@@ -1,7 +1,4 @@
-import 'dart:typed_data';
-import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+part of 'profile.dart';
 
 class EditProfilePage extends StatefulWidget {
   const EditProfilePage({super.key});
@@ -12,7 +9,6 @@ class EditProfilePage extends StatefulWidget {
 
 class _EditProfilePageState extends State<EditProfilePage> {
   static const Color brandRed = Color(0xFFB11217);
-  static const Color darkText = Color(0xFF222222);
   static const String _bucketName = 'profile_pic';
 
   final ImagePicker _picker = ImagePicker();
@@ -387,7 +383,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           (c) => Padding(
                             padding: const EdgeInsets.only(bottom: 8),
                             child: Text(
-                              '• $c',
+                              'ï¿½ $c',
                               style: const TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,

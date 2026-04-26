@@ -2,10 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'login.dart';
-
-String _t(BuildContext context, String en, String tl) {
-  return Localizations.localeOf(context).languageCode == 'tl' ? tl : en;
-}
+import 'localization/language_controller.dart';
 
 class ForgotPassPage extends StatefulWidget {
   const ForgotPassPage({super.key});
@@ -44,28 +41,66 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
 
   String? _validateEmail(String? value) {
     final email = value?.trim() ?? '';
-    if (email.isEmpty) return 'Please enter your email.';
+    if (email.isEmpty) {
+      return t(
+        context,
+        'Please enter your email.',
+        'Mangyaring ilagay ang iyong email.',
+      );
+    }
     final emailRegex = RegExp(r'^[\w\.-]+@[\w\.-]+\.\w+$');
-    if (!emailRegex.hasMatch(email)) return 'Please enter a valid email.';
+    if (!emailRegex.hasMatch(email)) {
+      return t(
+        context,
+        'Please enter a valid email.',
+        'Mangyaring maglagay ng wastong email.',
+      );
+    }
     return null;
   }
 
   String? _validateOtp(String? value) {
     final otp = value?.trim() ?? '';
-    if (otp.isEmpty) return 'Please enter the OTP.';
-    if (otp.length != 6) return 'OTP must be 6 digits.';
+    if (otp.isEmpty)
+      return t(context, 'Please enter the OTP.', 'Mangyaring ilagay ang OTP.');
+    if (otp.length != 6)
+      return t(
+        context,
+        'OTP must be 6 digits.',
+        'Ang OTP ay dapat 6 na digit.',
+      );
     return null;
   }
 
   String? _validatePassword(String? value) {
     final password = value?.trim() ?? '';
-    if (password.isEmpty) return 'Please enter a new password.';
-    if (password.length < 8) return 'Password must be at least 8 characters.';
+    if (password.isEmpty) {
+      return t(
+        context,
+        'Please enter a new password.',
+        'Mangyaring maglagay ng bagong password.',
+      );
+    }
+    if (password.length < 8) {
+      return t(
+        context,
+        'Password must be at least 8 characters.',
+        'Ang password ay dapat may hindi bababa sa 8 character.',
+      );
+    }
     if (!RegExp(r'\d').hasMatch(password)) {
-      return 'Password must contain a number.';
+      return t(
+        context,
+        'Password must contain a number.',
+        'Ang password ay dapat may numero.',
+      );
     }
     if (!RegExp(r'[!@#$%^&*(),.?":{}|<>_\-\\/\[\]=+]').hasMatch(password)) {
-      return 'Password must contain a symbol.';
+      return t(
+        context,
+        'Password must contain a symbol.',
+        'Ang password ay dapat may simbolo.',
+      );
     }
     return null;
   }
@@ -89,8 +124,14 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
       setState(() => _stage = _ForgotStage.otp);
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('OTP sent to your email. Please check your inbox.'),
+        SnackBar(
+          content: Text(
+            t(
+              context,
+              'OTP sent to your email. Please check your inbox.',
+              'Naipadala ang OTP sa iyong email. Pakitingnan ang iyong inbox.',
+            ),
+          ),
         ),
       );
     } on AuthException catch (e) {
@@ -101,7 +142,15 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to send OTP. Please try again.')),
+        SnackBar(
+          content: Text(
+            t(
+              context,
+              'Failed to send OTP. Please try again.',
+              'Hindi naipadala ang OTP. Pakisubukang muli.',
+            ),
+          ),
+        ),
       );
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -130,7 +179,13 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
           response.session != null || supabase.auth.currentSession != null;
 
       if (!hasSession) {
-        throw Exception('OTP verification did not create a session.');
+        throw Exception(
+          t(
+            context,
+            'OTP verification did not create a session.',
+            'Ang pag-verify ng OTP ay hindi nakagawa ng session.',
+          ),
+        );
       }
 
       if (!mounted) return;
@@ -138,8 +193,14 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
       setState(() => _stage = _ForgotStage.password);
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('OTP verified. You can now set a new password.'),
+        SnackBar(
+          content: Text(
+            t(
+              context,
+              'OTP verified. You can now set a new password.',
+              'Naverify na ang OTP. Maaari ka nang magtakda ng bagong password.',
+            ),
+          ),
         ),
       );
     } on AuthException catch (e) {
@@ -149,9 +210,17 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
       ).showSnackBar(SnackBar(content: Text(e.message)));
     } catch (_) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Invalid or expired OTP.')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            t(
+              context,
+              'Invalid or expired OTP.',
+              'Hindi wasto o paso na ang OTP.',
+            ),
+          ),
+        ),
+      );
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -168,15 +237,31 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
 
     if (_confirmPasswordCtrl.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please confirm your password.')),
+        SnackBar(
+          content: Text(
+            t(
+              context,
+              'Please confirm your password.',
+              'Mangyaring kumpirmahin ang iyong password.',
+            ),
+          ),
+        ),
       );
       return;
     }
 
     if (_newPasswordCtrl.text.trim() != _confirmPasswordCtrl.text.trim()) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Passwords do not match.')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            t(
+              context,
+              'Passwords do not match.',
+              'Hindi magkatugma ang mga password.',
+            ),
+          ),
+        ),
+      );
       return;
     }
 
@@ -192,7 +277,15 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Password updated successfully.')),
+        SnackBar(
+          content: Text(
+            t(
+              context,
+              'Password updated successfully.',
+              'Matagumpay na na-update ang password.',
+            ),
+          ),
+        ),
       );
 
       Navigator.pushAndRemoveUntil(
@@ -208,7 +301,15 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(_t(context, 'Unable to update password.', 'Hindi ma-update ang password.'))),
+        SnackBar(
+          content: Text(
+            t(
+              context,
+              'Unable to update password.',
+              'Hindi ma-update ang password.',
+            ),
+          ),
+        ),
       );
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -218,8 +319,12 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
   Widget _buildEmailStep() {
     return Column(
       children: [
-        const Text(
-          'Enter your registered email address and we will send you a password reset OTP.',
+        Text(
+          t(
+            context,
+            'Enter your registered email address and we will send you a password reset OTP.',
+            'Ilagay ang iyong rehistradong email address at padadalhan ka namin ng OTP para sa pag-reset ng password.',
+          ),
           textAlign: TextAlign.center,
           style: TextStyle(
             fontFamily: 'Poppins',
@@ -234,8 +339,8 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
           keyboardType: TextInputType.emailAddress,
           validator: _validateEmail,
           decoration: InputDecoration(
-            labelText: 'Email',
-            hintText: 'Enter your email',
+            labelText: t(context, 'Email', 'Email'),
+            hintText: t(context, 'Enter your email', 'Ilagay ang iyong email'),
             prefixIcon: const Icon(Icons.email_outlined),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
             enabledBorder: OutlineInputBorder(
@@ -271,8 +376,8 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
                       color: Colors.white,
                     ),
                   )
-                : const Text(
-                    'Send OTP',
+                : Text(
+                    t(context, 'Send OTP', 'Ipadala ang OTP'),
                     style: TextStyle(
                       fontFamily: 'Poppins',
                       fontSize: 16,
@@ -289,7 +394,11 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
     return Column(
       children: [
         Text(
-          'We sent a 6-digit OTP to ${_emailCtrl.text.trim()}.',
+          t(
+            context,
+            'We sent a 6-digit OTP to ${_emailCtrl.text.trim()}.',
+            'Nagpadala kami ng 6-digit OTP sa ${_emailCtrl.text.trim()}.',
+          ),
           textAlign: TextAlign.center,
           style: const TextStyle(
             fontFamily: 'Poppins',
@@ -314,7 +423,7 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
           ),
           decoration: InputDecoration(
             counterText: '',
-            labelText: 'OTP Code',
+            labelText: t(context, 'OTP Code', 'OTP Code'),
             hintText: '------',
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
             enabledBorder: OutlineInputBorder(
@@ -350,8 +459,8 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
                       color: Colors.white,
                     ),
                   )
-                : const Text(
-                    'Verify OTP',
+                : Text(
+                    t(context, 'Verify OTP', 'I-verify ang OTP'),
                     style: TextStyle(
                       fontFamily: 'Poppins',
                       fontSize: 16,
@@ -363,8 +472,8 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
         const SizedBox(height: 12),
         TextButton(
           onPressed: _isLoading ? null : _sendOtp,
-          child: const Text(
-            'Resend OTP',
+          child: Text(
+            t(context, 'Resend OTP', 'Ipadala muli ang OTP'),
             style: TextStyle(
               fontFamily: 'Poppins',
               fontWeight: FontWeight.w600,
@@ -379,8 +488,12 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
   Widget _buildPasswordStep() {
     return Column(
       children: [
-        const Text(
-          'Enter your new password.',
+        Text(
+          t(
+            context,
+            'Enter your new password.',
+            'Ilagay ang bago mong password.',
+          ),
           textAlign: TextAlign.center,
           style: TextStyle(
             fontFamily: 'Poppins',
@@ -395,7 +508,7 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
           obscureText: !_showNewPassword,
           validator: _validatePassword,
           decoration: InputDecoration(
-            labelText: 'New Password',
+            labelText: t(context, 'New Password', 'Bagong Password'),
             prefixIcon: const Icon(Icons.lock_outline),
             suffixIcon: IconButton(
               icon: Icon(
@@ -421,7 +534,11 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
           controller: _confirmPasswordCtrl,
           obscureText: !_showConfirmPassword,
           decoration: InputDecoration(
-            labelText: 'Confirm Password',
+            labelText: t(
+              context,
+              'Confirm Password',
+              'Kumpirmahin ang Password',
+            ),
             prefixIcon: const Icon(Icons.lock_outline),
             suffixIcon: IconButton(
               icon: Icon(
@@ -465,9 +582,9 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
                       color: Colors.white,
                     ),
                   )
-                : Text(
-                    _t(context, 'Update Password', 'I-update ang Password'),
-                    style: const TextStyle(
+                : const Text(
+                    'Update Password',
+                    style: TextStyle(
                       fontFamily: 'Poppins',
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -481,13 +598,11 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
 
   @override
   Widget build(BuildContext context) {
-    String title = _t(context, 'Forgot Password', 'Nakalimutang Password');
+    String title = 'Forgot Password';
     if (_stage == _ForgotStage.otp) {
-      title = _t(context, 'Verify OTP', 'I-verify ang OTP');
+      title = t(context, 'Verify OTP', 'I-verify ang OTP');
     }
-    if (_stage == _ForgotStage.password) {
-      title = _t(context, 'Reset Password', 'I-reset ang Password');
-    }
+    if (_stage == _ForgotStage.password) title = 'Reset Password';
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -558,8 +673,8 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
                                         }
                                       });
                                     },
-                              child: const Text(
-                                'Back',
+                              child: Text(
+                                t(context, 'Back', 'Bumalik'),
                                 style: TextStyle(
                                   fontFamily: 'Poppins',
                                   fontWeight: FontWeight.w600,
@@ -579,8 +694,8 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
                                       ),
                                     );
                                   },
-                            child: const Text(
-                              'Back to Login',
+                            child: Text(
+                              t(context, 'Back to Login', 'Bumalik sa Login'),
                               style: TextStyle(
                                 fontFamily: 'Poppins',
                                 fontWeight: FontWeight.w600,

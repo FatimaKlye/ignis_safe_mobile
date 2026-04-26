@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../localization/localized_db_text.dart';
 
 import 'pre_assess_completion_page.dart';
 
@@ -73,7 +74,7 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
 
       final moduleRow = await _supabase
           .from('modules')
-          .select('id, title')
+          .select('id, title, title_tl, subtitle, subtitle_tl')
           .eq('module_no', _moduleNo)
           .maybeSingle();
 
@@ -86,7 +87,7 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
 
       final assessmentRow = await _supabase
           .from('assessments')
-          .select('id, title, instructions')
+          .select('id, title, title_tl, instructions, instructions_tl')
           .eq('module_id', moduleId)
           .eq('type', _assessmentType)
           .maybeSingle();
@@ -98,13 +99,24 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
       }
 
       final assessmentId = assessmentRow['id'].toString();
-      final assessmentTitle =
-          (assessmentRow['title'] ?? 'Pre-Assessment').toString();
-      final instructions = (assessmentRow['instructions'] ?? '').toString();
+      final assessmentTitle = LocalizedDbText.pick(
+        context,
+        assessmentRow,
+        'title',
+        'title_tl',
+        fallback: _assessmentType == 'post' ? 'Post-Assessment' : 'Pre-Assessment',
+      );
+
+      final instructions = LocalizedDbText.pick(
+        context,
+        assessmentRow,
+        'instructions',
+        'instructions_tl',
+      );
 
       final questionRows = await _supabase
           .from('assessment_questions')
-          .select('id, question_no, prompt, explanation')
+          .select('id, question_no, prompt, prompt_tl, explanation, explanation_tl')
           .eq('assessment_id', assessmentId)
           .eq('is_active', true)
           .order('question_no');
@@ -118,7 +130,7 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
       final optionRows = await _supabase
           .from('assessment_options')
           .select(
-            'id, question_id, option_key, option_text, is_correct, display_order',
+            'id, question_id, option_key, option_text, option_text_tl, is_correct, display_order',
           )
           .inFilter('question_id', questionIds)
           .order('question_id')
@@ -138,7 +150,12 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
           _OptionVm(
             id: row['id'].toString(),
             key: (row['option_key'] ?? '').toString(),
-            text: (row['option_text'] ?? '').toString(),
+            text: LocalizedDbText.pick(
+              context,
+              row,
+              'option_text',
+              'option_text_tl',
+            ),
             isCorrect: (row['is_correct'] ?? false) as bool,
             displayOrder: displayOrder,
           ),
@@ -153,8 +170,18 @@ class _PreAssessmentKitchenPageState extends State<PreAssessmentKitchenPage> {
         final questionId = row['id'].toString();
         return _QuestionVm(
           id: questionId,
-          prompt: (row['prompt'] ?? '').toString(),
-          explanation: (row['explanation'] ?? '').toString(),
+          prompt: LocalizedDbText.pick(
+            context,
+            row,
+            'prompt',
+            'prompt_tl',
+          ),
+          explanation: LocalizedDbText.pick(
+            context,
+            row,
+            'explanation',
+            'explanation_tl',
+          ),
           options: optionsByQuestion[questionId] ?? [],
         );
       }).toList();
