@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'localization/language_controller.dart';
 import 'login.dart';
 
-enum AboutFilter { all, about, team, bfpDasmarinas , contacts }
+enum AboutFilter { all, about, team, bfpDasmarinas, contacts }
 
 class AboutUsPage extends StatefulWidget {
   const AboutUsPage({super.key, this.onRequestTabChange});
@@ -73,13 +74,28 @@ class _AboutUsPageState extends State<AboutUsPage> {
   void _openFilterMenu(BuildContext context) async {
     final selected = await showMenu<AboutFilter>(
       context: context,
-      position: const RelativeRect.fromLTRB(9999, 120, 16, 0), // right-side-ish
-      items: const [
-        PopupMenuItem(value: AboutFilter.all, child: Text("All")),
-        PopupMenuItem(value: AboutFilter.about, child: Text("About")),
-        PopupMenuItem(value: AboutFilter.team, child: Text("Team")),
-        PopupMenuItem(value: AboutFilter.bfpDasmarinas, child: Text("BFP Dasmariñas")),
-        PopupMenuItem(value: AboutFilter.contacts, child: Text("Contacts")),
+      position: const RelativeRect.fromLTRB(9999, 120, 16, 0),
+      items: [
+        PopupMenuItem(
+          value: AboutFilter.all,
+          child: Text(t(context, 'All', 'Lahat')),
+        ),
+        PopupMenuItem(
+          value: AboutFilter.about,
+          child: Text(t(context, 'About', 'Tungkol')),
+        ),
+        PopupMenuItem(
+          value: AboutFilter.team,
+          child: Text(t(context, 'Team', 'Koponan')),
+        ),
+        PopupMenuItem(
+          value: AboutFilter.bfpDasmarinas,
+          child: Text(t(context, 'BFP Dasmariñas', 'BFP Dasmariñas')),
+        ),
+        PopupMenuItem(
+          value: AboutFilter.contacts,
+          child: Text(t(context, 'Contacts', 'Mga Kontak')),
+        ),
       ],
     );
 
@@ -122,7 +138,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-          // background image (same approach as your modules)
+          // background image
           Positioned(
             top: 0,
             left: 0,
@@ -142,7 +158,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
                     children: [
                       const SizedBox(height: 20),
 
-                      // header (kept from your code)
+                      // header
                       Row(
                         children: [
                           PopupMenuButton<String>(
@@ -161,14 +177,14 @@ class _AboutUsPageState extends State<AboutUsPage> {
                                 return;
                               }
                             },
-                            itemBuilder: (context) => const [
+                            itemBuilder: (context) => [
                               PopupMenuItem(
                                 value: "profile",
                                 child: Row(
                                   children: [
-                                    Icon(Icons.person_outline_rounded),
-                                    SizedBox(width: 8),
-                                    Text("Profile"),
+                                    const Icon(Icons.person_outline_rounded),
+                                    const SizedBox(width: 8),
+                                    Text(t(context, 'Profile', 'Profile')),
                                   ],
                                 ),
                               ),
@@ -176,9 +192,9 @@ class _AboutUsPageState extends State<AboutUsPage> {
                                 value: "logout",
                                 child: Row(
                                   children: [
-                                    Icon(Icons.logout_rounded),
-                                    SizedBox(width: 8),
-                                    Text("Log Out"),
+                                    const Icon(Icons.logout_rounded),
+                                    const SizedBox(width: 8),
+                                    Text(t(context, 'Log Out', 'Mag-logout')),
                                   ],
                                 ),
                               ),
@@ -190,7 +206,8 @@ class _AboutUsPageState extends State<AboutUsPage> {
                                   ? NetworkImage(_avatarUrl!) as ImageProvider
                                   : null,
                               child: _avatarUrl == null
-                                  ? const Icon(Icons.person, size: 22, color: Colors.white)
+                                  ? const Icon(Icons.person,
+                                      size: 22, color: Colors.white)
                                   : null,
                             ),
                           ),
@@ -200,8 +217,13 @@ class _AboutUsPageState extends State<AboutUsPage> {
                             children: [
                               Text(
                                 _firstName.isEmpty && _lastName.isEmpty
-                                    ? 'Hi!'
-                                    : 'Hi, $_firstName $_lastName'.trim(),
+                                    ? t(context, 'Hi!', 'Kumusta!')
+                                    : t(
+                                        context,
+                                        'Hi, $_firstName $_lastName'.trim(),
+                                        'Kumusta, $_firstName $_lastName'
+                                            .trim(),
+                                      ),
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 12,
@@ -209,9 +231,10 @@ class _AboutUsPageState extends State<AboutUsPage> {
                                 ),
                               ),
                               const SizedBox(height: 2),
-                              const Text(
-                                "Welcome to Ignis Safe",
-                                style: TextStyle(
+                              Text(
+                                t(context, 'Welcome to Ignis Safe',
+                                    'Maligayang pagdating sa Ignis Safe'),
+                                style: const TextStyle(
                                   color: Colors.black,
                                   fontSize: 14,
                                   fontWeight: FontWeight.w700,
@@ -223,10 +246,10 @@ class _AboutUsPageState extends State<AboutUsPage> {
                       ),
 
                       const SizedBox(height: 30),
-                      const Center(
+                      Center(
                         child: Text(
-                          "About Us",
-                          style: TextStyle(
+                          t(context, 'About Us', 'Tungkol sa Amin'),
+                          style: const TextStyle(
                             fontSize: 30,
                             fontWeight: FontWeight.w800,
                             color: Color(0xFF222222),
@@ -235,7 +258,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
                       ),
                       const SizedBox(height: 30),
 
-                      // Search with filter icon INSIDE right side (kept)
+                      // Search with filter icon
                       Container(
                         height: 50,
                         padding: const EdgeInsets.symmetric(horizontal: 14),
@@ -257,16 +280,18 @@ class _AboutUsPageState extends State<AboutUsPage> {
                             Expanded(
                               child: TextField(
                                 onChanged: _onSearchChanged,
-                                decoration: const InputDecoration(
-                                  hintText: "Search",
-                                  hintStyle: TextStyle(color: Colors.grey),
+                                decoration: InputDecoration(
+                                  hintText:
+                                      t(context, 'Search', 'Maghanap'),
+                                  hintStyle:
+                                      const TextStyle(color: Colors.grey),
                                   border: InputBorder.none,
                                   isDense: true,
                                 ),
                               ),
                             ),
                             IconButton(
-                              tooltip: "Filter",
+                              tooltip: t(context, 'Filter', 'Salain'),
                               onPressed: () => _openFilterMenu(context),
                               icon: Icon(
                                 Icons.filter_list_rounded,
@@ -317,7 +342,8 @@ class _AboutUsPageState extends State<AboutUsPage> {
       _AboutSection(
         type: _AboutSectionType.about,
         title: "IGNIS SAFE",
-        searchText: "Ignis Safe interactive 3D fire safety simulation mission",
+        searchText:
+            "Ignis Safe interactive 3D fire safety simulation mission",
         builder: (context) => const _ModernAboutCard(),
       ),
       _AboutSection(
@@ -330,7 +356,6 @@ class _AboutUsPageState extends State<AboutUsPage> {
       _AboutSection(
         type: _AboutSectionType.team,
         title: "Meet the Developers",
-        // ✅ include full names + email for search
         searchText:
             "Fatima Klye M Sierra fatimaklyesierra081005@gmail.com Andrei C Quias Rave Paulo Sierra Sarah Flor Macandile Maricis Punzalan Adviser",
         builder: (context) => const _TeamCard(),
@@ -338,13 +363,15 @@ class _AboutUsPageState extends State<AboutUsPage> {
       _AboutSection(
         type: _AboutSectionType.partner,
         title: "BFP R4A Dasmariñas City Fire Station",
-        searchText: "Bureau of Fire Protection Philippines fire safety education",
+        searchText:
+            "Bureau of Fire Protection Philippines fire safety education",
         builder: (context) => const _PartnerCard(),
       ),
       _AboutSection(
         type: _AboutSectionType.contact,
         title: "Emergency Contact Information",
-        searchText: "hotline emergency 046 884 6131 416 0875 0995 336 9534",
+        searchText:
+            "hotline emergency 046 884 6131 416 0875 0995 336 9534",
         builder: (context) => const _ContactCard(),
       ),
       _AboutSection(
@@ -377,7 +404,6 @@ class _AboutSection {
     required this.builder,
   });
 }
-
 
 class _ModernAboutCard extends StatelessWidget {
   static const Color brandRed = Color(0xFFB11217);
@@ -434,9 +460,13 @@ class _ModernAboutCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
-            const Text(
-              "An interactive 3D fire safety simulation that helps users learn proper prevention and emergency response through realistic, hands-on scenarios in a controlled environment.",
-              style: TextStyle(
+            Text(
+              t(
+                context,
+                "An interactive 3D fire safety simulation that helps users learn proper prevention and emergency response through realistic, hands-on scenarios in a controlled environment.",
+                "Isang interactive na 3D fire safety simulation na tumutulong sa mga gumagamit na matuto ng wastong pag-iwas at pagtugon sa emerhensiya sa pamamagitan ng mga makatotohanang senaryo sa kontroladong kapaligiran.",
+              ),
+              style: const TextStyle(
                 height: 1.35,
                 fontSize: 13.5,
                 color: Color(0xFF3A3A3A),
@@ -447,11 +477,25 @@ class _ModernAboutCard extends StatelessWidget {
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: const [
-                _Chip(text: "3D Scenarios", icon: Icons.view_in_ar_rounded),
-                _Chip(text: "Hands-on Practice", icon: Icons.touch_app_rounded),
-                _Chip(text: "Safe Learning", icon: Icons.verified_rounded),
-                _Chip(text: "Fire Awareness", icon: Icons.school_rounded),
+              children: [
+                _Chip(
+                  text: t(context, "3D Scenarios", "3D na Senaryo"),
+                  icon: Icons.view_in_ar_rounded,
+                ),
+                _Chip(
+                  text: t(context, "Hands-on Practice",
+                      "Hands-on na Pagsasanay"),
+                  icon: Icons.touch_app_rounded,
+                ),
+                _Chip(
+                  text: t(context, "Safe Learning", "Ligtas na Pag-aaral"),
+                  icon: Icons.verified_rounded,
+                ),
+                _Chip(
+                  text: t(context, "Fire Awareness",
+                      "Kaalaman sa Sunog"),
+                  icon: Icons.school_rounded,
+                ),
               ],
             ),
             const SizedBox(height: 14),
@@ -463,13 +507,17 @@ class _ModernAboutCard extends StatelessWidget {
               ),
               padding: const EdgeInsets.all(12),
               child: Row(
-                children: const [
-                  Icon(Icons.flag_rounded, color: brandRed),
-                  SizedBox(width: 10),
+                children: [
+                  const Icon(Icons.flag_rounded, color: brandRed),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      "Goal: Improve readiness through correct decision-making and proper extinguisher handling.",
-                      style: TextStyle(
+                      t(
+                        context,
+                        "Goal: Improve readiness through correct decision-making and proper extinguisher handling.",
+                        "Layunin: Palakasin ang kahandaan sa pamamagitan ng tamang paggawa ng desisyon at wastong paggamit ng pamatay-sunog.",
+                      ),
+                      style: const TextStyle(
                         fontSize: 12.8,
                         height: 1.25,
                         color: Color(0xFF2D2D2D),
@@ -486,6 +534,7 @@ class _ModernAboutCard extends StatelessWidget {
     );
   }
 }
+
 class _LogoMeaningCard extends StatelessWidget {
   static const Color brandRed = Color(0xFFB11217);
 
@@ -526,7 +575,7 @@ class _LogoMeaningCard extends StatelessWidget {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(18),
                     child: Image.asset(
-                      "assets/logo.png", // ✅ change this
+                      "assets/logo.png",
                       fit: BoxFit.fitHeight,
                       errorBuilder: (_, __, ___) => const Icon(
                         Icons.shield_rounded,
@@ -537,13 +586,19 @@ class _LogoMeaningCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 14),
-                const Expanded(
+                Expanded(
                   child: Text(
-                    "The IGNIS SAFE logo is built around a shield, symbolizing protection and safety. "
-                    "The fire truck and hose show readiness to respond quickly during emergencies. "
-                    "The flame represents fire risk, while the water spray represents control and prevention.",
+                    t(
+                      context,
+                      "The IGNIS SAFE logo is built around a shield, symbolizing protection and safety. "
+                          "The fire truck and hose show readiness to respond quickly during emergencies. "
+                          "The flame represents fire risk, while the water spray represents control and prevention.",
+                      "Ang logo ng IGNIS SAFE ay nakabase sa isang kalasag, na sumasalamin sa proteksyon at kaligtasan. "
+                          "Ang fire truck at hose ay nagpapakita ng kahandaang tumugon nang mabilis sa mga emerhensiya. "
+                          "Ang apoy ay kumakatawan sa panganib ng sunog, habang ang tubig ay kumakatawan sa kontrol at pag-iwas.",
+                    ),
                     textAlign: TextAlign.justify,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 12.8,
                       height: 1.35,
                       color: Color(0xFF2D2D2D),
@@ -571,20 +626,28 @@ class _LogoMeaningCard extends StatelessWidget {
             const SizedBox(height: 12),
 
             // Ignis / Safe blocks
-            const Row(
+            Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
                   child: _MeaningMiniBlock(
                     title: "Ignis",
-                    body: "is a Latin word meaning fire.",
+                    body: t(
+                      context,
+                      "is a Latin word meaning fire.",
+                      "ay isang salitang Latin na nangangahulugang apoy.",
+                    ),
                   ),
                 ),
-                SizedBox(width: 12),
+                const SizedBox(width: 12),
                 Expanded(
                   child: _MeaningMiniBlock(
                     title: "Safe",
-                    body: "means protected or secure.",
+                    body: t(
+                      context,
+                      "means protected or secure.",
+                      "ay nangangahulugang protektado o ligtas.",
+                    ),
                   ),
                 ),
               ],
@@ -592,12 +655,18 @@ class _LogoMeaningCard extends StatelessWidget {
 
             const SizedBox(height: 12),
 
-            const Text(
-              "Together, Ignis Safe means protection from fire or fire safety. "
-              "It reflects a mission focused on preventing fire risks, ensuring preparedness, "
-              "and keeping people and property safe from fire-related hazards.",
+            Text(
+              t(
+                context,
+                "Together, Ignis Safe means protection from fire or fire safety. "
+                    "It reflects a mission focused on preventing fire risks, ensuring preparedness, "
+                    "and keeping people and property safe from fire-related hazards.",
+                "Magkasama, ang Ignis Safe ay nangangahulugang proteksyon mula sa sunog o kaligtasan sa sunog. "
+                    "Sumasalamin ito sa isang misyon na nakatuon sa pag-iwas sa panganib ng sunog, pagtitiyak ng kahandaan, "
+                    "at pagpapanatiling ligtas ang mga tao at ari-arian mula sa mga panganib na may kaugnayan sa sunog.",
+              ),
               textAlign: TextAlign.justify,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 12.8,
                 height: 1.35,
                 color: Color(0xFF2D2D2D),
@@ -607,10 +676,14 @@ class _LogoMeaningCard extends StatelessWidget {
 
             const SizedBox(height: 12),
 
-            const Text(
-              "Ignis Safe focuses on fire safety, prevention, and emergency preparedness.",
+            Text(
+              t(
+                context,
+                "Ignis Safe focuses on fire safety, prevention, and emergency preparedness.",
+                "Ang Ignis Safe ay nakatuon sa kaligtasan sa sunog, pag-iwas, at paghahanda para sa emerhensiya.",
+              ),
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 12.8,
                 height: 1.35,
                 color: Color(0xFF1E1E1E),
@@ -620,12 +693,18 @@ class _LogoMeaningCard extends StatelessWidget {
 
             const SizedBox(height: 10),
 
-            const Text(
-              "It provides fire safety education, training, and awareness programs to help individuals and organizations "
-              "understand fire risks and how to respond properly during emergencies. It also supports inspection, compliance, "
-              "and safety reporting to strengthen overall fire protection systems.",
+            Text(
+              t(
+                context,
+                "It provides fire safety education, training, and awareness programs to help individuals and organizations "
+                    "understand fire risks and how to respond properly during emergencies. It also supports inspection, compliance, "
+                    "and safety reporting to strengthen overall fire protection systems.",
+                "Nagbibigay ito ng edukasyon sa kaligtasan sa sunog, pagsasanay, at mga programa ng kamalayan upang matulungan "
+                    "ang mga indibidwal at organisasyon na maunawaan ang mga panganib ng sunog at kung paano tumugon nang wasto sa mga emerhensiya. "
+                    "Sinusuportahan din nito ang inspeksyon, pagsunod, at pag-uulat sa kaligtasan upang palakasin ang pangkalahatang sistema ng proteksyon sa sunog.",
+              ),
               textAlign: TextAlign.justify,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 12.8,
                 height: 1.35,
                 color: Color(0xFF2D2D2D),
@@ -643,10 +722,14 @@ class _LogoMeaningCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(color: const Color(0xFFF1D5D6)),
               ),
-              child: const Text(
-                "In essence, Ignis Safe helps prevent fires, prepare people for emergencies, and protect lives and property.",
+              child: Text(
+                t(
+                  context,
+                  "In essence, Ignis Safe helps prevent fires, prepare people for emergencies, and protect lives and property.",
+                  "Sa esensya, tinutulungan ng Ignis Safe ang pag-iwas sa sunog, paghahanda ng mga tao para sa mga emerhensiya, at pagprotekta ng buhay at ari-arian.",
+                ),
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 12.8,
                   height: 1.35,
                   color: Color(0xFF1E1E1E),
@@ -705,16 +788,17 @@ class _TeamCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // ✅ UPDATED DATA + dialog content (name/role/email/bio)
-    final team = const [
+    final team = [
       _TeamMember(
         fullName: "FATIMA KLYE M. SIERRA",
         displayFirst: "FATIMA",
         displayLast: "SIERRA",
         role: "MOBILE DEVELOPER",
+        roleTl: "MOBILE DEVELOPER",
         email: "fatimaklyesierra081005@gmail.com",
-        bio:
-            "Manages mobile application & databases and supports project coordination. She also serves as an Assistant Project Manager, helping ensure timelines and deliverables are met efficiently.",
+        bio: "Manages mobile application & databases and supports project coordination. She also serves as an Assistant Project Manager, helping ensure timelines and deliverables are met efficiently.",
+        bioTl:
+            "Namamahala ng mobile application at mga database at sumusuporta sa koordinasyon ng proyekto. Nagsisilbi rin siya bilang Assistant Project Manager, na tumutulong na matiyak na natutugunan ang mga takdang oras at naihahatid ang mga resulta nang mahusay.",
         asset: "assets/dev_fatima1.jpg",
       ),
       _TeamMember(
@@ -722,9 +806,11 @@ class _TeamCard extends StatelessWidget {
         displayFirst: "ANDREI",
         displayLast: "QUIAS",
         role: "3D UNITY DEVELOPER",
+        roleTl: "3D UNITY DEVELOPER",
         email: "",
-        bio:
-            "Builds interactive and immersive applications. He also serves as a Project Manager, overseeing planning, coordination, and timely delivery of projects.",
+        bio: "Builds interactive and immersive applications. He also serves as a Project Manager, overseeing planning, coordination, and timely delivery of projects.",
+        bioTl:
+            "Nagtatayo ng mga interactive at immersive na application. Nagsisilbi rin siya bilang Project Manager, na nangunguna sa pagpaplano, koordinasyon, at napapanahong paghahatid ng mga proyekto.",
         asset: "assets/dev_andrei.jpg",
       ),
       _TeamMember(
@@ -732,9 +818,11 @@ class _TeamCard extends StatelessWidget {
         displayFirst: "RAVE",
         displayLast: "SIERRA",
         role: "WEBSITE DEVELOPER",
+        roleTl: "WEBSITE DEVELOPER",
         email: "",
-        bio:
-            "Responsible for designing, building, and maintaining responsive and functional websites, ensuring performance, usability, and a seamless user experience.",
+        bio: "Responsible for designing, building, and maintaining responsive and functional websites, ensuring performance, usability, and a seamless user experience.",
+        bioTl:
+            "Responsable sa pagdidisenyo, pagtatayo, at pagpapanatili ng mga responsive at functional na website, na tinitiyak ang pagganap, kakayahang magamit, at maayos na karanasan ng gumagamit.",
         asset: "assets/dev_rave.png",
       ),
       _TeamMember(
@@ -742,9 +830,11 @@ class _TeamCard extends StatelessWidget {
         displayFirst: "SARAH",
         displayLast: "MACANDILE",
         role: "DOCUMENTATION",
+        roleTl: "DOKUMENTASYON",
         email: "",
-        bio:
-            "Ensures that all project records, reports, and required materials are accurate, organized, and properly maintained to support compliance and operational efficiency.",
+        bio: "Ensures that all project records, reports, and required materials are accurate, organized, and properly maintained to support compliance and operational efficiency.",
+        bioTl:
+            "Tinitiyak na ang lahat ng rekord ng proyekto, ulat, at mga kinakailangang materyales ay tumpak, organisado, at maayos na pinapanatili upang suportahan ang pagsunod at kahusayan sa operasyon.",
         asset: "assets/dev_sarah.jpg",
       ),
       _TeamMember(
@@ -752,9 +842,11 @@ class _TeamCard extends StatelessWidget {
         displayFirst: "MARICIS",
         displayLast: "PUNZALAN",
         role: "ADVISER",
+        roleTl: "TAGAPAYO",
         email: "",
-        bio:
-            "Provides strategic guidance, oversight, and expert recommendations to support informed decision-making and overall project direction.",
+        bio: "Provides strategic guidance, oversight, and expert recommendations to support informed decision-making and overall project direction.",
+        bioTl:
+            "Nagbibigay ng estratehikong gabay, pangangasiwa, at mga rekomendasyon ng eksperto upang suportahan ang matalinong paggawa ng desisyon at pangkalahatang direksyon ng proyekto.",
         asset: "assets/dev_maricis.png",
       ),
     ];
@@ -777,16 +869,17 @@ class _TeamCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "MEET OUR DEVELOPERS",
-              style: TextStyle(
+            Text(
+              t(context, "MEET OUR DEVELOPERS",
+                  "KILALANIN ANG AMING MGA DEVELOPER"),
+              style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w900,
                 color: Color(0xFFB11217),
                 letterSpacing: 0.4,
               ),
             ),
-              Container(
+            Container(
               width: double.infinity,
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
@@ -794,13 +887,20 @@ class _TeamCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(color: const Color(0xFFEDEDED)),
               ),
-              child: const Text(
-                "We are the Ignis Safe Team, fourth-year BSIT students from National University – Dasmariñas.\n\n"
-                "Our group is developing a technology-driven fire safety education platform as part of our capstone project.\n\n "
-                "We focus on building interactive, user-centered solutions that promote fire awareness, prevention, and proper emergency response. "
-                "Our goal is to create a practical system with real-world relevance and community impact.",
+              child: Text(
+                t(
+                  context,
+                  "We are the Ignis Safe Team, fourth-year BSIT students from National University – Dasmariñas.\n\n"
+                      "Our group is developing a technology-driven fire safety education platform as part of our capstone project.\n\n "
+                      "We focus on building interactive, user-centered solutions that promote fire awareness, prevention, and proper emergency response. "
+                      "Our goal is to create a practical system with real-world relevance and community impact.",
+                  "Kami ang Ignis Safe Team, mga fourth-year na mag-aaral ng BSIT mula sa National University – Dasmariñas.\n\n"
+                      "Ang aming grupo ay nagde-develop ng isang technology-driven na platform para sa fire safety education bilang bahagi ng aming capstone project.\n\n "
+                      "Nakatuon kami sa pagbuo ng mga interactive at user-centered na solusyon na nagtataguyod ng kaalaman sa sunog, pag-iwas, at wastong pagtugon sa emerhensiya. "
+                      "Ang aming layunin ay lumikha ng isang praktikal na sistema na may kaugnayan sa totoong mundo at epekto sa komunidad.",
+                ),
                 textAlign: TextAlign.justify,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 12.8,
                   height: 1.35,
                   color: Color(0xFF2D2D2D),
@@ -810,7 +910,7 @@ class _TeamCard extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             SizedBox(
-              height: 146, // ✅ prevents overflow with 2-line name
+              height: 146,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 itemCount: team.length,
@@ -819,9 +919,13 @@ class _TeamCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 10),
-            const Text(
-              "Tip: Tap any profile (optional) to open a short bio dialog.",
-              style: TextStyle(
+            Text(
+              t(
+                context,
+                "Tip: Tap any profile (optional) to open a short bio dialog.",
+                "Tip: I-tap ang anumang profile (opsyonal) upang buksan ang maikling bio dialog.",
+              ),
+              style: const TextStyle(
                 fontSize: 12,
                 color: Color(0xFF666666),
                 fontWeight: FontWeight.w500,
@@ -866,10 +970,14 @@ class _PartnerCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
-              "An official fire service unit operating under the Bureau of Fire Protection (BFP) in the Philippines. The BFP is a national government agency tasked with preventing and suppressing destructive fires, enforcing the Fire Code, and conducting community fire safety education nationwide.",
+            Text(
+              t(
+                context,
+                "An official fire service unit operating under the Bureau of Fire Protection (BFP) in the Philippines. The BFP is a national government agency tasked with preventing and suppressing destructive fires, enforcing the Fire Code, and conducting community fire safety education nationwide.",
+                "Isang opisyal na yunit ng serbisyong pangsunog na nag-ooperate sa ilalim ng Bureau of Fire Protection (BFP) sa Pilipinas. Ang BFP ay isang pambansang ahensya ng gobyerno na may tungkuling pigilan at supilin ang mga mapanwasak na sunog, ipatupad ang Fire Code, at magsagawa ng edukasyon sa kaligtasan sa sunog sa buong bansa.",
+              ),
               textAlign: TextAlign.justify,
-              style: TextStyle(
+              style: const TextStyle(
                 height: 1.35,
                 fontSize: 13.2,
                 color: Color(0xFF3A3A3A),
@@ -879,7 +987,7 @@ class _PartnerCard extends StatelessWidget {
 
             const SizedBox(height: 14),
 
-            // ✅ NEW: Dasmariñas City Fire Station block
+            // Dasmariñas City Fire Station block
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(14),
@@ -909,15 +1017,19 @@ class _PartnerCard extends StatelessWidget {
                   // contacts
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Icon(Icons.phone_in_talk_rounded,
+                    children: [
+                      const Icon(Icons.phone_in_talk_rounded,
                           size: 18, color: Color(0xFFB11217)),
-                      SizedBox(width: 8),
+                      const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          "In case of Fire or other Emergencies, call:\n(046) 884-6131 / 416-0875 | 0995 336 9534",
+                          t(
+                            context,
+                            "In case of Fire or other Emergencies, call:\n(046) 884-6131 / 416-0875 | 0995 336 9534",
+                            "Sa kaso ng Sunog o iba pang Emerhensiya, tumawag sa:\n(046) 884-6131 / 416-0875 | 0995 336 9534",
+                          ),
                           textAlign: TextAlign.justify,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 12.8,
                             height: 1.3,
                             color: Color(0xFF2D2D2D),
@@ -931,82 +1043,91 @@ class _PartnerCard extends StatelessWidget {
                   const SizedBox(height: 12),
 
                   // Fire marshal
-                Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: const [
-                    Text(
-                      "FCINSP MICHAEL JOHN V ESCAÑO",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 12.8,
-                        fontWeight: FontWeight.w900,
-                        color: Color(0xFF1E1E1E),
-                      ),
-                    ),
-                    SizedBox(height: 2),
-                    Text(
-                      "City Fire Marshal",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 12.2,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xFF6B6B6B),
-                      ),
-                    ),
-                  ],
-                ),
-              )
+                  Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text(
+                          "FCINSP MICHAEL JOHN V ESCAÑO",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 12.8,
+                            fontWeight: FontWeight.w900,
+                            color: Color(0xFF1E1E1E),
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          t(context, "City Fire Marshal",
+                              "Lungsod na Fire Marshal"),
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 12.2,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF6B6B6B),
+                          ),
+                        ),
                       ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 12),
-
-                  const Text(
-                    "Vision",
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w900,
-                      color: Color(0xFF1E1E1E),
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  const Text(
-                    "A modern fire service fully capable of ensuring a fire safe nation by 2034.",
-                    textAlign: TextAlign.justify,
-                    style: TextStyle(
-                      fontSize: 12.8,
-                      height: 1.35,
-                      color: Color(0xFF2D2D2D),
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  const Text(
-                    "Mission",
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w900,
-                      color: Color(0xFF1E1E1E),
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  const Text(
-                    "We commit to prevent and suppress destructive fires, investigate its causes; enforce Fire Code and other related laws; respond to man-made and natural disasters and other emergencies.",
-                    textAlign: TextAlign.justify,
-                    style: TextStyle(
-                      fontSize: 12.8,
-                      height: 1.35,
-                      color: Color(0xFF2D2D2D),
-                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ],
               ),
             ),
+
+            const SizedBox(height: 12),
+
+            Text(
+              t(context, "Vision", "Bisyon"),
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w900,
+                color: Color(0xFF1E1E1E),
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              t(
+                context,
+                "A modern fire service fully capable of ensuring a fire safe nation by 2034.",
+                "Isang modernong serbisyong pangsunog na ganap na kayang tiyakin ang isang ligtas na bansang walang sunog sa taong 2034.",
+              ),
+              textAlign: TextAlign.justify,
+              style: const TextStyle(
+                fontSize: 12.8,
+                height: 1.35,
+                color: Color(0xFF2D2D2D),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+
+            const SizedBox(height: 10),
+
+            Text(
+              t(context, "Mission", "Misyon"),
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w900,
+                color: Color(0xFF1E1E1E),
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              t(
+                context,
+                "We commit to prevent and suppress destructive fires, investigate its causes; enforce Fire Code and other related laws; respond to man-made and natural disasters and other emergencies.",
+                "Kami ay nakatuon sa pagpigil at pagsugpo ng mapanwasak na sunog, pagsisiyasat ng sanhi nito; pagpapatupad ng Fire Code at iba pang kaugnay na batas; pagtugon sa mga man-made at natural na sakuna at iba pang emerhensiya.",
+              ),
+              textAlign: TextAlign.justify,
+              style: const TextStyle(
+                fontSize: 12.8,
+                height: 1.35,
+                color: Color(0xFF2D2D2D),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -1041,12 +1162,13 @@ class _ContactCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              children: const [
-                Icon(Icons.phone_in_talk_rounded, color: brandRed),
-                SizedBox(width: 10),
+              children: [
+                const Icon(Icons.phone_in_talk_rounded, color: brandRed),
+                const SizedBox(width: 10),
                 Text(
-                  "Emergency Contact Information",
-                  style: TextStyle(
+                  t(context, "Emergency Contact Information",
+                      "Impormasyon sa Emergency na Pakikipag-ugnayan"),
+                  style: const TextStyle(
                     fontSize: 15.5,
                     fontWeight: FontWeight.w900,
                     color: Color(0xFF1E1E1E),
@@ -1055,9 +1177,13 @@ class _ContactCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 10),
-            const Text(
-              "In case of fire or other emergencies, the public may call the station’s hotlines:",
-              style: TextStyle(
+            Text(
+              t(
+                context,
+                "In case of fire or other emergencies, the public may call the station's hotlines:",
+                "Sa kaso ng sunog o iba pang emerhensiya, maaaring tumawag ang publiko sa mga hotline ng istasyon:",
+              ),
+              style: const TextStyle(
                 fontSize: 13,
                 color: Color(0xFF3A3A3A),
                 fontWeight: FontWeight.w600,
@@ -1066,16 +1192,16 @@ class _ContactCard extends StatelessWidget {
             const SizedBox(height: 10),
             _ContactRow(
               icon: Icons.local_phone_rounded,
-              label: "Landline",
+              label: t(context, "Landline", "Landline"),
               value: "(046) 884-6131 / 416-0875",
-              onTap: () {}, // keep handler, you can wire later
+              onTap: () {},
             ),
             const SizedBox(height: 8),
             _ContactRow(
               icon: Icons.smartphone_rounded,
-              label: "Mobile",
+              label: t(context, "Mobile", "Mobile"),
               value: "0995-336-9534",
-              onTap: () {}, // keep handler, you can wire later
+              onTap: () {},
             ),
             const SizedBox(height: 12),
             Container(
@@ -1085,9 +1211,13 @@ class _ContactCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(color: const Color(0xFFEDEDED)),
               ),
-              child: const Text(
-                "If you are in immediate danger, prioritize evacuation and follow local emergency procedures.",
-                style: TextStyle(
+              child: Text(
+                t(
+                  context,
+                  "If you are in immediate danger, prioritize evacuation and follow local emergency procedures.",
+                  "Kung ikaw ay nasa agarang panganib, unahin ang paglikas at sundin ang mga lokal na pamamaraan sa emerhensiya.",
+                ),
+                style: const TextStyle(
                   fontSize: 12.5,
                   height: 1.25,
                   color: Color(0xFF2D2D2D),
@@ -1167,7 +1297,8 @@ class _DevTile extends StatelessWidget {
         showDialog(
           context: context,
           builder: (_) => AlertDialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
             title: Text(
               m.fullName,
               style: const TextStyle(fontWeight: FontWeight.w900),
@@ -1177,7 +1308,7 @@ class _DevTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  m.role,
+                  t(context, m.role, m.roleTl),
                   style: const TextStyle(
                     fontWeight: FontWeight.w800,
                     color: Color(0xFFB11217),
@@ -1195,20 +1326,20 @@ class _DevTile extends StatelessWidget {
                 ],
                 const SizedBox(height: 10),
                 Text(
-                m.bio,
-                textAlign: TextAlign.justify,   // ✅ this makes it justified
-                style: const TextStyle(
-                  height: 1.4,
-                  fontWeight: FontWeight.w500,
-                  fontSize: 13,
+                  t(context, m.bio, m.bioTl),
+                  textAlign: TextAlign.justify,
+                  style: const TextStyle(
+                    height: 1.4,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 13,
+                  ),
                 ),
-              ),
               ],
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text("Close"),
+                child: Text(t(context, "Close", "Isara")),
               ),
             ],
           ),
@@ -1266,7 +1397,7 @@ class _DevTile extends StatelessWidget {
             ),
             const SizedBox(height: 6),
             Text(
-              m.role,
+              t(context, m.role, m.roleTl),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.center,
@@ -1289,8 +1420,10 @@ class _TeamMember {
   final String displayFirst;
   final String displayLast;
   final String role;
+  final String roleTl;
   final String email;
   final String bio;
+  final String bioTl;
   final String asset;
 
   const _TeamMember({
@@ -1298,8 +1431,10 @@ class _TeamMember {
     required this.displayFirst,
     required this.displayLast,
     required this.role,
+    required this.roleTl,
     required this.email,
     required this.bio,
+    required this.bioTl,
     required this.asset,
   });
 }
@@ -1362,19 +1497,23 @@ class _EmptyState extends StatelessWidget {
         children: [
           const Icon(Icons.search_off_rounded, size: 44, color: Colors.grey),
           const SizedBox(height: 10),
-          const Text(
-            "No results found.",
-            style: TextStyle(
+          Text(
+            t(context, "No results found.", "Walang nahanap na resulta."),
+            style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w800,
               color: Color(0xFF2D2D2D),
             ),
           ),
           const SizedBox(height: 6),
-          const Text(
-            "Try a different keyword or reset filters.",
+          Text(
+            t(
+              context,
+              "Try a different keyword or reset filters.",
+              "Subukan ang ibang keyword o i-reset ang mga filter.",
+            ),
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 12.5,
               height: 1.25,
               color: Color(0xFF6B6B6B),
@@ -1394,9 +1533,9 @@ class _EmptyState extends StatelessWidget {
                 ),
                 elevation: 0,
               ),
-              child: const Text(
-                "Reset",
-                style: TextStyle(fontWeight: FontWeight.w800),
+              child: Text(
+                t(context, "Reset", "I-reset"),
+                style: const TextStyle(fontWeight: FontWeight.w800),
               ),
             ),
           )
@@ -1414,7 +1553,7 @@ class _CaviteBfpDirectoryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final q = query.trim().toLowerCase();
 
-    // Filter groups and entries by query (name/email/contact + group title)
+    // Filter groups and entries by query
     final filteredGroups = _caviteBfpGroups
         .map((g) {
           final entries = g.entries.where((e) {
@@ -1459,13 +1598,15 @@ class _CaviteBfpDirectoryCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              children: const [
-                Icon(Icons.apartment_rounded, color: Color(0xFFB11217)),
-                SizedBox(width: 10),
+              children: [
+                const Icon(Icons.apartment_rounded,
+                    color: Color(0xFFB11217)),
+                const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    "Cavite BFP Directory",
-                    style: TextStyle(
+                    t(context, "Cavite BFP Directory",
+                        "Direktoryo ng Cavite BFP"),
+                    style: const TextStyle(
                       fontSize: 15.5,
                       fontWeight: FontWeight.w900,
                       color: Color(0xFF1E1E1E),
@@ -1475,9 +1616,13 @@ class _CaviteBfpDirectoryCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 6),
-            const Text(
-              "Search by station name, district, email, or number. Tap to call/email.",
-              style: TextStyle(
+            Text(
+              t(
+                context,
+                "Search by station name, district, email, or number. Tap to call/email.",
+                "Maghanap ayon sa pangalan ng istasyon, distrito, email, o numero. I-tap para tumawag/mag-email.",
+              ),
+              style: const TextStyle(
                 fontSize: 12.5,
                 height: 1.25,
                 color: Color(0xFF5E5E5E),
@@ -1495,9 +1640,13 @@ class _CaviteBfpDirectoryCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(color: const Color(0xFFEFEFEF)),
                 ),
-                child: const Text(
-                  "No matching results in Cavite BFP Directory.",
-                  style: TextStyle(
+                child: Text(
+                  t(
+                    context,
+                    "No matching results in Cavite BFP Directory.",
+                    "Walang katugmang resulta sa Direktoryo ng Cavite BFP.",
+                  ),
+                  style: const TextStyle(
                     fontSize: 12.8,
                     height: 1.25,
                     color: Color(0xFF2D2D2D),
@@ -1511,7 +1660,7 @@ class _CaviteBfpDirectoryCard extends StatelessWidget {
                   padding: const EdgeInsets.only(bottom: 10),
                   child: _DistrictAccordion(
                     group: g,
-                    initiallyExpanded: q.isNotEmpty, // auto-open on search
+                    initiallyExpanded: q.isNotEmpty,
                   ),
                 ),
               ),
@@ -1542,7 +1691,8 @@ class _DistrictAccordion extends StatelessWidget {
         data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
         child: ExpansionTile(
           initiallyExpanded: initiallyExpanded,
-          tilePadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          tilePadding:
+              const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
           childrenPadding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
           collapsedIconColor: const Color(0xFFB11217),
           iconColor: const Color(0xFFB11217),
@@ -1630,7 +1780,7 @@ class _DirectoryEntryTile extends StatelessWidget {
             children: entry.contacts
                 .map(
                   (c) => InkWell(
-                    borderRadius: BorderRadius.circular(999),    
+                    borderRadius: BorderRadius.circular(999),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 10, vertical: 7),
@@ -1658,8 +1808,6 @@ class _DirectoryEntryTile extends StatelessWidget {
     );
   }
 }
-
-
 
 // ─────────────────────────────────────────────────────────────
 // Directory data models + data

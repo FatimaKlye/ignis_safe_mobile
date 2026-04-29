@@ -138,8 +138,8 @@ const Map<String, Map<String, String>> _strings = {
     'tl': 'Mga Materyal sa Pag-aaral',
   },
   'fire_scenario_module': {
-    'en': 'Fire Scenario Module',
-    'tl': 'Modyul ng Senaryo ng Sunog',
+    'en': 'Fire Scenario',
+    'tl': 'Senaryo ng Sunog',
   },
   'search': {
     'en': 'Search',
@@ -220,6 +220,14 @@ const Map<String, Map<String, String>> _strings = {
   'module_5': {
     'en': 'MODULE 5',
     'tl': 'MODYUL 5',
+  },
+  'module_1_full_title': {
+    'en': 'Module 1: Fire Extinguisher: Safe Use and Emergency Response',
+    'tl': 'Modyul 1: Pamatay-Sunog: Ligtas na Paggamit at Pagtugon sa Emergency',
+   },
+  'module_1_full_header': {
+    'en': 'Fire Extinguisher: Safe Use and Emergency Response',
+    'tl': 'Pamatay-Sunog: Ligtas na Paggamit at Pagtugon sa Emergency',
   },
   'title_fire_extinguisher': {
     'en': 'FIRE EXTINGUISHER',

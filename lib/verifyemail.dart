@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'localization/language_controller.dart';
-import 'forgotpass.dart';
 import 'passwordvalidation.dart';
 import 'login.dart';
 
@@ -27,11 +26,9 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
 
   final SupabaseClient supabase = Supabase.instance.client;
 
-  final List<TextEditingController> _ctrl = List.generate(
-    6,
-    (_) => TextEditingController(),
-  );
-  final List<FocusNode> _focus = List.generate(6, (_) => FocusNode());
+  // ── Single controller + focus for the card-style OTP input ───────────────
+  final TextEditingController _otpCtrl = TextEditingController();
+  final FocusNode _otpFocus = FocusNode();
 
   bool _isSending = false;
   bool _isVerifying = false;
@@ -39,136 +36,34 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   @override
   void initState() {
     super.initState();
+    _otpCtrl.addListener(() => setState(() {}));
+    _otpFocus.addListener(() => setState(() {})); // rebuild on focus change
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
-
-      _focus.first.requestFocus();
-
+      _otpFocus.requestFocus();
       if (widget.email.trim().isNotEmpty) {
-        await _sendCode(showToast: false);
+        await _sendOtp(showToast: false);
       }
     });
   }
 
   @override
   void dispose() {
-    for (final c in _ctrl) {
-      c.dispose();
-    }
-    for (final f in _focus) {
-      f.dispose();
-    }
+    _otpCtrl.dispose();
+    _otpFocus.dispose();
     super.dispose();
   }
 
-  String get _code => _ctrl.map((c) => c.text).join();
+  String get _code => _otpCtrl.text.trim();
   bool get _codeComplete => RegExp(r'^\d{6}$').hasMatch(_code);
 
   void _clearOtp() {
-    for (final c in _ctrl) {
-      c.clear();
-    }
-    _focus.first.requestFocus();
-    setState(() {});
+    _otpCtrl.clear();
+    _otpFocus.requestFocus();
   }
 
-  Future<bool> _emailAlreadyExists(String email) async {
-    final normalizedEmail = email.trim().toLowerCase();
-
-    final result = await Supabase.instance.client.rpc(
-      'email_exists',
-      params: {'p_email': normalizedEmail},
-    );
-
-    return result == true;
-  }
-
-  void _showExistingAccountDialog(String email) {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(
-          t(
-            context,
-            'This email already has an account',
-            'Mayroon nang account ang email na ito',
-          ),
-          style: const TextStyle(fontWeight: FontWeight.w900),
-        ),
-        content: Text(
-          t(
-            context,
-            '$email already has an account.\n\nWould you like to reset your password or go to login?',
-            '$email ay mayroon nang account.\n\nNais mo bang i-reset ang iyong password o mag-login?',
-          ),
-          style: const TextStyle(fontWeight: FontWeight.w600, height: 1.4),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(t(context, 'Cancel', 'Kanselahin')),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const ForgotPassPage()),
-              );
-            },
-            child: Text(
-              t(context, 'Forgot Password', 'Nakalimutan ang Password'),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              LoginPage.skipAutoRoute = false;
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (_) => const LoginPage()),
-                (route) => false,
-              );
-            },
-            child: Text(t(context, 'Login', 'Mag-login')),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future<void> _sendCode({bool showToast = true}) async {
-    final email = widget.email.trim().toLowerCase();
-
-    try {
-      final exists = await _emailAlreadyExists(email);
-
-      if (!mounted) return;
-
-      if (exists) {
-        _showExistingAccountDialog(email);
-        return;
-      }
-
-      await _sendOtp(showToast: showToast);
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            t(
-              context,
-              'Could not check email: $e',
-              'Hindi masuri ang email: $e',
-            ),
-          ),
-        ),
-      );
-    }
-  }
-
+  // ── Send OTP ──────────────────────────────────────────────────────────────
   Future<void> _sendOtp({bool showToast = true}) async {
     if (_isSending) return;
 
@@ -185,7 +80,9 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
           'first_name': widget.firstName,
           'last_name': widget.lastName,
           'app_language_code':
-              Localizations.localeOf(context).languageCode == 'tl' ? 'tl' : 'en',
+              Localizations.localeOf(context).languageCode == 'tl'
+                  ? 'tl'
+                  : 'en',
         },
       );
 
@@ -206,9 +103,8 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       }
     } on AuthException catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(e.message)));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.message)));
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -227,12 +123,14 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     }
   }
 
+  // ── Upsert profile after OTP verified ────────────────────────────────────
   Future<void> _upsertProfileAfterVerify(User user) async {
     await supabase.from('profiles').upsert({
       'id': user.id,
       'first_name': widget.firstName,
       'last_name': widget.lastName,
       'email': widget.email.trim().toLowerCase(),
+      'registration_status': 'pending_password_setup',
       'terms_accepted': false,
       'terms_accepted_at': null,
       'app_language_code':
@@ -241,6 +139,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     });
   }
 
+  // ── Verify OTP ────────────────────────────────────────────────────────────
   Future<void> _verifyOtp() async {
     if (_isVerifying) return;
 
@@ -290,9 +189,8 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       );
     } on AuthException catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(e.message)));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.message)));
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -311,16 +209,102 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     }
   }
 
-  void _onDigitChanged(int index, String value) {
-    if (value.isNotEmpty && index < 5) {
-      _focus[index + 1].requestFocus();
-    }
+  // ── OTP Card Widget ───────────────────────────────────────────────────────
+  Widget _buildOtpCard() {
+    final typed = _otpCtrl.text;
+    final focused = _otpFocus.hasFocus;
 
-    if (value.isEmpty && index > 0) {
-      _focus[index - 1].requestFocus();
-    }
+    return GestureDetector(
+      onTap: () => _otpFocus.requestFocus(),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          // ── Card border ─────────────────────────────────────────────────
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 150),
+            height: 72,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: focused ? brandRed : const Color(0xFFB71C1C),
+                width: focused ? 1.8 : 1.4,
+              ),
+            ),
+            child: Stack(
+              children: [
+                // Hidden TextField — absorbs keyboard input
+                Positioned.fill(
+                  child: Opacity(
+                    opacity: 0,
+                    child: TextField(
+                      controller: _otpCtrl,
+                      focusNode: _otpFocus,
+                      keyboardType: TextInputType.number,
+                      maxLength: 6,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        LengthLimitingTextInputFormatter(6),
+                      ],
+                      decoration: const InputDecoration(
+                        counterText: '',
+                        border: InputBorder.none,
+                      ),
+                    ),
+                  ),
+                ),
 
-    setState(() {});
+                // ── Digit / dash slots ────────────────────────────────────
+                Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(6, (i) {
+                      final isFilled = i < typed.length;
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 9),
+                        child: AnimatedDefaultTextStyle(
+                          duration: const Duration(milliseconds: 120),
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: isFilled ? 22 : 20,
+                            fontWeight: isFilled
+                                ? FontWeight.w700
+                                : FontWeight.w400,
+                            color:
+                                isFilled ? Colors.black87 : Colors.black26,
+                          ),
+                          child: Text(isFilled ? typed[i] : '–'),
+                        ),
+                      );
+                    }),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // ── Floating "OTP Code" label ────────────────────────────────────
+          Positioned(
+            top: -10,
+            left: 14,
+            child: Container(
+              color: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 5),
+              child: Text(
+                t(context, 'OTP Code', 'OTP Code'),
+                style: const TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: brandRed,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -382,7 +366,8 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
             builder: (context, constraints) {
               return SingleChildScrollView(
                 child: ConstrainedBox(
-                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  constraints:
+                      BoxConstraints(minHeight: constraints.maxHeight),
                   child: Align(
                     alignment: Alignment.topCenter,
                     child: Column(
@@ -390,7 +375,8 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Padding(
-                          padding: const EdgeInsets.only(top: 70, bottom: 30),
+                          padding:
+                              const EdgeInsets.only(top: 70, bottom: 30),
                           child: SizedBox(
                             height: 120,
                             child: FittedBox(
@@ -452,6 +438,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                           ],
                         ),
                         const SizedBox(height: 8),
+                        // Step indicator
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -485,9 +472,14 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                         ),
                         const SizedBox(height: 18),
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                          padding:
+                              const EdgeInsets.symmetric(horizontal: 4),
                           child: Text(
-                            'We just sent a 6-digit code to\n$email\nEnter it below:',
+                            t(
+                              context,
+                              'We just sent a 6-digit code to\n$email\nEnter it below:',
+                              'Nagpadala kami ng 6-digit OTP sa\n$email\nIlagay ito sa ibaba:',
+                            ),
                             textAlign: TextAlign.center,
                             style: const TextStyle(
                               fontFamily: 'Poppins',
@@ -497,36 +489,11 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 20),
-                        LayoutBuilder(
-                          builder: (context, c) {
-                            const count = 6;
-                            const gap = 8.0;
-                            final maxW = c.maxWidth;
-                            final boxW = ((maxW - gap * (count - 1)) / count)
-                                .clamp(34.0, 48.0);
+                        const SizedBox(height: 28),
 
-                            return Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: List.generate(count, (i) {
-                                return Padding(
-                                  padding: EdgeInsets.only(
-                                    right: i == count - 1 ? 0 : gap,
-                                  ),
-                                  child: SizedBox(
-                                    width: boxW,
-                                    height: 56,
-                                    child: _OtpBox(
-                                      controller: _ctrl[i],
-                                      focusNode: _focus[i],
-                                      onChanged: (v) => _onDigitChanged(i, v),
-                                    ),
-                                  ),
-                                );
-                              }),
-                            );
-                          },
-                        ),
+                        // ── Card-style OTP input ──────────────────────────
+                        _buildOtpCard(),
+
                         const SizedBox(height: 14),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -535,9 +502,9 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                               onPressed: (_isVerifying || _isSending)
                                   ? null
                                   : _clearOtp,
-                              child: const Text(
-                                'Clear',
-                                style: TextStyle(
+                              child: Text(
+                                t(context, 'Clear', 'Burahin'),
+                                style: const TextStyle(
                                   fontFamily: 'Poppins',
                                   fontSize: 12,
                                   fontWeight: FontWeight.w700,
@@ -549,10 +516,10 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                             TextButton(
                               onPressed: (_isVerifying || _isSending)
                                   ? null
-                                  : () => _sendCode(showToast: true),
-                              child: const Text(
-                                'Resend code',
-                                style: TextStyle(
+                                  : () => _sendOtp(showToast: true),
+                              child: Text(
+                                t(context, 'Resend code', 'Magpadala ulit'),
+                                style: const TextStyle(
                                   fontFamily: 'Poppins',
                                   fontSize: 12,
                                   fontWeight: FontWeight.w700,
@@ -588,8 +555,10 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                                   )
                                 : Text(
                                     _codeComplete
-                                        ? 'Verify email'
-                                        : 'Enter code',
+                                        ? t(context, 'Verify email',
+                                            'I-verify ang email')
+                                        : t(context, 'Enter code',
+                                            'Ilagay ang code'),
                                     style: const TextStyle(
                                       fontFamily: 'Poppins',
                                       fontSize: 14,
@@ -603,9 +572,13 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Text(
-                              'Already have an account? ',
-                              style: TextStyle(
+                            Text(
+                              t(
+                                context,
+                                'Already have an account? ',
+                                'Mayroon ka nang account? ',
+                              ),
+                              style: const TextStyle(
                                 fontFamily: 'Poppins',
                                 fontSize: 12,
                                 color: Colors.black38,
@@ -621,9 +594,9 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                                   (route) => false,
                                 );
                               },
-                              child: const Text(
-                                'Log in',
-                                style: TextStyle(
+                              child: Text(
+                                t(context, 'Log in', 'Mag-login'),
+                                style: const TextStyle(
                                   fontFamily: 'Poppins',
                                   fontSize: 12,
                                   fontWeight: FontWeight.w700,
@@ -643,57 +616,6 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
           ),
         ),
       ),
-    );
-  }
-}
-
-class _OtpBox extends StatelessWidget {
-  final TextEditingController controller;
-  final FocusNode focusNode;
-  final ValueChanged<String> onChanged;
-
-  const _OtpBox({
-    required this.controller,
-    required this.focusNode,
-    required this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return TextField(
-      controller: controller,
-      focusNode: focusNode,
-      keyboardType: TextInputType.number,
-      textAlign: TextAlign.center,
-      maxLength: 1,
-      inputFormatters: [
-        FilteringTextInputFormatter.digitsOnly,
-        LengthLimitingTextInputFormatter(1),
-      ],
-      style: const TextStyle(
-        fontFamily: 'Poppins',
-        fontSize: 18,
-        fontWeight: FontWeight.w600,
-      ),
-      decoration: InputDecoration(
-        counterText: '',
-        filled: true,
-        fillColor: const Color(0xFFF3F3F3),
-        contentPadding: const EdgeInsets.symmetric(vertical: 14),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Color(0xFFCCCCCC)),
-        ),
-      ),
-      onChanged: onChanged,
     );
   }
 }

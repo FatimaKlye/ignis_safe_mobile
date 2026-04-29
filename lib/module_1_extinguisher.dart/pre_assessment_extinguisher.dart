@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../localization/app_text.dart';
 import '../localization/localized_db_text.dart';
 import 'pre_assess_completion_page.dart';
 import '../profile_progress_sync.dart';
@@ -43,6 +44,12 @@ class _PreAssessmentExtinguisherPageState
   List<_QuestionVm> _questions = [];
   List<String?> _selectedOptionIds = [];
   Set<int> _flaggedIndexes = {};
+
+  bool get _isTl => Localizations.localeOf(context).languageCode == 'tl';
+
+  String _txt(String en, String tl) {
+    return _isTl ? tl : en;
+  }
 
   @override
   void initState() {
@@ -678,7 +685,10 @@ class _PreAssessmentExtinguisherPageState
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  'Please answer all questions before submitting. Missing: $preview$suffix',
+                  _txt(
+                    'Please answer all questions before submitting. Missing: $preview$suffix',
+                    'Sagutan muna ang lahat ng tanong bago ipasa. Kulang: $preview$suffix',
+                  ),
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w700,
@@ -699,12 +709,15 @@ class _PreAssessmentExtinguisherPageState
   }
 
   final confirmed = await _showConfirmDialog(
-    title: 'Submit Pre-Assessment',
-    message:
-        'Answered: $_answeredCount / ${_questions.length}\n\n'
-        'After submission, you will be redirected to the completion page.',
-    confirmText: 'Submit',
-    cancelText: 'Review Again',
+    title: _txt('Submit Pre-Assessment', 'Ipasa ang Paunang Pagsusulit'),
+    message: _txt(
+      'Answered: $_answeredCount / ${_questions.length}\n\n'
+      'After submission, you will be redirected to the completion page.',
+      'Nasagutan: $_answeredCount / ${_questions.length}\n\n'
+      'Pagkatapos ipasa, dadalhin ka sa completion page.',
+    ),
+    confirmText: _txt('Submit', 'Ipasa'),
+    cancelText: _txt('Review Again', 'Suriin Muli'),
   );
 
   if (confirmed != true) return;
@@ -789,9 +802,9 @@ class _PreAssessmentExtinguisherPageState
     if (!mounted) return;
 
     await _showInfoDialog(
-      title: 'Submission failed',
+      title: _txt('Submission failed', 'Nabigo ang pagpapasa'),
       message: '$e',
-      buttonText: 'OK',
+      buttonText: _txt('OK', 'Sige'),
     );
   } finally {
     if (!mounted) return;
@@ -812,39 +825,147 @@ class _PreAssessmentExtinguisherPageState
   }) {
     return showDialog<bool>(
       context: context,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: Text(
-          title,
-          style: const TextStyle(fontWeight: FontWeight.w900),
-        ),
-        content: Text(
-          message,
-          style: const TextStyle(height: 1.45),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(cancelText),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: kBrandRed,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
+      barrierDismissible: true,
+      builder: (dialogContext) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 28),
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.fromLTRB(22, 22, 22, 20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.18),
+                  blurRadius: 30,
+                  offset: const Offset(0, 16),
+                ),
+              ],
             ),
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(
-              confirmText,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w900,
-              ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(99),
+                    onTap: () => Navigator.pop(dialogContext),
+                    child: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF5F5F5),
+                        borderRadius: BorderRadius.circular(99),
+                      ),
+                      child: const Icon(
+                        Icons.close_rounded,
+                        size: 20,
+                        color: Colors.black54,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Container(
+                  height: 68,
+                  width: 68,
+                  decoration: BoxDecoration(
+                    color: kBrandRed.withOpacity(0.10),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.error_outline_rounded,
+                    color: kBrandRed,
+                    size: 36,
+                  ),
+                ),
+                const SizedBox(height: 18),
+                Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 22,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.black87,
+                    height: 1.18,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  height: 2,
+                  width: 90,
+                  decoration: BoxDecoration(
+                    color: kBrandRed,
+                    borderRadius: BorderRadius.circular(99),
+                  ),
+                ),
+                const SizedBox(height: 18),
+                Text(
+                  message,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black.withOpacity(0.60),
+                    height: 1.45,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.pop(dialogContext, true),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: kBrandRed,
+                      elevation: 4,
+                      shadowColor: kBrandRed.withOpacity(0.35),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    child: Text(
+                      confirmText,
+                      style: const TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: OutlinedButton(
+                    onPressed: () => Navigator.pop(dialogContext, false),
+                    style: OutlinedButton.styleFrom(
+                      side: const BorderSide(color: kBrandRed, width: 1.3),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    child: Text(
+                      cancelText,
+                      style: const TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: kBrandRed,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -855,35 +976,124 @@ class _PreAssessmentExtinguisherPageState
   }) {
     return showDialog<void>(
       context: context,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: Text(
-          title,
-          style: const TextStyle(fontWeight: FontWeight.w900),
-        ),
-        content: Text(
-          message,
-          style: const TextStyle(height: 1.45),
-        ),
-        actions: [
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: kBrandRed,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
+      barrierDismissible: true,
+      builder: (dialogContext) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 28),
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.fromLTRB(22, 22, 22, 20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.18),
+                  blurRadius: 30,
+                  offset: const Offset(0, 16),
+                ),
+              ],
             ),
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              buttonText,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w900,
-              ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(99),
+                    onTap: () => Navigator.pop(dialogContext),
+                    child: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF5F5F5),
+                        borderRadius: BorderRadius.circular(99),
+                      ),
+                      child: const Icon(
+                        Icons.close_rounded,
+                        size: 20,
+                        color: Colors.black54,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Container(
+                  height: 68,
+                  width: 68,
+                  decoration: BoxDecoration(
+                    color: kBrandRed.withOpacity(0.10),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.error_outline_rounded,
+                    color: kBrandRed,
+                    size: 36,
+                  ),
+                ),
+                const SizedBox(height: 18),
+                Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 22,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.black87,
+                    height: 1.18,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  height: 2,
+                  width: 90,
+                  decoration: BoxDecoration(
+                    color: kBrandRed,
+                    borderRadius: BorderRadius.circular(99),
+                  ),
+                ),
+                const SizedBox(height: 18),
+                Text(
+                  message,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black.withOpacity(0.60),
+                    height: 1.45,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.pop(dialogContext),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: kBrandRed,
+                      elevation: 4,
+                      shadowColor: kBrandRed.withOpacity(0.35),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    child: Text(
+                      buttonText,
+                      style: const TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -1048,8 +1258,8 @@ class _PreAssessmentExtinguisherPageState
                   padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
                 onPressed: () => Navigator.pop(context),
-                child: const Text(
-                  'Back',
+                child: Text(
+                  _txt('Back', 'Bumalik'),
                   style: TextStyle(
                     color: kBrandRed,
                     fontWeight: FontWeight.w900,
@@ -1070,8 +1280,8 @@ class _PreAssessmentExtinguisherPageState
                 onPressed: _isSubmitting
                     ? null
                     : () => _loadOrCreateAttempt(forceNewAttempt: true),
-                child: const Text(
-                  'New Attempt',
+                child: Text(
+                  _txt('New Attempt', 'Bagong Subok'),
                   style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w900,
@@ -1106,8 +1316,8 @@ class _PreAssessmentExtinguisherPageState
                     _editingFromSummary = false;
                   });
                 },
-                child: const Text(
-                  'Back to Questions',
+                child: Text(
+                  _txt('Back to Questions', 'Bumalik sa mga Tanong'),
                   style: TextStyle(
                     color: kBrandRed,
                     fontWeight: FontWeight.w900,
@@ -1128,10 +1338,10 @@ class _PreAssessmentExtinguisherPageState
                 onPressed: _isSubmitting ? null : _submitAssessment,
                 child: Text(
                   _isSubmitting
-                      ? 'Submitting...'
+                      ? _txt('Submitting...', 'Ipinapasa...')
                       : locked
-                          ? 'Complete All'
-                          : 'Submit',
+                          ? _txt('Complete All', 'Kumpletuhin Lahat')
+                          : _txt('Submit', 'Ipasa'),
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w900,
@@ -1145,8 +1355,11 @@ class _PreAssessmentExtinguisherPageState
     }
 
     final isLast = _currentIndex == _questions.length - 1;
-    final nextLabel =
-        _editingFromSummary ? 'Review Summary' : (isLast ? 'Review Summary' : 'Next');
+    final nextLabel = _editingFromSummary
+      ? _txt('Review Summary', 'Suriin ang Buod')
+      : (isLast
+        ? _txt('Review Summary', 'Suriin ang Buod')
+        : _txt('Next', 'Susunod'));
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 8, 24, 20),
@@ -1164,8 +1377,10 @@ class _PreAssessmentExtinguisherPageState
               onPressed: _goBack,
               child: Text(
                 _editingFromSummary
-                    ? 'Back to Summary'
-                    : (_currentIndex == 0 ? 'Exit' : 'Back'),
+                    ? _txt('Back to Summary', 'Bumalik sa Buod')
+                    : (_currentIndex == 0
+                        ? _txt('Exit', 'Lumabas')
+                        : _txt('Back', 'Bumalik')),
                 style: const TextStyle(
                   color: kBrandRed,
                   fontWeight: FontWeight.w900,
@@ -1232,20 +1447,20 @@ class _PreAssessmentExtinguisherPageState
                                 onPressed: () => Navigator.pop(context),
                               ),
                               const SizedBox(height: 15),
-                              const Center(
-                                child: Text(
-                                  'Pre Assessment',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: 'Poppins',
-                                  ),
-                                ),
-                              ),
+                                    Center(
+                                      child: Text(
+                                        context.tr('pre_assessment').replaceAll('\n', ' '),
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 30,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: 'Poppins',
+                                        ),
+                                      ),
+                                    ),
                               const SizedBox(height: 15),
                               Padding(
-                                padding: const EdgeInsets.only(left: 25),
+                                      padding: const EdgeInsets.only(left: 25, right: 10),
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
@@ -1265,33 +1480,38 @@ class _PreAssessmentExtinguisherPageState
                                           ),
                                         ],
                                       ),
-                                      child: const Row(
+                                      child: Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          Icon(
-                                            Icons.bolt_rounded,
+                                          const Icon(
+                                            Icons.flash_on_rounded,
                                             color: Colors.white,
-                                            size: 18,
+                                            size: 15,
                                           ),
-                                          SizedBox(width: 8),
+                                          const SizedBox(width: 7),
                                           Text(
-                                            'MODULE 1',
-                                            style: TextStyle(
+                                            context.tr('module_1'),
+                                            style: const TextStyle(
                                               fontWeight: FontWeight.bold,
                                               color: Colors.white,
+                                              fontSize: 13,
                                               fontFamily: 'Poppins',
                                             ),
                                           ),
                                         ],
                                       ),
                                     ),
-                                    const SizedBox(width: 15),
-                                    const Expanded(
+                                    const SizedBox(width: 12),
+                                    Expanded(
                                       child: Text(
-                                        'Fire Extinguisher: Basics, Types, and How to Use',
-                                        style: TextStyle(
+                                        context.tr('module_1_full_header'),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
                                           color: Colors.black,
-                                          fontWeight: FontWeight.w600,
+                                          fontSize: 13,
+                                          height: 1.25,
+                                          fontWeight: FontWeight.w900,
                                           fontFamily: 'Poppins',
                                         ),
                                       ),

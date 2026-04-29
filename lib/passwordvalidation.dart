@@ -132,17 +132,124 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
 
     await showDialog<void>(
       context: context,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(title ?? _t(context, 'Notice', 'Paalala')),
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(_t(context, 'OK', 'Sige')),
+      barrierDismissible: true,
+      builder: (dialogContext) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 28),
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.fromLTRB(22, 22, 22, 20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.18),
+                  blurRadius: 30,
+                  offset: const Offset(0, 16),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(99),
+                    onTap: () => Navigator.pop(dialogContext),
+                    child: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF5F5F5),
+                        borderRadius: BorderRadius.circular(99),
+                      ),
+                      child: const Icon(
+                        Icons.close_rounded,
+                        size: 20,
+                        color: Colors.black54,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Container(
+                  height: 68,
+                  width: 68,
+                  decoration: BoxDecoration(
+                    color: brandRed.withOpacity(0.10),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.error_outline_rounded,
+                    color: brandRed,
+                    size: 36,
+                  ),
+                ),
+                const SizedBox(height: 18),
+                Text(
+                  title ?? _t(context, 'Notice', 'Paalala'),
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 22,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.black87,
+                    height: 1.18,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  height: 2,
+                  width: 90,
+                  decoration: BoxDecoration(
+                    color: brandRed,
+                    borderRadius: BorderRadius.circular(99),
+                  ),
+                ),
+                const SizedBox(height: 18),
+                Text(
+                  message,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black.withOpacity(0.60),
+                    height: 1.45,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.pop(dialogContext),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: brandRed,
+                      elevation: 4,
+                      shadowColor: brandRed.withOpacity(0.35),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    child: Text(
+                      _t(context, 'OK', 'Sige'),
+                      style: const TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -201,6 +308,7 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
     );
   }
 
+  // ── Create account ────────────────────────────────────────────────────────
   Future<void> _continueWithSupabase() async {
     if (_isLoading) return;
 
@@ -252,11 +360,15 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
         );
       }
 
+      // ── UPDATED: upsert profile and mark registration as COMPLETED ───────
+      // This is the ONLY place where registration_status becomes 'completed'.
+      // Until this point, the profile was 'pending_password_setup'.
       await supabase.from('profiles').upsert({
         'id': user.id,
         'first_name': widget.firstName.trim(),
         'last_name': widget.lastName.trim(),
         'email': widget.email.trim().toLowerCase(),
+        'registration_status': 'completed', // ← marks registration as done
         'app_language_code':
             Localizations.localeOf(context).languageCode == 'tl' ? 'tl' : 'en',
         'updated_at': DateTime.now().toUtc().toIso8601String(),
@@ -283,7 +395,7 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
               const SizedBox(height: 16),
               Text(
                 _t(context, 'Account Created!', 'Nagawa na ang Account!'),
-                style: TextStyle(
+                style: const TextStyle(
                   fontFamily: 'Poppins',
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
@@ -298,7 +410,7 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                   'Matagumpay na nagawa ang iyong account.',
                 ),
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   fontFamily: 'Poppins',
                   fontSize: 12,
                   color: Colors.black54,
@@ -330,7 +442,7 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                   },
                   child: Text(
                     _t(context, 'Go to Login', 'Pumunta sa Login'),
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontFamily: 'Poppins',
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -503,7 +615,7 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                         ),
                         Text(
                           _t(context, 'Create Password', 'Gumawa ng Password'),
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontFamily: 'Poppins',
                             fontSize: 28,
                             fontWeight: FontWeight.w700,
@@ -527,7 +639,7 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                             'Welcome to, IGNIS SAFE',
                             'Maligayang pagdating sa IGNIS SAFE',
                           ),
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontFamily: 'Poppins',
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
@@ -554,7 +666,7 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                                 'Set your password',
                                 'I-set ang iyong password',
                               ),
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontFamily: 'Poppins',
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
@@ -673,7 +785,7 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                                   'Password strength',
                                   'Lakas ng password',
                                 ),
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontFamily: 'Poppins',
                                   fontSize: 13,
                                   fontWeight: FontWeight.w700,
@@ -779,7 +891,7 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                                       'Create Account',
                                       'Gumawa ng Account',
                                     ),
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontFamily: 'Poppins',
                                       color: Colors.white,
                                       fontSize: 18,
@@ -798,7 +910,7 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                                 'Already have an account? ',
                                 'Mayroon ka nang account? ',
                               ),
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontFamily: 'Poppins',
                                 fontSize: 12,
                                 color: Colors.black38,
@@ -817,7 +929,7 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                               },
                               child: Text(
                                 _t(context, 'Log in', 'Mag-login'),
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontFamily: 'Poppins',
                                   fontSize: 12,
                                   fontWeight: FontWeight.w700,

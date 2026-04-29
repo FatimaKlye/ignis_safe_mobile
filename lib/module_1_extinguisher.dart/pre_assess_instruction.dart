@@ -54,9 +54,9 @@ class PreAssessmentIntroPage extends StatelessWidget {
                       ),
                       const SizedBox(height: 15),
                       Padding(
-                        padding: const EdgeInsets.only(left: 25),
+                        padding: const EdgeInsets.symmetric(horizontal: 25),
                         child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Container(
                               padding: const EdgeInsets.symmetric(
@@ -77,15 +77,15 @@ class PreAssessmentIntroPage extends StatelessWidget {
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Icon(
+                                  const Icon(
                                     Icons.bolt_rounded,
                                     color: Colors.white,
                                     size: 18,
                                   ),
-                                  SizedBox(width: 8),
+                                  const SizedBox(width: 8),
                                   Text(
                                     context.tr('module_1'),
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white,
                                       fontFamily: 'Poppins',
@@ -94,14 +94,22 @@ class PreAssessmentIntroPage extends StatelessWidget {
                                 ],
                               ),
                             ),
-                            const SizedBox(width: 15),
+                            const SizedBox(width: 12),
                             Expanded(
-                              child: Text(
-                                context.tr('title_fire_extinguisher'),
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.w600,
-                                  fontFamily: 'Poppins',
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 4),
+                                child: Text(
+                                  context.tr('module_1_full_header'),
+                                  softWrap: true,
+                                  maxLines: 3,
+                                  overflow: TextOverflow.visible,
+                                  style: const TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 14,
+                                    height: 1.35,
+                                    fontWeight: FontWeight.w700,
+                                    fontFamily: 'Poppins',
+                                  ),
                                 ),
                               ),
                             ),
@@ -114,8 +122,6 @@ class PreAssessmentIntroPage extends StatelessWidget {
 
                 const SizedBox(height: 10),
 
-                // ===== CONTENT (fills space, minimal white space) =====
-                // ===== CONTENT (centered vertically) =====
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 18),
@@ -169,36 +175,46 @@ class PreAssessmentIntroPage extends StatelessWidget {
                                   ),
                                 ),
                                 const SizedBox(height: 18),
-                                RichText(
-                                  textAlign: TextAlign.center,
-                                  text: TextSpan(
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      height: 1.5,
-                                      color: Colors.black87,
-                                      fontFamily: 'Poppins',
+                                Column(
+                                  children: [
+                                    Text(
+                                      isTl
+                                          ? 'Ang pagsusulit na ito ay ginawa upang suriin ang iyong pangunahing kaalaman tungkol sa'
+                                          : 'This quiz is designed to check your basic knowledge about',
+                                      textAlign: TextAlign.center,
+                                      style: const TextStyle(
+                                        fontSize: 15,
+                                        height: 1.45,
+                                        color: Colors.black87,
+                                        fontFamily: 'Poppins',
+                                      ),
                                     ),
-                                    children: [
-                                      TextSpan(
-                                        text: isTl
-                                            ? 'Ang pagsusulit na ito ay ginawa upang suriin ang iyong pangunahing kaalaman tungkol sa '
-                                            : 'This quiz is designed to check your basic knowledge about ',
+                                    const SizedBox(height: 6),
+                                    Text(
+                                      context.tr('module_1_full_title'),
+                                      textAlign: TextAlign.center,
+                                      style: const TextStyle(
+                                        fontSize: 14.5,
+                                        height: 1.35,
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.w800,
+                                        fontFamily: 'Poppins',
                                       ),
-                                      TextSpan(
-                                        text: isTl
-                                            ? 'Modyul 1: Pamatay-Sunog'
-                                            : 'Module 1: Fire Extinguisher',
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.w700,
-                                        ),
+                                    ),
+                                    const SizedBox(height: 6),
+                                    Text(
+                                      isTl
+                                          ? 'Tinutulungan tayo nitong makita kung ano na ang alam mo bago simulan ang aralin.'
+                                          : 'It helps us see what you already know before starting the lesson.',
+                                      textAlign: TextAlign.center,
+                                      style: const TextStyle(
+                                        fontSize: 15,
+                                        height: 1.45,
+                                        color: Colors.black87,
+                                        fontFamily: 'Poppins',
                                       ),
-                                      TextSpan(
-                                        text: isTl
-                                            ? '. Tinutulungan tayo nitong makita kung ano na ang alam mo bago simulan ang aralin.'
-                                            : '. It helps us see what you already know before starting the lesson.',
-                                      ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
                                 const SizedBox(height: 18),
                                 Container(
@@ -260,8 +276,10 @@ class PreAssessmentIntroPage extends StatelessWidget {
 
                           const SizedBox(height: 18),
 
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          Wrap(
+                            alignment: WrapAlignment.center,
+                            spacing: 8,
+                            runSpacing: 8,
                             children: [
                               const _InfoChip(
                                 icon: Icons.timer_outlined,

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'localization/language_controller.dart';
+
 class TermsAndConditionsPage extends StatefulWidget {
   final String? userId;
   final bool readOnly;
@@ -79,7 +81,12 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not save agreement: $e')),
+        SnackBar(
+          content: Text(
+            t(context, 'Could not save agreement: $e',
+                'Hindi ma-save ang kasunduan: $e'),
+          ),
+        ),
       );
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -100,9 +107,9 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context, false),
         ),
-        title: const Text(
-          'Terms & Conditions',
-          style: TextStyle(
+        title: Text(
+          t(context, 'Terms & Conditions', 'Mga Tuntunin at Kundisyon'),
+          style: const TextStyle(
             fontFamily: 'Poppins',
             color: brandRed,
             fontWeight: FontWeight.w600,
@@ -121,7 +128,8 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
                     value: _progress,
                     minHeight: 6,
                     backgroundColor: brandRed.withOpacity(0.15),
-                    valueColor: const AlwaysStoppedAnimation<Color>(brandRed),
+                    valueColor:
+                        const AlwaysStoppedAnimation<Color>(brandRed),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -148,73 +156,173 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
               child: ListView(
                 controller: _scrollController,
                 padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
-                children: const [
-                  _Title('TERMS AND CONDITIONS'),
-                  SizedBox(height: 16),
-                  _SectionTitle('1. Introduction'),
-                  _BodyText(
+                children: [
+                  _Title(t(context, 'TERMS AND CONDITIONS',
+                      'MGA TUNTUNIN AT KUNDISYON')),
+                  const SizedBox(height: 16),
+
+                  // 1. Introduction
+                  _SectionTitle(
+                      t(context, '1. Introduction', '1. Panimula')),
+                  _BodyText(t(
+                    context,
                     'These Terms and Conditions govern your access to and use of the Ignis Safe mobile application. By creating an account or using the application, you agree to comply with and be legally bound by these Terms. If you do not agree with any part of these Terms, you must not use the application.',
-                  ),
-                  _SectionTitle('2. Purpose of the Application'),
-                  _BodyText(
+                    'Ang Mga Tuntunin at Kundisyong ito ay namamahala sa iyong pag-access at paggamit ng Ignis Safe mobile application. Sa pamamagitan ng paglikha ng account o paggamit ng application, sumasang-ayon kang sumunod at legal na mapigiln ng Mga Tuntuning ito. Kung hindi ka sumasang-ayon sa anumang bahagi ng Mga Tuntuning ito, hindi mo dapat gamitin ang application.',
+                  )),
+
+                  // 2. Purpose
+                  _SectionTitle(t(context, '2. Purpose of the Application',
+                      '2. Layunin ng Application')),
+                  _BodyText(t(
+                    context,
                     'Ignis Safe is a fire safety learning and assessment platform. The application provides educational modules, interactive simulations powered by Unity, and structured pre-test and post-test evaluations. The system is designed for training, awareness, and performance assessment purposes.',
-                  ),
-                  _SectionTitle('3. Account Registration and Verification'),
-                  _BodyText(
+                    'Ang Ignis Safe ay isang platform para sa pag-aaral at pagtatasa ng kaligtasan sa sunog. Nagbibigay ang application ng mga educational module, interactive simulations na pinapagana ng Unity, at nakabalangkas na pre-test at post-test evaluations. Ang sistema ay dinisenyo para sa layuning pagsasanay, kamalayan, at pagtatasa ng pagganap.',
+                  )),
+
+                  // 3. Account Registration
+                  _SectionTitle(t(
+                    context,
+                    '3. Account Registration and Verification',
+                    '3. Pagpaparehistro at Pag-verify ng Account',
+                  )),
+                  _BodyText(t(
+                    context,
                     'To access the application, users must provide accurate personal information including First Name, Last Name, and Email Address. For verification, users are redirected to Google services for OTP authentication. Ignis Safe does not collect, store, or have access to your Google password.',
-                  ),
-                  _SectionTitle('4. Data Collection'),
-                  _BodyText(
+                    'Upang ma-access ang application, ang mga gumagamit ay dapat magbigay ng tumpak na personal na impormasyon kabilang ang Pangalan, Apelyido, at Email Address. Para sa pag-verify, ang mga gumagamit ay nire-redirect sa mga serbisyo ng Google para sa OTP authentication. Ang Ignis Safe ay hindi nangongolekta, nag-iimbak, o may access sa iyong Google password.',
+                  )),
+
+                  // 4. Data Collection
+                  _SectionTitle(t(context, '4. Data Collection',
+                      '4. Pagkolekta ng Data')),
+                  _BodyText(t(
+                    context,
                     'Ignis Safe collects and processes the following information:\n\n• First Name\n• Last Name\n• Email Address\n• Pre-test and Post-test Scores\n• Training progress and activity data\n\nThis information is used strictly for authentication, monitoring progress, reporting, and improving system functionality.',
-                  ),
-                  _SectionTitle('5. Unity Simulation Integration'),
-                  _BodyText(
+                    'Ang Ignis Safe ay nangongolekta at nagpoproseso ng sumusunod na impormasyon:\n\n• Pangalan\n• Apelyido\n• Email Address\n• Mga Marka sa Pre-test at Post-test\n• Data ng progreso at aktibidad sa pagsasanay\n\nAng impormasyong ito ay ginagamit nang mahigpit para sa authentication, pagsubaybay ng progreso, pag-uulat, at pagpapabuti ng functionality ng sistema.',
+                  )),
+
+                  // 5. Unity Simulation
+                  _SectionTitle(t(
+                    context,
+                    '5. Unity Simulation Integration',
+                    '5. Pagsasama ng Unity Simulation',
+                  )),
+                  _BodyText(t(
+                    context,
                     'Certain learning modules and simulations are delivered through Unity technology. Limited technical data may be processed to ensure proper system functionality, performance optimization, and compatibility.',
-                  ),
-                  _SectionTitle('6. Administrative Access and Reporting'),
-                  _BodyText(
+                    'Ang ilang mga learning module at simulation ay inihahatid sa pamamagitan ng teknolohiya ng Unity. Limitadong teknikal na data ang maaaring iproseso upang matiyak ang maayos na functionality ng sistema, pag-optimize ng pagganap, at compatibility.',
+                  )),
+
+                  // 6. Administrative Access
+                  _SectionTitle(t(
+                    context,
+                    '6. Administrative Access and Reporting',
+                    '6. Administratibong Pag-access at Pag-uulat',
+                  )),
+                  _BodyText(t(
+                    context,
                     'User registration details, training progress, and assessment results may be accessed by authorized Bureau of Fire Protection (BFP) administrators for monitoring, evaluation, and official reporting purposes. By using the application, you consent to this administrative access.',
-                  ),
-                  _SectionTitle('7. Data Protection and Security'),
-                  _BodyText(
+                    'Ang mga detalye ng pagpaparehistro ng gumagamit, progreso sa pagsasanay, at mga resulta ng pagtatasa ay maaaring ma-access ng mga awtorisadong administrator ng Bureau of Fire Protection (BFP) para sa layuning pagsubaybay, ebalwasyon, at opisyal na pag-uulat. Sa paggamit ng application, pumapayag ka sa administratibong pag-access na ito.',
+                  )),
+
+                  // 7. Data Protection
+                  _SectionTitle(t(
+                    context,
+                    '7. Data Protection and Security',
+                    '7. Proteksyon at Seguridad ng Data',
+                  )),
+                  _BodyText(t(
+                    context,
                     'Ignis Safe implements reasonable technical and organizational measures to protect user information. While we strive to safeguard all data, no digital system can guarantee absolute security.',
-                  ),
-                  _SectionTitle('8. User Responsibilities'),
-                  _BodyText(
+                    'Ang Ignis Safe ay nagpapatupad ng makatwirang teknikal at organisasyonal na mga hakbang upang protektahan ang impormasyon ng gumagamit. Bagama\'t nagsisikap kaming pangalagaan ang lahat ng data, walang digital na sistema ang makakagarantiya ng ganap na seguridad.',
+                  )),
+
+                  // 8. User Responsibilities
+                  _SectionTitle(t(
+                    context,
+                    '8. User Responsibilities',
+                    '8. Mga Responsibilidad ng Gumagamit',
+                  )),
+                  _BodyText(t(
+                    context,
                     'Users agree to provide accurate information, maintain the confidentiality of their credentials, and use the application solely for lawful training purposes. Any attempt to manipulate results, misuse the system, or interfere with functionality may result in account suspension or termination.',
-                  ),
-                  _SectionTitle('9. Intellectual Property'),
-                  _BodyText(
+                    'Sumasang-ayon ang mga gumagamit na magbigay ng tumpak na impormasyon, panatilihing kumpidensyal ang kanilang mga kredensyal, at gamitin ang application nang eksklusibo para sa mga legal na layunin ng pagsasanay. Ang anumang pagtatangkang manipulahin ang mga resulta, maling gamitin ang sistema, o makagambala sa functionality ay maaaring magresulta sa pagsuspinde o pagwawakas ng account.',
+                  )),
+
+                  // 9. Intellectual Property
+                  _SectionTitle(t(
+                    context,
+                    '9. Intellectual Property',
+                    '9. Intelektwal na Ari-arian',
+                  )),
+                  _BodyText(t(
+                    context,
                     'All content within the application, including educational materials, simulations, graphics, and system design, is the intellectual property of Ignis Safe unless otherwise stated. Unauthorized reproduction or distribution is prohibited.',
-                  ),
-                  _SectionTitle('10. Limitation of Liability'),
-                  _BodyText(
+                    'Ang lahat ng nilalaman sa loob ng application, kabilang ang mga educational na materyales, simulations, graphics, at disenyo ng sistema, ay intelektwal na ari-arian ng Ignis Safe maliban kung may iba pang nakasaad. Ang hindi awtorisadong pagpaparami o pamamahagi ay ipinagbabawal.',
+                  )),
+
+                  // 10. Limitation of Liability
+                  _SectionTitle(t(
+                    context,
+                    '10. Limitation of Liability',
+                    '10. Limitasyon ng Pananagutan',
+                  )),
+                  _BodyText(t(
+                    context,
                     'Ignis Safe provides training and educational content for awareness and evaluation purposes only. The application does not replace official fire safety certification unless explicitly stated. Ignis Safe shall not be liable for damages arising from system interruptions, external technical issues, or misuse of the application.',
-                  ),
-                  _SectionTitle('11. Termination'),
-                  _BodyText(
+                    'Ang Ignis Safe ay nagbibigay ng pagsasanay at educational na nilalaman para lamang sa layuning kamalayan at ebalwasyon. Ang application ay hindi pumapalit sa opisyal na fire safety certification maliban kung malinaw na nakasaad. Ang Ignis Safe ay hindi mananagot sa mga pinsalang dulot ng mga pagkaantala ng sistema, mga panlabas na teknikal na isyu, o maling paggamit ng application.',
+                  )),
+
+                  // 11. Termination
+                  _SectionTitle(
+                      t(context, '11. Termination', '11. Pagwawakas')),
+                  _BodyText(t(
+                    context,
                     'Ignis Safe reserves the right to suspend or terminate access to the application if a user violates these Terms or engages in unlawful activity.',
-                  ),
-                  _SectionTitle('12. Amendments'),
-                  _BodyText(
+                    'Inireserba ng Ignis Safe ang karapatang suspindihin o wakasan ang pag-access sa application kung lalabag ang isang gumagamit sa Mga Tuntuning ito o makikisangkot sa ilegal na aktibidad.',
+                  )),
+
+                  // 12. Amendments
+                  _SectionTitle(
+                      t(context, '12. Amendments', '12. Mga Pagbabago')),
+                  _BodyText(t(
+                    context,
                     'These Terms and Conditions may be updated at any time. Continued use of the application after modifications constitutes acceptance of the revised Terms.',
-                  ),
-                  _SectionTitle('13. Governing Law'),
-                  _BodyText(
+                    'Ang Mga Tuntunin at Kundisyong ito ay maaaring ma-update anumang oras. Ang patuloy na paggamit ng application pagkatapos ng mga pagbabago ay nagtataglay ng pagtanggap sa mga binagong Tuntunin.',
+                  )),
+
+                  // 13. Governing Law
+                  _SectionTitle(t(
+                    context,
+                    '13. Governing Law',
+                    '13. Namamahalang Batas',
+                  )),
+                  _BodyText(t(
+                    context,
                     'These Terms and Conditions shall be governed by and interpreted in accordance with the laws of the Republic of the Philippines.',
-                  ),
-                  _SectionTitle('14. Contact Information'),
-                  _BodyText(
+                    'Ang Mga Tuntunin at Kundisyong ito ay pamamahalaan at bibigyang-kahulugan alinsunod sa mga batas ng Republika ng Pilipinas.',
+                  )),
+
+                  // 14. Contact Information
+                  _SectionTitle(t(
+                    context,
+                    '14. Contact Information',
+                    '14. Impormasyon sa Pakikipag-ugnayan',
+                  )),
+                  _BodyText(t(
+                    context,
                     'For inquiries regarding these Terms and Conditions, please contact: andreicarisma24@gmail.com.',
-                  ),
-                  SizedBox(height: 24),
+                    'Para sa mga katanungan tungkol sa Mga Tuntunin at Kundisyong ito, makipag-ugnayan sa: andreicarisma24@gmail.com.',
+                  )),
+
+                  const SizedBox(height: 24),
                 ],
               ),
             ),
           ),
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+            padding:
+                const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
             decoration: const BoxDecoration(
               border: Border(
                 top: BorderSide(color: Color(0xFFB71C1C), width: 1),
@@ -224,12 +332,16 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 if (!_scrolledToBottom)
-                  const Padding(
-                    padding: EdgeInsets.only(bottom: 4),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 4),
                     child: Text(
-                      'Scroll to the bottom to continue',
+                      t(
+                        context,
+                        'Scroll to the bottom to continue',
+                        'Mag-scroll hanggang sa ibaba para magpatuloy',
+                      ),
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontFamily: 'Poppins',
                         color: brandRed,
                         fontWeight: FontWeight.w500,
@@ -246,10 +358,14 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
                             ? null
                             : (v) => setState(() => _checked = v ?? false),
                       ),
-                      const Expanded(
+                      Expanded(
                         child: Text(
-                          'I have read and agree to the Terms and Conditions.',
-                          style: TextStyle(
+                          t(
+                            context,
+                            'I have read and agree to the Terms and Conditions.',
+                            'Nabasa ko at sumasang-ayon ako sa Mga Tuntunin at Kundisyon.',
+                          ),
+                          style: const TextStyle(
                             fontFamily: 'Poppins',
                             fontSize: 12,
                             color: Colors.black87,
@@ -280,9 +396,9 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
                                 color: Colors.white,
                               ),
                             )
-                          : const Text(
-                              'I Agree',
-                              style: TextStyle(
+                          : Text(
+                              t(context, 'I Agree', 'Sumasang-ayon Ako'),
+                              style: const TextStyle(
                                 fontFamily: 'Poppins',
                                 color: Colors.white,
                                 fontWeight: FontWeight.w600,
