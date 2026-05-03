@@ -1167,7 +1167,7 @@ class _ContactCard extends StatelessWidget {
                 const SizedBox(width: 10),
                 Text(
                   t(context, "Emergency Contact Information",
-                      "Impormasyon sa Emergency na Pakikipag-ugnayan"),
+                      "Impormasyon sa Emergency"),
                   style: const TextStyle(
                     fontSize: 15.5,
                     fontWeight: FontWeight.w900,

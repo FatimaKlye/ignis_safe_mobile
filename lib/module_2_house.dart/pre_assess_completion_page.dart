@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../localization/language_controller.dart';
 import 'pre_assessment_house.dart';
 import 'simulation_scene_house.dart';
 
@@ -30,10 +31,7 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
       body: Stack(
         children: [
           Positioned.fill(
-            child: Image.asset(
-              'assets/bg.png',
-              fit: BoxFit.cover,
-            ),
+            child: Image.asset('assets/bg.png', fit: BoxFit.cover),
           ),
           SafeArea(
             child: Center(
@@ -59,9 +57,9 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
                       Container(
                         width: 78,
                         height: 78,
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           shape: BoxShape.circle,
-                          gradient: const LinearGradient(
+                          gradient: LinearGradient(
                             colors: [kBrandRed, kBrandBlue],
                           ),
                         ),
@@ -72,10 +70,10 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 18),
-                      const Text(
-                        'Great job!',
+                      Text(
+                        t(context, 'Great job!', 'Magaling!'),
                         textAlign: TextAlign.center,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.w900,
                           color: kDarkText,
@@ -83,7 +81,11 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        '$assessmentTitle completed',
+                        t(
+                          context,
+                          '$assessmentTitle completed',
+                          '$assessmentTitle nakumpleto',
+                        ),
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                           fontSize: 16,
@@ -105,9 +107,9 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
                         ),
                         child: Column(
                           children: [
-                            const Text(
-                              'Your Result',
-                              style: TextStyle(
+                            Text(
+                              t(context, 'Your Result', 'Iyong Resulta'),
+                              style: const TextStyle(
                                 fontWeight: FontWeight.w800,
                                 color: Colors.black54,
                               ),
@@ -144,10 +146,14 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
                             color: kBrandBlue.withOpacity(0.18),
                           ),
                         ),
-                        child: const Text(
-                          'This pre-assessment is not graded. It is only meant to check your knowledge before starting the module.',
+                        child: Text(
+                          t(
+                            context,
+                            'This pre-assessment is not graded. It is only meant to check your knowledge before starting the module.',
+                            'Ang paunang pagsusulit na ito ay hindi graded. Layunin lamang nitong suriin ang iyong kaalaman bago simulan ang modyul.',
+                          ),
                           textAlign: TextAlign.center,
-                          style: TextStyle(
+                          style: const TextStyle(
                             height: 1.45,
                             fontWeight: FontWeight.w700,
                             color: kDarkText,
@@ -173,9 +179,10 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
                               ),
                             );
                           },
-                          child: const Text(
-                            'Proceed to Simulation',
-                            style: TextStyle(
+                          child: Text(
+                            t(context, 'Proceed to Simulation',
+                                'Magpatuloy sa Simulasyon'),
+                            style: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.w900,
                               fontSize: 16,
@@ -202,9 +209,9 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
                               ),
                             );
                           },
-                          child: const Text(
-                            'Retake',
-                            style: TextStyle(
+                          child: Text(
+                            t(context, 'Retake', 'Ulitin'),
+                            style: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.w900,
                               fontSize: 16,

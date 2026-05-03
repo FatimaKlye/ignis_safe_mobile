@@ -135,7 +135,7 @@ const Map<String, Map<String, String>> _strings = {
   },
   'learning_materials': {
     'en': 'Learning Materials',
-    'tl': 'Mga Materyal sa Pag-aaral',
+    'tl': 'Materyal sa Pag-aaral',
   },
   'fire_scenario_module': {
     'en': 'Fire Scenario',
@@ -226,8 +226,16 @@ const Map<String, Map<String, String>> _strings = {
     'tl': 'Modyul 1: Pamatay-Sunog: Ligtas na Paggamit at Pagtugon sa Emergency',
    },
   'module_1_full_header': {
-    'en': 'Fire Extinguisher: Safe Use and Emergency Response',
-    'tl': 'Pamatay-Sunog: Ligtas na Paggamit at Pagtugon sa Emergency',
+    'en': 'Fire Extinguisher: Basics, Types, and Proper Use',
+    'tl': 'Pamatay-Sunog: Mga Batayan, Uri, at Tamang Paggamit',
+  },
+  'module_2_full_title': {
+    'en': 'Module 2: House Fire: How to Get Out Safely During a Fire',
+    'tl': 'Modyul 2: Sunog sa Bahay: Paano Ligtas na Makalabas Habang May Sunog',
+  },
+  'module_2_full_header': {
+    'en': 'House Fire: How to Get Out Safely During a Fire',
+    'tl': 'Sunog sa Bahay: Paano Ligtas na Makalabas Habang May Sunog',
   },
   'title_fire_extinguisher': {
     'en': 'FIRE EXTINGUISHER',

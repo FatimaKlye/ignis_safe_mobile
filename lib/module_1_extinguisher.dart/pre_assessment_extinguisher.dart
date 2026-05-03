@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../localization/app_text.dart';
 import '../localization/localized_db_text.dart';
+import '../localization/language_controller.dart';
 import 'pre_assess_completion_page.dart';
 import '../profile_progress_sync.dart';
 
@@ -363,9 +364,9 @@ class _PreAssessmentExtinguisherPageState
       });
 
       await _showInfoDialog(
-        title: 'Failed to load pre-assessment',
+        title: _txt('Failed to load pre-assessment', 'Hindi na-load ang paunang pagsusulit'),
         message: '$e',
-        buttonText: 'OK',
+        buttonText: _txt('OK', 'Sige'),
       );
     }
   }
@@ -437,11 +438,13 @@ class _PreAssessmentExtinguisherPageState
   Future<void> _handleRefresh() async {
     if (_showReview) {
       final confirmed = await _showConfirmDialog(
-        title: 'Start new attempt?',
-        message:
-            'You already finished this pre-assessment. Starting again will generate a new attempt.',
-        confirmText: 'New Attempt',
-        cancelText: 'Cancel',
+        title: _txt('Start new attempt?', 'Magsimula ng bagong subok?'),
+        message: _txt(
+          'You already finished this pre-assessment. Starting again will generate a new attempt.',
+          'Natapos mo na ang paunang pagsusulit na ito. Ang pagsisimula ulit ay lilikha ng bagong subok.',
+        ),
+        confirmText: _txt('New Attempt', 'Bagong Subok'),
+        cancelText: _txt('Cancel', 'Kanselahin'),
       );
 
       if (confirmed == true) {
@@ -451,10 +454,12 @@ class _PreAssessmentExtinguisherPageState
     }
 
     await _showInfoDialog(
-      title: 'Current attempt preserved',
-      message:
-          'This pre-assessment is still unfinished, so refresh will keep the same attempt and the same questions.',
-      buttonText: 'OK',
+      title: _txt('Current attempt preserved', 'Napanatili ang kasalukuyang subok'),
+      message: _txt(
+        'This pre-assessment is still unfinished, so refresh will keep the same attempt and the same questions.',
+        'Hindi pa tapos ang paunang pagsusulit na ito, kaya ang i-refresh ay magpapanatili ng parehong subok at mga tanong.',
+      ),
+      buttonText: _txt('OK', 'Sige'),
     );
 
     await _loadOrCreateAttempt(forceNewAttempt: false);
@@ -1151,10 +1156,12 @@ class _PreAssessmentExtinguisherPageState
                       );
                     }),
                     const SizedBox(height: 8),
-                    const _HintCard(
+                    _HintCard(
                       icon: Icons.info_outline_rounded,
-                      text:
-                          'Use the summary to jump back to any question before submitting.',
+                      text: _txt(
+                        'Use the summary to jump back to any question before submitting.',
+                        'Gamitin ang buod para balikan ang anumang tanong bago ipasa.',
+                      ),
                     ),
                   ],
                 ),
@@ -1191,7 +1198,7 @@ class _PreAssessmentExtinguisherPageState
                   questionNumber: index + 1,
                   question: question.prompt,
                   selectedAnswer: selected == null
-                      ? 'No answer selected'
+                      ? _txt('No answer selected', 'Walang napiling sagot')
                       : _optionDisplay(question, selected),
                   answered: selected != null,
                   flagged: _flaggedIndexes.contains(index),
@@ -1316,11 +1323,17 @@ class _PreAssessmentExtinguisherPageState
                     _editingFromSummary = false;
                   });
                 },
-                child: Text(
-                  _txt('Back to Questions', 'Bumalik sa mga Tanong'),
-                  style: TextStyle(
-                    color: kBrandRed,
-                    fontWeight: FontWeight.w900,
+                child: SizedBox(
+                  width: double.infinity,
+                  child: Text(
+                    _txt('Back to Questions', 'Bumalik sa Tanong'),
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: kBrandRed,
+                      fontWeight: FontWeight.w900,
+                      fontSize: 14,
+                      height: 1.2,
+                    ),
                   ),
                 ),
               ),
@@ -1615,7 +1628,7 @@ class _StatsRow extends StatelessWidget {
         Expanded(
           child: _StatChip(
             icon: Icons.check_circle_outline_rounded,
-            label: 'Answered',
+            label: t(context, 'Answered', 'Nasagutan'),
             value: '$answered / $total',
             color: const Color(0xFF16A34A),
           ),
@@ -1624,7 +1637,7 @@ class _StatsRow extends StatelessWidget {
         Expanded(
           child: _StatChip(
             icon: Icons.outlined_flag_rounded,
-            label: 'Flagged',
+            label: t(context, 'Flagged', 'Naka-flag'),
             value: '$flagged',
             color: kBrandRed,
           ),
@@ -1742,7 +1755,7 @@ class _QuestionHeaderCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  'QUESTION $questionNumber / $totalQuestions',
+                  '${t(context, 'QUESTION', 'TANONG')} $questionNumber / $totalQuestions',
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w900,
@@ -1777,7 +1790,9 @@ class _QuestionHeaderCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        isFlagged ? 'Flagged' : 'Flag',
+                        isFlagged
+                            ? t(context, 'Flagged', 'Naka-flag')
+                            : t(context, 'Flag', 'I-flag'),
                         style: TextStyle(
                           fontWeight: FontWeight.w800,
                           color: isFlagged ? kBrandRed : kDarkText,
@@ -1961,9 +1976,9 @@ class _SummaryHeaderCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          const Text(
-            'Review all questions before you submit',
-            style: TextStyle(
+          Text(
+            t(context, 'Review all questions before you submit', 'Suriin ang lahat ng tanong bago ipasa'),
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w900,
               color: kDarkText,
@@ -1972,7 +1987,7 @@ class _SummaryHeaderCard extends StatelessWidget {
           if (hasUnanswered) ...[
             const SizedBox(height: 8),
             Text(
-              '$unansweredCount question(s) still need an answer.',
+              t(context, '$unansweredCount question(s) still need an answer.', '$unansweredCount tanong pa ang kailangang sagutin.'),
               style: const TextStyle(
                 color: Colors.orange,
                 fontWeight: FontWeight.w800,
@@ -2057,7 +2072,9 @@ class _SummaryCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
-                  answered ? 'Answered' : 'Unanswered',
+                  answered
+                      ? t(context, 'Answered', 'Nasagutan')
+                      : t(context, 'Unanswered', 'Hindi pa nasasagutan'),
                   style: TextStyle(
                     fontWeight: FontWeight.w900,
                     color: statusColor,
@@ -2074,8 +2091,8 @@ class _SummaryCard extends StatelessWidget {
                     color: kBrandRed.withOpacity(0.12),
                     borderRadius: BorderRadius.circular(999),
                   ),
-                  child: const Text(
-                    'Flagged',
+                  child: Text(
+                    t(context, 'Flagged', 'Naka-flag'),
                     style: TextStyle(
                       fontWeight: FontWeight.w900,
                       color: kBrandRed,
@@ -2129,9 +2146,9 @@ class _SummaryCard extends StatelessWidget {
                 color: Colors.white,
                 size: 18,
               ),
-              label: const Text(
-                'Edit',
-                style: TextStyle(
+              label: Text(
+                t(context, 'Edit', 'I-edit'),
+                style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w900,
                 ),
@@ -2174,9 +2191,9 @@ class _ReviewTopCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          const Text(
-            'Pre-Assessment Result',
-            style: TextStyle(
+          Text(
+            t(context, 'Pre-Assessment Result', 'Resulta ng Paunang Pagsusulit'),
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w900,
               color: kDarkText,
@@ -2270,7 +2287,9 @@ class _ReviewCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
-                  isCorrect ? 'Correct' : 'Incorrect',
+                  isCorrect
+                      ? t(context, 'Correct', 'Tama')
+                      : t(context, 'Incorrect', 'Mali'),
                   style: TextStyle(
                     fontWeight: FontWeight.w900,
                     color: statusColor,
@@ -2291,9 +2310,9 @@ class _ReviewCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          const Text(
-            'Answer Review',
-            style: TextStyle(
+          Text(
+            t(context, 'Answer Review', 'Pagsusuri ng Sagot'),
+            style: const TextStyle(
               fontWeight: FontWeight.w900,
               color: Colors.black54,
             ),
@@ -2309,9 +2328,9 @@ class _ReviewCard extends StatelessWidget {
           ),
           if (!isCorrect) ...[
             const SizedBox(height: 12),
-            const Text(
-              'Correct Answer',
-              style: TextStyle(
+            Text(
+              t(context, 'Correct Answer', 'Tamang Sagot'),
+              style: const TextStyle(
                 fontWeight: FontWeight.w900,
                 color: Colors.black54,
               ),
@@ -2330,9 +2349,9 @@ class _ReviewCard extends StatelessWidget {
               explanation != null &&
               explanation!.trim().isNotEmpty) ...[
             const SizedBox(height: 12),
-            const Text(
-              'Why this is wrong',
-              style: TextStyle(
+            Text(
+              t(context, 'Why this is wrong', 'Bakit mali ito'),
+              style: const TextStyle(
                 fontWeight: FontWeight.w900,
                 color: Colors.black54,
               ),

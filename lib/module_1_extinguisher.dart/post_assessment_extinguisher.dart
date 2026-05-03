@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../localization/language_controller.dart';
 import '../localization/localized_db_text.dart';
 import '../profile_progress_sync.dart';
 
@@ -19,6 +20,9 @@ class PostAssessmentPassPage extends StatefulWidget {
 class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
   static const int _moduleNo = 1;
   static const String _assessmentType = 'post';
+
+  bool get _isTl => Localizations.localeOf(context).languageCode == 'tl';
+  String _txt(String en, String tl) => _isTl ? tl : en;
 
   final PageController _pageCtrl = PageController();
   final Map<int, TextEditingController> _essayControllers = {};
@@ -47,9 +51,7 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
 
   User get _user {
     final user = _supabase.auth.currentUser;
-    if (user == null) {
-      throw Exception('No active user session.');
-    }
+    if (user == null) throw Exception('No active user session.');
     return user;
   }
 
@@ -86,7 +88,6 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
   }
 
   int get _unansweredCount => _questions.length - _answeredCount;
-
   bool get _hasUnansweredQuestions => _unansweredCount > 0;
 
   List<int> get _unansweredIndexes {
@@ -95,7 +96,6 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
       final unanswered = _isEssay(_questions[i])
           ? (_writtenAnswers[i] ?? '').trim().isEmpty
           : _selectedOptionIds[i] == null;
-
       if (unanswered) result.add(i);
     }
     return result;
@@ -109,12 +109,10 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
       c.dispose();
     }
     _essayControllers.clear();
-
     for (int i = 0; i < questions.length; i++) {
       if (_isEssay(questions[i])) {
-        _essayControllers[i] = TextEditingController(
-          text: writtenAnswers[i] ?? '',
-        );
+        _essayControllers[i] =
+            TextEditingController(text: writtenAnswers[i] ?? '');
       }
     }
   }
@@ -160,7 +158,7 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
         assessmentRow,
         'title',
         'title_tl',
-        fallback: _assessmentType == 'post' ? 'Post-Assessment' : 'Pre-Assessment',
+        fallback: 'Post-Assessment',
       );
 
       final instructions = LocalizedDbText.pick(
@@ -172,7 +170,8 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
 
       final questionRows = await _supabase
           .from('assessment_questions')
-          .select('id, question_no, prompt, prompt_tl, explanation, explanation_tl, question_type')
+          .select(
+              'id, question_no, prompt, prompt_tl, explanation, explanation_tl, question_type')
           .eq('assessment_id', assessmentId)
           .eq('is_active', true)
           .order('question_no');
@@ -187,8 +186,7 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
       final optionRows = await _supabase
           .from('assessment_options')
           .select(
-            'id, question_id, option_key, option_text, option_text_tl, is_correct, display_order',
-          )
+              'id, question_id, option_key, option_text, option_text_tl, is_correct, display_order')
           .inFilter('question_id', questionIds)
           .order('question_id')
           .order('display_order');
@@ -208,11 +206,7 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
             id: row['id'].toString(),
             key: (row['option_key'] ?? '').toString().toUpperCase(),
             text: LocalizedDbText.pick(
-              context,
-              row,
-              'option_text',
-              'option_text_tl',
-            ),
+                context, row, 'option_text', 'option_text_tl'),
             isCorrect: (row['is_correct'] ?? false) as bool,
             displayOrder: displayOrder,
           ),
@@ -227,27 +221,17 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
         final questionId = row['id'].toString();
         return _QuestionVm(
           id: questionId,
-          prompt: LocalizedDbText.pick(
-            context,
-            row,
-            'prompt',
-            'prompt_tl',
-          ),
+          prompt: LocalizedDbText.pick(context, row, 'prompt', 'prompt_tl'),
           explanation: LocalizedDbText.pick(
-            context,
-            row,
-            'explanation',
-            'explanation_tl',
-          ),
-          type: ((row['question_type'] ?? 'multiple_choice').toString()),
+              context, row, 'explanation', 'explanation_tl'),
+          type: (row['question_type'] ?? 'multiple_choice').toString(),
           options: optionsByQuestion[questionId] ?? [],
         );
       }).toList();
 
       if (baseQuestions.any((q) => _isMcq(q) && q.options.isEmpty)) {
         throw Exception(
-          'One or more multiple-choice questions do not have options.',
-        );
+            'One or more multiple-choice questions do not have options.');
       }
 
       String attemptId;
@@ -272,8 +256,7 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
           final savedRows = await _supabase
               .from('assessment_attempt_answers')
               .select(
-                'question_id, selected_option_id, answer_text, is_flagged, display_order',
-              )
+                  'question_id, selected_option_id, answer_text, is_flagged, display_order')
               .eq('attempt_id', attemptId)
               .order('display_order');
 
@@ -302,23 +285,22 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
               final orderedMissing = _orderedQuestions(missingQuestions);
 
               await _supabase.from('assessment_attempt_answers').insert(
-                List.generate(
-                  orderedMissing.length,
-                  (index) => {
-                    'attempt_id': attemptId,
-                    'question_id': orderedMissing[index].id,
-                    'display_order': startOrder + index,
-                    'is_flagged': false,
-                  },
-                ),
-              );
+                    List.generate(
+                      orderedMissing.length,
+                      (index) => {
+                        'attempt_id': attemptId,
+                        'question_id': orderedMissing[index].id,
+                        'display_order': startOrder + index,
+                        'is_flagged': false,
+                      },
+                    ),
+                  );
             }
 
             final refreshedSavedRows = await _supabase
                 .from('assessment_attempt_answers')
                 .select(
-                  'question_id, selected_option_id, answer_text, is_flagged, display_order',
-                )
+                    'question_id, selected_option_id, answer_text, is_flagged, display_order')
                 .eq('attempt_id', attemptId)
                 .order('display_order');
 
@@ -336,12 +318,8 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
               if (question == null) continue;
 
               orderedQuestions.add(question);
-              selectedOptionIds.add(
-                row['selected_option_id']?.toString(),
-              );
-              writtenAnswers.add(
-                row['answer_text']?.toString(),
-              );
+              selectedOptionIds.add(row['selected_option_id']?.toString());
+              writtenAnswers.add(row['answer_text']?.toString());
 
               if ((row['is_flagged'] ?? false) as bool) {
                 flaggedIndexes.add(i);
@@ -373,8 +351,7 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
           orderedQuestions = created.questions;
           selectedOptionIds =
               List<String?>.filled(orderedQuestions.length, null);
-          writtenAnswers =
-              List<String?>.filled(orderedQuestions.length, null);
+          writtenAnswers = List<String?>.filled(orderedQuestions.length, null);
           flaggedIndexes = {};
         }
       } else {
@@ -413,19 +390,16 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
       });
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (_pageCtrl.hasClients) {
-          _pageCtrl.jumpToPage(0);
-        }
+        if (_pageCtrl.hasClients) _pageCtrl.jumpToPage(0);
       });
     } catch (e) {
       if (!mounted) return;
-
       setState(() => _isLoading = false);
-
       await _showInfoDialog(
-        title: 'Failed to load post-assessment',
+        title: _txt('Failed to load post-assessment',
+            'Hindi na-load ang pangwakas na pagsusulit'),
         message: '$e',
-        buttonText: 'OK',
+        buttonText: _txt('OK', 'Sige'),
       );
     }
   }
@@ -453,16 +427,16 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
     final attemptId = insertedAttempt['id'].toString();
 
     await _supabase.from('assessment_attempt_answers').insert(
-      List.generate(
-        ordered.length,
-        (index) => {
-          'attempt_id': attemptId,
-          'question_id': ordered[index].id,
-          'display_order': index,
-          'is_flagged': false,
-        },
-      ),
-    );
+          List.generate(
+            ordered.length,
+            (index) => {
+              'attempt_id': attemptId,
+              'question_id': ordered[index].id,
+              'display_order': index,
+              'is_flagged': false,
+            },
+          ),
+        );
 
     return _CreatedAttempt(attemptId: attemptId, questions: ordered);
   }
@@ -474,16 +448,16 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
     final ordered = _orderedQuestions(questions);
 
     await _supabase.from('assessment_attempt_answers').insert(
-      List.generate(
-        ordered.length,
-        (index) => {
-          'attempt_id': attemptId,
-          'question_id': ordered[index].id,
-          'display_order': index,
-          'is_flagged': false,
-        },
-      ),
-    );
+          List.generate(
+            ordered.length,
+            (index) => {
+              'attempt_id': attemptId,
+              'question_id': ordered[index].id,
+              'display_order': index,
+              'is_flagged': false,
+            },
+          ),
+        );
 
     return _CreatedAttempt(attemptId: attemptId, questions: ordered);
   }
@@ -491,34 +465,33 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
   Future<void> _handleRefresh() async {
     if (_showReview) {
       final confirmed = await _showConfirmDialog(
-        title: 'Start new attempt?',
-        message:
-            'You already finished this post-assessment. Starting again will generate a new attempt.',
-        confirmText: 'New Attempt',
-        cancelText: 'Cancel',
+        title: _txt('Start new attempt?', 'Magsimula ng bagong subok?'),
+        message: _txt(
+          'You already finished this post-assessment. Starting again will generate a new attempt.',
+          'Natapos mo na ang pangwakas na pagsusulit na ito. Ang pagsisimula ulit ay lilikha ng bagong subok.',
+        ),
+        confirmText: _txt('New Attempt', 'Bagong Subok'),
+        cancelText: _txt('Cancel', 'Kanselahin'),
       );
-
-      if (confirmed == true) {
-        await _loadOrCreateAttempt(forceNewAttempt: true);
-      }
+      if (confirmed == true) await _loadOrCreateAttempt(forceNewAttempt: true);
       return;
     }
 
     await _showInfoDialog(
-      title: 'Current attempt preserved',
-      message:
-          'This post-assessment is still unfinished, so refresh will keep the same attempt and the same questions.',
-      buttonText: 'OK',
+      title: _txt('Current attempt preserved',
+          'Napanatili ang kasalukuyang subok'),
+      message: _txt(
+        'This post-assessment is still unfinished, so refresh will keep the same attempt and the same questions.',
+        'Hindi pa tapos ang pangwakas na pagsusulit na ito, kaya ang i-refresh ay magpapanatili ng parehong subok at mga tanong.',
+      ),
+      buttonText: _txt('OK', 'Sige'),
     );
 
     await _loadOrCreateAttempt(forceNewAttempt: false);
   }
 
   Future<void> _selectAnswer(int questionIndex, String optionId) async {
-    setState(() {
-      _selectedOptionIds[questionIndex] = optionId;
-    });
-
+    setState(() => _selectedOptionIds[questionIndex] = optionId);
     try {
       await _supabase.from('assessment_attempt_answers').upsert(
         {
@@ -535,10 +508,7 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
   }
 
   Future<void> _saveEssayAnswer(int questionIndex, String value) async {
-    setState(() {
-      _writtenAnswers[questionIndex] = value;
-    });
-
+    setState(() => _writtenAnswers[questionIndex] = value);
     try {
       await _supabase.from('assessment_attempt_answers').upsert(
         {
@@ -556,7 +526,6 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
 
   Future<void> _toggleFlag(int questionIndex) async {
     final newFlagState = !_flaggedIndexes.contains(questionIndex);
-
     setState(() {
       if (newFlagState) {
         _flaggedIndexes.add(questionIndex);
@@ -564,7 +533,6 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
         _flaggedIndexes.remove(questionIndex);
       }
     });
-
     try {
       await _supabase.from('assessment_attempt_answers').upsert(
         {
@@ -587,7 +555,6 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
   _OptionVm? _selectedOptionFor(int questionIndex) {
     final selectedId = _selectedOptionIds[questionIndex];
     if (selectedId == null) return null;
-
     for (final option in _questions[questionIndex].options) {
       if (option.id == selectedId) return option;
     }
@@ -618,14 +585,16 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
 
     if (_isEssay(question)) {
       final text = (_writtenAnswers[questionIndex] ?? '').trim();
-      return text.isEmpty ? 'No reflection submitted' : text;
+      return text.isEmpty
+          ? _txt('No reflection submitted', 'Walang isinumiteng repleksyon')
+          : text;
     }
 
     final selected = _selectedOptionFor(questionIndex);
     final correct = _correctOptionFor(questionIndex);
 
     if (selected == null && correct != null) {
-      return 'No answer selected. Correct answer: ${_optionDisplay(question, correct)}';
+      return '${_txt('No answer selected', 'Walang napiling sagot')}. ${_txt('Correct answer', 'Tamang sagot')}: ${_optionDisplay(question, correct)}';
     }
 
     if (selected != null && correct != null && selected.id == correct.id) {
@@ -633,10 +602,10 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
     }
 
     if (selected != null && correct != null) {
-      return '${_optionDisplay(question, selected)}. Correct answer: ${_optionDisplay(question, correct)}';
+      return '${_optionDisplay(question, selected)}. ${_txt('Correct answer', 'Tamang sagot')}: ${_optionDisplay(question, correct)}';
     }
 
-    return 'No answer selected';
+    return _txt('No answer selected', 'Walang napiling sagot');
   }
 
   String _reviewExplanationFor(int questionIndex) {
@@ -648,10 +617,16 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
     }
 
     if (correct != null) {
-      return 'The correct answer is "${correct.text}" based on the lesson for this module.';
+      return _txt(
+        'The correct answer is "${correct.text}" based on the lesson for this module.',
+        'Ang tamang sagot ay "${correct.text}" batay sa aralin ng modyul na ito.',
+      );
     }
 
-    return 'Review the fire extinguisher lesson from this module.';
+    return _txt(
+      'Review the fire extinguisher lesson from this module.',
+      'Suriin muli ang aralin tungkol sa pamatay-sunog ng modyul na ito.',
+    );
   }
 
   void _goNext() {
@@ -713,11 +688,8 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
       _editingFromSummary = true;
       _currentIndex = index;
     });
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_pageCtrl.hasClients) {
-        _pageCtrl.jumpToPage(index);
-      }
+      if (_pageCtrl.hasClients) _pageCtrl.jumpToPage(index);
     });
   }
 
@@ -733,9 +705,8 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
           behavior: SnackBarBehavior.floating,
           backgroundColor: const Color(0xFFB45309),
           margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
-          ),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
           content: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -746,7 +717,10 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  'Please answer all questions before submitting. Missing: $preview$suffix',
+                  _txt(
+                    'Please answer all questions before submitting. Missing: $preview$suffix',
+                    'Sagutan muna ang lahat ng tanong bago ipasa. Kulang: $preview$suffix',
+                  ),
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w700,
@@ -767,11 +741,14 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
     }
 
     final confirmed = await _showConfirmDialog(
-      title: 'Submit Post-Assessment',
-      message:
-          'Answered: $_answeredCount / ${_questions.length}\n\nAfter submission, you will see your score for the multiple-choice questions and your written reflection.',
-      confirmText: 'Submit',
-      cancelText: 'Review Again',
+      title: _txt('Submit Post-Assessment',
+          'Ipasa ang Pangwakas na Pagsusulit'),
+      message: _txt(
+        'Answered: $_answeredCount / ${_questions.length}\n\nAfter submission, you will see your score for the multiple-choice questions and your written reflection.',
+        'Nasagutan: $_answeredCount / ${_questions.length}\n\nPagkatapos ipasa, makikita mo ang iyong marka para sa mga multiple-choice na tanong at ang iyong nakasulat na repleksyon.',
+      ),
+      confirmText: _txt('Submit', 'Ipasa'),
+      cancelText: _txt('Review Again', 'Suriin Muli'),
     );
 
     if (confirmed != true) return;
@@ -786,7 +763,6 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
 
         if (_isEssay(question)) {
           final answerText = (_writtenAnswers[i] ?? '').trim();
-
           await _supabase.from('assessment_attempt_answers').upsert(
             {
               'attempt_id': _attemptId,
@@ -804,7 +780,6 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
           final selectedId = _selectedOptionIds[i];
           final isCorrect =
               selectedId == null ? false : _isCorrectSelection(i, selectedId);
-
           if (isCorrect) correctCount++;
 
           await _supabase.from('assessment_attempt_answers').upsert(
@@ -863,11 +838,10 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
       });
     } catch (e) {
       if (!mounted) return;
-
       await _showInfoDialog(
-        title: 'Submission failed',
+        title: _txt('Submission failed', 'Nabigo ang pagpapasa'),
         message: '$e',
-        buttonText: 'OK',
+        buttonText: _txt('OK', 'Sige'),
       );
     } finally {
       if (!mounted) return;
@@ -883,32 +857,136 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
   }) {
     return showDialog<bool>(
       context: context,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w900)),
-        content: Text(message, style: const TextStyle(height: 1.45)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(cancelText),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: kBrandRed,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+      barrierDismissible: true,
+      builder: (dialogContext) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 28),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.fromLTRB(22, 22, 22, 20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.18),
+                blurRadius: 30,
+                offset: const Offset(0, 16),
               ),
-            ),
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(
-              confirmText,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w900,
-              ),
-            ),
+            ],
           ),
-        ],
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Align(
+                alignment: Alignment.centerRight,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(99),
+                  onTap: () => Navigator.pop(dialogContext),
+                  child: Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF5F5F5),
+                      borderRadius: BorderRadius.circular(99),
+                    ),
+                    child: const Icon(Icons.close_rounded,
+                        size: 20, color: Colors.black54),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 4),
+              Container(
+                height: 68,
+                width: 68,
+                decoration: BoxDecoration(
+                  color: kBrandRed.withOpacity(0.10),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.error_outline_rounded,
+                    color: kBrandRed, size: 36),
+              ),
+              const SizedBox(height: 18),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 22,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.black87,
+                  height: 1.18,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Container(
+                height: 2,
+                width: 90,
+                decoration: BoxDecoration(
+                  color: kBrandRed,
+                  borderRadius: BorderRadius.circular(99),
+                ),
+              ),
+              const SizedBox(height: 18),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black.withOpacity(0.60),
+                  height: 1.45,
+                ),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pop(dialogContext, true),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: kBrandRed,
+                    elevation: 4,
+                    shadowColor: kBrandRed.withOpacity(0.35),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14)),
+                  ),
+                  child: Text(
+                    confirmText,
+                    style: const TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: OutlinedButton(
+                  onPressed: () => Navigator.pop(dialogContext, false),
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: kBrandRed, width: 1.3),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14)),
+                  ),
+                  child: Text(
+                    cancelText,
+                    style: const TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: kBrandRed,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -920,28 +998,114 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
   }) {
     return showDialog<void>(
       context: context,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w900)),
-        content: Text(message, style: const TextStyle(height: 1.45)),
-        actions: [
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: kBrandRed,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+      barrierDismissible: true,
+      builder: (dialogContext) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 28),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.fromLTRB(22, 22, 22, 20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.18),
+                blurRadius: 30,
+                offset: const Offset(0, 16),
               ),
-            ),
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              buttonText,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w900,
-              ),
-            ),
+            ],
           ),
-        ],
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Align(
+                alignment: Alignment.centerRight,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(99),
+                  onTap: () => Navigator.pop(dialogContext),
+                  child: Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF5F5F5),
+                      borderRadius: BorderRadius.circular(99),
+                    ),
+                    child: const Icon(Icons.close_rounded,
+                        size: 20, color: Colors.black54),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 4),
+              Container(
+                height: 68,
+                width: 68,
+                decoration: BoxDecoration(
+                  color: kBrandRed.withOpacity(0.10),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.error_outline_rounded,
+                    color: kBrandRed, size: 36),
+              ),
+              const SizedBox(height: 18),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 22,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.black87,
+                  height: 1.18,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Container(
+                height: 2,
+                width: 90,
+                decoration: BoxDecoration(
+                  color: kBrandRed,
+                  borderRadius: BorderRadius.circular(99),
+                ),
+              ),
+              const SizedBox(height: 18),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black.withOpacity(0.60),
+                  height: 1.45,
+                ),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pop(dialogContext),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: kBrandRed,
+                    elevation: 4,
+                    shadowColor: kBrandRed.withOpacity(0.35),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14)),
+                  ),
+                  child: Text(
+                    buttonText,
+                    style: const TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -962,9 +1126,7 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
             controller: _pageCtrl,
             physics: const NeverScrollableScrollPhysics(),
             itemCount: _questions.length,
-            onPageChanged: (index) {
-              setState(() => _currentIndex = index);
-            },
+            onPageChanged: (index) => setState(() => _currentIndex = index),
             itemBuilder: (context, index) {
               final question = _questions[index];
               final selectedId = _selectedOptionIds[index];
@@ -988,7 +1150,6 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
                         final option = entry.value;
                         final selected = selectedId == option.id;
                         final label = String.fromCharCode(65 + entry.key);
-
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 12),
                           child: _OptionCard(
@@ -1009,8 +1170,14 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
                     _HintCard(
                       icon: Icons.info_outline_rounded,
                       text: _isEssay(question)
-                          ? 'Write 1 to 2 sentences about what you learned from using a fire extinguisher.'
-                          : 'Use the summary to jump back to any question before submitting.',
+                          ? _txt(
+                              'Write 1 to 2 sentences about what you learned from using a fire extinguisher.',
+                              'Sumulat ng 1 hanggang 2 pangungusap tungkol sa iyong natutunan sa paggamit ng pamatay-sunog.',
+                            )
+                          : _txt(
+                              'Use the summary to jump back to any question before submitting.',
+                              'Gamitin ang buod upang bumalik sa anumang tanong bago ipasa.',
+                            ),
                     ),
                   ],
                 ),
@@ -1045,14 +1212,15 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
 
                 final selectedAnswer = _isEssay(question)
                     ? ((_writtenAnswers[index] ?? '').trim().isEmpty
-                        ? 'No reflection written'
+                        ? _txt('No reflection written',
+                            'Walang naisulat na repleksyon')
                         : _writtenAnswers[index]!.trim())
                     : (selected == null
-                        ? 'No answer selected'
+                        ? _txt('No answer selected', 'Walang napiling sagot')
                         : _optionDisplay(question, selected));
 
                 final answered = _isEssay(question)
-                    ? ((_writtenAnswers[index] ?? '').trim().isNotEmpty)
+                    ? (_writtenAnswers[index] ?? '').trim().isNotEmpty
                     : selected != null;
 
                 return _SummaryCard(
@@ -1091,7 +1259,8 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
                     questionNumber: index + 1,
                     question: question.prompt,
                     userAnswer: (_writtenAnswers[index] ?? '').trim().isEmpty
-                        ? 'No reflection submitted'
+                        ? _txt('No reflection submitted',
+                            'Walang isinumiteng repleksyon')
                         : _writtenAnswers[index]!.trim(),
                     correctAnswer: '',
                     isCorrect: false,
@@ -1102,15 +1271,17 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
 
                 final selected = _selectedOptionFor(index);
                 final correct = _correctOptionFor(index);
-                final isCorrect =
-                    selected != null && correct != null && selected.id == correct.id;
+                final isCorrect = selected != null &&
+                    correct != null &&
+                    selected.id == correct.id;
 
                 return _ReviewCard(
                   questionNumber: index + 1,
                   question: question.prompt,
                   userAnswer: _reviewAnswerText(index),
                   correctAnswer: correct == null
-                      ? 'No correct answer configured'
+                      ? _txt('No correct answer configured',
+                          'Walang tamang sagot na na-configure')
                       : _optionDisplay(question, correct),
                   isCorrect: isCorrect,
                   explanation: isCorrect ? null : _reviewExplanationFor(index),
@@ -1135,17 +1306,14 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
                 style: OutlinedButton.styleFrom(
                   side: const BorderSide(color: kBrandRed),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18),
-                  ),
+                      borderRadius: BorderRadius.circular(18)),
                   padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
                 onPressed: () => Navigator.pop(context),
-                child: const Text(
-                  'Back',
-                  style: TextStyle(
-                    color: kBrandRed,
-                    fontWeight: FontWeight.w900,
-                  ),
+                child: Text(
+                  _txt('Back', 'Bumalik'),
+                  style: const TextStyle(
+                      color: kBrandRed, fontWeight: FontWeight.w900),
                 ),
               ),
             ),
@@ -1155,19 +1323,16 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: kBrandRedDark,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18),
-                  ),
+                      borderRadius: BorderRadius.circular(18)),
                   padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
                 onPressed: _isSubmitting
                     ? null
                     : () => _loadOrCreateAttempt(forceNewAttempt: true),
-                child: const Text(
-                  'New Attempt',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w900,
-                  ),
+                child: Text(
+                  _txt('New Attempt', 'Bagong Subok'),
+                  style: const TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.w900),
                 ),
               ),
             ),
@@ -1178,7 +1343,6 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
 
     if (_showSummary) {
       final locked = _hasUnansweredQuestions;
-
       return Padding(
         padding: const EdgeInsets.fromLTRB(24, 8, 24, 20),
         child: Row(
@@ -1188,21 +1352,24 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
                 style: OutlinedButton.styleFrom(
                   side: const BorderSide(color: kBrandRed),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18),
-                  ),
+                      borderRadius: BorderRadius.circular(18)),
                   padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
-                onPressed: () {
-                  setState(() {
-                    _showSummary = false;
-                    _editingFromSummary = false;
-                  });
-                },
-                child: const Text(
-                  'Back to Questions',
-                  style: TextStyle(
-                    color: kBrandRed,
-                    fontWeight: FontWeight.w900,
+                onPressed: () => setState(() {
+                  _showSummary = false;
+                  _editingFromSummary = false;
+                }),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: Text(
+                    _txt('Back to Questions', 'Bumalik sa Tanong'),
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: kBrandRed,
+                      fontWeight: FontWeight.w900,
+                      fontSize: 14,
+                      height: 1.2,
+                    ),
                   ),
                 ),
               ),
@@ -1211,23 +1378,21 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
             Expanded(
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: locked ? Colors.grey.shade400 : kBrandRed,
+                  backgroundColor:
+                      locked ? Colors.grey.shade400 : kBrandRed,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18),
-                  ),
+                      borderRadius: BorderRadius.circular(18)),
                   padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
                 onPressed: _isSubmitting ? null : _submitAssessment,
                 child: Text(
                   _isSubmitting
-                      ? 'Submitting...'
+                      ? _txt('Submitting...', 'Ipinapasa...')
                       : locked
-                          ? 'Complete All'
-                          : 'Submit',
+                          ? _txt('Complete All', 'Kumpletuhin Lahat')
+                          : _txt('Submit', 'Ipasa'),
                   style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w900,
-                  ),
+                      color: Colors.white, fontWeight: FontWeight.w900),
                 ),
               ),
             ),
@@ -1238,8 +1403,10 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
 
     final isLast = _currentIndex == _questions.length - 1;
     final nextLabel = _editingFromSummary
-        ? 'Review Summary'
-        : (isLast ? 'Review Summary' : 'Next');
+        ? _txt('Review Summary', 'Suriin ang Buod')
+        : (isLast
+            ? _txt('Review Summary', 'Suriin ang Buod')
+            : _txt('Next', 'Susunod'));
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 8, 24, 20),
@@ -1250,19 +1417,18 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
               style: OutlinedButton.styleFrom(
                 side: const BorderSide(color: kBrandRed),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(18),
-                ),
+                    borderRadius: BorderRadius.circular(18)),
                 padding: const EdgeInsets.symmetric(vertical: 14),
               ),
               onPressed: _goBack,
               child: Text(
                 _editingFromSummary
-                    ? 'Back to Summary'
-                    : (_currentIndex == 0 ? 'Exit' : 'Back'),
+                    ? _txt('Back to Summary', 'Bumalik sa Buod')
+                    : (_currentIndex == 0
+                        ? _txt('Exit', 'Lumabas')
+                        : _txt('Back', 'Bumalik')),
                 style: const TextStyle(
-                  color: kBrandRed,
-                  fontWeight: FontWeight.w900,
-                ),
+                    color: kBrandRed, fontWeight: FontWeight.w900),
               ),
             ),
           ),
@@ -1272,17 +1438,14 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: kBrandRed,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(18),
-                ),
+                    borderRadius: BorderRadius.circular(18)),
                 padding: const EdgeInsets.symmetric(vertical: 14),
               ),
               onPressed: _goNext,
               child: Text(
                 nextLabel,
                 style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w900,
-                ),
+                    color: Colors.white, fontWeight: FontWeight.w900),
               ),
             ),
           ),
@@ -1316,18 +1479,30 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
                               IconButton(
                                 padding: EdgeInsets.zero,
                                 constraints: const BoxConstraints(),
-                                icon: const Icon(Icons.close, color: Colors.white),
+                                icon: const Icon(Icons.close,
+                                    color: Colors.white),
                                 onPressed: () => Navigator.pop(context),
                               ),
                               const SizedBox(height: 15),
-                              Center(
+                              SizedBox(
+                                width: double.infinity,
                                 child: Text(
-                                  _showReview ? 'Assessment Review' : 'Post Assessment',
+                                  _showReview
+                                      ? _txt(
+                                          'Assessment Review',
+                                          'Pagsusuri ng Pagtatasa',
+                                        )
+                                      : _txt(
+                                          'Post Assessment',
+                                          'Pangwakas na Pagsusulit',
+                                        ),
+                                  textAlign: TextAlign.center,
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 30,
                                     fontWeight: FontWeight.bold,
                                     fontFamily: 'Poppins',
+                                    height: 1.25,
                                   ),
                                 ),
                               ),
@@ -1335,7 +1510,8 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
                               Padding(
                                 padding: const EdgeInsets.only(left: 25),
                                 child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.center,
                                   children: [
                                     Container(
                                       padding: const EdgeInsets.symmetric(
@@ -1348,27 +1524,30 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
                                           end: Alignment.bottomRight,
                                           colors: [kBrandRed, kBrandRedDark],
                                         ),
-                                        borderRadius: BorderRadius.circular(10),
+                                        borderRadius:
+                                            BorderRadius.circular(10),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.black.withOpacity(0.18),
+                                            color: Colors.black
+                                                .withOpacity(0.18),
                                             blurRadius: 10,
                                             offset: const Offset(0, 6),
                                           ),
                                         ],
                                       ),
-                                      child: const Row(
+                                      child: Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          Icon(
-                                            Icons.local_fire_department_rounded,
+                                          const Icon(
+                                            Icons
+                                                .local_fire_department_rounded,
                                             color: Colors.white,
                                             size: 18,
                                           ),
-                                          SizedBox(width: 8),
+                                          const SizedBox(width: 8),
                                           Text(
-                                            'MODULE 1',
-                                            style: TextStyle(
+                                            _isTl ? 'MODYUL 1' : 'MODULE 1',
+                                            style: const TextStyle(
                                               fontWeight: FontWeight.bold,
                                               color: Colors.white,
                                               fontFamily: 'Poppins',
@@ -1381,14 +1560,21 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
                                     Expanded(
                                       child: Text(
                                         _showReview
-                                            ? 'Your score for the graded items plus your written reflection'
-                                            : (_assessmentTitle.isEmpty
-                                                ? 'Fire Extinguisher: Basics, Types, and How to Use'
-                                                : _assessmentTitle),
+                                            ? _txt(
+                                                'Your score for the graded items plus your written reflection',
+                                                'Ang iyong marka para sa mga graded na aytem kasama ang iyong nakasulat na repleksyon',
+                                              )
+                                            : _txt(
+                                                'Fire Extinguisher: Basics, Types, and Proper Use',
+                                                'Pamatay-Sunog: Mga Batayan, Uri, at Tamang Paggamit',
+                                              ),
+                                        maxLines: 3,
+                                        overflow: TextOverflow.ellipsis,
                                         style: const TextStyle(
                                           color: Colors.black,
-                                          fontWeight: FontWeight.w600,
+                                          fontWeight: FontWeight.w700,
                                           fontFamily: 'Poppins',
+                                          height: 1.25,
                                         ),
                                       ),
                                     ),
@@ -1433,14 +1619,14 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
   }
 }
 
+// ─────────────────────────────────────────────────────────────
+// Data models
+// ─────────────────────────────────────────────────────────────
+
 class _CreatedAttempt {
   final String attemptId;
   final List<_QuestionVm> questions;
-
-  const _CreatedAttempt({
-    required this.attemptId,
-    required this.questions,
-  });
+  const _CreatedAttempt({required this.attemptId, required this.questions});
 }
 
 class _QuestionVm {
@@ -1449,7 +1635,6 @@ class _QuestionVm {
   final String explanation;
   final String type;
   final List<_OptionVm> options;
-
   const _QuestionVm({
     required this.id,
     required this.prompt,
@@ -1465,7 +1650,6 @@ class _OptionVm {
   final String text;
   final bool isCorrect;
   final int displayOrder;
-
   const _OptionVm({
     required this.id,
     required this.key,
@@ -1474,6 +1658,10 @@ class _OptionVm {
     required this.displayOrder,
   });
 }
+
+// ─────────────────────────────────────────────────────────────
+// UI widgets
+// ─────────────────────────────────────────────────────────────
 
 class _StatsRow extends StatelessWidget {
   const _StatsRow({
@@ -1493,7 +1681,7 @@ class _StatsRow extends StatelessWidget {
         Expanded(
           child: _StatChip(
             icon: Icons.check_circle_outline_rounded,
-            label: 'Answered',
+            label: t(context, 'Answered', 'Nasagutan'),
             value: '$answered / $total',
             color: const Color(0xFF16A34A),
           ),
@@ -1502,7 +1690,7 @@ class _StatsRow extends StatelessWidget {
         Expanded(
           child: _StatChip(
             icon: Icons.outlined_flag_rounded,
-            label: 'Flagged',
+            label: t(context, 'Flagged', 'Naka-flag'),
             value: '$flagged',
             color: kBrandRed,
           ),
@@ -1616,13 +1804,12 @@ class _QuestionHeaderCard extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [kBrandRed, kBrandRedDark],
-                  ),
+                  gradient:
+                      const LinearGradient(colors: [kBrandRed, kBrandRedDark]),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  'QUESTION $questionNumber / $totalQuestions',
+                  '${t(context, 'QUESTION', 'TANONG')} $questionNumber / $totalQuestions',
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w900,
@@ -1657,7 +1844,9 @@ class _QuestionHeaderCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        isFlagged ? 'Flagged' : 'Flag',
+                        isFlagged
+                            ? t(context, 'Flagged', 'Naka-flag')
+                            : t(context, 'Flag', 'I-flag'),
                         style: TextStyle(
                           fontWeight: FontWeight.w800,
                           color: isFlagged ? kBrandRed : kDarkText,
@@ -1700,8 +1889,7 @@ class _OptionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final borderColor =
-        selected ? kBrandRed : Colors.black.withOpacity(0.08);
+    final borderColor = selected ? kBrandRed : Colors.black.withOpacity(0.08);
     final bgColor = selected ? kBrandRed.withOpacity(0.08) : Colors.white;
 
     return Material(
@@ -1714,10 +1902,7 @@ class _OptionCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: bgColor,
             borderRadius: BorderRadius.circular(18),
-            border: Border.all(
-              color: borderColor,
-              width: selected ? 1.4 : 1,
-            ),
+            border: Border.all(color: borderColor, width: selected ? 1.4 : 1),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.05),
@@ -1798,8 +1983,11 @@ class _EssayAnswerCard extends StatelessWidget {
         cursorColor: kBrandRed,
         onChanged: onChanged,
         decoration: InputDecoration(
-          hintText:
-              'Write 1 to 2 sentences about what you learned from using a fire extinguisher.',
+          hintText: t(
+            context,
+            'Write 1 to 2 sentences about what you learned from using a fire extinguisher.',
+            'Sumulat ng 1 hanggang 2 pangungusap tungkol sa iyong natutunan sa paggamit ng pamatay-sunog.',
+          ),
           hintStyle: TextStyle(
             color: Colors.grey.shade600,
             fontWeight: FontWeight.w500,
@@ -1818,10 +2006,7 @@ class _EssayAnswerCard extends StatelessWidget {
 }
 
 class _HintCard extends StatelessWidget {
-  const _HintCard({
-    required this.icon,
-    required this.text,
-  });
+  const _HintCard({required this.icon, required this.text});
 
   final IconData icon;
   final String text;
@@ -1842,10 +2027,7 @@ class _HintCard extends StatelessWidget {
           Expanded(
             child: Text(
               text,
-              style: const TextStyle(
-                height: 1.35,
-                fontWeight: FontWeight.w600,
-              ),
+              style: const TextStyle(height: 1.35, fontWeight: FontWeight.w600),
             ),
           ),
         ],
@@ -1891,9 +2073,10 @@ class _SummaryHeaderCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          const Text(
-            'Review all questions before you submit',
-            style: TextStyle(
+          Text(
+            t(context, 'Review all questions before you submit',
+                'Suriin ang lahat ng tanong bago ipasa'),
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w900,
               color: kDarkText,
@@ -1902,7 +2085,11 @@ class _SummaryHeaderCard extends StatelessWidget {
           if (hasUnanswered) ...[
             const SizedBox(height: 8),
             Text(
-              '$unansweredCount question(s) still need an answer.',
+              t(
+                context,
+                '$unansweredCount question(s) still need an answer.',
+                '$unansweredCount tanong pa ang kailangang sagutin.',
+              ),
               style: const TextStyle(
                 color: Colors.orange,
                 fontWeight: FontWeight.w800,
@@ -1910,11 +2097,7 @@ class _SummaryHeaderCard extends StatelessWidget {
             ),
           ],
           const SizedBox(height: 10),
-          _StatsRow(
-            answered: answered,
-            total: total,
-            flagged: flagged,
-          ),
+          _StatsRow(answered: answered, total: total, flagged: flagged),
         ],
       ),
     );
@@ -1973,9 +2156,7 @@ class _SummaryCard extends StatelessWidget {
                 child: Text(
                   'Q$questionNumber',
                   style: const TextStyle(
-                    fontWeight: FontWeight.w900,
-                    color: kBrandRed,
-                  ),
+                      fontWeight: FontWeight.w900, color: kBrandRed),
                 ),
               ),
               const SizedBox(width: 8),
@@ -1987,7 +2168,9 @@ class _SummaryCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
-                  answered ? 'Answered' : 'Unanswered',
+                  answered
+                      ? t(context, 'Answered', 'Nasagutan')
+                      : t(context, 'Unanswered', 'Hindi pa nasasagutan'),
                   style: TextStyle(
                     fontWeight: FontWeight.w900,
                     color: statusColor,
@@ -2004,9 +2187,9 @@ class _SummaryCard extends StatelessWidget {
                     color: kBrandRed.withOpacity(0.12),
                     borderRadius: BorderRadius.circular(999),
                   ),
-                  child: const Text(
-                    'Flagged',
-                    style: TextStyle(
+                  child: Text(
+                    t(context, 'Flagged', 'Naka-flag'),
+                    style: const TextStyle(
                       fontWeight: FontWeight.w900,
                       color: kBrandRed,
                       fontSize: 12,
@@ -2050,21 +2233,14 @@ class _SummaryCard extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: kBrandRed,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
+                    borderRadius: BorderRadius.circular(12)),
               ),
               onPressed: onEdit,
-              icon: const Icon(
-                Icons.edit_rounded,
-                color: Colors.white,
-                size: 18,
-              ),
-              label: const Text(
-                'Edit',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w900,
-                ),
+              icon: const Icon(Icons.edit_rounded, color: Colors.white, size: 18),
+              label: Text(
+                t(context, 'Edit', 'I-edit'),
+                style: const TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.w900),
               ),
             ),
           ),
@@ -2075,10 +2251,7 @@ class _SummaryCard extends StatelessWidget {
 }
 
 class _ReviewTopCard extends StatelessWidget {
-  const _ReviewTopCard({
-    required this.score,
-    required this.total,
-  });
+  const _ReviewTopCard({required this.score, required this.total});
 
   final int score;
   final int total;
@@ -2104,9 +2277,10 @@ class _ReviewTopCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          const Text(
-            'Post-Assessment Result',
-            style: TextStyle(
+          Text(
+            t(context, 'Post-Assessment Result',
+                'Resulta ng Pangwakas na Pagsusulit'),
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w900,
               color: kDarkText,
@@ -2122,9 +2296,9 @@ class _ReviewTopCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 4),
-          const Text(
-            'Scored questions only',
-            style: TextStyle(
+          Text(
+            t(context, 'Scored questions only', 'Graded na mga tanong lamang'),
+            style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w700,
               color: kBrandRedDark,
@@ -2166,9 +2340,8 @@ class _ReviewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final statusColor = isEssay
-        ? kBrandRed
-        : (isCorrect ? const Color(0xFF16A34A) : kBrandRed);
+    final statusColor =
+        isEssay ? kBrandRed : (isCorrect ? const Color(0xFF16A34A) : kBrandRed);
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -2198,10 +2371,7 @@ class _ReviewCard extends StatelessWidget {
                 ),
                 child: Text(
                   'Q$questionNumber',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w900,
-                    color: statusColor,
-                  ),
+                  style: TextStyle(fontWeight: FontWeight.w900, color: statusColor),
                 ),
               ),
               const SizedBox(width: 8),
@@ -2213,7 +2383,11 @@ class _ReviewCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
-                  isEssay ? 'Reflection' : (isCorrect ? 'Correct' : 'Incorrect'),
+                  isEssay
+                      ? t(context, 'Reflection', 'Repleksyon')
+                      : (isCorrect
+                          ? t(context, 'Correct', 'Tama')
+                          : t(context, 'Incorrect', 'Mali')),
                   style: TextStyle(
                     fontWeight: FontWeight.w900,
                     color: statusColor,
@@ -2235,11 +2409,11 @@ class _ReviewCard extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(
-            isEssay ? 'Your Reflection' : 'Answer Review',
+            isEssay
+                ? t(context, 'Your Reflection', 'Iyong Repleksyon')
+                : t(context, 'Answer Review', 'Pagsusuri ng Sagot'),
             style: const TextStyle(
-              fontWeight: FontWeight.w900,
-              color: Colors.black54,
-            ),
+                fontWeight: FontWeight.w900, color: Colors.black54),
           ),
           const SizedBox(height: 4),
           Text(
@@ -2254,12 +2428,10 @@ class _ReviewCard extends StatelessWidget {
           ),
           if (!isEssay) ...[
             const SizedBox(height: 12),
-            const Text(
-              'Correct Answer',
-              style: TextStyle(
-                fontWeight: FontWeight.w900,
-                color: Colors.black54,
-              ),
+            Text(
+              t(context, 'Correct Answer', 'Tamang Sagot'),
+              style: const TextStyle(
+                  fontWeight: FontWeight.w900, color: Colors.black54),
             ),
             const SizedBox(height: 4),
             Text(
@@ -2274,11 +2446,11 @@ class _ReviewCard extends StatelessWidget {
           if (explanation != null && explanation!.trim().isNotEmpty) ...[
             const SizedBox(height: 12),
             Text(
-              isEssay ? 'Reflection Note' : 'Why this is wrong',
+              isEssay
+                  ? t(context, 'Reflection Note', 'Tala ng Repleksyon')
+                  : t(context, 'Why this is wrong', 'Bakit mali ito'),
               style: const TextStyle(
-                fontWeight: FontWeight.w900,
-                color: Colors.black54,
-              ),
+                  fontWeight: FontWeight.w900, color: Colors.black54),
             ),
             const SizedBox(height: 4),
             Text(

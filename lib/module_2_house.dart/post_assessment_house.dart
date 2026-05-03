@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../localization/localized_db_text.dart';
+import '../localization/language_controller.dart';
 import '../profile_progress_sync.dart';
+import 'package:flutter/material.dart';
+import 'pre_assess_instruction.dart' as intro;
 
 const Color kHouseOrange = Color(0xFFF97316);
 const Color kHouseAmber = Color(0xFFF59E0B);
@@ -22,6 +25,9 @@ class _PostAssessmentHousePageState extends State<PostAssessmentHousePage> {
 
   final PageController _pageCtrl = PageController();
   final Map<int, TextEditingController> _essayControllers = {};
+
+  bool get _isTl => Localizations.localeOf(context).languageCode == 'tl';
+  String _txt(String en, String tl) => _isTl ? tl : en;
 
   bool _isLoading = true;
   bool _isSubmitting = false;
@@ -384,9 +390,9 @@ class _PostAssessmentHousePageState extends State<PostAssessmentHousePage> {
       setState(() => _isLoading = false);
 
       await _showInfoDialog(
-        title: 'Failed to load post-assessment',
+        title: _txt('Failed to load post-assessment', 'Hindi na-load ang pangwakas na pagsusulit'),
         message: '$e',
-        buttonText: 'OK',
+        buttonText: _txt('OK', 'Sige'),
       );
     }
   }
@@ -557,20 +563,24 @@ class _PostAssessmentHousePageState extends State<PostAssessmentHousePage> {
   Future<void> _submitAssessment() async {
     if (_hasUnansweredQuestions) {
       await _showInfoDialog(
-        title: 'Cannot submit yet',
-        message:
-            'You must answer all questions before submitting the post-assessment.',
-        buttonText: 'OK',
+        title: _txt('Cannot submit yet', 'Hindi pa maaaring ipasa'),
+        message: _txt(
+          'You must answer all questions before submitting the post-assessment.',
+          'Dapat mong sagutin lahat ng tanong bago ipasa ang pangwakas na pagsusulit.',
+        ),
+        buttonText: _txt('OK', 'Sige'),
       );
       return;
     }
 
     final confirmed = await _showConfirmDialog(
-      title: 'Submit Post-Assessment',
-      message:
-          'Answered: $_answeredCount / ${_questions.length}\n\nAfter submission, you will see your score for the 4 multiple-choice questions and your written reflection.',
-      confirmText: 'Submit',
-      cancelText: 'Review Again',
+      title: _txt('Submit Post-Assessment', 'Ipasa ang Pangwakas na Pagsusulit'),
+      message: _txt(
+        'Answered: $_answeredCount / ${_questions.length}\n\nAfter submission, you will see your score for the 4 multiple-choice questions and your written reflection.',
+        'Nasagutan: $_answeredCount / ${_questions.length}\n\nMakikita mo ang iyong marka pagkatapos ipasa.',
+      ),
+      confirmText: _txt('Submit', 'Ipasa'),
+      cancelText: _txt('Review Again', 'Suriin Muli'),
     );
 
     if (confirmed != true) return;
@@ -663,9 +673,9 @@ class _PostAssessmentHousePageState extends State<PostAssessmentHousePage> {
     } catch (e) {
       if (!mounted) return;
       await _showInfoDialog(
-        title: 'Submission failed',
+        title: _txt('Submission failed', 'Nabigo ang pagpapasa'),
         message: '$e',
-        buttonText: 'OK',
+        buttonText: _txt('OK', 'Sige'),
       );
     } finally {
       if (!mounted) return;
@@ -874,8 +884,14 @@ class _PostAssessmentHousePageState extends State<PostAssessmentHousePage> {
                     _HintCard(
                       icon: Icons.info_outline_rounded,
                       text: _isEssay(question)
-                          ? 'Write 1 to 2 sentences about what you learned from the house fire simulation.'
-                          : 'Use the summary to jump back to any question before submitting.',
+                          ? _txt(
+                              'Write 1 to 2 sentences about what you learned from the house fire simulation.',
+                              'Sumulat ng 1 hanggang 2 pangungusap tungkol sa iyong natutunan sa panahon ng isang sunog sa bahay.',
+                            )
+                          : _txt(
+                              'Use the summary to jump back to any question before submitting.',
+                              'Gamitin ang buod upang bumalik sa anumang tanong bago magpasa.',
+                            ),
                     ),
                   ],
                 ),
@@ -909,12 +925,12 @@ class _PostAssessmentHousePageState extends State<PostAssessmentHousePage> {
                 final selected = _selectedOptionFor(index);
 
                 final selectedAnswer = _isEssay(question)
-                    ? ((_writtenAnswers[index] ?? '').trim().isEmpty
-                        ? 'No reflection written'
-                        : _writtenAnswers[index]!.trim())
-                    : (selected == null
-                        ? 'No answer selected'
-                        : _optionDisplay(question, selected));
+                  ? ((_writtenAnswers[index] ?? '').trim().isEmpty
+                    ? _txt('No reflection written', 'Walang naisulat na repleksyon')
+                    : _writtenAnswers[index]!.trim())
+                  : (selected == null
+                    ? _txt('No answer selected', 'Walang napiling sagot')
+                    : _optionDisplay(question, selected));
 
                 final answered = _isEssay(question)
                     ? ((_writtenAnswers[index] ?? '').trim().isNotEmpty)
@@ -956,8 +972,8 @@ class _PostAssessmentHousePageState extends State<PostAssessmentHousePage> {
                     questionNumber: index + 1,
                     question: question.prompt,
                     userAnswer: (_writtenAnswers[index] ?? '').trim().isEmpty
-                        ? 'No reflection submitted'
-                        : _writtenAnswers[index]!.trim(),
+                      ? _txt('No reflection submitted', 'Walang isinumiteng repleksyon')
+                      : _writtenAnswers[index]!.trim(),
                     correctAnswer: '',
                     isCorrect: false,
                     explanation: question.explanation,
@@ -973,11 +989,11 @@ class _PostAssessmentHousePageState extends State<PostAssessmentHousePage> {
                 return _ReviewCard(
                   questionNumber: index + 1,
                   question: question.prompt,
-                  userAnswer: selected == null
-                      ? 'No answer selected'
+                    userAnswer: selected == null
+                      ? _txt('No answer selected', 'Walang napiling sagot')
                       : _optionDisplay(question, selected),
-                  correctAnswer: correct == null
-                      ? 'No correct answer configured'
+                    correctAnswer: correct == null
+                      ? _txt('No correct answer configured', 'Walang tamang sagot na naka-configure')
                       : _optionDisplay(question, correct),
                   isCorrect: isCorrect,
                   explanation: isCorrect ? null : _reviewExplanationFor(index),
@@ -1007,9 +1023,9 @@ class _PostAssessmentHousePageState extends State<PostAssessmentHousePage> {
                   padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
                 onPressed: () => Navigator.pop(context),
-                child: const Text(
-                  'Back',
-                  style: TextStyle(
+                child: Text(
+                  _txt('Back', 'Bumalik'),
+                  style: const TextStyle(
                     color: kHouseOrange,
                     fontWeight: FontWeight.w900,
                   ),
@@ -1029,9 +1045,9 @@ class _PostAssessmentHousePageState extends State<PostAssessmentHousePage> {
                 onPressed: _isSubmitting
                     ? null
                     : () => _loadOrCreateAttempt(forceNewAttempt: true),
-                child: const Text(
-                  'New Attempt',
-                  style: TextStyle(
+                child: Text(
+                  _txt('New Attempt', 'Bagong Subok'),
+                  style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w900,
                   ),
@@ -1065,11 +1081,17 @@ class _PostAssessmentHousePageState extends State<PostAssessmentHousePage> {
                     _editingFromSummary = false;
                   });
                 },
-                child: const Text(
-                  'Back to Questions',
-                  style: TextStyle(
-                    color: kHouseOrange,
-                    fontWeight: FontWeight.w900,
+                child: SizedBox(
+                  width: double.infinity,
+                  child: Text(
+                    _txt('Back to Questions', 'Bumalik sa Tanong'),
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: kHouseOrange,
+                      fontWeight: FontWeight.w900,
+                      fontSize: 14,
+                      height: 1.2,
+                    ),
                   ),
                 ),
               ),
@@ -1087,10 +1109,10 @@ class _PostAssessmentHousePageState extends State<PostAssessmentHousePage> {
                 onPressed: _isSubmitting ? null : _submitAssessment,
                 child: Text(
                   _isSubmitting
-                      ? 'Submitting...'
+                      ? _txt('Submitting...', 'Ipinapasa...')
                       : locked
-                          ? 'Complete All'
-                          : 'Submit',
+                          ? _txt('Complete All', 'Kumpletuhin Lahat')
+                          : _txt('Submit', 'Ipasa'),
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w900,
@@ -1104,8 +1126,9 @@ class _PostAssessmentHousePageState extends State<PostAssessmentHousePage> {
     }
 
     final isLast = _currentIndex == _questions.length - 1;
-    final nextLabel =
-        _editingFromSummary ? 'Review Summary' : (isLast ? 'Review Summary' : 'Next');
+    final nextLabel = _editingFromSummary
+      ? _txt('Review Summary', 'Suriin ang Buod')
+      : (isLast ? _txt('Review Summary', 'Suriin ang Buod') : _txt('Next', 'Susunod'));
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 8, 24, 20),
@@ -1123,8 +1146,8 @@ class _PostAssessmentHousePageState extends State<PostAssessmentHousePage> {
               onPressed: _goBack,
               child: Text(
                 _editingFromSummary
-                    ? 'Back to Summary'
-                    : (_currentIndex == 0 ? 'Exit' : 'Back'),
+                    ? _txt('Back to Summary', 'Bumalik sa Buod')
+                    : (_currentIndex == 0 ? _txt('Exit', 'Lumabas') : _txt('Back', 'Bumalik')),
                 style: const TextStyle(
                   color: kHouseOrange,
                   fontWeight: FontWeight.w900,
@@ -1160,8 +1183,8 @@ class _PostAssessmentHousePageState extends State<PostAssessmentHousePage> {
   @override
   Widget build(BuildContext context) {
     final headerTitle = _moduleDisplayTitle.trim().isEmpty
-        ? 'House Fire: What To Do During a House Fire'
-        : _moduleDisplayTitle.trim();
+      ? _txt('House Fire: What To Do During a House Fire', 'Sunog sa Bahay: Paano Makalabas nang Ligtas')
+      : _moduleDisplayTitle.trim();
 
     return Scaffold(
       backgroundColor: kSoftBg,
@@ -1177,32 +1200,41 @@ class _PostAssessmentHousePageState extends State<PostAssessmentHousePage> {
                     children: [
                       const SizedBox(height: 15),
                       Padding(
-                        padding: const EdgeInsets.only(left: 9, right: 25),
+                        padding: const EdgeInsets.symmetric(horizontal: 25),
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            IconButton(
-                              padding: EdgeInsets.zero,
-                              constraints: const BoxConstraints(),
-                              icon: const Icon(Icons.close, color: Colors.white),
-                              onPressed: () => Navigator.pop(context),
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: IconButton(
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(),
+                                icon: const Icon(Icons.close, color: Colors.white),
+                                onPressed: () => Navigator.pop(context),
+                              ),
                             ),
                             const SizedBox(height: 15),
-                            Center(
+                            SizedBox(
+                              width: double.infinity,
                               child: Text(
-                                _showReview ? 'Assessment Review' : 'Post-Assessment',
+                                _showReview
+                                    ? _txt('Assessment Review', 'Pagsusuri ng Pagtatasa')
+                                    : _txt('Post Assessment', 'Pangwakas na Pagsusulit'),
+                                textAlign: TextAlign.center,
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 30,
                                   fontWeight: FontWeight.bold,
                                   fontFamily: 'Poppins',
+                                  height: 1.25,
                                 ),
                               ),
                             ),
                             const SizedBox(height: 15),
                             Padding(
-                              padding: const EdgeInsets.only(left: 25),
+                              padding: const EdgeInsets.symmetric(horizontal: 8),
                               child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   Container(
@@ -1221,18 +1253,18 @@ class _PostAssessmentHousePageState extends State<PostAssessmentHousePage> {
                                         ),
                                       ],
                                     ),
-                                    child: const Row(
+                                    child: Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        Icon(
+                                        const Icon(
                                           Icons.home_rounded,
                                           color: Colors.white,
                                           size: 18,
                                         ),
-                                        SizedBox(width: 8),
+                                        const SizedBox(width: 8),
                                         Text(
-                                          'MODULE 2',
-                                          style: TextStyle(
+                                          _isTl ? 'MODYUL 2' : 'MODULE 2',
+                                          style: const TextStyle(
                                             fontWeight: FontWeight.bold,
                                             color: Colors.white,
                                             fontFamily: 'Poppins',
@@ -1245,7 +1277,10 @@ class _PostAssessmentHousePageState extends State<PostAssessmentHousePage> {
                                   Expanded(
                                     child: Text(
                                       _showReview
-                                          ? 'Your score for the graded items plus your written reflection'
+                                          ? _txt(
+                                              'Your score for the graded items plus your written reflection',
+                                              'Ang iyong marka para sa graded na mga tanong at ang iyong naisulat na repleksyon',
+                                            )
                                           : headerTitle,
                                       style: const TextStyle(
                                         color: Colors.black,
@@ -1353,7 +1388,7 @@ class _StatsRow extends StatelessWidget {
         Expanded(
           child: _StatChip(
             icon: Icons.check_circle_outline_rounded,
-            label: 'Answered',
+            label: t(context, 'Answered', 'Nasagutan'),
             value: '$answered / $total',
             color: const Color(0xFF16A34A),
           ),
@@ -1362,7 +1397,7 @@ class _StatsRow extends StatelessWidget {
         Expanded(
           child: _StatChip(
             icon: Icons.outlined_flag_rounded,
-            label: 'Flagged',
+            label: t(context, 'Flagged', 'Naka-flag'),
             value: '$flagged',
             color: kHouseOrange,
           ),
@@ -1479,7 +1514,7 @@ class _QuestionHeaderCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  'QUESTION $questionNumber / $totalQuestions',
+                  '${t(context, 'QUESTION', 'TANONG')} $questionNumber / $totalQuestions',
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w900,
@@ -1513,7 +1548,7 @@ class _QuestionHeaderCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        isFlagged ? 'Flagged' : 'Flag',
+                        isFlagged ? t(context, 'Flagged', 'Naka-flag') : t(context, 'Flag', 'I-flag'),
                         style: TextStyle(
                           fontWeight: FontWeight.w800,
                           color: isFlagged ? kHouseOrange : kDarkText,
@@ -1651,8 +1686,11 @@ class _EssayAnswerCard extends StatelessWidget {
         cursorColor: kHouseOrange,
         onChanged: onChanged,
         decoration: InputDecoration(
-          hintText:
-              'Write 1 to 2 sentences about what you learned from the house fire simulation.',
+          hintText: t(
+            context,
+            'Write 1 to 2 sentences about what you learned from the house fire simulation.',
+            'Sumulat ng 1 hanggang 2 pangungusap tungkol sa iyong natutunan sa panahon ng isang sunog sa bahay.',
+          ),
           hintStyle: TextStyle(
             color: Colors.grey.shade600,
             fontWeight: FontWeight.w500,
@@ -1744,9 +1782,9 @@ class _SummaryHeaderCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          const Text(
-            'Review all questions before you submit',
-            style: TextStyle(
+          Text(
+            t(context, 'Review all questions before you submit', 'Suriin ang lahat ng tanong bago ipasa'),
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w900,
               color: kDarkText,
@@ -1755,7 +1793,7 @@ class _SummaryHeaderCard extends StatelessWidget {
           if (hasUnanswered) ...[
             const SizedBox(height: 8),
             Text(
-              '$unansweredCount question(s) still need an answer.',
+              t(context, '$unansweredCount question(s) still need an answer.', '$unansweredCount tanong pa ang kailangang sagutin.'),
               style: const TextStyle(
                 color: kHouseOrange,
                 fontWeight: FontWeight.w800,
@@ -1838,7 +1876,7 @@ class _SummaryCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
-                  answered ? 'Answered' : 'Unanswered',
+                  answered ? t(context, 'Answered', 'Nasagutan') : t(context, 'Unanswered', 'Hindi pa nasasagutan'),
                   style: TextStyle(
                     fontWeight: FontWeight.w900,
                     color: statusColor,
@@ -1854,9 +1892,9 @@ class _SummaryCard extends StatelessWidget {
                     color: kHouseOrange.withOpacity(0.12),
                     borderRadius: BorderRadius.circular(999),
                   ),
-                  child: const Text(
-                    'Flagged',
-                    style: TextStyle(
+                  child: Text(
+                    t(context, 'Flagged', 'Naka-flag'),
+                    style: const TextStyle(
                       fontWeight: FontWeight.w900,
                       color: kHouseOrange,
                       fontSize: 12,
@@ -1909,9 +1947,9 @@ class _SummaryCard extends StatelessWidget {
                 color: Colors.white,
                 size: 18,
               ),
-              label: const Text(
-                'Edit',
-                style: TextStyle(
+              label: Text(
+                t(context, 'Edit', 'I-edit'),
+                style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w900,
                 ),
@@ -1954,9 +1992,9 @@ class _ReviewTopCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          const Text(
-            'Post-Assessment Result',
-            style: TextStyle(
+          Text(
+            t(context, 'Post-Assessment Result', 'Resulta ng Pangwakas na Pagsusulit'),
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w900,
               color: kDarkText,
@@ -1973,7 +2011,7 @@ class _ReviewTopCard extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            '$percent% • scored questions only',
+            t(context, '$percent% • scored questions only', '$percent% • Graded na mga tanong lamang'),
             style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w700,
@@ -2052,7 +2090,7 @@ class _ReviewCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
-                  isEssay ? 'Reflection' : (isCorrect ? 'Correct' : 'Incorrect'),
+                  isEssay ? t(context, 'Reflection', 'Repleksyon') : (isCorrect ? t(context, 'Correct', 'Tama') : t(context, 'Incorrect', 'Mali')),
                   style: TextStyle(
                     fontWeight: FontWeight.w900,
                     color: statusColor,
@@ -2074,7 +2112,7 @@ class _ReviewCard extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(
-            isEssay ? 'Your Reflection' : 'Answer Review',
+            isEssay ? t(context, 'Your Reflection', 'Iyong Repleksyon') : t(context, 'Answer Review', 'Pagsusuri ng Sagot'),
             style: const TextStyle(
               fontWeight: FontWeight.w900,
               color: Colors.black54,
@@ -2091,11 +2129,11 @@ class _ReviewCard extends StatelessWidget {
               height: 1.35,
             ),
           ),
-          if (!isEssay) ...[
+            if (!isEssay) ...[
             const SizedBox(height: 12),
-            const Text(
-              'Correct Answer',
-              style: TextStyle(
+            Text(
+              t(context, 'Correct Answer', 'Tamang Sagot'),
+              style: const TextStyle(
                 fontWeight: FontWeight.w900,
                 color: Colors.black54,
               ),
@@ -2113,7 +2151,7 @@ class _ReviewCard extends StatelessWidget {
           if (explanation != null && explanation!.trim().isNotEmpty) ...[
             const SizedBox(height: 12),
             Text(
-              isEssay ? 'Reflection Note' : 'Why this is wrong',
+              isEssay ? t(context, 'Reflection Note', 'Tala ng Repleksyon') : t(context, 'Why this is wrong', 'Bakit mali ito'),
               style: const TextStyle(
                 fontWeight: FontWeight.w900,
                 color: Colors.black54,
@@ -2134,3 +2172,7 @@ class _ReviewCard extends StatelessWidget {
     );
   }
 }
+
+
+
+

@@ -268,16 +268,17 @@ class _SimulationSceneState extends State<SimulationScene> {
                         onPressed: () => Navigator.pop(context),
                       ),
                       const SizedBox(height: 15),
-                      Center(
+                      SizedBox(
+                        width: double.infinity,
                         child: Text(
-                          _isTl
-                              ? "Mga Scene ng Simulasyon"
-                              : "Simulation Scenes",
-                          style: TextStyle(
+                          _isTl ? "Simulasyon" : "Simulation",
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 30,
                             fontWeight: FontWeight.bold,
                             fontFamily: 'Poppins',
+                            height: 1.25,
                           ),
                         ),
                       ),
@@ -358,7 +359,7 @@ class _SimulationSceneState extends State<SimulationScene> {
                             ? "Alamin ang tama at ligtas na paggamit ng pamatay-sunog para sa epektibong pagtugon sa emerhensiyang may sunog."
                             : "Learn the proper and safe use of fire extinguishers for effective response during fire emergencies.",
                         asset: "assets/fire_ex.png",
-                        buttonText: _isTl ? "Scene" : "Scene",
+                        buttonText: _isTl ? "Simulan" : "Scene",
                         onPressed: _openSceneFlow,
                       ),
                     ],
