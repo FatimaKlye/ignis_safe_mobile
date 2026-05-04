@@ -253,7 +253,7 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
                               _t(
                                 context,
                                 "Kitchen Fire: What It Is, Common Types, and What To Do",
-                                "Sunog sa Kusina: Ano Ito, Karaniwang Uri, at Ano ang Gagawin",
+                                "Sunog sa Kusina: Ano Ito, Karaniwang Uri, at Ano ang Dapat Gawin",
                               ),
                               style: TextStyle(
                                 color: Colors.black,
@@ -420,10 +420,14 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
                 c2: accent2,
               ),
               const SizedBox(width: 15),
-              const Expanded(
+              Expanded(
                 child: Text(
-                  "A kitchen fire starts in the cooking area. It often happens when food, oil, or appliances overheat. Most kitchen fires spread fast because heat and grease build up quickly.",
-                  style: TextStyle(
+                  _t(
+                    context,
+                    "A kitchen fire starts in the cooking area. It often happens when food, oil, or appliances overheat. Most kitchen fires spread fast because heat and grease build up quickly.",
+                    "Ang sunog sa kusina ay nagsisimula sa lugar ng pagluluto. Madalas itong nangyayari kapag sobrang uminit ang pagkain, mantika, o kagamitan. Mabilis kumalat ang karamihan ng sunog sa kusina dahil mabilis maipon ang init at sebo.",
+                  ),
+                  style: const TextStyle(
                     fontSize: 14,
                     height: 1.5,
                     fontFamily: 'Poppins',
@@ -498,7 +502,7 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
           _MiniTile(
             color: Color(0xFFF59E0B),
             icon: Icons.local_pizza_rounded,
-            title: _t(context, "Oven Fire", "Sunog sa Oven"),
+            title: _t(context, "Oven Fire", "Sunog sa Hurno"),
             desc: _t(context, "Food spills or grease buildup burns inside the oven.", "Ang tapon na pagkain o naipong sebo ay nasusunog sa loob ng oven."),
           ),
           const SizedBox(height: 10),
@@ -512,7 +516,7 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
           _MiniTile(
             color: Color(0xFFEA580C),
             icon: Icons.local_gas_station_rounded,
-            title: _t(context, "Gas Stove Fire", "Sunog sa Gas Stove"),
+            title: _t(context, "Gas Stove Fire", "Sunog sa Gas na Kalan"),
             desc: _t(context, "Flame flare-ups or leaking gas ignites near the stove.", "Biglaang paglaki ng apoy o tumatagas na gas ang nagiging sanhi ng sindi malapit sa kalan."),
           ),
         ],
@@ -638,7 +642,7 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
                     _t(context, "Keep flammables away from heat.", "Ilayo ang madaling masunog na bagay sa init."),
                     _t(context, "Turn handles inward.", "Iharap paloob ang hawakan ng kawali."),
                     _t(context, "Use the right heat level (don’t overheat oil).", "Gamitin ang tamang antas ng init (huwag paabutin sa sobrang init ang mantika)."),
-                    _t(context, "Know your extinguisher location.", "Alamin kung saan nakalagay ang fire extinguisher."),
+                    _t(context, "Know your extinguisher location.", "Alamin kung saan nakalagay ang pamatay-sunog."),
                   ],
                 ),
               ),
@@ -701,8 +705,8 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
                     _t(context, "Turn off heat source if safe.", "Patayin ang pinagmumulan ng init kung ligtas."),
                     _t(context, "Cover small pan fire with a metal lid/tray.", "Takpan ang maliit na apoy sa kawali gamit ang metal na takip/tray."),
                     _t(context, "Do NOT use water on burning oil/grease.", "HUWAG gumamit ng tubig sa nagliliyab na mantika/sebo."),
-                    _t(context, "Use a fire extinguisher if trained and safe.", "Gumamit ng fire extinguisher kung sanay at ligtas."),
-                    _t(context, "If it spreads: evacuate and call emergency services.", "Kung kumalat ang apoy: lumikas at tumawag sa emergency services."),
+                    _t(context, "Use a fire extinguisher if trained and safe.", "Gumamit ng pamatay-sunog kung sanay at ligtas."),
+                    _t(context, "If it spreads: evacuate and call emergency services.", "Kung kumalat ang apoy: lumikas at tumawag sa serbisyong pang-emergency."),
                     _t(context, "Close doors behind you to slow the fire.", "Isara ang pinto sa likod mo upang bumagal ang pagkalat ng apoy."),
                   ],
                 ),
@@ -769,7 +773,7 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
                       items: [
                         _t(context, "Stop the heat.", "Patayin ang init."),
                         _t(context, "Smother small flames.", "Takpan ang maliit na apoy."),
-                        _t(context, "Use extinguisher only if safe.", "Gumamit ng extinguisher kung ligtas."),
+                        _t(context, "Use extinguisher only if safe.", "Gumamit ng pamatay-sunog kung ligtas."),
                         _t(context, "Get out if unsure.", "Lumabas kung hindi sigurado."),
                       ],
                     ),

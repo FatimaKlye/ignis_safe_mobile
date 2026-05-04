@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'localization/app_text.dart';
+import 'localization/localized_db_text.dart';
+
 class ModuleHistoryDetailPage extends StatefulWidget {
   const ModuleHistoryDetailPage({
     super.key,
@@ -14,7 +17,8 @@ class ModuleHistoryDetailPage extends StatefulWidget {
   final String moduleTitle;
 
   @override
-  State<ModuleHistoryDetailPage> createState() => _ModuleHistoryDetailPageState();
+  State<ModuleHistoryDetailPage> createState() =>
+      _ModuleHistoryDetailPageState();
 }
 
 class _ModuleHistoryDetailPageState extends State<ModuleHistoryDetailPage> {
@@ -137,7 +141,9 @@ class _ModuleHistoryDetailPageState extends State<ModuleHistoryDetailPage> {
 
       final progressRow = await _supabase
           .from('module_progress')
-          .select('pre_test_completed_at, simulation_completed_at, post_test_completed_at')
+          .select(
+            'pre_test_completed_at, simulation_completed_at, post_test_completed_at',
+          )
           .eq('user_id', user.id)
           .eq('module_id', widget.moduleId)
           .maybeSingle();
@@ -203,12 +209,12 @@ class _ModuleHistoryDetailPageState extends State<ModuleHistoryDetailPage> {
   }
 
   String _formatDate(dynamic value) {
-    if (value == null) return "No date";
+    if (value == null) return '—';
     final dt = DateTime.tryParse(value.toString());
-    if (dt == null) return "No date";
+    if (dt == null) return '—';
     final local = dt.toLocal();
-    return "${local.month.toString().padLeft(2, '0')}/${local.day.toString().padLeft(2, '0')}/${local.year} "
-        "${local.hour.toString().padLeft(2, '0')}:${local.minute.toString().padLeft(2, '0')}";
+    return '${local.month.toString().padLeft(2, '0')}/${local.day.toString().padLeft(2, '0')}/${local.year} '
+        '${local.hour.toString().padLeft(2, '0')}:${local.minute.toString().padLeft(2, '0')}';
   }
 
   String _formatAssessmentScore({
@@ -277,18 +283,26 @@ class _ModuleHistoryDetailPageState extends State<ModuleHistoryDetailPage> {
                         child: Column(
                           children: [
                             Text(
-                              "MODULE ${widget.moduleNo}",
+                              LocalizedDbText.moduleLabel(
+                                context,
+                                widget.moduleNo,
+                              ),
                               textAlign: TextAlign.center,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
                                 fontSize: 28,
                                 fontWeight: FontWeight.w900,
                                 color: Colors.black,
+                                height: 1.15,
                               ),
                             ),
                             const SizedBox(height: 4),
                             Text(
                               widget.moduleTitle,
                               textAlign: TextAlign.center,
+                              maxLines: 3,
+                              overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w700,
@@ -311,7 +325,7 @@ class _ModuleHistoryDetailPageState extends State<ModuleHistoryDetailPage> {
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           children: [
                             _HistorySectionCard(
-                              title: "Pre Assessment",
+                              title: context.tr('pre_assessment').replaceAll('\n', ' '),
                               done: _preDone,
                               attempts: _preAttempts,
                               formatDate: _formatDate,
@@ -322,12 +336,13 @@ class _ModuleHistoryDetailPageState extends State<ModuleHistoryDetailPage> {
                             ),
                             const SizedBox(height: 14),
                             _SimulationStatusCard(
-                              title: "Simulation",
+                              title: context.tr('simulation'),
                               done: _simDone,
                             ),
                             const SizedBox(height: 14),
                             _HistorySectionCard(
-                              title: "Post Assessment",
+                              title:
+                                  context.tr('post_assessment').replaceAll('\n', ' '),
                               done: _postDone,
                               attempts: _postAttempts,
                               formatDate: _formatDate,
@@ -363,6 +378,30 @@ class _HistorySectionCard extends StatelessWidget {
   final List<Map<String, dynamic>> attempts;
   final String Function(dynamic) formatDate;
   final String Function(Map<String, dynamic>) formatScore;
+
+  String _localizedStatus(BuildContext context, dynamic value) {
+    final status = (value ?? '').toString().trim().toLowerCase();
+
+    switch (status) {
+      case 'submitted':
+        return context.tr('status_submitted');
+      case 'done':
+      case 'completed':
+        return context.tr('status_done');
+      case 'in_progress':
+        return context.tr('status_in_progress');
+      case 'draft':
+      case 'pending':
+        return context.tr('status_pending');
+      case 'cancelled':
+      case 'canceled':
+        return context.tr('status_cancelled');
+      case '':
+        return '—';
+      default:
+        return value.toString();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -402,24 +441,31 @@ class _HistorySectionCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   title,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
               ),
+              const SizedBox(width: 10),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
-                  color: done ? const Color(0x142EB872) : const Color(0x14B11217),
+                  color: done
+                      ? const Color(0x142EB872)
+                      : const Color(0x14B11217),
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
-                  done ? "DONE" : "NOT DONE",
+                  done ? context.tr('done') : context.tr('not_done'),
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w900,
-                    color: done ? const Color(0xFF2EB872) : const Color(0xFFB11217),
+                    color: done
+                        ? const Color(0xFF2EB872)
+                        : const Color(0xFFB11217),
                   ),
                 ),
               ),
@@ -429,7 +475,10 @@ class _HistorySectionCard extends StatelessWidget {
             Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                "Total Attempts: ${attempts.length}",
+                context.tr(
+                  'total_attempts_count',
+                  params: {'count': attempts.length.toString()},
+                ),
                 style: const TextStyle(fontWeight: FontWeight.w800),
               ),
             ),
@@ -437,17 +486,20 @@ class _HistorySectionCard extends StatelessWidget {
             Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                "Retakes: $retakes",
+                context.tr(
+                  'retakes_count',
+                  params: {'count': retakes.toString()},
+                ),
                 style: const TextStyle(fontWeight: FontWeight.w800),
               ),
             ),
             const SizedBox(height: 12),
             if (attempts.isEmpty)
-              const Align(
+              Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  "No attempts yet.",
-                  style: TextStyle(
+                  context.tr('no_attempts_yet'),
+                  style: const TextStyle(
                     fontWeight: FontWeight.w600,
                     color: Colors.grey,
                   ),
@@ -472,7 +524,10 @@ class _HistorySectionCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Attempt $attemptNo",
+                          context.tr(
+                            'attempt_number',
+                            params: {'number': attemptNo.toString()},
+                          ),
                           style: const TextStyle(
                             fontWeight: FontWeight.w900,
                             fontSize: 14,
@@ -480,17 +535,33 @@ class _HistorySectionCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          "Score: ${formatScore(item)}",
+                          context.tr(
+                            'score_value',
+                            params: {'score': formatScore(item)},
+                          ),
                           style: const TextStyle(fontWeight: FontWeight.w700),
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          "Status: ${item['status'] ?? 'N/A'}",
+                          context.tr(
+                            'status_value',
+                            params: {
+                              'status': _localizedStatus(
+                                context,
+                                item['status'],
+                              ),
+                            },
+                          ),
                           style: const TextStyle(fontWeight: FontWeight.w700),
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          "Submitted: ${formatDate(item['submitted_at'])}",
+                          context.tr(
+                            'submitted_value',
+                            params: {
+                              'date': formatDate(item['submitted_at']),
+                            },
+                          ),
                           style: const TextStyle(fontWeight: FontWeight.w700),
                         ),
                       ],
@@ -550,24 +621,31 @@ class _SimulationStatusCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   title,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
               ),
+              const SizedBox(width: 10),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
-                  color: done ? const Color(0x142EB872) : const Color(0x14B11217),
+                  color: done
+                      ? const Color(0x142EB872)
+                      : const Color(0x14B11217),
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
-                  done ? "DONE" : "NOT DONE",
+                  done ? context.tr('done') : context.tr('not_done'),
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w900,
-                    color: done ? const Color(0xFF2EB872) : const Color(0xFFB11217),
+                    color: done
+                        ? const Color(0xFF2EB872)
+                        : const Color(0xFFB11217),
                   ),
                 ),
               ),
@@ -578,8 +656,8 @@ class _SimulationStatusCard extends StatelessWidget {
               alignment: Alignment.centerLeft,
               child: Text(
                 done
-                    ? "The simulation for this module is already completed."
-                    : "The simulation for this module is not completed yet.",
+                    ? context.tr('simulation_history_completed')
+                    : context.tr('simulation_history_not_completed'),
                 style: const TextStyle(
                   fontWeight: FontWeight.w700,
                   height: 1.4,

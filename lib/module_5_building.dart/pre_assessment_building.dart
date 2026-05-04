@@ -18,8 +18,7 @@ class PreAssessmentBuildingPage extends StatefulWidget {
       _PreAssessmentBuildingPageState();
 }
 
-class _PreAssessmentBuildingPageState
-    extends State<PreAssessmentBuildingPage> {
+class _PreAssessmentBuildingPageState extends State<PreAssessmentBuildingPage> {
   static const int _moduleNo = 5;
   static const String _assessmentType = 'pre';
 
@@ -46,6 +45,10 @@ class _PreAssessmentBuildingPageState
   Set<int> _flaggedIndexes = {};
 
   SupabaseClient get _supabase => Supabase.instance.client;
+
+  bool get _isTl => Localizations.localeOf(context).languageCode == 'tl';
+
+  String _txt(String en, String tl) => _isTl ? tl : en;
 
   User get _user {
     final user = _supabase.auth.currentUser;
@@ -84,7 +87,15 @@ class _PreAssessmentBuildingPageState
       }
 
       final moduleId = moduleRow['id'].toString();
-      final moduleDisplayTitle = (moduleRow['title'] ?? '').toString();
+      final moduleDisplayTitle = LocalizedDbText.pick(
+        context,
+        moduleRow,
+        'title',
+        'title_tl',
+        fallback: _isTl
+            ? 'Sunog sa Tenement: Ano Ito, Karaniwang Sanhi, at Ano ang Dapat Gawin'
+            : 'Tenement Fire: What It Is, Common Causes, and What To Do',
+      );
 
       final assessmentRow = await _supabase
           .from('assessments')
@@ -126,8 +137,7 @@ class _PreAssessmentBuildingPageState
         throw Exception('No active questions found for this assessment.');
       }
 
-      final questionIds =
-          questionRows.map((row) => row['id'].toString()).toList();
+      final questionIds = questionRows.map((row) => row['id'].toString()).toList();
 
       final optionRows = await _supabase
           .from('assessment_options')
@@ -214,8 +224,7 @@ class _PreAssessmentBuildingPageState
 
           final savedRows = await _supabase
               .from('assessment_attempt_answers')
-              .select(
-                  'question_id, selected_option_id, is_flagged, display_order')
+              .select('question_id, selected_option_id, is_flagged, display_order')
               .eq('attempt_id', attemptId)
               .order('display_order');
 
@@ -254,8 +263,7 @@ class _PreAssessmentBuildingPageState
 
             final refreshedSavedRows = await _supabase
                 .from('assessment_attempt_answers')
-                .select(
-                    'question_id, selected_option_id, is_flagged, display_order')
+                .select('question_id, selected_option_id, is_flagged, display_order')
                 .eq('attempt_id', attemptId)
                 .order('display_order');
 
@@ -348,9 +356,9 @@ class _PreAssessmentBuildingPageState
       setState(() => _isLoading = false);
 
       await _showInfoDialog(
-        title: 'Failed to load pre-assessment',
+        title: _txt('Failed to load pre-assessment', 'Hindi na-load ang paunang pagsusulit'),
         message: '$e',
-        buttonText: 'OK',
+        buttonText: _txt('OK', 'Sige'),
       );
     }
   }
@@ -416,11 +424,13 @@ class _PreAssessmentBuildingPageState
   Future<void> _handleRefresh() async {
     if (_showReview) {
       final confirmed = await _showConfirmDialog(
-        title: 'Start new attempt?',
-        message:
-            'You already finished this pre-assessment. Starting again will generate a new attempt.',
-        confirmText: 'New Attempt',
-        cancelText: 'Cancel',
+        title: _txt('Start new attempt?', 'Magsimula ng bagong pagsubok?'),
+        message: _txt(
+          'You already finished this pre-assessment. Starting again will generate a new attempt.',
+          'Natapos mo na ang paunang pagsusulit na ito. Ang pagsisimula muli ay lilikha ng bagong pagsubok.',
+        ),
+        confirmText: _txt('New Attempt', 'Bagong Pagsubok'),
+        cancelText: _txt('Cancel', 'Kanselahin'),
       );
 
       if (confirmed == true) {
@@ -430,10 +440,12 @@ class _PreAssessmentBuildingPageState
     }
 
     await _showInfoDialog(
-      title: 'Current attempt preserved',
-      message:
-          'This pre-assessment is still unfinished, so refresh will keep the same attempt and the same questions.',
-      buttonText: 'OK',
+      title: _txt('Current attempt preserved', 'Napanatili ang kasalukuyang pagsubok'),
+      message: _txt(
+        'This pre-assessment is still unfinished, so refresh will keep the same attempt and the same questions.',
+        'Hindi pa tapos ang paunang pagsusulit na ito, kaya ang pag-refresh ay magpapanatili ng parehong pagsubok at mga tanong.',
+      ),
+      buttonText: _txt('OK', 'Sige'),
     );
 
     await _loadOrCreateAttempt(forceNewAttempt: false);
@@ -515,13 +527,15 @@ class _PreAssessmentBuildingPageState
       return question.explanation.trim();
     }
 
-    return 'The correct answer is "${correct.text}" based on the lesson content for this module.';
+    return _txt(
+      'The correct answer is "${correct.text}" based on the lesson content for this module.',
+      'Ang tamang sagot ay "${correct.text}" batay sa aralin ng modyul na ito.',
+    );
   }
 
   int get _answeredCount => _selectedOptionIds.where((value) => value != null).length;
 
-  int get _unansweredCount =>
-      _selectedOptionIds.where((value) => value == null).length;
+  int get _unansweredCount => _selectedOptionIds.where((value) => value == null).length;
 
   bool get _hasUnansweredQuestions => _unansweredCount > 0;
 
@@ -552,14 +566,20 @@ class _PreAssessmentBuildingPageState
     final correct = _correctOptionFor(questionIndex);
 
     if (selected == null) {
-      return 'No answer selected. Correct answer: ${_optionDisplay(question, correct)}';
+      return _txt(
+        'No answer selected. Correct answer: ${_optionDisplay(question, correct)}',
+        'Walang napiling sagot. Tamang sagot: ${_optionDisplay(question, correct)}',
+      );
     }
 
     if (selected.id == correct.id) {
       return _optionDisplay(question, selected);
     }
 
-    return '${_optionDisplay(question, selected)}. Correct answer: ${_optionDisplay(question, correct)}';
+    return _txt(
+      '${_optionDisplay(question, selected)}. Correct answer: ${_optionDisplay(question, correct)}',
+      '${_optionDisplay(question, selected)}. Tamang sagot: ${_optionDisplay(question, correct)}',
+    );
   }
 
   void _goNext() {
@@ -630,7 +650,9 @@ class _PreAssessmentBuildingPageState
   }
 
   void _showIncompleteSnackBar() {
-    final missing = _unansweredIndexes.map((i) => 'Q${i + 1}').toList();
+    final missing = _unansweredIndexes
+        .map((i) => _isTl ? 'Tanong ${i + 1}' : 'Q${i + 1}')
+        .toList();
     final preview = missing.take(8).join(', ');
     final suffix = missing.length > 8 ? '...' : '';
 
@@ -639,7 +661,7 @@ class _PreAssessmentBuildingPageState
       ..showSnackBar(
         SnackBar(
           behavior: SnackBarBehavior.floating,
-          backgroundColor: const Color(0xFF5B21B6),
+          backgroundColor: const Color(0xFFB45309),
           margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
@@ -654,7 +676,10 @@ class _PreAssessmentBuildingPageState
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  'Please answer all questions before submitting. Missing: $preview$suffix',
+                  _txt(
+                    'Please answer all questions before submitting. Missing: $preview$suffix',
+                    'Sagutin muna ang lahat ng tanong bago ipasa. Kulang: $preview$suffix',
+                  ),
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w700,
@@ -675,11 +700,13 @@ class _PreAssessmentBuildingPageState
     }
 
     final confirmed = await _showConfirmDialog(
-      title: 'Submit Pre-Assessment',
-      message:
-          'Answered: $_answeredCount / ${_questions.length}\n\nAfter submission, you will be redirected to the completion page.',
-      confirmText: 'Submit',
-      cancelText: 'Review Again',
+      title: _txt('Submit Pre-Assessment', 'Ipasa ang Paunang Pagsusulit'),
+      message: _txt(
+        'Answered: $_answeredCount / ${_questions.length}\n\nAfter submission, you will be redirected to the completion page.',
+        'Nasagutan: $_answeredCount / ${_questions.length}\n\nPagkatapos ipasa, mapupunta ka sa completion page.',
+      ),
+      confirmText: _txt('Submit', 'Ipasa'),
+      cancelText: _txt('Review Again', 'Suriin Muli'),
     );
 
     if (confirmed != true) return;
@@ -691,8 +718,9 @@ class _PreAssessmentBuildingPageState
 
       for (int i = 0; i < _questions.length; i++) {
         final selectedId = _selectedOptionIds[i];
-        final isCorrect =
-            selectedId == null ? false : _isCorrectSelection(i, selectedId);
+        final isCorrect = selectedId == null
+            ? false
+            : _isCorrectSelection(i, selectedId);
 
         if (isCorrect) correctCount++;
 
@@ -714,12 +742,15 @@ class _PreAssessmentBuildingPageState
           : (correctCount / _questions.length) * 100;
       final submittedAt = DateTime.now().toUtc().toIso8601String();
 
-      await _supabase.from('assessment_attempts').update({
-        'submitted_at': submittedAt,
-        'status': 'submitted',
-        'correct_count': correctCount,
-        'score': scorePercent,
-      }).eq('id', _attemptId!);
+      await _supabase
+          .from('assessment_attempts')
+          .update({
+            'submitted_at': submittedAt,
+            'status': 'submitted',
+            'correct_count': correctCount,
+            'score': scorePercent,
+          })
+          .eq('id', _attemptId!);
 
       if (_moduleId != null) {
         final progressRow = await _supabase
@@ -763,9 +794,9 @@ class _PreAssessmentBuildingPageState
       if (!mounted) return;
 
       await _showInfoDialog(
-        title: 'Submission failed',
+        title: _txt('Submission failed', 'Nabigo ang pagsusumite'),
         message: '$e',
-        buttonText: 'OK',
+        buttonText: _txt('OK', 'Sige'),
       );
     } finally {
       if (!mounted) return;
@@ -896,10 +927,12 @@ class _PreAssessmentBuildingPageState
                       );
                     }),
                     const SizedBox(height: 8),
-                    const _HintCard(
+                    _HintCard(
                       icon: Icons.info_outline_rounded,
-                      text:
-                          'Use the summary to jump back to any question before submitting.',
+                      text: _txt(
+                        'Use the summary to jump back to any question before submitting.',
+                        'Gamitin ang buod para bumalik sa anumang tanong bago ipasa.',
+                      ),
                     ),
                   ],
                 ),
@@ -936,7 +969,7 @@ class _PreAssessmentBuildingPageState
                   questionNumber: index + 1,
                   question: question.prompt,
                   selectedAnswer: selected == null
-                      ? 'No answer selected'
+                      ? (_isTl ? 'Walang napiling sagot' : 'No answer selected')
                       : _optionDisplay(question, selected),
                   answered: selected != null,
                   flagged: _flaggedIndexes.contains(index),
@@ -1000,9 +1033,9 @@ class _PreAssessmentBuildingPageState
                   padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
                 onPressed: () => Navigator.pop(context),
-                child: const Text(
-                  'Back',
-                  style: TextStyle(
+                child: Text(
+                  _isTl ? 'Bumalik' : 'Back',
+                  style: const TextStyle(
                     color: kBuildingPurple,
                     fontWeight: FontWeight.w900,
                   ),
@@ -1019,12 +1052,11 @@ class _PreAssessmentBuildingPageState
                   ),
                   padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
-                onPressed: _isSubmitting
-                    ? null
-                    : () => _loadOrCreateAttempt(forceNewAttempt: true),
-                child: const Text(
-                  'New Attempt',
-                  style: TextStyle(
+                onPressed:
+                    _isSubmitting ? null : () => _loadOrCreateAttempt(forceNewAttempt: true),
+                child: Text(
+                  _isTl ? 'Bagong Pagsubok' : 'New Attempt',
+                  style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w900,
                   ),
@@ -1058,9 +1090,9 @@ class _PreAssessmentBuildingPageState
                     _editingFromSummary = false;
                   });
                 },
-                child: const Text(
-                  'Back to Questions',
-                  style: TextStyle(
+                child: Text(
+                  _isTl ? 'Bumalik sa Tanong' : 'Back to Questions',
+                  style: const TextStyle(
                     color: kBuildingPurple,
                     fontWeight: FontWeight.w900,
                   ),
@@ -1071,8 +1103,7 @@ class _PreAssessmentBuildingPageState
             Expanded(
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      locked ? Colors.grey.shade400 : kBuildingPurple,
+                  backgroundColor: locked ? Colors.grey.shade400 : kBuildingPurple,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18),
                   ),
@@ -1081,10 +1112,10 @@ class _PreAssessmentBuildingPageState
                 onPressed: _isSubmitting ? null : _submitAssessment,
                 child: Text(
                   _isSubmitting
-                      ? 'Submitting...'
+                      ? (_isTl ? 'Ipinapasa...' : 'Submitting...')
                       : locked
-                          ? 'Complete All'
-                          : 'Submit',
+                          ? (_isTl ? 'Kumpletuhin Lahat' : 'Complete All')
+                          : (_isTl ? 'Ipasa' : 'Submit'),
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w900,
@@ -1098,8 +1129,11 @@ class _PreAssessmentBuildingPageState
     }
 
     final isLast = _currentIndex == _questions.length - 1;
-    final nextLabel =
-        _editingFromSummary ? 'Review Summary' : (isLast ? 'Review Summary' : 'Next');
+    final nextLabel = _editingFromSummary
+        ? (_isTl ? 'Suriin ang Buod' : 'Review Summary')
+        : (isLast
+            ? (_isTl ? 'Suriin ang Buod' : 'Review Summary')
+            : (_isTl ? 'Susunod' : 'Next'));
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 8, 24, 20),
@@ -1117,8 +1151,10 @@ class _PreAssessmentBuildingPageState
               onPressed: _goBack,
               child: Text(
                 _editingFromSummary
-                    ? 'Back to Summary'
-                    : (_currentIndex == 0 ? 'Exit' : 'Back'),
+                    ? (_isTl ? 'Bumalik sa Buod' : 'Back to Summary')
+                    : (_currentIndex == 0
+                        ? (_isTl ? 'Lumabas' : 'Exit')
+                        : (_isTl ? 'Bumalik' : 'Back')),
                 style: const TextStyle(
                   color: kBuildingPurple,
                   fontWeight: FontWeight.w900,
@@ -1154,7 +1190,9 @@ class _PreAssessmentBuildingPageState
   @override
   Widget build(BuildContext context) {
     final headerTitle = _moduleDisplayTitle.trim().isEmpty
-        ? 'Tenement / Building Fire: What It Is, Common Causes, and What To Do'
+        ? (_isTl
+            ? 'Sunog sa Tenement: Ano Ito, Karaniwang Sanhi, at Ano ang Dapat Gawin'
+            : 'Tenement Fire: What It Is, Common Causes, and What To Do')
         : _moduleDisplayTitle.trim();
 
     return Scaffold(
@@ -1173,32 +1211,34 @@ class _PreAssessmentBuildingPageState
                       children: [
                         const SizedBox(height: 15),
                         Padding(
-                          padding: const EdgeInsets.only(left: 9, right: 25),
+                          padding: const EdgeInsets.symmetric(horizontal: 25),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               IconButton(
                                 padding: EdgeInsets.zero,
                                 constraints: const BoxConstraints(),
-                                icon:
-                                    const Icon(Icons.close, color: Colors.white),
+                                icon: const Icon(Icons.close, color: Colors.white),
                                 onPressed: () => Navigator.pop(context),
                               ),
                               const SizedBox(height: 15),
-                              const Center(
+                              SizedBox(
+                                width: double.infinity,
                                 child: Text(
-                                  'Pre-Assessment',
-                                  style: TextStyle(
+                                  _txt('PRE – ASSESSMENT', 'PAUNANG – PAGSUSULIT'),
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 30,
                                     fontWeight: FontWeight.bold,
                                     fontFamily: 'Poppins',
+                                    height: 1.25,
                                   ),
                                 ),
                               ),
                               const SizedBox(height: 15),
                               Padding(
-                                padding: const EdgeInsets.only(left: 25),
+                                padding: const EdgeInsets.symmetric(horizontal: 8),
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
@@ -1211,33 +1251,29 @@ class _PreAssessmentBuildingPageState
                                         gradient: const LinearGradient(
                                           begin: Alignment.topLeft,
                                           end: Alignment.bottomRight,
-                                          colors: [
-                                            kBuildingPurple,
-                                            kBuildingPurpleDark
-                                          ],
+                                          colors: [kBuildingPurple, kBuildingPurpleDark],
                                         ),
                                         borderRadius: BorderRadius.circular(10),
                                         boxShadow: [
                                           BoxShadow(
-                                            color:
-                                                Colors.black.withOpacity(0.18),
+                                            color: Colors.black.withOpacity(0.18),
                                             blurRadius: 10,
                                             offset: const Offset(0, 6),
                                           ),
                                         ],
                                       ),
-                                      child: const Row(
+                                      child: Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          Icon(
+                                          const Icon(
                                             Icons.apartment_rounded,
                                             color: Colors.white,
                                             size: 18,
                                           ),
-                                          SizedBox(width: 8),
+                                          const SizedBox(width: 8),
                                           Text(
-                                            'MODULE 5',
-                                            style: TextStyle(
+                                            LocalizedDbText.moduleLabel(context, _moduleNo),
+                                            style: const TextStyle(
                                               fontWeight: FontWeight.bold,
                                               color: Colors.white,
                                               fontFamily: 'Poppins',
@@ -1250,8 +1286,13 @@ class _PreAssessmentBuildingPageState
                                     Expanded(
                                       child: Text(
                                         headerTitle,
+                                        softWrap: true,
+                                        maxLines: 3,
+                                        overflow: TextOverflow.visible,
                                         style: const TextStyle(
                                           color: Colors.black,
+                                          fontSize: 14,
+                                          height: 1.35,
                                           fontWeight: FontWeight.w600,
                                           fontFamily: 'Poppins',
                                         ),
@@ -1260,8 +1301,7 @@ class _PreAssessmentBuildingPageState
                                   ],
                                 ),
                               ),
-                              if (_instructions.trim().isNotEmpty &&
-                                  !_showReview) ...[
+                              if (_instructions.trim().isNotEmpty && !_showReview) ...[
                                 const SizedBox(height: 15),
                                 Align(
                                   alignment: Alignment.center,
@@ -1348,12 +1388,13 @@ class _StatsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isTl = Localizations.localeOf(context).languageCode == 'tl';
     return Row(
       children: [
         Expanded(
           child: _StatChip(
             icon: Icons.check_circle_outline_rounded,
-            label: 'Answered',
+            label: isTl ? 'Nasagutan' : 'Answered',
             value: '$answered / $total',
             color: const Color(0xFF16A34A),
           ),
@@ -1362,7 +1403,7 @@ class _StatsRow extends StatelessWidget {
         Expanded(
           child: _StatChip(
             icon: Icons.outlined_flag_rounded,
-            label: 'Flagged',
+            label: isTl ? 'Minarkahan' : 'Flagged',
             value: '$flagged',
             color: kBuildingPurpleDark,
           ),
@@ -1449,6 +1490,7 @@ class _QuestionHeaderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isTl = Localizations.localeOf(context).languageCode == 'tl';
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(18),
@@ -1478,7 +1520,9 @@ class _QuestionHeaderCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  'QUESTION $questionNumber / $totalQuestions',
+                  isTl
+                      ? 'TANONG $questionNumber / $totalQuestions'
+                      : 'QUESTION $questionNumber / $totalQuestions',
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w900,
@@ -1491,8 +1535,7 @@ class _QuestionHeaderCard extends StatelessWidget {
                 onTap: onFlagTap,
                 borderRadius: BorderRadius.circular(999),
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                   decoration: BoxDecoration(
                     color: isFlagged
                         ? kBuildingPurple.withOpacity(0.12)
@@ -1513,7 +1556,9 @@ class _QuestionHeaderCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        isFlagged ? 'Flagged' : 'Flag',
+                        isFlagged
+                            ? (isTl ? 'Minarkahan' : 'Flagged')
+                            : (isTl ? 'Markahan' : 'Flag'),
                         style: TextStyle(
                           fontWeight: FontWeight.w800,
                           color: isFlagged ? kBuildingPurpleDark : kDarkText,
@@ -1586,8 +1631,7 @@ class _OptionCard extends StatelessWidget {
                 width: 34,
                 height: 34,
                 decoration: BoxDecoration(
-                  color:
-                      selected ? kBuildingPurpleDark : Colors.grey.shade100,
+                  color: selected ? kBuildingPurpleDark : Colors.grey.shade100,
                   shape: BoxShape.circle,
                 ),
                 child: Center(
@@ -1675,7 +1719,7 @@ class _SummaryHeaderCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
           color: hasUnanswered
-              ? kBuildingPurple.withOpacity(0.25)
+              ? Colors.orange.withOpacity(0.25)
               : Colors.black.withOpacity(0.06),
         ),
         boxShadow: [
@@ -1688,9 +1732,11 @@ class _SummaryHeaderCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          const Text(
-            'Review all questions before you submit',
-            style: TextStyle(
+          Text(
+            LocalizedDbText.isTagalog(context)
+                ? 'Suriin muna ang lahat ng tanong bago ipasa'
+                : 'Review all questions before you submit',
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w900,
               color: kDarkText,
@@ -1699,9 +1745,11 @@ class _SummaryHeaderCard extends StatelessWidget {
           if (hasUnanswered) ...[
             const SizedBox(height: 8),
             Text(
-              '$unansweredCount question(s) still need an answer.',
+              LocalizedDbText.isTagalog(context)
+                  ? '$unansweredCount tanong ang kailangan pang sagutan.'
+                  : '$unansweredCount question(s) still need an answer.',
               style: const TextStyle(
-                color: kBuildingPurpleDark,
+                color: Colors.orange,
                 fontWeight: FontWeight.w800,
               ),
             ),
@@ -1735,12 +1783,13 @@ class _SummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final statusColor = answered ? const Color(0xFF16A34A) : kBuildingPurpleDark;
+    final isTl = Localizations.localeOf(context).languageCode == 'tl';
+    final statusColor = answered ? const Color(0xFF16A34A) : Colors.orange;
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: answered ? Colors.white : kBuildingPurpleSoft,
+        color: answered ? Colors.white : const Color(0xFFFFFBEB),
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: statusColor.withOpacity(0.22)),
         boxShadow: [
@@ -1757,8 +1806,7 @@ class _SummaryCard extends StatelessWidget {
           Row(
             children: [
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                 decoration: BoxDecoration(
                   color: kBuildingPurple.withOpacity(0.12),
                   borderRadius: BorderRadius.circular(999),
@@ -1773,14 +1821,15 @@ class _SummaryCard extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                 decoration: BoxDecoration(
                   color: statusColor.withOpacity(0.12),
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
-                  answered ? 'Answered' : 'Unanswered',
+                  answered
+                      ? (isTl ? 'Nasagutan' : 'Answered')
+                      : (isTl ? 'Hindi pa nasasagutan' : 'Unanswered'),
                   style: TextStyle(
                     fontWeight: FontWeight.w900,
                     color: statusColor,
@@ -1791,15 +1840,14 @@ class _SummaryCard extends StatelessWidget {
               if (flagged) ...[
                 const SizedBox(width: 8),
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                   decoration: BoxDecoration(
                     color: kBuildingPurple.withOpacity(0.12),
                     borderRadius: BorderRadius.circular(999),
                   ),
-                  child: const Text(
-                    'Flagged',
-                    style: TextStyle(
+                  child: Text(
+                    isTl ? 'Minarkahan' : 'Flagged',
+                    style: const TextStyle(
                       fontWeight: FontWeight.w900,
                       color: kBuildingPurpleDark,
                       fontSize: 12,
@@ -1831,7 +1879,7 @@ class _SummaryCard extends StatelessWidget {
           Text(
             selectedAnswer,
             style: TextStyle(
-              color: answered ? Colors.black87 : kBuildingPurpleDark,
+              color: answered ? Colors.black87 : Colors.orange.shade800,
               fontWeight: FontWeight.w600,
               height: 1.35,
             ),
@@ -1847,11 +1895,10 @@ class _SummaryCard extends StatelessWidget {
                 ),
               ),
               onPressed: onEdit,
-              icon: const Icon(Icons.edit_rounded,
-                  color: Colors.white, size: 18),
-              label: const Text(
-                'Edit',
-                style: TextStyle(
+              icon: const Icon(Icons.edit_rounded, color: Colors.white, size: 18),
+              label: Text(
+                isTl ? 'Baguhin' : 'Edit',
+                style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w900,
                 ),
@@ -1872,6 +1919,7 @@ class _ReviewTopCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isTl = Localizations.localeOf(context).languageCode == 'tl';
     final percent = total == 0 ? 0 : ((score / total) * 100).round();
 
     return Container(
@@ -1891,9 +1939,9 @@ class _ReviewTopCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          const Text(
-            'Pre-Assessment Result',
-            style: TextStyle(
+          Text(
+            isTl ? 'Resulta ng Paunang Pagsusulit' : 'Pre-Assessment Result',
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w900,
               color: kDarkText,
@@ -1942,8 +1990,8 @@ class _ReviewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final statusColor =
-        isCorrect ? const Color(0xFF16A34A) : kBuildingPurpleDark;
+    final isTl = Localizations.localeOf(context).languageCode == 'tl';
+    final statusColor = isCorrect ? const Color(0xFF16A34A) : kBuildingPurpleDark;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -1965,8 +2013,7 @@ class _ReviewCard extends StatelessWidget {
           Row(
             children: [
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                 decoration: BoxDecoration(
                   color: statusColor.withOpacity(0.12),
                   borderRadius: BorderRadius.circular(999),
@@ -1981,14 +2028,15 @@ class _ReviewCard extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                 decoration: BoxDecoration(
                   color: statusColor.withOpacity(0.12),
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
-                  isCorrect ? 'Correct' : 'Incorrect',
+                  isCorrect
+                      ? (isTl ? 'Tama' : 'Correct')
+                      : (isTl ? 'Mali' : 'Incorrect'),
                   style: TextStyle(
                     fontWeight: FontWeight.w900,
                     color: statusColor,
@@ -2009,9 +2057,9 @@ class _ReviewCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          const Text(
-            'Answer Review',
-            style: TextStyle(
+          Text(
+            isTl ? 'Pagsusuri ng Sagot' : 'Answer Review',
+            style: const TextStyle(
               fontWeight: FontWeight.w900,
               color: Colors.black54,
             ),
@@ -2027,9 +2075,9 @@ class _ReviewCard extends StatelessWidget {
           ),
           if (!isCorrect) ...[
             const SizedBox(height: 12),
-            const Text(
-              'Correct Answer',
-              style: TextStyle(
+            Text(
+              isTl ? 'Tamang Sagot' : 'Correct Answer',
+              style: const TextStyle(
                 fontWeight: FontWeight.w900,
                 color: Colors.black54,
               ),
@@ -2044,13 +2092,11 @@ class _ReviewCard extends StatelessWidget {
               ),
             ),
           ],
-          if (!isCorrect &&
-              explanation != null &&
-              explanation!.trim().isNotEmpty) ...[
+          if (!isCorrect && explanation != null && explanation!.trim().isNotEmpty) ...[
             const SizedBox(height: 12),
-            const Text(
-              'Why this is wrong',
-              style: TextStyle(
+            Text(
+              isTl ? 'Bakit Mali Ito' : 'Why this is wrong',
+              style: const TextStyle(
                 fontWeight: FontWeight.w900,
                 color: Colors.black54,
               ),

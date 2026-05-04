@@ -267,10 +267,10 @@ class _SimulationScene3State extends State<SimulationScene3> {
                         onPressed: () => Navigator.pop(context),
                       ),
                       const SizedBox(height: 15),
-                      const Center(
+                      Center(
                         child: Text(
-                          "Simulation Scenes",
-                          style: TextStyle(
+                          _isTl ? "Simulasyon" : "Simulation Scenes",
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 30,
                             fontWeight: FontWeight.bold,
@@ -304,18 +304,18 @@ class _SimulationScene3State extends State<SimulationScene3> {
                                   ),
                                 ],
                               ),
-                              child: const Row(
+                              child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Icon(
+                                  const Icon(
                                     Icons.bolt_rounded,
                                     color: Colors.white,
                                     size: 18,
                                   ),
-                                  SizedBox(width: 8),
+                                  const SizedBox(width: 8),
                                   Text(
-                                    "MODULE 3",
-                                    style: TextStyle(
+                                    _isTl ? "MODYUL 3" : "MODULE 3",
+                                    style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white,
                                       fontFamily: 'Poppins',
@@ -325,10 +325,12 @@ class _SimulationScene3State extends State<SimulationScene3> {
                               ),
                             ),
                             const SizedBox(width: 15),
-                            const Expanded(
+                            Expanded(
                               child: Text(
-                                "Electrical Fire: Causes, Safe Actions, and Prevention",
-                                style: TextStyle(
+                                _isTl
+                                    ? "Sunog sa Kuryente: Sanhi, Ligtas na Aksyon, at Pag-iwas"
+                                    : "Electrical Fire: Causes, Safe Actions, and Prevention",
+                                style: const TextStyle(
                                   color: Colors.black,
                                   fontWeight: FontWeight.w600,
                                   fontFamily: 'Poppins',
@@ -347,12 +349,13 @@ class _SimulationScene3State extends State<SimulationScene3> {
                     padding: const EdgeInsets.fromLTRB(16, 14, 16, 18),
                     children: [
                       _ModuleCard(
-                        moduleLabel: "MODULE 3",
-                        title: "ELECTRICAL FIRE",
-                        description:
-                            "Learn the correct response during an electrical fire, including shutting off power when safe, using the correct extinguisher, and evacuating if the fire spreads.",
+                        moduleLabel: _isTl ? "MODYUL 3" : "MODULE 3",
+                        title: _isTl ? "SUNOG SA KURYENTE" : "ELECTRICAL FIRE",
+                        description: _isTl
+                            ? "Alamin ang tamang tugon sa panahon ng sunog sa kuryente, kasama ang pag-off ng kuryente kung ligtas, paggamit ng tamang fire extinguisher, at paglilikas kung kumakalat ang apoy."
+                            : "Learn the correct response during an electrical fire, including shutting off power when safe, using the correct extinguisher, and evacuating if the fire spreads.",
                         asset: "assets/electrical.png",
-                        buttonText: "Scene",
+                        buttonText: _isTl ? "Eksena" : "Scene",
                         onPressed: _openSceneFlow,
                       ),
                     ],
@@ -386,6 +389,8 @@ class _ModuleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isTl = Localizations.localeOf(context).languageCode == 'tl';
+
     return Stack(
       clipBehavior: Clip.none,
       children: [
@@ -422,9 +427,9 @@ class _ModuleCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      "ELECTRICAL FIRE",
-                      style: TextStyle(
+                    Text(
+                      isTl ? "SUNOG SA KURYENTE" : "ELECTRICAL FIRE",
+                      style: const TextStyle(
                         fontFamily: 'Poppins',
                         color: kBrandBlueDark,
                         fontSize: 14,
@@ -516,6 +521,8 @@ class _ScenePickerPopup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isTl = Localizations.localeOf(context).languageCode == 'tl';
+
     return Material(
       color: Colors.transparent,
       child: Container(
@@ -551,10 +558,10 @@ class _ScenePickerPopup extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 12),
-                const Expanded(
+                Expanded(
                   child: Text(
-                    "Choose a Scene",
-                    style: TextStyle(
+                    isTl ? "Pumili ng Eksena" : "Choose a Scene",
+                    style: const TextStyle(
                       fontFamily: 'Poppins',
                       fontSize: 16,
                       fontWeight: FontWeight.w800,
@@ -572,7 +579,9 @@ class _ScenePickerPopup extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              "Module 3 has one available simulation scene.",
+              isTl
+                  ? "Ang Modyul 3 ay may isang available na eksena ng simulasyon."
+                  : "Module 3 has one available simulation scene.",
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: 'Poppins',
@@ -584,8 +593,10 @@ class _ScenePickerPopup extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             _ModernSceneTile(
-              title: "Scene 3",
-              subtitle: "Electrical fire in the house",
+              title: isTl ? "Eksena 3" : "Scene 3",
+              subtitle: isTl
+                  ? "Sunog sa kuryente sa bahay"
+                  : "Electrical fire in the house",
               icon: Icons.electrical_services_rounded,
               onTap: onPickScene3,
             ),
@@ -635,7 +646,7 @@ class _ModernSceneTile extends StatelessWidget {
               width: 46,
               height: 46,
               decoration: BoxDecoration(
-                gradient: LinearGradient(
+                gradient: const LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [kBrandBlue, kBrandBlueDark],
@@ -703,22 +714,28 @@ class _SceneConfirmPopup extends StatelessWidget {
     required this.onStart,
   });
 
-  String get _body {
-    switch (scene) {
-      case 3:
-        return "You chose Scene 3: Electrical fire in the house.\n\n"
-            "In this scene, you will practice electrical fire safety:\n"
-            "• Do NOT use water\n"
-            "• Switch off power if safe\n"
-            "• Use the correct extinguisher\n"
-            "• Evacuate if the fire spreads";
-      default:
-        return "You chose a scene. Press Start to continue.";
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
+    final isTl = Localizations.localeOf(context).languageCode == 'tl';
+
+    final body = isTl
+        ? (scene == 3
+            ? "Pinili mo ang Eksena 3: Sunog sa kuryente sa bahay.\n\n"
+                "Sa eksena na ito, magsasanay ka sa kaligtasan sa sunog sa kuryente:\n"
+                "• HUWAG gumamit ng tubig\n"
+                "• I-off ang kuryente kung ligtas\n"
+                "• Gumamit ng tamang fire extinguisher\n"
+                "• Lumikas kung kumakalat ang apoy"
+            : "Pumili ka ng eksena. Pindutin ang Simulan para magpatuloy.")
+        : (scene == 3
+            ? "You chose Scene 3: Electrical fire in the house.\n\n"
+                "In this scene, you will practice electrical fire safety:\n"
+                "• Do NOT use water\n"
+                "• Switch off power if safe\n"
+                "• Use the correct extinguisher\n"
+                "• Evacuate if the fire spreads"
+            : "You chose a scene. Press Start to continue.");
+
     return Material(
       color: Colors.transparent,
       child: Container(
@@ -756,7 +773,9 @@ class _SceneConfirmPopup extends StatelessWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    "Chosen Scene: Scene $scene",
+                    isTl
+                        ? "Napiling Eksena: Eksena $scene"
+                        : "Chosen Scene: Scene $scene",
                     style: const TextStyle(
                       fontFamily: 'Poppins',
                       fontSize: 16,
@@ -783,7 +802,7 @@ class _SceneConfirmPopup extends StatelessWidget {
                 border: Border.all(color: Colors.black.withOpacity(0.06)),
               ),
               child: Text(
-                _body,
+                body,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontFamily: 'Poppins',
@@ -808,9 +827,9 @@ class _SceneConfirmPopup extends StatelessWidget {
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                child: const Text(
-                  "START SIMULATION",
-                  style: TextStyle(
+                child: Text(
+                  isTl ? "SIMULAN ANG SIMULASYON" : "START SIMULATION",
+                  style: const TextStyle(
                     fontFamily: 'Poppins',
                     fontSize: 14.5,
                     fontWeight: FontWeight.w900,
@@ -822,7 +841,9 @@ class _SceneConfirmPopup extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              "This button will redirect you to the Unity simulation.",
+              isTl
+                  ? "Ang button na ito ay magdadala sa iyo sa Unity simulation."
+                  : "This button will redirect you to the Unity simulation.",
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: 'Poppins',

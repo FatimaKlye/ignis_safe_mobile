@@ -88,7 +88,7 @@ class _SimulationScene2State extends State<SimulationScene2> {
         SnackBar(
           content: Text(
             _isTl
-                ? 'Ang Scene $picked ay hindi pa available sa Unity.'
+                ? 'Ang Eksena $picked ay hindi pa available sa Unity.'
                 : 'Scene $picked is not yet available in Unity.',
           ),
         ),
@@ -355,7 +355,7 @@ class _SimulationScene2State extends State<SimulationScene2> {
                             ? "Alamin kung paano tumugon nang ligtas sa sunog sa bahay sa pamamagitan ng wastong mga hakbang sa paglikas."
                             : "Learn how to respond safely during a house fire through proper evacuation steps.",
                         asset: "assets/house.jpg",
-                        buttonText: "Scene",
+                        buttonText: _isTl ? "Eksena" : "Scene",
                         onPressed: _openSceneFlow,
                       ),
                     ],
@@ -559,7 +559,7 @@ class _ScenePickerPopup extends StatelessWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    isTl ? "Pumili ng Scene" : "Choose a Scene",
+                    isTl ? "Pumili ng Eksena" : "Choose a Scene",
                     style: const TextStyle(
                       fontFamily: 'Poppins',
                       fontSize: 16,
@@ -579,7 +579,7 @@ class _ScenePickerPopup extends StatelessWidget {
             const SizedBox(height: 10),
             Text(
               isTl
-                  ? "Ang Modyul 2 (Sunog sa Bahay) ay may isang available na scene."
+                  ? "Ang Modyul 2 (Sunog sa Bahay) ay may isang available na eksena."
                   : "Module 2 (House) has one scene available.",
               textAlign: TextAlign.center,
               style: TextStyle(
@@ -592,7 +592,7 @@ class _ScenePickerPopup extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             _ModernSceneTile(
-              title: "Scene 2",
+              title: isTl ? "Eksena 2" : "Scene 2",
               subtitle: isTl
                   ? "Paano makalabas sa bahay kung ito ay nasusunog"
                   : "How to get out of the house if the house is on fire",
@@ -715,16 +715,16 @@ class _SceneConfirmPopup extends StatelessWidget {
     required this.isTl,
   });
 
-  String get _title => isTl
-      ? "Napiling Scene: Scene $scene"
+    String get _title => isTl
+      ? "Napiling Eksena: Eksena $scene"
       : "Chosen Scene: Scene $scene";
 
   String get _body {
     switch (scene) {
       case 2:
         return isTl
-            ? "Pinili mo ang Scene 2: Paano makalabas sa bahay kung ito ay nasusunog.\n\n"
-                "Sa scene na ito, magsasanay ka ng ligtas na paglikas:\n"
+            ? "Pinili mo ang Eksena 2: Paano makalabas sa bahay kung ito ay nasusunog.\n\n"
+                "Sa eksenang ito, magsasanay ka ng ligtas na paglikas:\n"
                 "• Gumapang nang mababa sa ilalim ng usok\n"
                 "• Suriin ang pinto kung mainit\n"
                 "• Gamitin ang pinakamalapit na ligtas na labasan\n"
@@ -737,7 +737,7 @@ class _SceneConfirmPopup extends StatelessWidget {
                 "• Call for help once outside";
       default:
         return isTl
-            ? "May pinili kang scene. Pindutin ang Start upang magpatuloy."
+            ? "May pinili kang eksena. Pindutin ang Start upang magpatuloy."
             : "You chose a scene. Press Start to continue.";
     }
   }

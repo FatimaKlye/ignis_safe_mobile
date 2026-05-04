@@ -39,6 +39,26 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
     super.dispose();
   }
 
+  String _authErrorMessage(String message) {
+    final isTl = Localizations.localeOf(context).languageCode == 'tl';
+    if (!isTl) return message;
+
+    final lower = message.toLowerCase();
+    if (lower.contains('expired') || lower.contains('invalid')) {
+      return 'Hindi wasto o paso na ang OTP. Pakisubukang muli.';
+    }
+    if (lower.contains('rate') || lower.contains('too many')) {
+      return 'Masyadong maraming pagsubok. Maghintay sandali bago subukang muli.';
+    }
+    if (lower.contains('email')) {
+      return 'Pakisuri ang email address at subukang muli.';
+    }
+    if (lower.contains('password')) {
+      return 'Hindi ma-update ang password. Pakisuri ang bagong password at subukang muli.';
+    }
+    return 'May problema sa authentication. Pakisubukang muli.';
+  }
+
   String? _validateEmail(String? value) {
     final email = value?.trim() ?? '';
     if (email.isEmpty) {
@@ -138,7 +158,7 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text(e.message)));
+      ).showSnackBar(SnackBar(content: Text(_authErrorMessage(e.message))));
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -207,7 +227,7 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text(e.message)));
+      ).showSnackBar(SnackBar(content: Text(_authErrorMessage(e.message))));
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -297,7 +317,7 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text(e.message)));
+      ).showSnackBar(SnackBar(content: Text(_authErrorMessage(e.message))));
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -423,7 +443,7 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
           ),
           decoration: InputDecoration(
             counterText: '',
-            labelText: t(context, 'OTP Code', 'OTP Code'),
+            labelText: t(context, 'OTP Code', 'Code ng OTP'),
             hintText: '------',
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
             enabledBorder: OutlineInputBorder(
@@ -582,9 +602,9 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
                       color: Colors.white,
                     ),
                   )
-                : const Text(
-                    'Update Password',
-                    style: TextStyle(
+                : Text(
+                    t(context, 'Update Password', 'I-update ang Password'),
+                    style: const TextStyle(
                       fontFamily: 'Poppins',
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -598,11 +618,13 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
 
   @override
   Widget build(BuildContext context) {
-    String title = 'Forgot Password';
+    String title = t(context, 'Forgot Password', 'Nakalimutan ang Password');
     if (_stage == _ForgotStage.otp) {
       title = t(context, 'Verify OTP', 'I-verify ang OTP');
     }
-    if (_stage == _ForgotStage.password) title = 'Reset Password';
+    if (_stage == _ForgotStage.password) {
+      title = t(context, 'Reset Password', 'I-reset ang Password');
+    }
 
     return Scaffold(
       backgroundColor: Colors.white,

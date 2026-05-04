@@ -3,18 +3,17 @@ import 'package:flutter/material.dart';
 import 'pre_assessment_building.dart';
 import 'simulation_scene.dart';
 
-const Color kBrandRed = Color(0xFFB11217);
-const Color kBrandBlue = Color(0xFF2563EB);
+const Color kBuildingPurple = Color(0xFF7C3AED);
+const Color kBuildingPurpleDark = Color(0xFF5B21B6);
 const Color kDarkText = Color(0xFF1F2937);
 const Color kSoftBg = Color(0xFFF8FAFC);
 
 class PreAssessmentCompletionPage3 extends StatelessWidget {
-  const PreAssessmentCompletionPage3 ({
+  const PreAssessmentCompletionPage3({
     super.key,
     required this.score,
     required this.totalQuestions,
-    required this.
-    assessmentTitle,
+    required this.assessmentTitle,
   });
 
   final int score;
@@ -23,6 +22,9 @@ class PreAssessmentCompletionPage3 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isTl = Localizations.localeOf(context).languageCode == 'tl';
+    String txt(String en, String tl) => isTl ? tl : en;
+
     final percent =
         totalQuestions == 0 ? 0 : ((score / totalQuestions) * 100).round();
 
@@ -63,7 +65,7 @@ class PreAssessmentCompletionPage3 extends StatelessWidget {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           gradient: const LinearGradient(
-                            colors: [kBrandRed, kBrandBlue],
+                            colors: [kBuildingPurple, kBuildingPurpleDark],
                           ),
                         ),
                         child: const Icon(
@@ -73,10 +75,10 @@ class PreAssessmentCompletionPage3 extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 18),
-                      const Text(
-                        'Great job!',
+                      Text(
+                        txt('Great job!', 'Magaling!'),
                         textAlign: TextAlign.center,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.w900,
                           color: kDarkText,
@@ -84,7 +86,7 @@ class PreAssessmentCompletionPage3 extends StatelessWidget {
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        '$assessmentTitle completed',
+                        txt('$assessmentTitle completed', 'Nakumpleto ang $assessmentTitle'),
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                           fontSize: 16,
@@ -106,9 +108,9 @@ class PreAssessmentCompletionPage3 extends StatelessWidget {
                         ),
                         child: Column(
                           children: [
-                            const Text(
-                              'Your Result',
-                              style: TextStyle(
+                            Text(
+                              txt('Your Result', 'Iyong Resulta'),
+                              style: const TextStyle(
                                 fontWeight: FontWeight.w800,
                                 color: Colors.black54,
                               ),
@@ -119,7 +121,7 @@ class PreAssessmentCompletionPage3 extends StatelessWidget {
                               style: const TextStyle(
                                 fontSize: 30,
                                 fontWeight: FontWeight.w900,
-                                color: kBrandRed,
+                                color: kBuildingPurpleDark,
                               ),
                             ),
                             const SizedBox(height: 4),
@@ -128,7 +130,7 @@ class PreAssessmentCompletionPage3 extends StatelessWidget {
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w800,
-                                color: kBrandBlue,
+                                color: kBuildingPurple,
                               ),
                             ),
                           ],
@@ -139,16 +141,19 @@ class PreAssessmentCompletionPage3 extends StatelessWidget {
                         width: double.infinity,
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: kBrandBlue.withOpacity(0.08),
+                          color: kBuildingPurple.withOpacity(0.08),
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
-                            color: kBrandBlue.withOpacity(0.18),
+                            color: kBuildingPurple.withOpacity(0.18),
                           ),
                         ),
-                        child: const Text(
-                          'This pre-assessment is not graded. It is only meant to check your knowledge before starting the module.',
+                        child: Text(
+                          txt(
+                            'This pre-assessment is not graded. It is only meant to check your knowledge before starting the module.',
+                            'Ang paunang pagsusulit na ito ay hindi binibigyan ng grado. Ginagamit lamang ito upang masukat ang iyong kaalaman bago simulan ang modyul.',
+                          ),
                           textAlign: TextAlign.center,
-                          style: TextStyle(
+                          style: const TextStyle(
                             height: 1.45,
                             fontWeight: FontWeight.w700,
                             color: kDarkText,
@@ -160,7 +165,7 @@ class PreAssessmentCompletionPage3 extends StatelessWidget {
                         width: double.infinity,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: kBrandBlue,
+                            backgroundColor: kBuildingPurple,
                             padding: const EdgeInsets.symmetric(vertical: 15),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(16),
@@ -174,9 +179,9 @@ class PreAssessmentCompletionPage3 extends StatelessWidget {
                               ),
                             );
                           },
-                          child: const Text(
-                            'Proceed to Simulation',
-                            style: TextStyle(
+                          child: Text(
+                            txt('Proceed to Simulation', 'Magpatuloy sa Simulasyon'),
+                            style: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.w900,
                               fontSize: 16,
@@ -189,7 +194,7 @@ class PreAssessmentCompletionPage3 extends StatelessWidget {
                         width: double.infinity,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: kBrandRed,
+                            backgroundColor: kBuildingPurpleDark,
                             padding: const EdgeInsets.symmetric(vertical: 15),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(16),
@@ -203,9 +208,9 @@ class PreAssessmentCompletionPage3 extends StatelessWidget {
                               ),
                             );
                           },
-                          child: const Text(
-                            'Retake',
-                            style: TextStyle(
+                          child: Text(
+                            txt('Retake', 'Ulitin'),
+                            style: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.w900,
                               fontSize: 16,

@@ -31,6 +31,30 @@ class _EditProfilePageState extends State<EditProfilePage> {
   String _originalFirstName = '';
   String _originalLastName = '';
 
+  bool get _isTl => Localizations.localeOf(context).languageCode == 'tl';
+
+  String _txt(String en, String tl) => _isTl ? tl : en;
+
+  String _friendlyError(Object error, String enFallback, String tlFallback) {
+    return _isTl ? tlFallback : '$enFallback\n$error';
+  }
+
+  String _authErrorMessage(String message) {
+    if (!_isTl) return message;
+
+    final lower = message.toLowerCase();
+    if (lower.contains('password')) {
+      return 'Hindi ma-update ang password. Pakisuri ang bagong password at subukang muli.';
+    }
+    if (lower.contains('email')) {
+      return 'Hindi ma-update ang email. Pakisubukang muli.';
+    }
+    if (lower.contains('rate') || lower.contains('too many')) {
+      return 'Masyadong maraming pagsubok. Maghintay sandali bago subukang muli.';
+    }
+    return 'Hindi na-update ang profile. Pakisubukang muli.';
+  }
+
   @override
   void initState() {
     super.initState();
@@ -53,7 +77,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       final user = supabase.auth.currentUser;
 
       if (user == null) {
-        throw Exception('No active session.');
+        throw Exception(_txt('No active session.', 'Walang aktibong session.'));
       }
 
       final data = await supabase
@@ -104,9 +128,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
       setState(() => _isLoading = false);
 
       await _showInfoDialog(
-        title: 'Failed to load profile',
-        message: '$e',
-        buttonText: 'OK',
+        title: _txt('Failed to load profile', 'Hindi na-load ang profile'),
+        message: _friendlyError(e, 'Failed to load profile.', 'Hindi na-load ang profile. Pakisubukang muli.'),
+        buttonText: _txt('OK', 'Sige'),
       );
     }
   }
@@ -134,9 +158,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
     } catch (e) {
       if (!mounted) return;
       await _showInfoDialog(
-        title: 'Image Error',
-        message: 'Could not read selected image.\n$e',
-        buttonText: 'OK',
+        title: _txt('Image Error', 'Error sa Larawan'),
+        message: _friendlyError(e, 'Could not read selected image.', 'Hindi mabasa ang napiling larawan. Pakisubukang muli.'),
+        buttonText: _txt('OK', 'Sige'),
       );
     }
   }
@@ -149,9 +173,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
     if (first.isEmpty || last.isEmpty) {
       await _showInfoDialog(
-        title: 'Incomplete Details',
-        message: 'Please complete First Name and Last Name.',
-        buttonText: 'OK',
+        title: _txt('Incomplete Details', 'Kulang ang Detalye'),
+        message: _txt('Please complete First Name and Last Name.', 'Pakikumpleto ang Pangalan at Apelyido.'),
+        buttonText: _txt('OK', 'Sige'),
       );
       return false;
     }
@@ -159,18 +183,18 @@ class _EditProfilePageState extends State<EditProfilePage> {
     if (password.isNotEmpty || confirm.isNotEmpty) {
       if (password.length < 6) {
         await _showInfoDialog(
-          title: 'Invalid Password',
-          message: 'Password must be at least 6 characters.',
-          buttonText: 'OK',
+          title: _txt('Invalid Password', 'Hindi Wastong Password'),
+          message: _txt('Password must be at least 6 characters.', 'Ang password ay dapat may hindi bababa sa 6 na character.'),
+          buttonText: _txt('OK', 'Sige'),
         );
         return false;
       }
 
       if (password != confirm) {
         await _showInfoDialog(
-          title: 'Password Mismatch',
-          message: 'Passwords do not match.',
-          buttonText: 'OK',
+          title: _txt('Password Mismatch', 'Hindi Magkatugma ang Password'),
+          message: _txt('Passwords do not match.', 'Hindi magkatugma ang mga password.'),
+          buttonText: _txt('OK', 'Sige'),
         );
         return false;
       }
@@ -194,21 +218,21 @@ class _EditProfilePageState extends State<EditProfilePage> {
     final password = _passwordCtrl.text.trim();
 
     if (first != _originalFirstName) {
-      changes.add('First Name: "$_originalFirstName" ? "$first"');
+      changes.add(_txt('First Name: "$_originalFirstName" → "$first"', 'Pangalan: "$_originalFirstName" → "$first"'));
     }
 
     if (last != _originalLastName) {
-      changes.add('Last Name: "$_originalLastName" ? "$last"');
+      changes.add(_txt('Last Name: "$_originalLastName" → "$last"', 'Apelyido: "$_originalLastName" → "$last"'));
     }
 
     if (_newAvatarBytes != null) {
-      changes.add('Profile Photo: Updated');
+      changes.add(_txt('Profile Photo: Updated', 'Larawan sa Profile: Na-update'));
     }
 
     if (password.isNotEmpty) {
-      changes.add('Password: Will be updated');
+      changes.add(_txt('Password: Will be updated', 'Password: I-a-update'));
     } else {
-      changes.add('Password: No change (left blank)');
+      changes.add(_txt('Password: No change (left blank)', 'Password: Walang pagbabago (iniwang blangko)'));
     }
 
     return changes;
@@ -220,10 +244,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
     if (!_hasActualChanges()) {
       await _showInfoDialog(
-        title: 'No changes detected',
-        message:
-            'Nothing to update.\n\nPassword is blank, so it will remain unchanged.',
-        buttonText: 'OK',
+        title: _txt('No changes detected', 'Walang Nakitang Pagbabago'),
+        message: _txt(
+          'Nothing to update.\n\nPassword is blank, so it will remain unchanged.',
+          'Walang kailangang i-update.\n\nBlangko ang password kaya mananatili itong hindi nabago.',
+        ),
+        buttonText: _txt('OK', 'Sige'),
       );
       return;
     }
@@ -234,10 +260,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
     if (wantsUpdate != true) return;
 
     final sure = await _showConfirmDialog(
-      title: 'Confirm Update',
-      message: 'Are you sure you want to update these changes?',
-      confirmText: 'Yes, Update',
-      cancelText: 'No',
+      title: _txt('Confirm Update', 'Kumpirmahin ang Update'),
+      message: _txt('Are you sure you want to update these changes?', 'Sigurado ka bang gusto mong i-update ang mga pagbabagong ito?'),
+      confirmText: _txt('Yes, Update', 'Oo, I-update'),
+      cancelText: _txt('No', 'Hindi'),
     );
     if (sure != true) return;
 
@@ -249,25 +275,25 @@ class _EditProfilePageState extends State<EditProfilePage> {
       if (!mounted) return;
 
       await _showInfoDialog(
-        title: 'Updated',
-        message: 'Changed successfully.',
-        buttonText: 'OK',
+        title: _txt('Updated', 'Na-update'),
+        message: _txt('Changed successfully.', 'Matagumpay na nabago.'),
+        buttonText: _txt('OK', 'Sige'),
       );
 
       Navigator.pop(context, true);
     } on AuthException catch (e) {
       if (!mounted) return;
       await _showInfoDialog(
-        title: 'Update Failed',
-        message: e.message,
-        buttonText: 'OK',
+        title: _txt('Update Failed', 'Hindi Na-update'),
+        message: _authErrorMessage(e.message),
+        buttonText: _txt('OK', 'Sige'),
       );
     } catch (e) {
       if (!mounted) return;
       await _showInfoDialog(
-        title: 'Update Failed',
-        message: 'Update failed: $e',
-        buttonText: 'OK',
+        title: _txt('Update Failed', 'Hindi Na-update'),
+        message: _friendlyError(e, 'Update failed.', 'Hindi na-update ang profile. Pakisubukang muli.'),
+        buttonText: _txt('OK', 'Sige'),
       );
     } finally {
       if (mounted) {
@@ -281,7 +307,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     final user = supabase.auth.currentUser;
 
     if (user == null) {
-      throw Exception('No active session.');
+      throw Exception(_txt('No active session.', 'Walang aktibong session.'));
     }
 
     String? avatarUrl = _existingAvatarUrl;
@@ -360,8 +386,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
-                  'Review Changes',
+                Text(
+                  _txt('Review Changes', 'Suriin ang mga Pagbabago'),
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w900,
@@ -383,7 +409,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           (c) => Padding(
                             padding: const EdgeInsets.only(bottom: 8),
                             child: Text(
-                              '� $c',
+                              '• $c',
                               style: const TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
@@ -396,11 +422,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                const Align(
+                Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    'Leave the password fields blank if you want to keep your current password.',
-                    style: TextStyle(
+                    _txt('Leave the password fields blank if you want to keep your current password.', 'Iwanang blangko ang password fields kung gusto mong panatilihin ang kasalukuyan mong password.'),
+                    style: const TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
                       color: Colors.black54,
@@ -421,8 +447,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           padding: const EdgeInsets.symmetric(vertical: 12),
                         ),
                         onPressed: () => Navigator.pop(context, false),
-                        child: const Text(
-                          'Back',
+                        child: Text(
+                          _txt('Back', 'Bumalik'),
                           style: TextStyle(fontWeight: FontWeight.w800),
                         ),
                       ),
@@ -439,8 +465,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           elevation: 6,
                         ),
                         onPressed: () => Navigator.pop(context, true),
-                        child: const Text(
-                          'Update',
+                        child: Text(
+                          _txt('Update', 'I-update'),
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.w900,
@@ -603,8 +629,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         icon: const Icon(Icons.arrow_back, color: Colors.white),
                       ),
                       const Spacer(),
-                      const Text(
-                        'Edit Profile',
+                      Text(
+                        _txt('Edit Profile', 'I-edit ang Profile'),
                         style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.w900,
@@ -690,44 +716,44 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     child: Column(
                       children: [
                         _Field(
-                          label: 'First Name',
+                          label: _txt('First Name', 'Pangalan'),
                           controller: _firstNameCtrl,
                           icon: Icons.badge_outlined,
                         ),
                         const SizedBox(height: 12),
                         _Field(
-                          label: 'Last Name',
+                          label: _txt('Last Name', 'Apelyido'),
                           controller: _lastNameCtrl,
                           icon: Icons.badge_outlined,
                         ),
                         const SizedBox(height: 12),
                         _Field(
-                          label: 'Email',
+                          label: _txt('Email', 'Email'),
                           controller: _emailCtrl,
                           icon: Icons.mail_outline,
                           enabled: false,
                         ),
                         const SizedBox(height: 18),
                         _PasswordField(
-                          label: 'New Password',
+                          label: _txt('New Password', 'Bagong Password'),
                           controller: _passwordCtrl,
                           show: _showPass,
                           onToggle: () => setState(() => _showPass = !_showPass),
                         ),
                         const SizedBox(height: 12),
                         _PasswordField(
-                          label: 'Confirm Password',
+                          label: _txt('Confirm Password', 'Kumpirmahin ang Password'),
                           controller: _confirmCtrl,
                           show: _showConfirm,
                           onToggle: () =>
                               setState(() => _showConfirm = !_showConfirm),
                         ),
                         const SizedBox(height: 8),
-                        const Align(
+                        Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
-                            'Leave password blank if you do not want to change it.',
-                            style: TextStyle(
+                            _txt('Leave password blank if you do not want to change it.', 'Iwanang blangko ang password kung ayaw mo itong palitan.'),
+                            style: const TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
                               color: Colors.black54,
@@ -751,7 +777,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       ),
                       onPressed: _isSaving ? null : _onSavePressed,
                       child: Text(
-                        _isSaving ? 'Saving...' : 'Save Changes',
+                        _isSaving
+                            ? _txt('Saving...', 'Sine-save...')
+                            : _txt('Save Changes', 'I-save ang Pagbabago'),
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w900,

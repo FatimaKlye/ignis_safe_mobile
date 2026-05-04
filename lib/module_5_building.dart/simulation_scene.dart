@@ -14,8 +14,8 @@ class SimulationScene5 extends StatefulWidget {
 }
 
 class _SimulationScene5State extends State<SimulationScene5> {
-  static const accent = Color(0xFF7C3AED); // purple
-  static const accent2 = Color(0xFF5B21B6); // darker purple
+  static const accent = Color(0xFF7C3AED);
+  static const accent2 = Color(0xFF5B21B6);
 
   static const int _moduleNo = 5;
   bool get _isTl => Localizations.localeOf(context).languageCode == 'tl';
@@ -173,7 +173,7 @@ class _SimulationScene5State extends State<SimulationScene5> {
               Center(
                 child: _ScenePickerPopup(
                   onClose: () => Navigator.pop(context),
-                  onPickScene5: () => Navigator.pop(context, 5),
+                  onPickScene4: () => Navigator.pop(context, 4),
                 ),
               ),
             ],
@@ -267,10 +267,10 @@ class _SimulationScene5State extends State<SimulationScene5> {
                         onPressed: () => Navigator.pop(context),
                       ),
                       const SizedBox(height: 15),
-                      const Center(
+                      Center(
                         child: Text(
-                          "Simulation Scenes",
-                          style: TextStyle(
+                          _isTl ? "Simulasyon" : "Simulation Scenes",
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 30,
                             fontWeight: FontWeight.bold,
@@ -280,7 +280,7 @@ class _SimulationScene5State extends State<SimulationScene5> {
                       ),
                       const SizedBox(height: 15),
                       Padding(
-                        padding: const EdgeInsets.only(left: 25),
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
@@ -304,18 +304,18 @@ class _SimulationScene5State extends State<SimulationScene5> {
                                   ),
                                 ],
                               ),
-                              child: const Row(
+                              child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Icon(
-                                    Icons.apartment_rounded,
+                                  const Icon(
+                                    Icons.local_fire_department_rounded,
                                     color: Colors.white,
                                     size: 18,
                                   ),
-                                  SizedBox(width: 8),
+                                  const SizedBox(width: 8),
                                   Text(
-                                    "MODULE 5",
-                                    style: TextStyle(
+                                    _isTl ? "MODYUL 5" : "MODULE 5",
+                                    style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white,
                                       fontFamily: 'Poppins',
@@ -325,10 +325,12 @@ class _SimulationScene5State extends State<SimulationScene5> {
                               ),
                             ),
                             const SizedBox(width: 15),
-                            const Expanded(
+                            Expanded(
                               child: Text(
-                                "Tenement Fire: What It Is, Common Causes, and What To Do",
-                                style: TextStyle(
+                                _isTl
+                                    ? "Sunog sa Tenement: Ano Ito, Karaniwang Sanhi, at Ano ang Dapat Gawin"
+                                    : "Tenement Fire: What It Is, Common Causes, and What To Do",
+                                style: const TextStyle(
                                   color: Colors.black,
                                   fontWeight: FontWeight.w600,
                                   fontFamily: 'Poppins',
@@ -347,12 +349,13 @@ class _SimulationScene5State extends State<SimulationScene5> {
                     padding: const EdgeInsets.fromLTRB(16, 14, 16, 18),
                     children: [
                       _ModuleCard(
-                        moduleLabel: "MODULE 5",
-                        title: "TENEMENT FIRE",
-                        description:
-                            "Learn the correct response during a tenement fire, including staying calm, alerting others, using the nearest safe exit, avoiding elevators, staying low if there is smoke, and evacuating to a safe assembly area.",
+                        moduleLabel: _isTl ? "MODYUL 5" : "MODULE 5",
+                        title: _isTl ? "SUNOG SA TENEMENT" : "TENEMENT FIRE",
+                        description: _isTl
+                            ? "Alamin ang tamang paglikas kapag may sunog sa tenement, kabilang ang pagbababala sa ibang nakatira, pagyuko kapag may usok, pag-iwas sa elevator, paggamit ng ligtas na labasan, at pagpunta sa assembly area."
+                            : "Learn the correct response during a tenement fire, including alerting occupants, staying low in smoke, avoiding elevators, using safe exits, and going to the assembly area.",
                         asset: "assets/condo.jpg",
-                        buttonText: "Scene",
+                        buttonText: _isTl ? "Eksena" : "Scene",
                         onPressed: _openSceneFlow,
                       ),
                     ],
@@ -384,7 +387,7 @@ class _ModuleCard extends StatelessWidget {
     required this.onPressed,
   });
 
-  static const Color brandPurple = Color(0xFF7C3AED);
+  static const Color brandAmber = Color(0xFF7C3AED);
 
   @override
   Widget build(BuildContext context) {
@@ -428,7 +431,7 @@ class _ModuleCard extends StatelessWidget {
                       title,
                       style: const TextStyle(
                         fontFamily: 'Poppins',
-                        color: brandPurple,
+                        color: brandAmber,
                         fontSize: 14,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 0.2,
@@ -452,7 +455,7 @@ class _ModuleCard extends StatelessWidget {
                         height: 34,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: brandPurple,
+                            backgroundColor: brandAmber,
                             elevation: 8,
                             padding: const EdgeInsets.symmetric(horizontal: 18),
                             shape: RoundedRectangleBorder(
@@ -484,7 +487,7 @@ class _ModuleCard extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
             decoration: BoxDecoration(
-              color: brandPurple,
+              color: brandAmber,
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
@@ -512,14 +515,16 @@ class _ModuleCard extends StatelessWidget {
 
 class _ScenePickerPopup extends StatelessWidget {
   final VoidCallback onClose;
-  final VoidCallback onPickScene5;
+  final VoidCallback onPickScene4;
 
-  const _ScenePickerPopup({required this.onClose, required this.onPickScene5});
+  const _ScenePickerPopup({required this.onClose, required this.onPickScene4});
 
-  static const Color brandPurple = Color(0xFF7C3AED);
+  static const Color brandAmber = Color(0xFF7C3AED);
 
   @override
   Widget build(BuildContext context) {
+    final isTl = Localizations.localeOf(context).languageCode == 'tl';
+
     return Material(
       color: Colors.transparent,
       child: Container(
@@ -546,19 +551,19 @@ class _ScenePickerPopup extends StatelessWidget {
                   width: 38,
                   height: 38,
                   decoration: BoxDecoration(
-                    color: brandPurple.withOpacity(0.10),
+                    color: brandAmber.withOpacity(0.10),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Icon(
-                    Icons.apartment_rounded,
-                    color: brandPurple,
+                    Icons.local_fire_department_rounded,
+                    color: brandAmber,
                   ),
                 ),
                 const SizedBox(width: 12),
-                const Expanded(
+                Expanded(
                   child: Text(
-                    "Choose a Scene",
-                    style: TextStyle(
+                    isTl ? "Pumili ng Eksena" : "Choose a Scene",
+                    style: const TextStyle(
                       fontFamily: 'Poppins',
                       fontSize: 16,
                       fontWeight: FontWeight.w800,
@@ -576,7 +581,9 @@ class _ScenePickerPopup extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              "Module 5 has one available simulation scene.",
+              isTl
+                  ? "Ang Modyul 5 ay may isang available na eksena ng simulasyon."
+                  : "Module 5 has one available simulation scene.",
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: 'Poppins',
@@ -588,10 +595,12 @@ class _ScenePickerPopup extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             _ModernSceneTile(
-              title: "Scene 5",
-              subtitle: "Building fire emergency response",
-              icon: Icons.apartment_rounded,
-              onTap: onPickScene5,
+              title: isTl ? "Eksena 5" : "Scene 5",
+              subtitle: isTl
+                  ? "Paglikas at pagtugon sa sunog sa tenement"
+                  : "Tenement fire evacuation response",
+              icon: Icons.local_fire_department_rounded,
+              onTap: onPickScene4,
             ),
           ],
         ),
@@ -613,7 +622,7 @@ class _ModernSceneTile extends StatelessWidget {
     required this.onTap,
   });
 
-  static const Color brandPurple = Color(0xFF7C3AED);
+  static const Color brandAmber = Color(0xFF7C3AED);
 
   @override
   Widget build(BuildContext context) {
@@ -645,14 +654,14 @@ class _ModernSceneTile extends StatelessWidget {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    brandPurple.withOpacity(0.92),
-                    brandPurple.withOpacity(0.72),
+                    brandAmber.withOpacity(0.92),
+                    brandAmber.withOpacity(0.72),
                   ],
                 ),
                 borderRadius: BorderRadius.circular(14),
                 boxShadow: [
                   BoxShadow(
-                    color: brandPurple.withOpacity(0.22),
+                    color: brandAmber.withOpacity(0.22),
                     blurRadius: 14,
                     offset: const Offset(0, 8),
                   ),
@@ -712,26 +721,39 @@ class _SceneConfirmPopup extends StatelessWidget {
     required this.onStart,
   });
 
-  static const Color brandPurple = Color(0xFF7C3AED);
+  static const Color brandAmber = Color(0xFF7C3AED);
 
-  String get _body {
+  String _body(BuildContext context) {
+    final isTl = Localizations.localeOf(context).languageCode == 'tl';
+
     switch (scene) {
       case 5:
-        return "You chose Scene 5: Building fire.\n\n"
-            "In this scene, you will practice building fire safety:\n"
-            "• Stay calm and alert other people nearby\n"
-            "• Use the nearest safe exit or stairway\n"
-            "• Do NOT use the elevator during a fire\n"
-            "• Stay low if there is smoke\n"
-            "• Go to the designated safe assembly area\n"
-            "• Do not go back inside the building";
+        return isTl
+            ? "Pinili mo ang Eksena 5: Sunog sa tenement.\n\n"
+                "Sa eksenang ito, magsasanay ka ng ligtas na paglikas sa tenement:\n"
+                "• Ipaalam agad sa ibang nakatira kung ligtas\n"
+                "• Yumuko kapag may usok\n"
+                "• HUWAG gumamit ng elevator\n"
+                "• Gamitin ang pinakamalapit na ligtas na hagdan o labasan\n"
+                "• Pumunta sa assembly area at hintayin ang responders"
+            : "You chose Scene 5: Tenement fire.\n\n"
+                "In this scene, you will practice safe evacuation during a tenement fire:\n"
+                "• Alert other occupants immediately if safe\n"
+                "• Stay low when there is smoke\n"
+                "• Do NOT use elevators\n"
+                "• Use the nearest safe stairway or exit\n"
+                "• Go to the assembly area and wait for responders";
       default:
-        return "You chose a scene. Press Start to continue.";
+        return isTl
+            ? "Pumili ka ng eksena. Pindutin ang Simulan para magpatuloy."
+            : "You chose a scene. Press Start to continue.";
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final isTl = Localizations.localeOf(context).languageCode == 'tl';
+
     return Material(
       color: Colors.transparent,
       child: Container(
@@ -758,18 +780,18 @@ class _SceneConfirmPopup extends StatelessWidget {
                   width: 38,
                   height: 38,
                   decoration: BoxDecoration(
-                    color: brandPurple.withOpacity(0.10),
+                    color: brandAmber.withOpacity(0.10),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Icon(
                     Icons.check_circle_rounded,
-                    color: brandPurple,
+                    color: brandAmber,
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    "Chosen Scene: Scene $scene",
+                    isTl ? "Napiling Eksena: Eksena $scene" : "Chosen Scene: Scene $scene",
                     style: const TextStyle(
                       fontFamily: 'Poppins',
                       fontSize: 16,
@@ -796,7 +818,7 @@ class _SceneConfirmPopup extends StatelessWidget {
                 border: Border.all(color: Colors.black.withOpacity(0.06)),
               ),
               child: Text(
-                _body,
+                _body(context),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontFamily: 'Poppins',
@@ -814,16 +836,16 @@ class _SceneConfirmPopup extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: onStart,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: brandPurple,
+                  backgroundColor: brandAmber,
                   elevation: 10,
                   shadowColor: Colors.black.withOpacity(0.25),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                child: const Text(
-                  "START SIMULATION",
-                  style: TextStyle(
+                child: Text(
+                  isTl ? "SIMULAN ANG SIMULASYON" : "START SIMULATION",
+                  style: const TextStyle(
                     fontFamily: 'Poppins',
                     fontSize: 14.5,
                     fontWeight: FontWeight.w900,
@@ -835,7 +857,9 @@ class _SceneConfirmPopup extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              "This button will redirect you to the Unity simulation.",
+              isTl
+                  ? "Dadalhin ka ng button na ito sa Unity simulation."
+                  : "This button will redirect you to the Unity simulation.",
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: 'Poppins',

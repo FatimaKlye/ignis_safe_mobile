@@ -375,10 +375,14 @@ class _LearningMaterialElectricalPageState
                 c2: accent2,
               ),
               const SizedBox(width: 15),
-              const Expanded(
+              Expanded(
                 child: Text(
-                  "An electrical fire is a fire caused by electrical equipment, wiring, or devices that overheat, spark, or short circuit. These fires often start behind walls, inside appliances, or in electrical panels, making them difficult to detect early.",
-                  style: TextStyle(
+                  _t(
+                    context,
+                    "An electrical fire is a fire caused by electrical equipment, wiring, or devices that overheat, spark, or short circuit. These fires often start behind walls, inside appliances, or in electrical panels, making them difficult to detect early.",
+                    "Ang sunog sa kuryente ay sunog na sanhi ng electrical na kagamitan, wiring, o device na sumobra ang init, nagpapahinga ng spark, o nagkaroon ng short circuit. Ang mga sunog na ito ay madalas magsimula sa likod ng mga pader, sa loob ng mga appliance, o sa electrical panel, kaya mahirap itong mapansin agad.",
+                  ),
+                  style: const TextStyle(
                     fontSize: 14,
                     height: 1.5,
                     fontFamily: 'Poppins',

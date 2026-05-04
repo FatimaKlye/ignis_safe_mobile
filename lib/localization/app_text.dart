@@ -179,7 +179,7 @@ const Map<String, Map<String, String>> _strings = {
   },
   'post_assessment': {
     'en': 'POST -\nASSESSMENT',
-    'tl': 'PANGWAKAS -\nPAGSUSULIT',
+    'tl': 'PANGHULING -\nPAGSUSULIT',
   },
   'simulation_required': {
     'en': 'Simulation Required',
@@ -187,7 +187,7 @@ const Map<String, Map<String, String>> _strings = {
   },
   'simulation_required_message': {
     'en': 'You need to finish the simulation first before the post-assessment will open.\n\nThe questions on the post-assessment are connected to the simulation.',
-    'tl': 'Kailangan mo munang tapusin ang simulasyon bago mabuksan ang pangwakas na pagsusulit.\n\nAng mga tanong sa pangwakas na pagsusulit ay konektado sa simulasyon.',
+    'tl': 'Kailangan mo munang tapusin ang simulasyon bago mabuksan ang panghuling pagsusulit.\n\nAng mga tanong sa panghuling pagsusulit ay konektado sa simulasyon.',
   },
   'ok': {
     'en': 'OK',
@@ -236,6 +236,22 @@ const Map<String, Map<String, String>> _strings = {
   'module_2_full_header': {
     'en': 'House Fire: How to Get Out Safely During a Fire',
     'tl': 'Sunog sa Bahay: Paano Ligtas na Makalabas Habang May Sunog',
+  },
+  'module_3_full_title': {
+    'en': 'Module 3: Electrical Fire: Causes, Safe Actions, and Prevention',
+    'tl': 'Modyul 3: Sunog sa Kuryente: Mga Sanhi, Ligtas na Gawain, at Pag-iwas',
+  },
+  'module_3_full_header': {
+    'en': 'Electrical Fire: Causes, Safe Actions, and Prevention',
+    'tl': 'Sunog sa Kuryente: Mga Sanhi, Ligtas na Gawain, at Pag-iwas',
+  },
+  'module_4_full_title': {
+    'en': 'Module 4: Kitchen Fire: What It Is, Common Types, and What To Do',
+    'tl': 'Modyul 4: Sunog sa Kusina: Ano Ito, Karaniwang Uri, at Ano ang Dapat Gawin',
+  },
+  'module_4_full_header': {
+    'en': 'Kitchen Fire: What It Is, Common Types, and What To Do',
+    'tl': 'Sunog sa Kusina: Ano Ito, Karaniwang Uri, at Ano ang Dapat Gawin',
   },
   'title_fire_extinguisher': {
     'en': 'FIRE EXTINGUISHER',

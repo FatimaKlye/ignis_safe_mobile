@@ -183,7 +183,7 @@ class _LearningMaterialTenementPageState
               children: [
                 const SizedBox(height: 5),
                 Padding(
-                  padding: const EdgeInsets.only(left: 9, right: 25),
+                  padding: const EdgeInsets.symmetric(horizontal: 25),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -194,10 +194,12 @@ class _LearningMaterialTenementPageState
                         onPressed: () => Navigator.pop(context),
                       ),
                       const SizedBox(height: 10),
-                      Center(
+                      SizedBox(
+                        width: double.infinity,
                         child: Text(
                           _t(context, "Learning Material", "Materyal sa Pag-aaral"),
-                          style: TextStyle(
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 30,
                             fontWeight: FontWeight.bold,
@@ -206,7 +208,7 @@ class _LearningMaterialTenementPageState
                       ),
                       const SizedBox(height: 15),
                       Padding(
-                        padding: const EdgeInsets.only(left: 25),
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
@@ -343,7 +345,7 @@ class _LearningMaterialTenementPageState
                         onPressed: _canNext ? _goNext : null,
                         child: Text(
                           isLast
-                              ? _t(context, "Start pre test", "Simulan ang paunang pagsusulit")
+                              ? _t(context, "Start Pre-Assessment", "Simulan ang Paunang Pagsusulit")
                               : _t(context, "NEXT »", "SUNOD »"),
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
@@ -411,10 +413,14 @@ class _LearningMaterialTenementPageState
                 c2: accent2,
               ),
               const SizedBox(width: 15),
-              const Expanded(
+              Expanded(
                 child: Text(
-                  "A tenement fire happens in a residential building with many rooms or floors. It is dangerous because flames and smoke can spread quickly through hallways, stairs, doors, and nearby units.",
-                  style: TextStyle(
+                  _t(
+                    context,
+                    "A tenement fire happens in a residential building with many rooms or floors. It is dangerous because flames and smoke can spread quickly through hallways, stairs, doors, and nearby units.",
+                    "Ang sunog sa tenement ay nangyayari sa gusaling tirahan na may maraming silid o palapag. Mapanganib ito dahil mabilis kumalat ang apoy at usok sa pasilyo, hagdan, pinto, at mga katabing unit.",
+                  ),
+                  style: const TextStyle(
                     fontSize: 14,
                     height: 1.5,
                     fontFamily: 'Poppins',
@@ -575,12 +581,19 @@ class _LearningMaterialTenementPageState
                     title: _t(context, "Safety Tips", "Mga Tip sa Kaligtasan"),
                     icon: Icons.tips_and_updates_rounded,
                     color: const Color(0xFF6366F1),
-                    message:
+                    message: _t(
+                        context,
                         "• Avoid overloading outlets.\n"
-                        "• Keep exits and stairs clear.\n"
-                        "• Check wiring regularly.\n"
-                        "• Do not leave open flames unattended.\n"
-                        "• Know the nearest safe exit.",
+                            "• Keep exits and stairs clear.\n"
+                            "• Check wiring regularly.\n"
+                            "• Do not leave open flames unattended.\n"
+                            "• Know the nearest safe exit.",
+                        "• Huwag sobrahan ang nakakabit sa saksakan.\n"
+                            "• Panatilihing walang harang ang labasan at hagdan.\n"
+                            "• Regular na suriin ang wiring.\n"
+                            "• Huwag pabayaang nakasindi ang bukas na apoy.\n"
+                            "• Alamin ang pinakamalapit na ligtas na labasan.",
+                      ),
                   ),
                 ),
               ),

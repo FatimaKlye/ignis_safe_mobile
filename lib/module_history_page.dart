@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'localization/app_text.dart';
 import 'localization/localized_db_text.dart';
 
 import 'module_history_detail_page.dart';
@@ -114,12 +115,19 @@ class _ModuleHistoryPageState extends State<ModuleHistoryPage> {
                         ),
                       ),
                       const Spacer(),
-                      const Text(
-                        "Module History",
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w900,
-                          color: Colors.black,
+                      Expanded(
+                        flex: 4,
+                        child: Text(
+                          context.tr('module_history'),
+                          textAlign: TextAlign.center,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.black,
+                            height: 1.15,
+                          ),
                         ),
                       ),
                       const Spacer(),
@@ -130,88 +138,110 @@ class _ModuleHistoryPageState extends State<ModuleHistoryPage> {
                 Expanded(
                   child: _isLoading
                       ? const Center(child: CircularProgressIndicator())
-                      : ListView.separated(
-                          padding: const EdgeInsets.fromLTRB(16, 24, 16, 0),
-                          itemCount: _modules.length,
-                          separatorBuilder: (_, __) =>
-                              const SizedBox(height: 20),
-                          itemBuilder: (context, index) {
-                            final module = _modules[index];
-                            final moduleId = module['id'].toString();
-                            final moduleNo = module['module_no'] as int;
-                            final title = LocalizedDbText.pick(
-                              context,
-                              module,
-                              'title',
-                              'title_tl',
-                              fallback: 'Module $moduleNo',
-                            );
-
-                            return InkWell(
-                              borderRadius: BorderRadius.circular(14),
-                              onTap: () {
-                                Navigator.push(
+                      : _modules.isEmpty
+                          ? Center(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 24),
+                                child: Text(
+                                  context.tr('no_modules_found'),
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.black54,
+                                  ),
+                                ),
+                              ),
+                            )
+                          : ListView.separated(
+                              padding: const EdgeInsets.fromLTRB(16, 24, 16, 0),
+                              itemCount: _modules.length,
+                              separatorBuilder: (_, __) =>
+                                  const SizedBox(height: 20),
+                              itemBuilder: (context, index) {
+                                final module = _modules[index];
+                                final moduleId = module['id'].toString();
+                                final moduleNo = module['module_no'] as int;
+                                final title = LocalizedDbText.pick(
                                   context,
-                                  MaterialPageRoute(
-                                    builder: (_) => ModuleHistoryDetailPage(
-                                      moduleId: moduleId,
-                                      moduleNo: moduleNo,
-                                      moduleTitle: title,
+                                  module,
+                                  'title',
+                                  'title_tl',
+                                  fallback:
+                                      LocalizedDbText.moduleLabel(context, moduleNo),
+                                );
+
+                                return InkWell(
+                                  borderRadius: BorderRadius.circular(14),
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => ModuleHistoryDetailPage(
+                                          moduleId: moduleId,
+                                          moduleNo: moduleNo,
+                                          moduleTitle: title,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.all(16),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(14),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.08),
+                                          blurRadius: 12,
+                                          offset: const Offset(0, 6),
+                                        ),
+                                      ],
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                LocalizedDbText.moduleLabel(
+                                                  context,
+                                                  moduleNo,
+                                                ),
+                                                style: const TextStyle(
+                                                  color: brandRed,
+                                                  fontWeight: FontWeight.w900,
+                                                  fontSize: 12,
+                                                ),
+                                              ),
+                                              const SizedBox(height: 4),
+                                              Text(
+                                                title,
+                                                maxLines: 3,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: const TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w900,
+                                                  color: Color(0xFF222222),
+                                                  height: 1.25,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        const Icon(
+                                          Icons.chevron_right_rounded,
+                                          size: 28,
+                                          color: Colors.black,
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 );
                               },
-                              child: Container(
-                                padding: const EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(14),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.08),
-                                      blurRadius: 12,
-                                      offset: const Offset(0, 6),
-                                    ),
-                                  ],
-                                ),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            LocalizedDbText.moduleLabel(context, moduleNo),
-                                            style: const TextStyle(
-                                              color: Color(0xFFB11217),
-                                              fontWeight: FontWeight.w900,
-                                              fontSize: 12,
-                                            ),
-                                          ),
-                                          const SizedBox(height: 4),
-                                          Text(
-                                            title,
-                                            style: const TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w900,
-                                              color: Color(0xFF222222),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    const Icon(
-                                      Icons.chevron_right_rounded,
-                                      size: 28,
-                                      color: Colors.black,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
-                        ),
+                            ),
                 ),
               ],
             ),

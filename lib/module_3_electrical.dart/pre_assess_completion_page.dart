@@ -21,6 +21,7 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isTl = Localizations.localeOf(context).languageCode == 'tl';
     final percent = totalQuestions == 0
         ? 0
         : ((score / totalQuestions) * 100).round();
@@ -67,10 +68,10 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 18),
-                      const Text(
-                        'Great job!',
+                      Text(
+                        isTl ? 'Magaling!' : 'Great job!',
                         textAlign: TextAlign.center,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.w900,
                           color: kDarkText,
@@ -78,7 +79,9 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        '$assessmentTitle completed',
+                        isTl
+                            ? 'Nakumpleto ang $assessmentTitle'
+                            : '$assessmentTitle completed',
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                           fontSize: 16,
@@ -100,9 +103,9 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
                         ),
                         child: Column(
                           children: [
-                            const Text(
-                              'Your Result',
-                              style: TextStyle(
+                            Text(
+                              isTl ? 'Ang Iyong Resulta' : 'Your Result',
+                              style: const TextStyle(
                                 fontWeight: FontWeight.w800,
                                 color: Colors.black54,
                               ),
@@ -139,10 +142,12 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
                             color: kBrandBlue.withOpacity(0.18),
                           ),
                         ),
-                        child: const Text(
-                          'This pre-assessment is not graded. It is only meant to check your knowledge before starting the module.',
+                        child: Text(
+                          isTl
+                              ? 'Ang paunang pagsusulit na ito ay hindi graded. Para lamang itong suriin ang iyong kaalaman bago simulan ang modyul.'
+                              : 'This pre-assessment is not graded. It is only meant to check your knowledge before starting the module.',
                           textAlign: TextAlign.center,
-                          style: TextStyle(
+                          style: const TextStyle(
                             height: 1.45,
                             fontWeight: FontWeight.w700,
                             color: kDarkText,
@@ -168,9 +173,9 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
                               ),
                             );
                           },
-                          child: const Text(
-                            'Proceed to Simulation',
-                            style: TextStyle(
+                          child: Text(
+                            isTl ? 'Magpatuloy sa Simulasyon' : 'Proceed to Simulation',
+                            style: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.w900,
                               fontSize: 16,
@@ -197,9 +202,9 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
                               ),
                             );
                           },
-                          child: const Text(
-                            'Retake',
-                            style: TextStyle(
+                          child: Text(
+                            isTl ? 'Ulitin' : 'Retake',
+                            style: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.w900,
                               fontSize: 16,

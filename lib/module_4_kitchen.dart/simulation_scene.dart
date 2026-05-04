@@ -93,7 +93,7 @@ class _SimulationScene4State extends State<SimulationScene4> {
         SnackBar(
           content: Text(
             _isTl
-                ? 'Ang Scene 4 ay hindi pa available sa Unity.'
+                ? 'Ang Eksena 4 ay hindi pa available sa Unity.'
                 : 'Scene 4 is not yet available in Unity.',
           ),
         ),
@@ -266,11 +266,11 @@ class _SimulationScene4State extends State<SimulationScene4> {
                         icon: const Icon(Icons.close, color: Colors.white),
                         onPressed: () => Navigator.pop(context),
                       ),
-                      const SizedBox(height: 15),
-                      const Center(
+                      const SizedBox(height: 15), 
+                      Center(
                         child: Text(
-                          "Simulation Scenes",
-                          style: TextStyle(
+                          _isTl ? "Simulasyon" : "Simulation Scenes",
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 30,
                             fontWeight: FontWeight.bold,
@@ -280,7 +280,7 @@ class _SimulationScene4State extends State<SimulationScene4> {
                       ),
                       const SizedBox(height: 15),
                       Padding(
-                        padding: const EdgeInsets.only(left: 25),
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
@@ -304,18 +304,18 @@ class _SimulationScene4State extends State<SimulationScene4> {
                                   ),
                                 ],
                               ),
-                              child: const Row(
+                              child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Icon(
+                                  const Icon(
                                     Icons.local_fire_department_rounded,
                                     color: Colors.white,
                                     size: 18,
                                   ),
-                                  SizedBox(width: 8),
+                                  const SizedBox(width: 8),
                                   Text(
-                                    "MODULE 4",
-                                    style: TextStyle(
+                                    _isTl ? "MODYUL 4" : "MODULE 4",
+                                    style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white,
                                       fontFamily: 'Poppins',
@@ -325,10 +325,12 @@ class _SimulationScene4State extends State<SimulationScene4> {
                               ),
                             ),
                             const SizedBox(width: 15),
-                            const Expanded(
+                            Expanded(
                               child: Text(
-                                "Kitchen Fire: What It Is, Common Types, and What To Do",
-                                style: TextStyle(
+                                _isTl
+                                    ? "Sunog sa Kusina: Ano Ito, Karaniwang Uri, at Ano ang Dapat Gawin"
+                                    : "Kitchen Fire: What It Is, Common Types, and What To Do",
+                                style: const TextStyle(
                                   color: Colors.black,
                                   fontWeight: FontWeight.w600,
                                   fontFamily: 'Poppins',
@@ -347,12 +349,13 @@ class _SimulationScene4State extends State<SimulationScene4> {
                     padding: const EdgeInsets.fromLTRB(16, 14, 16, 18),
                     children: [
                       _ModuleCard(
-                        moduleLabel: "MODULE 4",
-                        title: "KITCHEN FIRE ",
-                        description:
-                            "Learn the correct response during a kitchen fire, including turning off the heat if safe, never using water on oil or grease fire, covering small flames with a metal lid, and evacuating if the fire spreads.",
+                        moduleLabel: _isTl ? "MODYUL 4" : "MODULE 4",
+                        title: _isTl ? "SUNOG SA KUSINA" : "KITCHEN FIRE",
+                        description: _isTl
+                            ? "Alamin ang tamang pagtugon kapag may sunog sa kusina, kabilang ang ligtas na pagpatay ng kalan, hindi paggamit ng tubig sa mantika o sebo, pagtatakip ng maliit na apoy gamit ang metal na takip, at paglikas kung kumalat ang apoy."
+                            : "Learn the correct response during a kitchen fire, including turning off the heat if safe, never using water on oil or grease fire, covering small flames with a metal lid, and evacuating if the fire spreads.",
                         asset: "assets/kitchen.png",
-                        buttonText: "Scene",
+                        buttonText: _isTl ? "Eksena" : "Scene",
                         onPressed: _openSceneFlow,
                       ),
                     ],
@@ -520,6 +523,8 @@ class _ScenePickerPopup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isTl = Localizations.localeOf(context).languageCode == 'tl';
+
     return Material(
       color: Colors.transparent,
       child: Container(
@@ -555,10 +560,10 @@ class _ScenePickerPopup extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 12),
-                const Expanded(
+                Expanded(
                   child: Text(
-                    "Choose a Scene",
-                    style: TextStyle(
+                    isTl ? "Pumili ng Eksena" : "Choose a Scene",
+                    style: const TextStyle(
                       fontFamily: 'Poppins',
                       fontSize: 16,
                       fontWeight: FontWeight.w800,
@@ -576,7 +581,9 @@ class _ScenePickerPopup extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              "Module 4 has one available simulation scene.",
+              isTl
+                  ? "Ang Modyul 4 ay may isang available na eksena ng simulasyon."
+                  : "Module 4 has one available simulation scene.",
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: 'Poppins',
@@ -588,8 +595,10 @@ class _ScenePickerPopup extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             _ModernSceneTile(
-              title: "Scene 4",
-              subtitle: "Kitchen fire emergency response",
+              title: isTl ? "Eksena 4" : "Scene 4",
+              subtitle: isTl
+                  ? "Pagtugon sa emergency ng sunog sa kusina"
+                  : "Kitchen fire emergency response",
               icon: Icons.local_fire_department_rounded,
               onTap: onPickScene4,
             ),
@@ -714,23 +723,37 @@ class _SceneConfirmPopup extends StatelessWidget {
 
   static const Color brandAmber = Color(0xFFF59E0B);
 
-  String get _body {
+  String _body(BuildContext context) {
+    final isTl = Localizations.localeOf(context).languageCode == 'tl';
+
     switch (scene) {
       case 4:
-        return "You chose Scene 4: Kitchen fire.\n\n"
-            "In this scene, you will practice kitchen fire safety:\n"
-            "• Turn off the stove or heat source if it is safe\n"
-            "• Do NOT use water on oil or grease fire\n"
-            "• Cover a small fire with a metal lid or tray\n"
-            "• Use the correct fire extinguisher if safe\n"
-            "• Evacuate if the fire spreads";
+        return isTl
+            ? "Pinili mo ang Eksena 4: Sunog sa kusina.\n\n"
+                "Sa eksenang ito, magsasanay ka ng kaligtasan sa sunog sa kusina:\n"
+                "• Patayin ang kalan o pinagmumulan ng init kung ligtas\n"
+                "• HUWAG gumamit ng tubig sa sunog na dulot ng mantika o sebo\n"
+                "• Takpan ang maliit na apoy gamit ang metal na takip o tray\n"
+                "• Gamitin ang tamang pamatay-sunog kung ligtas\n"
+                "• Lumikas kung kumalat ang apoy"
+            : "You chose Scene 4: Kitchen fire.\n\n"
+                "In this scene, you will practice kitchen fire safety:\n"
+                "• Turn off the stove or heat source if it is safe\n"
+                "• Do NOT use water on oil or grease fire\n"
+                "• Cover a small fire with a metal lid or tray\n"
+                "• Use the correct fire extinguisher if safe\n"
+                "• Evacuate if the fire spreads";
       default:
-        return "You chose a scene. Press Start to continue.";
+        return isTl
+            ? "Pumili ka ng eksena. Pindutin ang Simulan para magpatuloy."
+            : "You chose a scene. Press Start to continue.";
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final isTl = Localizations.localeOf(context).languageCode == 'tl';
+
     return Material(
       color: Colors.transparent,
       child: Container(
@@ -768,7 +791,7 @@ class _SceneConfirmPopup extends StatelessWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    "Chosen Scene: Scene $scene",
+                    isTl ? "Napiling Eksena: Eksena $scene" : "Chosen Scene: Scene $scene",
                     style: const TextStyle(
                       fontFamily: 'Poppins',
                       fontSize: 16,
@@ -795,7 +818,7 @@ class _SceneConfirmPopup extends StatelessWidget {
                 border: Border.all(color: Colors.black.withOpacity(0.06)),
               ),
               child: Text(
-                _body,
+                _body(context),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontFamily: 'Poppins',
@@ -820,9 +843,9 @@ class _SceneConfirmPopup extends StatelessWidget {
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                child: const Text(
-                  "START SIMULATION",
-                  style: TextStyle(
+                child: Text(
+                  isTl ? "SIMULAN ANG SIMULASYON" : "START SIMULATION",
+                  style: const TextStyle(
                     fontFamily: 'Poppins',
                     fontSize: 14.5,
                     fontWeight: FontWeight.w900,
@@ -834,7 +857,9 @@ class _SceneConfirmPopup extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              "This button will redirect you to the Unity simulation.",
+              isTl
+                  ? "Dadalhin ka ng button na ito sa Unity simulation."
+                  : "This button will redirect you to the Unity simulation.",
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: 'Poppins',

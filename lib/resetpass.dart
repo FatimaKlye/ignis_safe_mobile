@@ -26,6 +26,23 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
 
   final SupabaseClient supabase = Supabase.instance.client;
 
+  String _authErrorMessage(String message) {
+    final isTl = Localizations.localeOf(context).languageCode == 'tl';
+    if (!isTl) return message;
+
+    final lower = message.toLowerCase();
+    if (lower.contains('expired') || lower.contains('invalid')) {
+      return 'Hindi wasto o paso na ang recovery link o OTP. Pakisubukang muli.';
+    }
+    if (lower.contains('rate') || lower.contains('too many')) {
+      return 'Masyadong maraming pagsubok. Maghintay sandali bago subukang muli.';
+    }
+    if (lower.contains('password')) {
+      return 'Hindi ma-update ang password. Pakisuri ang bagong password at subukang muli.';
+    }
+    return 'Hindi ma-update ang password. Pakisubukang muli.';
+  }
+
   @override
   void dispose() {
     _passwordCtrl.dispose();
@@ -80,7 +97,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text(e.message)));
+      ).showSnackBar(SnackBar(content: Text(_authErrorMessage(e.message))));
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
