@@ -33,6 +33,26 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   bool _isSending = false;
   bool _isVerifying = false;
 
+  Future<void> _cleanupPendingByEmail() async {
+    final email = widget.email.trim().toLowerCase();
+    if (email.isEmpty) return;
+
+    try {
+      await supabase.functions.invoke(
+        'cancel_pending_signup_email',
+        body: {'email': email},
+      );
+    } catch (_) {
+      // Best-effort cleanup.
+    }
+
+    try {
+      await supabase.auth.signOut();
+    } catch (_) {
+      // ignore
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -79,6 +99,9 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
         data: {
           'first_name': widget.firstName,
           'last_name': widget.lastName,
+          // Mark this user as created via the multi-step signup flow.
+          // We only flip this to true on the final submit step.
+          'registration_completed': false,
           'app_language_code':
               Localizations.localeOf(context).languageCode == 'tl'
                   ? 'tl'
@@ -123,22 +146,6 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     }
   }
 
-  // ── Upsert profile after OTP verified ────────────────────────────────────
-  Future<void> _upsertProfileAfterVerify(User user) async {
-    await supabase.from('profiles').upsert({
-      'id': user.id,
-      'first_name': widget.firstName,
-      'last_name': widget.lastName,
-      'email': widget.email.trim().toLowerCase(),
-      'registration_status': 'pending_password_setup',
-      'terms_accepted': false,
-      'terms_accepted_at': null,
-      'app_language_code':
-          Localizations.localeOf(context).languageCode == 'tl' ? 'tl' : 'en',
-      'updated_at': DateTime.now().toUtc().toIso8601String(),
-    });
-  }
-
   // ── Verify OTP ────────────────────────────────────────────────────────────
   Future<void> _verifyOtp() async {
     if (_isVerifying) return;
@@ -169,11 +176,6 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
         email: email,
         token: _code,
       );
-
-      final user = supabase.auth.currentUser;
-      if (user != null) {
-        await _upsertProfileAfterVerify(user);
-      }
 
       if (!mounted) return;
 
@@ -357,23 +359,29 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       );
     }
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30.0),
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              return SingleChildScrollView(
-                child: ConstrainedBox(
-                  constraints:
-                      BoxConstraints(minHeight: constraints.maxHeight),
-                  child: Align(
-                    alignment: Alignment.topCenter,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
+    return WillPopScope(
+      onWillPop: () async {
+        if (_isSending || _isVerifying) return false;
+        await _cleanupPendingByEmail();
+        return true;
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30.0),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  child: ConstrainedBox(
+                    constraints:
+                        BoxConstraints(minHeight: constraints.maxHeight),
+                    child: Align(
+                      alignment: Alignment.topCenter,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
                         Padding(
                           padding:
                               const EdgeInsets.only(top: 70, bottom: 30),
@@ -419,7 +427,13 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                         Row(
                           children: [
                             IconButton(
-                              onPressed: () => Navigator.pop(context),
+                              onPressed: (_isSending || _isVerifying)
+                                  ? null
+                                  : () async {
+                                      await _cleanupPendingByEmail();
+                                      if (!context.mounted) return;
+                                      Navigator.pop(context);
+                                    },
                               icon: const Icon(
                                 Icons.arrow_back_ios_new,
                                 size: 18,
@@ -608,11 +622,12 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                         ),
                         const SizedBox(height: 20),
                       ],
+                      ),
                     ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
         ),
       ),

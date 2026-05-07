@@ -41,6 +41,7 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
   bool _hasSymbol = false;
   bool _hasUpper = false;
   bool _matches = false;
+  bool _completed = false;
 
   @override
   void initState() {
@@ -308,6 +309,26 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
     );
   }
 
+  Future<void> _cleanupAbandonedSignup() async {
+    final email = widget.email.trim().toLowerCase();
+    if (email.isEmpty) return;
+
+    try {
+      await supabase.functions.invoke(
+        'cancel_pending_signup_email',
+        body: {'email': email},
+      );
+    } catch (_) {
+      // Best-effort cleanup; ignore failures so back navigation still works.
+    }
+
+    try {
+      await supabase.auth.signOut();
+    } catch (_) {
+      // ignore
+    }
+  }
+
   // ── Create account ────────────────────────────────────────────────────────
   Future<void> _continueWithSupabase() async {
     if (_isLoading) return;
@@ -373,6 +394,13 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
             Localizations.localeOf(context).languageCode == 'tl' ? 'tl' : 'en',
         'updated_at': DateTime.now().toUtc().toIso8601String(),
       });
+
+      // Mark the auth user as fully registered so cleanup won't delete it.
+      await supabase.auth.updateUser(
+        UserAttributes(
+          data: {'registration_completed': true},
+        ),
+      );
 
       if (!mounted) return;
 
@@ -455,6 +483,7 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
           ),
         ),
       );
+      _completed = true;
     } on AuthException catch (e) {
       final msg = e.message.toLowerCase();
 
@@ -588,21 +617,28 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
   Widget build(BuildContext context) {
     final email = widget.email.trim().toLowerCase();
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 35.0),
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              return SingleChildScrollView(
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                  child: Align(
-                    alignment: Alignment.topCenter,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
+    return WillPopScope(
+      onWillPop: () async {
+        if (_isLoading || _completed) return !_isLoading;
+        await _cleanupAbandonedSignup();
+        return true;
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 35.0),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  child: ConstrainedBox(
+                    constraints:
+                        BoxConstraints(minHeight: constraints.maxHeight),
+                    child: Align(
+                      alignment: Alignment.topCenter,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
                         Padding(
                           padding: const EdgeInsets.only(top: 70, bottom: 30),
                           child: SizedBox(
@@ -653,7 +689,13 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                             IconButton(
                               onPressed: _isLoading
                                   ? null
-                                  : () => Navigator.pop(context),
+                                  : () async {
+                                      if (!_completed) {
+                                        await _cleanupAbandonedSignup();
+                                      }
+                                      if (!context.mounted) return;
+                                      Navigator.pop(context);
+                                    },
                               icon: const Icon(
                                 Icons.arrow_back_ios_new,
                                 size: 18,
@@ -917,8 +959,12 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                               ),
                             ),
                             GestureDetector(
-                              onTap: () {
+                              onTap: () async {
+                                if (!_completed) {
+                                  await _cleanupAbandonedSignup();
+                                }
                                 LoginPage.skipAutoRoute = false;
+                                if (!context.mounted) return;
                                 Navigator.pushAndRemoveUntil(
                                   context,
                                   MaterialPageRoute(
@@ -941,11 +987,12 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                         ),
                         const SizedBox(height: 20),
                       ],
+                      ),
                     ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
         ),
       ),

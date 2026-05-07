@@ -78,18 +78,41 @@ class _RegisterPageState extends State<RegisterPage> {
   // Possible values: 'not_found' | 'pending_email_verification' |
   //                  'pending_password_setup' | 'completed' | 'expired'
   Future<String> _getRegistrationStatus(String email) async {
-    final result = await supabase.rpc(
-      'get_registration_status',
-      params: {'p_email': email.trim().toLowerCase()},
-    );
-    return (result as String?) ?? 'not_found';
+    final normalized = email.trim().toLowerCase();
+    if (normalized.isEmpty) return 'not_found';
+
+    try {
+      // Use Edge Function to check both profiles + Auth in a single place.
+      final res = await supabase.functions.invoke(
+        'check_email_status',
+        body: {'email': normalized},
+      );
+
+      final data = res.data;
+      final status = (data is Map && data['status'] is String)
+          ? data['status'] as String
+          : 'not_found';
+
+      // Map Edge Function statuses into legacy values the rest of the flow
+      // already understands.
+      switch (status) {
+        case 'existing':
+          return 'completed';
+        case 'not_found':
+        default:
+          return 'not_found';
+      }
+    } catch (_) {
+      // On any error, fall back to treating the email as not registered so we
+      // don't block signups due to transient issues.
+      return 'not_found';
+    }
   }
 
   Future<void> _cleanupPendingRegistration(String email) async {
-    await supabase.rpc(
-      'cleanup_pending_registration',
-      params: {'p_email': email.trim().toLowerCase()},
-    );
+    // Pending signups are now cleaned up via Edge Functions when the user backs
+    // out. Keeping this method as a no-op for backwards compatibility.
+    return;
   }
 
   // ── Dialog: fully completed account ─────────────────────────────────────
@@ -517,22 +540,6 @@ class _RegisterPageState extends State<RegisterPage> {
         case 'completed':
           _showExistingAccountDialog(email);
           return;
-
-        // ── Pending (not expired) — offer to continue
-        case 'pending_email_verification':
-        case 'pending_password_setup':
-          _showPendingRegistrationDialog(
-            email: email,
-            firstName: firstName,
-            lastName: lastName,
-            status: status,
-          );
-          return;
-
-        // ── Expired pending (>24h) — clean up and let them re-register
-        case 'expired':
-          await _cleanupPendingRegistration(email);
-          break;
 
         // ── Not found — fresh registration, proceed normally
         case 'not_found':
