@@ -20,6 +20,8 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
 
   double _progress = 0.0;
   bool _canNext = false;
+  bool _isSwitchingPage = false;
+  bool _lastPageCompleted = false;
 
   String _t(BuildContext context, String en, String tl) {
     return Localizations.localeOf(context).languageCode == 'tl' ? tl : en;
@@ -34,6 +36,7 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
 
   void _onScroll() {
     if (!_scrollCtrl.hasClients) return;
+    if (_isSwitchingPage) return;
 
     final max = _scrollCtrl.position.maxScrollExtent;
     final off = _scrollCtrl.offset;
@@ -42,7 +45,7 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
       if (_progress != 1.0 || !_canNext) {
         setState(() {
           _progress = 1.0;
-          _canNext = true;
+          _canNext = _pageIndex != 2;
         });
       }
       return;
@@ -57,6 +60,10 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
         _canNext = nearBottom;
       });
     }
+
+    if (_pageIndex == 2 && nearBottom) {
+      _lastPageCompleted = true;
+    }
   }
 
   @override
@@ -68,12 +75,19 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
   }
 
   void _resetForNewPage() {
-    if (_scrollCtrl.hasClients) _scrollCtrl.jumpTo(0);
     setState(() {
+      _isSwitchingPage = true;
       _progress = 0.0;
       _canNext = false;
+      _lastPageCompleted = false;
     });
-    WidgetsBinding.instance.addPostFrameCallback((_) => _onScroll());
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      if (_scrollCtrl.hasClients) _scrollCtrl.jumpTo(0);
+      setState(() => _isSwitchingPage = false);
+      _onScroll();
+    });
   }
 
   void _goBack() {
@@ -347,7 +361,7 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
                             borderRadius: BorderRadius.circular(22),
                           ),
                         ),
-                        onPressed: _canNext ? _goNext : null,
+                        onPressed: (isLast ? _lastPageCompleted : _canNext) ? _goNext : null,
                         child: Text(
                           isLast
                               ? _t(context, "Start pre test", "Simulan ang paunang pagsusulit")

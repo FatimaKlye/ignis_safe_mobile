@@ -21,6 +21,8 @@ class _LearningMaterialElectricalPageState
 
   double _progress = 0.0; // 0.0 -> 1.0 (per page scroll)
   bool _canNext = false;
+  bool _isSwitchingPage = false;
+  bool _lastPageCompleted = false;
 
   String _t(BuildContext context, String en, String tl) {
     return Localizations.localeOf(context).languageCode == 'tl' ? tl : en;
@@ -35,6 +37,7 @@ class _LearningMaterialElectricalPageState
 
   void _onScroll() {
     if (!_scrollCtrl.hasClients) return;
+    if (_isSwitchingPage) return;
 
     final max = _scrollCtrl.position.maxScrollExtent;
     final off = _scrollCtrl.offset;
@@ -43,7 +46,7 @@ class _LearningMaterialElectricalPageState
       if (_progress != 1.0 || !_canNext) {
         setState(() {
           _progress = 1.0;
-          _canNext = true;
+          _canNext = _pageIndex != 2;
         });
       }
       return;
@@ -58,6 +61,10 @@ class _LearningMaterialElectricalPageState
         _canNext = nearBottom;
       });
     }
+
+    if (_pageIndex == 2 && nearBottom) {
+      _lastPageCompleted = true;
+    }
   }
 
   @override
@@ -69,12 +76,19 @@ class _LearningMaterialElectricalPageState
   }
 
   void _resetForNewPage() {
-    if (_scrollCtrl.hasClients) _scrollCtrl.jumpTo(0);
     setState(() {
+      _isSwitchingPage = true;
       _progress = 0.0;
       _canNext = false;
+      _lastPageCompleted = false;
     });
-    WidgetsBinding.instance.addPostFrameCallback((_) => _onScroll());
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      if (_scrollCtrl.hasClients) _scrollCtrl.jumpTo(0);
+      setState(() => _isSwitchingPage = false);
+      _onScroll();
+    });
   }
 
   void _goBack() {
@@ -89,7 +103,7 @@ class _LearningMaterialElectricalPageState
   }
 
   void _goNext() {
-    if (!_canNext && _pageIndex < 2) return;
+    if (!_canNext) return;
 
     if (_pageIndex < 2) {
       _pageCtrl.nextPage(
@@ -277,42 +291,68 @@ class _LearningMaterialElectricalPageState
                 // ===== BOTTOM NAV (fixed) =====
                 Padding(
                   padding: const EdgeInsets.fromLTRB(25, 8, 25, 18),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      OutlinedButton(
-                        style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color: Color(0xFF2563EB)),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(22),
+                      if (isLast && !_canNext)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Text(
+                            _t(
+                              context,
+                              'Please finish reading the material before starting the pre-assessment.',
+                              'Pakibasang mabuti at tapusin muna ang materyal bago simulan ang paunang pagsusulit.',
+                            ),
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 12.5,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white.withOpacity(0.85),
+                            ),
                           ),
                         ),
-                        onPressed: _goBack,
-                        child: Text(
-                          _t(context, "« BACK", "« BALIK"),
-                          style: TextStyle(
-                            color: Color(0xFF2563EB),
-                            fontWeight: FontWeight.bold,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          OutlinedButton(
+                            style: OutlinedButton.styleFrom(
+                              side: const BorderSide(color: Color(0xFF2563EB)),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(22),
+                              ),
+                            ),
+                            onPressed: _goBack,
+                            child: Text(
+                              _t(context, "« BACK", "« BALIK"),
+                              style: TextStyle(
+                                color: Color(0xFF2563EB),
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF2563EB),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(22),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF2563EB),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(22),
+                              ),
+                            ),
+                            onPressed: (isLast ? _lastPageCompleted : _canNext) ? _goNext : null,
+                            child: Text(
+                              isLast
+                                  ? _t(
+                                      context,
+                                      "Start pre test",
+                                      "Simulan ang paunang pagsusulit",
+                                    )
+                                  : _t(context, "NEXT »", "SUNOD »"),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
                           ),
-                        ),
-                        onPressed: (_canNext || isLast) ? _goNext : null,
-                        child: Text(
-                          isLast
-                              ? _t(context, "Start pre test", "Simulan ang paunang pagsusulit")
-                              : _t(context, "NEXT »", "SUNOD »"),
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
+                        ],
                       ),
                     ],
                   ),

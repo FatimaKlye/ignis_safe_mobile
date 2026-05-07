@@ -20,7 +20,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.ignis_safe"
-        minSdk = flutter.minSdkVersion
+        minSdk = 25
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
@@ -40,4 +40,5 @@ flutter {
 dependencies {
     // Place your exported Unity .aar file(s) in android/app/libs/
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar", "*.aar"))))
+    implementation(project(":unityLibrary"))
 }

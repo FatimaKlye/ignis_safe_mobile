@@ -310,8 +310,98 @@ const Map<String, Map<String, String>> _strings = {
     'tl': 'Alamin kung paano tumugon nang ligtas sa sunog sa gusali, kabilang ang paglikas at pag-iwas sa panganib.',
   },
   'desc_m5_fire_modules': {
-    'en': 'Understand building fire risks, evacuation procedures, and the correct fire safety response in larger structures and shared spaces.',
-    'tl': 'Unawain ang panganib ng sunog sa gusali, proseso ng paglikas, at tamang tugon sa kaligtasan sa malalaking istruktura at pinaghahatiang lugar.',
+    'en':
+        'Understand building fire risks, evacuation procedures, and the correct fire safety response in larger structures and shared spaces.',
+    'tl':
+        'Unawain ang panganib ng sunog sa gusali, proseso ng paglikas, at tamang tugon sa kaligtasan sa malalaking istruktura at pinaghahatiang lugar.',
+  },
+
+
+  'module_5_full_title': {
+    'en':
+        'Module 5: Tenement Fire: What It Is, Common Causes, and What To Do',
+    'tl':
+        'Modyul 5: Sunog sa Tenement: Ano Ito, Karaniwang Sanhi, at Ano ang Dapat Gawin',
+  },
+  'module_5_full_header': {
+    'en': 'Tenement Fire: What It Is, Common Causes, and What To Do',
+    'tl': 'Sunog sa Tenement: Ano Ito, Karaniwang Sanhi, at Ano ang Dapat Gawin',
+  },
+
+
+  'total_attempts_count': {
+    'en': 'Total Attempts: {count}',
+    'tl': 'Kabuuang Pagsubok: {count}',
+  },
+  'retakes_count': {
+    'en': 'Retakes: {count}',
+    'tl': 'Ulit na Pagsubok: {count}',
+  },
+  'attempt_number': {
+    'en': 'Attempt No. {number}',
+    'tl': 'Pagsubok Blg. {number}',
+  },
+  'score_value': {
+    'en': 'Score: {score}',
+    'tl': 'Iskor: {score}',
+  },
+  'status_value': {
+    'en': 'Status: {status}',
+    'tl': 'Katayuan: {status}',
+  },
+  'submitted_value': {
+    'en': 'Submitted: {date}',
+    'tl': 'Naipasa: {date}',
+  },
+
+  // Generic status text
+  'done': {
+    'en': 'Done',
+    'tl': 'Tapos Na',
+  },
+  'not_done': {
+    'en': 'Not Done',
+    'tl': 'Hindi Pa Tapos',
+  },
+  'status_submitted': {
+    'en': 'Submitted',
+    'tl': 'Naipasa',
+  },
+  'status_done': {
+    'en': 'Done',
+    'tl': 'Tapos Na',
+  },
+  'status_in_progress': {
+    'en': 'In Progress',
+    'tl': 'Kasalukuyang Isinasagawa',
+  },
+  'status_pending': {
+    'en': 'Pending',
+    'tl': 'Nakahinto',
+  },
+  'status_cancelled': {
+    'en': 'Cancelled',
+    'tl': 'Kinansela',
+  },
+
+  // Simulation history helper text
+  'simulation_history_completed': {
+    'en': 'You have completed this simulation.',
+    'tl': 'Natapos mo na ang simulasyong ito.',
+  },
+  'simulation_history_not_completed': {
+    'en': 'You have not completed this simulation yet.',
+    'tl': 'Hindi mo pa natatapos ang simulasyong ito.',
+  },
+
+  // Module history titles and empty states
+  'module_history': {
+    'en': 'Module History',
+    'tl': 'Kasaysayan ng Modyul',
+  },
+  'no_attempts_yet': {
+    'en': 'No attempt yet',
+    'tl': 'Wala pang pagsubok',
   },
 };
 

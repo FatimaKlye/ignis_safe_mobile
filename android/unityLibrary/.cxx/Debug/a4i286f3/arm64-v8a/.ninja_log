@@ -1,0 +1,10 @@
+# ninja log v5
+50	16612	7997815531267261	GameActivity/CMakeFiles/game.dir/UGAInputKeyEvent.cpp.o	1df19254557c6cb5
+70	16658	7997815531843764	GameActivity/CMakeFiles/game.dir/UGAEntry.cpp.o	c82138666f66d94f
+18	16678	7997815532065840	GameActivity/CMakeFiles/game.dir/UGAConfiguration.cpp.o	3e7282e447e0f6ff
+109	16709	7997815532428391	GameActivity/CMakeFiles/game.dir/UGAInputMotionEvent.cpp.o	a39924c1c9ab7c93
+32	16751	7997815532874465	GameActivity/CMakeFiles/game.dir/UGADebug.cpp.o	4f455bdd3ae329db
+90	17002	7997815535304302	GameActivity/CMakeFiles/game.dir/UGAInput.cpp.o	d4b43cda49a7d8de
+1	17102	7997815536324403	GameActivity/CMakeFiles/game.dir/UGAApplication.cpp.o	f0f899f0796bd59d
+131	17349	7997815538903310	GameActivity/CMakeFiles/game.dir/UGASoftKeyboard.cpp.o	96c2e66bdbc54878
+17349	17589	7997815541333314	C:/Users/Andrei/Desktop/FinalIgnisSafeApp/ignisflutterapp/ignis_safe_mobile/build/unityLibrary/intermediates/cxx/Debug/a4i286f3/obj/arm64-v8a/libgame.so	2ee263db30ed6e1f

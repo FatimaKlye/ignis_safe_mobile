@@ -399,7 +399,8 @@ class _HistorySectionCard extends StatelessWidget {
       case '':
         return '—';
       default:
-        return value.toString();
+        // Fallback: hide unknown raw values from the user.
+        return '—';
     }
   }
 

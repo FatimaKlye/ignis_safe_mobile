@@ -34,11 +34,6 @@ class _RegisterPageState extends State<RegisterPage> {
     super.dispose();
   }
 
-  bool _isValidEmail(String s) {
-    final v = s.trim();
-    return RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(v);
-  }
-
   String? _validateFirstName(String? v) {
     final value = (v ?? '').trim();
     if (value.isEmpty) {
@@ -64,12 +59,14 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   String? _validateEmail(String? v) {
-    final value = (v ?? '').trim();
+    final value = (v ?? '').trim().toLowerCase();
     if (value.isEmpty) {
       return t(context, 'Email is required', 'Kailangan ang email');
     }
-    if (!_isValidEmail(value)) {
-      return t(context, 'Enter a valid email', 'Maglagay ng wastong email');
+    final emailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@gmail\.com$');
+    if (!emailRegex.hasMatch(value)) {
+      return t(context, 'Enter a valid Gmail address',
+          'Maglagay ng wastong Gmail address');
     }
     return null;
   }

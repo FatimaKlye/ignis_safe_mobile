@@ -60,7 +60,7 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
   }
 
   String? _validateEmail(String? value) {
-    final email = value?.trim() ?? '';
+    final email = (value ?? '').trim().toLowerCase();
     if (email.isEmpty) {
       return t(
         context,
@@ -68,12 +68,12 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
         'Mangyaring ilagay ang iyong email.',
       );
     }
-    final emailRegex = RegExp(r'^[\w\.-]+@[\w\.-]+\.\w+$');
+    final emailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@gmail\.com$');
     if (!emailRegex.hasMatch(email)) {
       return t(
         context,
-        'Please enter a valid email.',
-        'Mangyaring maglagay ng wastong email.',
+        'Please enter a valid Gmail address.',
+        'Mangyaring maglagay ng wastong Gmail address.',
       );
     }
     return null;
@@ -656,6 +656,7 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
                           ),
                           Text(
                             title,
+                            textAlign: TextAlign.center,
                             style: const TextStyle(
                               fontFamily: 'Poppins',
                               fontSize: 28,

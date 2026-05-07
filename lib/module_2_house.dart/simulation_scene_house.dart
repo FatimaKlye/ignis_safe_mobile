@@ -5,6 +5,7 @@ import '../localization/language_controller.dart';
 import '../unity_launcher.dart';
 import '../profile_progress_sync.dart';
 import '../simulation_history_service.dart';
+import '../module_progress_db.dart';
 
 const Color kHouseOrange = Color(0xFFF97316);
 const Color kHouseAmber = Color(0xFFF59E0B);
@@ -66,7 +67,10 @@ class _SimulationScene2State extends State<SimulationScene2> {
     _simulationMarkedComplete = true;
     final moduleId = _moduleId;
     final attemptId = _simulationAttemptId;
-    if (moduleId == null || attemptId == null) return;
+    if (moduleId == null || attemptId == null) {
+      await ModuleProgressDb.markSimulationCompleted(_moduleNo);
+      return;
+    }
     await _simulationHistoryService.completeAttempt(
       moduleId: moduleId,
       attemptId: attemptId,
@@ -96,12 +100,14 @@ class _SimulationScene2State extends State<SimulationScene2> {
       return;
     }
 
+    var unityReturned = false;
     try {
       if (_moduleId == null || _simulationAttemptId == null) {
         await _startSimulationTracking();
       }
 
       final unityResult = await UnityLauncher.openScene(unitySceneName);
+      unityReturned = true;
 
       if (!mounted) return;
 
@@ -112,18 +118,6 @@ class _SimulationScene2State extends State<SimulationScene2> {
         await ProfileProgressSync.syncCompletedSimulations();
 
         if (!mounted) return;
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              _isTl
-                  ? 'Nakumpleto ang simulasyon ng Modyul 2. Na-update ang progreso.'
-                  : 'Module 2 simulation completed. Progress updated.',
-            ),
-          ),
-        );
-
-        Navigator.pop(context, true);
       }
     } on PlatformException catch (e) {
       if (!mounted) return;
@@ -147,6 +141,10 @@ class _SimulationScene2State extends State<SimulationScene2> {
           ),
         ),
       );
+    } finally {
+      if (unityReturned && mounted) {
+        Navigator.pop(context, true);
+      }
     }
   }
 
@@ -259,7 +257,7 @@ class _SimulationScene2State extends State<SimulationScene2> {
                           padding: EdgeInsets.zero,
                           constraints: const BoxConstraints(),
                           icon: const Icon(Icons.close, color: Colors.white),
-                          onPressed: () => Navigator.pop(context),
+                          onPressed: () => Navigator.maybePop(context),
                         ),
                       ),
                       const SizedBox(height: 15),

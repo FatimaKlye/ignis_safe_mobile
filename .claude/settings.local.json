@@ -1,7 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\Asus\\\\OneDrive - National University\\\\Desktop\\\\ignis_safe_mobile\\\\android\\\\\" -Recurse | Select-Object FullName | ConvertTo-Csv -NoTypeInformation | Out-String)"
-    ]
-  }
-}

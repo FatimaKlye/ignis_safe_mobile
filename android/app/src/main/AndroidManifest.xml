@@ -31,17 +31,26 @@
 
         </activity>
 
-        <!-- Unity Activity -->
+        <!-- Unity Host Activity (wraps UnityPlayerGameActivity) -->
         <activity
-            android:name="com.unity3d.player.UnityPlayerActivity"
-            android:theme="@style/UnityThemeSelector"
+            android:name="com.unity3d.player.UnityFlutterHostActivity"
+            android:theme="@style/BaseUnityGameActivityTheme"
+            android:process=":unity"
             android:screenOrientation="landscape"
             android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|uiMode|screenSize|smallestScreenSize|fontScale|layoutDirection|density"
             android:hardwareAccelerated="true"
             android:resizeableActivity="false"
             android:exported="false"
-            tools:replace="android:theme,android:screenOrientation,android:configChanges,android:hardwareAccelerated,android:resizeableActivity" />
+            tools:replace="android:screenOrientation,android:configChanges,android:hardwareAccelerated,android:resizeableActivity">
+        </activity>
 
+        <!-- Flutter embedding meta-data -->
+        <meta-data
+            android:name="flutterEmbedding"
+            android:value="2" />
     </application>
 
 </manifest>
+
+
+

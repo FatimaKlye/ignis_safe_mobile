@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import '../unity_launcher.dart';
 import '../profile_progress_sync.dart';
 import '../simulation_history_service.dart';
+import '../module_progress_db.dart';
 
 class SimulationScene4 extends StatefulWidget {
   const SimulationScene4({super.key});
@@ -70,7 +71,10 @@ class _SimulationScene4State extends State<SimulationScene4> {
     final moduleId = _moduleId;
     final attemptId = _simulationAttemptId;
 
-    if (moduleId == null || attemptId == null) return;
+    if (moduleId == null || attemptId == null) {
+      await ModuleProgressDb.markSimulationCompleted(_moduleNo);
+      return;
+    }
 
     await _simulationHistoryService.completeAttempt(
       moduleId: moduleId,
@@ -101,12 +105,14 @@ class _SimulationScene4State extends State<SimulationScene4> {
       return;
     }
 
+    var unityReturned = false;
     try {
       if (_moduleId == null || _simulationAttemptId == null) {
         await _startSimulationTracking();
       }
 
       final unityResult = await UnityLauncher.openScene(unitySceneName);
+      unityReturned = true;
 
       if (!mounted) return;
 
@@ -117,18 +123,6 @@ class _SimulationScene4State extends State<SimulationScene4> {
         await ProfileProgressSync.syncCompletedSimulations();
 
         if (!mounted) return;
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              _isTl
-                  ? 'Nakumpleto ang simulasyon ng Modyul 4. Na-update ang progreso.'
-                  : 'Module 4 simulation completed. Progress updated.',
-            ),
-          ),
-        );
-
-        Navigator.pop(context, true);
       }
     } on PlatformException catch (e) {
       if (!mounted) return;
@@ -152,6 +146,10 @@ class _SimulationScene4State extends State<SimulationScene4> {
           ),
         ),
       );
+    } finally {
+      if (unityReturned && mounted) {
+        Navigator.pop(context, true);
+      }
     }
   }
 
@@ -264,7 +262,7 @@ class _SimulationScene4State extends State<SimulationScene4> {
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(),
                         icon: const Icon(Icons.close, color: Colors.white),
-                        onPressed: () => Navigator.pop(context),
+                        onPressed: () => Navigator.maybePop(context),
                       ),
                       const SizedBox(height: 15), 
                       Center(

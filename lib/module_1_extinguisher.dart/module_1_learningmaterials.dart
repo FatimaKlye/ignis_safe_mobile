@@ -20,6 +20,8 @@ class _LearningMaterialExtinguisherPageState
   int _pageIndex = 0;
   double _progress = 0.0;
   bool _canNext = false;
+  bool _isSwitchingPage = false;
+  bool _lastPageCompleted = false;
 
 
   @override
@@ -31,6 +33,7 @@ class _LearningMaterialExtinguisherPageState
 
   void _onScroll() {
     if (!_scrollCtrl.hasClients) return;
+    if (_isSwitchingPage) return;
 
     final max = _scrollCtrl.position.maxScrollExtent;
     final off = _scrollCtrl.offset;
@@ -39,7 +42,7 @@ class _LearningMaterialExtinguisherPageState
       if (_progress != 1.0 || !_canNext) {
         setState(() {
           _progress = 1.0;
-          _canNext = true;
+          _canNext = _pageIndex != 2;
         });
       }
       return;
@@ -54,6 +57,10 @@ class _LearningMaterialExtinguisherPageState
         _canNext = nearBottom;
       });
     }
+
+    if (_pageIndex == 2 && nearBottom) {
+      _lastPageCompleted = true;
+    }
   }
 
   @override
@@ -65,12 +72,24 @@ class _LearningMaterialExtinguisherPageState
   }
 
   void _resetForNewPage() {
-    if (_scrollCtrl.hasClients) _scrollCtrl.jumpTo(0);
+    // Important: the same ScrollController is reused across PageView pages.
+    // We must force-reset scroll AFTER the new page attaches, otherwise the old
+    // "near bottom" state can carry over and incorrectly enable the button.
     setState(() {
+      _isSwitchingPage = true;
       _progress = 0.0;
       _canNext = false;
+      _lastPageCompleted = false;
     });
-    WidgetsBinding.instance.addPostFrameCallback((_) => _onScroll());
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      if (_scrollCtrl.hasClients) {
+        _scrollCtrl.jumpTo(0);
+      }
+      setState(() => _isSwitchingPage = false);
+      _onScroll();
+    });
   }
 
   void _goBack() {
@@ -378,7 +397,7 @@ class _LearningMaterialExtinguisherPageState
                             borderRadius: BorderRadius.circular(22),
                           ),
                         ),
-                        onPressed: _canNext ? _goNext : null,
+                        onPressed: (isLast ? _lastPageCompleted : _canNext) ? _goNext : null,
                         child: Text(
                           isLast
                               ? _tStatic(

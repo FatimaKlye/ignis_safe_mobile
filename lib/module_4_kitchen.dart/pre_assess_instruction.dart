@@ -28,7 +28,6 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
 
           SafeArea(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 15),
 
@@ -65,74 +64,71 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
 
                       const SizedBox(height: 15),
 
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 18,
-                                vertical: 10,
-                              ),
-                              decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                  colors: [kKitchenAmber, kKitchenAmberDark],
-                                ),
-                                borderRadius: BorderRadius.circular(10),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.18),
-                                    blurRadius: 10,
-                                    offset: const Offset(0, 6),
-                                  ),
-                                ],
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const Icon(
-                                    Icons.local_fire_department_rounded,
-                                    color: Colors.white,
-                                    size: 18,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    context.tr('module_4'),
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                      fontFamily: 'Poppins',
-                                    ),
-                                  ),
-                                ],
-                              ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 18,
+                              vertical: 10,
                             ),
-                            const SizedBox(width: 15),
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.only(top: 4),
-                                child: Text(
-                                  context.tr('module_4_full_header'),
-                                  textAlign: TextAlign.left,
-                                  softWrap: true,
-                                  maxLines: 3,
-                                  overflow: TextOverflow.visible,
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [kKitchenAmber, kKitchenAmberDark],
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.18),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 6),
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(
+                                  Icons.local_fire_department_rounded,
+                                  color: Colors.white,
+                                  size: 18,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  context.tr('module_4'),
                                   style: const TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 14,
-                                    height: 1.35,
-                                    fontWeight: FontWeight.w700,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
                                     fontFamily: 'Poppins',
                                   ),
                                 ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 4),
+                              child: Text(
+                                context.tr('module_4_full_header'),
+                                textAlign: TextAlign.left,
+                                softWrap: true,
+                                maxLines: 3,
+                                overflow: TextOverflow.visible,
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 14,
+                                  height: 1.35,
+                                  fontWeight: FontWeight.w700,
+                                  fontFamily: 'Poppins',
+                                ),
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -141,47 +137,45 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                 const SizedBox(height: 10),
 
                 Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 18),
-                    child: Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 24,
-                              vertical: 28,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.96),
-                              borderRadius: BorderRadius.circular(22),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.12),
-                                  blurRadius: 25,
-                                  offset: const Offset(0, 15),
-                                ),
-                              ],
-                              border: Border.all(
-                                color: Colors.black.withOpacity(0.06),
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.fromLTRB(18, 10, 18, 24),
+                    child: Column(
+                      children: [
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 28,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.96),
+                            borderRadius: BorderRadius.circular(22),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.12),
+                                blurRadius: 25,
+                                offset: const Offset(0, 15),
                               ),
+                            ],
+                            border: Border.all(
+                              color: Colors.black.withOpacity(0.06),
                             ),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  isTl ? 'PANUTO' : 'INSTRUCTIONS',
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                    fontSize: 22,
-                                    fontWeight: FontWeight.w900,
-                                    color: Color(0xFF1F2937),
-                                    fontFamily: 'Poppins',
-                                    letterSpacing: 0.5,
-                                  ),
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                isTl ? 'PANUTO' : 'INSTRUCTIONS',
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w900,
+                                  color: Color(0xFF1F2937),
+                                  fontFamily: 'Poppins',
+                                  letterSpacing: 1,
                                 ),
-                                const SizedBox(height: 18),
+                              ),
+                              const SizedBox(height: 18),
 
                                 Column(
                                   mainAxisSize: MainAxisSize.min,
@@ -250,70 +244,67 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                                   ),
                                 ),
 
-                                const SizedBox(height: 26),
-
-                                SizedBox(
-                                  width: double.infinity,
-                                  height: 52,
-                                  child: ElevatedButton(
-                                    onPressed: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (_) =>
-                                              const PreAssessmentKitchenPage(),
-                                        ),
-                                      );
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: kKitchenAmber,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(14),
+                              const SizedBox(height: 26),
+                              SizedBox(
+                                width: double.infinity,
+                                height: 52,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) =>
+                                            const PreAssessmentKitchenPage(),
                                       ),
-                                      elevation: 6,
+                                    );
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: kKitchenAmber,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(14),
                                     ),
-                                    child: Text(
-                                      isTl
-                                          ? 'Magpatuloy sa mga Tanong'
-                                          : 'Proceed to Questions',
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.w800,
-                                        fontSize: 15,
-                                        fontFamily: 'Poppins',
-                                        color: Colors.white,
-                                      ),
+                                    elevation: 6,
+                                  ),
+                                  child: Text(
+                                    isTl
+                                        ? 'Magpatuloy sa mga Tanong'
+                                        : 'Proceed to Questions',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w800,
+                                      fontSize: 15,
+                                      fontFamily: 'Poppins',
+                                      color: Colors.white,
                                     ),
                                   ),
                                 ),
-                              ],
-                            ),
-                          ),
-
-                          const SizedBox(height: 18),
-
-                          Wrap(
-                            alignment: WrapAlignment.center,
-                            spacing: 8,
-                            runSpacing: 8,
-                            children: [
-                              const _InfoChip(
-                                icon: Icons.timer_outlined,
-                                label: '2–3 mins',
-                              ),
-                              _InfoChip(
-                                icon: Icons.quiz_outlined,
-                                label: isTl
-                                    ? 'Para sa pagsasanay lang'
-                                    : 'Practice only',
-                              ),
-                              _InfoChip(
-                                icon: Icons.lock_outline,
-                                label: isTl ? 'Hindi binibigyan ng grado' : 'Not graded',
                               ),
                             ],
                           ),
-                        ],
-                      ),
+                        ),
+                        const SizedBox(height: 18),
+                        Wrap(
+                          alignment: WrapAlignment.center,
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            const _InfoChip(
+                              icon: Icons.timer_outlined,
+                              label: '2–3 mins',
+                            ),
+                            _InfoChip(
+                              icon: Icons.quiz_outlined,
+                              label: isTl
+                                  ? 'Para sa pagsasanay lang'
+                                  : 'Practice only',
+                            ),
+                            _InfoChip(
+                              icon: Icons.lock_outline,
+                              label:
+                                  isTl ? 'Hindi binibigyan ng grado' : 'Not graded',
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -338,19 +329,19 @@ class _InfoChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.95),
+        color: Colors.white.withOpacity(0.88),
         borderRadius: BorderRadius.circular(999),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.08),
-            blurRadius: 14,
-            offset: const Offset(0, 7),
+            blurRadius: 10,
+            offset: const Offset(0, 6),
           ),
         ],
         border: Border.all(
-          color: Colors.black.withOpacity(0.05),
+          color: Colors.black.withOpacity(0.06),
         ),
       ),
       child: Row(
@@ -358,16 +349,16 @@ class _InfoChip extends StatelessWidget {
         children: [
           Icon(
             icon,
-            size: 17,
-            color: Colors.black54,
+            size: 16,
+            color: Colors.black.withOpacity(0.72),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 6),
           Text(
             label,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: Colors.black87,
+            style: TextStyle(
+              fontSize: 12.5,
+              fontWeight: FontWeight.w700,
+              color: Colors.black.withOpacity(0.72),
               fontFamily: 'Poppins',
             ),
           ),
