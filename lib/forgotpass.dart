@@ -59,6 +59,91 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
     return 'May problema sa authentication. Pakisubukang muli.';
   }
 
+
+  Future<bool> _accountExistsForPasswordReset(String email) async {
+    final normalizedEmail = email.trim().toLowerCase();
+
+    // Recommended: create the SQL RPC function shown below this file.
+    // This checks Supabase Auth securely from the database side.
+    try {
+      final result = await supabase.rpc(
+        'account_exists_for_password_reset',
+        params: {'p_email': normalizedEmail},
+      );
+
+      if (result is bool) return result;
+      if (result is String) return result.toLowerCase() == 'true';
+      if (result is num) return result == 1;
+    } on PostgrestException {
+      // If the RPC is not installed yet, fall back to the profiles table.
+      // Keep the fallback so existing projects can still work while setting up SQL.
+    }
+
+    try {
+      final rows = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('email', normalizedEmail)
+          .limit(1);
+
+      return rows.isNotEmpty;
+    } on PostgrestException {
+      // Do not send a reset OTP when the app cannot verify the account.
+      return false;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<void> _showAccountNotFoundDialog() async {
+    if (!mounted) return;
+
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(18),
+          ),
+          title: Text(
+            t(context, 'Account not found', 'Hindi nahanap ang account'),
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontFamily: 'Poppins',
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          content: Text(
+            t(
+              context,
+              'This email is not registered in our app. Please check the email or create an account first.',
+              'Hindi rehistrado ang email na ito sa aming app. Pakisuri ang email o gumawa muna ng account.',
+            ),
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontFamily: 'Poppins',
+              height: 1.4,
+            ),
+          ),
+          actionsAlignment: MainAxisAlignment.center,
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text(
+                t(context, 'Try Again', 'Subukang Muli'),
+                style: const TextStyle(
+                  fontFamily: 'Poppins',
+                  fontWeight: FontWeight.w600,
+                  color: brandRed,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   String? _validateEmail(String? value) {
     final email = (value ?? '').trim().toLowerCase();
     if (email.isEmpty) {
@@ -134,10 +219,21 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
       return;
     }
 
+    final email = _emailCtrl.text.trim().toLowerCase();
+
     setState(() => _isLoading = true);
 
     try {
-      await supabase.auth.resetPasswordForEmail(_emailCtrl.text.trim());
+      final accountExists = await _accountExistsForPasswordReset(email);
+
+      if (!mounted) return;
+
+      if (!accountExists) {
+        await _showAccountNotFoundDialog();
+        return;
+      }
+
+      await supabase.auth.resetPasswordForEmail(email);
 
       if (!mounted) return;
 

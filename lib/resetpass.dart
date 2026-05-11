@@ -65,6 +65,23 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
   Future<void> _updatePassword() async {
     if (!_formKey.currentState!.validate()) return;
 
+    final currentSession = supabase.auth.currentSession;
+    if (currentSession == null) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            _t(
+              context,
+              'Your reset session is missing or expired. Please request a new OTP.',
+              'Wala o paso na ang iyong reset session. Humingi muli ng bagong OTP.',
+            ),
+          ),
+        ),
+      );
+      return;
+    }
+
     setState(() => _isSaving = true);
 
     try {
