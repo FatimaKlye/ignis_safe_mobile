@@ -1,4 +1,4 @@
-﻿<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -32,16 +32,35 @@
         </activity>
 
         <!-- Unity Host Activity (wraps UnityPlayerGameActivity) -->
+        <!--
+            OLD (no launchMode set — defaulted to "standard"):
+            <activity
+                android:name="com.unity3d.player.UnityFlutterHostActivity"
+                android:theme="@style/BaseUnityGameActivityTheme"
+                android:process=":unity"
+                android:screenOrientation="landscape"
+                android:configChanges="mcc|mnc|locale|..."
+                android:hardwareAccelerated="true"
+                android:resizeableActivity="false"
+                android:exported="false"
+                tools:replace="android:screenOrientation,android:configChanges,android:hardwareAccelerated,android:resizeableActivity">
+            </activity>
+        -->
+        <!-- [FIX] android:launchMode="singleTop" added so that if the Unity activity is
+             already at the top of the stack when a new scene is requested, onNewIntent()
+             fires instead of creating a new conflicting instance inside the same :unity
+             process. tools:replace updated to include android:launchMode. -->
         <activity
             android:name="com.unity3d.player.UnityFlutterHostActivity"
             android:theme="@style/BaseUnityGameActivityTheme"
             android:process=":unity"
+            android:launchMode="singleTop"
             android:screenOrientation="landscape"
             android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|uiMode|screenSize|smallestScreenSize|fontScale|layoutDirection|density"
             android:hardwareAccelerated="true"
             android:resizeableActivity="false"
             android:exported="false"
-            tools:replace="android:screenOrientation,android:configChanges,android:hardwareAccelerated,android:resizeableActivity">
+            tools:replace="android:screenOrientation,android:configChanges,android:hardwareAccelerated,android:resizeableActivity,android:launchMode">
         </activity>
 
         <!-- Flutter embedding meta-data -->

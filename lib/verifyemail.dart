@@ -4,6 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'localization/language_controller.dart';
 import 'passwordvalidation.dart';
 import 'login.dart';
+import 'network_error_helper.dart';
 
 class VerifyEmailPage extends StatefulWidget {
   final String email;
@@ -130,17 +131,21 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
           .showSnackBar(SnackBar(content: Text(e.message)));
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            t(
-              context,
-              'Error sending code: $e',
-              'Nagkaroon ng error sa pagpapadala ng code: $e',
+      if (isNetworkError(e)) {
+        await showNoInternetDialog(context);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              t(
+                context,
+                'Error sending code. Please try again.',
+                'May error sa pagpapadala ng code. Subukang muli.',
+              ),
             ),
           ),
-        ),
-      );
+        );
+      }
     } finally {
       if (mounted) setState(() => _isSending = false);
     }
@@ -195,17 +200,21 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
           .showSnackBar(SnackBar(content: Text(e.message)));
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            t(
-              context,
-              'Error verifying code: $e',
-              'Nagkaroon ng error sa pag-verify ng code: $e',
+      if (isNetworkError(e)) {
+        await showNoInternetDialog(context);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              t(
+                context,
+                'Error verifying code. Please try again.',
+                'May error sa pag-verify ng code. Subukang muli.',
+              ),
             ),
           ),
-        ),
-      );
+        );
+      }
     } finally {
       if (mounted) setState(() => _isVerifying = false);
     }

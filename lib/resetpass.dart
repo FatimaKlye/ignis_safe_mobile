@@ -51,7 +51,11 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
   }
 
   Future<void> _goToLogin() async {
-    await supabase.auth.signOut();
+    try {
+      await supabase.auth.signOut();
+    } catch (e) {
+      debugPrint('Error signing out: $e');
+    }
 
     if (!mounted) return;
 

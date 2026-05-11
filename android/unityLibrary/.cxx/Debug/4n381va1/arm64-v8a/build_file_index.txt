@@ -1,0 +1,2 @@
+C:\Users\Asus\OneDrive - National University\Desktop\ignis_safe_mobile\android\unityLibrary\src\main\cpp\CMakeLists.txt
+C:\Users\Asus\OneDrive - National University\Desktop\ignis_safe_mobile\android\unityLibrary\src\main\cpp\GameActivity\CMakeLists.txt

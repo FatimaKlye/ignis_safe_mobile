@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'login.dart';
 import 'localization/language_controller.dart';
+import 'network_error_helper.dart';
 
 class ForgotPassPage extends StatefulWidget {
   const ForgotPassPage({super.key});
@@ -77,6 +78,11 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
     } on PostgrestException {
       // If the RPC is not installed yet, fall back to the profiles table.
       // Keep the fallback so existing projects can still work while setting up SQL.
+    } catch (e) {
+      if (isNetworkError(e)) {
+        return false;
+      }
+      return false;
     }
 
     try {
@@ -90,7 +96,10 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
     } on PostgrestException {
       // Do not send a reset OTP when the app cannot verify the account.
       return false;
-    } catch (_) {
+    } catch (e) {
+      if (isNetworkError(e)) {
+        return false;
+      }
       return false;
     }
   }
@@ -255,19 +264,23 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(_authErrorMessage(e.message))));
-    } catch (_) {
+    } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            t(
-              context,
-              'Failed to send OTP. Please try again.',
-              'Hindi naipadala ang OTP. Pakisubukang muli.',
+      if (isNetworkError(e)) {
+        await showNoInternetDialog(context);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              t(
+                context,
+                'Failed to send OTP. Please try again.',
+                'Hindi naipadala ang OTP. Pakisubukang muli.',
+              ),
             ),
           ),
-        ),
-      );
+        );
+      }
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -324,19 +337,23 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(_authErrorMessage(e.message))));
-    } catch (_) {
+    } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            t(
-              context,
-              'Invalid or expired OTP.',
-              'Hindi wasto o paso na ang OTP.',
+      if (isNetworkError(e)) {
+        await showNoInternetDialog(context);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              t(
+                context,
+                'Invalid or expired OTP.',
+                'Hindi wasto o paso na ang OTP.',
+              ),
             ),
           ),
-        ),
-      );
+        );
+      }
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -414,19 +431,23 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(_authErrorMessage(e.message))));
-    } catch (_) {
+    } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            t(
-              context,
-              'Unable to update password.',
-              'Hindi ma-update ang password.',
+      if (isNetworkError(e)) {
+        await showNoInternetDialog(context);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              t(
+                context,
+                'Unable to update password.',
+                'Hindi ma-update ang password.',
+              ),
             ),
           ),
-        ),
-      );
+        );
+      }
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }

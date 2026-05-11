@@ -10,6 +10,7 @@ import 'terms.dart';
 import 'forgotpass.dart';
 import 'localization/app_text.dart';
 import 'localization/language_controller.dart';
+import 'network_error_helper.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -90,24 +91,33 @@ class _LoginPageState extends State<LoginPage> {
     final email = (user.email ?? '').trim().toLowerCase();
     final languageCode = context.read<LanguageController>().locale.languageCode;
 
-    await supabase.from('profiles').upsert({
-      'id': user.id,
-      'email': email.isEmpty ? null : email,
-      'first_name': user.userMetadata?['first_name'],
-      'last_name': user.userMetadata?['last_name'],
-      'app_language_code': languageCode == 'tl' ? 'tl' : 'en',
-      'updated_at': DateTime.now().toUtc().toIso8601String(),
-    });
+    try {
+      await supabase.from('profiles').upsert({
+        'id': user.id,
+        'email': email.isEmpty ? null : email,
+        'first_name': user.userMetadata?['first_name'],
+        'last_name': user.userMetadata?['last_name'],
+        'app_language_code': languageCode == 'tl' ? 'tl' : 'en',
+        'updated_at': DateTime.now().toUtc().toIso8601String(),
+      });
+    } catch (e) {
+      debugPrint('Error ensuring profile: $e');
+    }
   }
 
   Future<bool> _hasAcceptedTerms(String userId) async {
-    final row = await supabase
-        .from('profiles')
-        .select('terms_accepted')
-        .eq('id', userId)
-        .maybeSingle();
+    try {
+      final row = await supabase
+          .from('profiles')
+          .select('terms_accepted')
+          .eq('id', userId)
+          .maybeSingle();
 
-    return (row?['terms_accepted'] ?? false) == true;
+      return (row?['terms_accepted'] ?? false) == true;
+    } catch (e) {
+      debugPrint('Error checking terms acceptance: $e');
+      return false;
+    }
   }
 
   Future<void> _handlePostLogin(User user) async {
@@ -130,7 +140,11 @@ class _LoginPageState extends State<LoginPage> {
       if (agreed == true) {
         _goNext();
       } else {
-        await supabase.auth.signOut();
+        try {
+          await supabase.auth.signOut();
+        } catch (e) {
+          debugPrint('Error signing out: $e');
+        }
         if (!mounted) return;
         ScaffoldMessenger.of(
           context,
@@ -177,11 +191,16 @@ class _LoginPageState extends State<LoginPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.message)),
       );
-    } catch (_) {
+    } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.tr('unexpected_error'))),
-      );
+      if (isNetworkError(e)) {
+        await showNoInternetDialog(context);
+        return;
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.tr('unexpected_error'))),
+        );
+      }
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -199,11 +218,16 @@ class _LoginPageState extends State<LoginPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.message)),
       );
-    } catch (_) {
+    } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.tr('google_signin_failed'))),
-      );
+      if (isNetworkError(e)) {
+        await showNoInternetDialog(context);
+        return;
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.tr('google_signin_failed'))),
+        );
+      }
     }
   }
 
@@ -445,7 +469,7 @@ class _LoginPageState extends State<LoginPage> {
               borderRadius: BorderRadius.circular(10),
             ),
           ),
-          onPressed: _isLoading ? null : _login,
+          onPressed: _isLoading ? null : () async { await _login(); },
           child: _isLoading
               ? const SizedBox(
                   width: 20,
