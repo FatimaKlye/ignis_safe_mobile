@@ -46,7 +46,7 @@ class _SimulationScene4State extends State<SimulationScene4> {
   String? _unitySceneNameFor(int scene) {
     switch (scene) {
       case 4:
-        return 'Kitchen_Fire';
+        return 'Kitchen Fire Safety';
       default:
         return null;
     }
