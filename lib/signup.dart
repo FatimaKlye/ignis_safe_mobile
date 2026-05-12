@@ -5,6 +5,7 @@ import 'localization/language_controller.dart';
 import 'forgotpass.dart';
 import 'login.dart';
 import 'verifyemail.dart';
+import 'network_error_helper.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -560,17 +561,21 @@ class _RegisterPageState extends State<RegisterPage> {
       );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            t(
-              context,
-              'Could not check email: $e',
-              'Hindi masuri ang email: $e',
+      if (isNetworkError(e)) {
+        await showNoInternetDialog(context);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              t(
+                context,
+                'Could not check email. Please try again.',
+                'Hindi masuri ang email. Subukang muli.',
+              ),
             ),
           ),
-        ),
-      );
+        );
+      }
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }

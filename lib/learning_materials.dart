@@ -135,7 +135,11 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
   Future<void> _logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('last_tab_index');
-    await _client.auth.signOut();
+    try {
+      await _client.auth.signOut();
+    } catch (e) {
+      debugPrint('Error signing out: $e');
+    }
     if (!mounted) return;
 
     Navigator.pushAndRemoveUntil(
@@ -184,7 +188,7 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
             top: 0,
             left: 0,
             right: 0,
-            height: 900,
+            height: MediaQuery.of(context).size.height,
             child: Image.asset('assets/bg.png', fit: BoxFit.cover),
           ),
           SafeArea(
@@ -248,32 +252,38 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
                         ),
                       ),
                       const SizedBox(width: 10),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            _firstName.isEmpty && _lastName.isEmpty
-                                ? context.tr('hi')
-                                : context.tr(
-                                    'hi_name',
-                                    params: {'name': '$_firstName $_lastName'.trim()},
-                                  ),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              _firstName.isEmpty && _lastName.isEmpty
+                                  ? context.tr('hi')
+                                  : context.tr(
+                                      'hi_name',
+                                      params: {'name': '$_firstName $_lastName'.trim()},
+                                    ),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            context.tr('welcome_to_ignis_safe_short'),
-                            style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700,
+                            const SizedBox(height: 2),
+                            Text(
+                              context.tr('welcome_to_ignis_safe_short'),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -281,10 +291,11 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
                   Center(
                     child: Text(
                       context.tr('learning_materials'),
-                      style: const TextStyle(
-                        fontSize: 30,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: (MediaQuery.of(context).size.width * 0.075).clamp(20.0, 30.0),
                         fontWeight: FontWeight.w800,
-                        color: Color(0xFF222222),
+                        color: const Color(0xFF222222),
                       ),
                     ),
                   ),
@@ -620,6 +631,35 @@ class _DatabaseLearningMaterialPageState
   String _t(String en, String tl) =>
       _isTl && tl.trim().isNotEmpty ? tl : en;
 
+  List<LearningSource> _pageSources(LearningPage page) {
+    final seen = <String>{};
+    final sources = <LearningSource>[];
+
+    for (final block in page.blocks) {
+      final title = block.sourceTitle.trim();
+      final organization = block.sourceOrganization.trim();
+      final url = block.sourceUrl.trim();
+      final accessedAt = block.sourceAccessedAt.trim();
+
+      if (title.isEmpty && organization.isEmpty) continue;
+
+      final key = '$title|$organization|$url';
+
+      if (seen.add(key)) {
+        sources.add(
+          LearningSource(
+            title: title,
+            organization: organization,
+            url: url,
+            accessedAt: accessedAt,
+          ),
+        );
+      }
+    }
+
+    return sources;
+  }
+
   @override
   Widget build(BuildContext context) {
     final m = _material;
@@ -687,6 +727,7 @@ class _DatabaseLearningMaterialPageState
               x.assetType != 'fire_class_image',
         )
         .toList();
+      final sources = _pageSources(page);
 
     return Column(
       children: [
@@ -731,11 +772,10 @@ class _DatabaseLearningMaterialPageState
                           borderRadius: BorderRadius.circular(14),
                           child: Container(
                             width: double.infinity,
-                            constraints: const BoxConstraints(minHeight: 160),
                             color: _accent.withOpacity(0.06),
                             padding: const EdgeInsets.all(12),
-                            child: SizedBox(
-                              height: 160,
+                            child: AspectRatio(
+                              aspectRatio: 16 / 9,
                               child: _DbImage(asset: m.heroImage!),
                             ),
                           ),
@@ -746,6 +786,10 @@ class _DatabaseLearningMaterialPageState
                     ],
                   ),
                 ),
+                if (sources.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  _SourceReferenceCard(sources: sources, isTl: _isTl, accent: _accent),
+                ],
                 if (m.moduleNo == 1 &&
                     page.pageNo == 2 &&
                     _fireGuides.isNotEmpty) ...[
@@ -981,12 +1025,20 @@ class LearningBlock {
   final String blockType;
   final String textEn;
   final String textTl;
+  final String sourceTitle;
+  final String sourceOrganization;
+  final String sourceUrl;
+  final String sourceAccessedAt;
 
   LearningBlock({
     required this.blockNo,
     required this.blockType,
     required this.textEn,
     required this.textTl,
+    required this.sourceTitle,
+    required this.sourceOrganization,
+    required this.sourceUrl,
+    required this.sourceAccessedAt,
   });
 
   factory LearningBlock.fromMap(Map<String, dynamic> m) {
@@ -996,10 +1048,33 @@ class LearningBlock {
           _str(m['block_type']).isEmpty ? 'paragraph' : _str(m['block_type']),
       textEn: _str(m['text_en']),
       textTl: _str(m['text_tl']),
+      sourceTitle: _str(m['source_title']),
+      sourceOrganization: _str(m['source_organization']),
+      sourceUrl: _str(m['source_url']),
+      sourceAccessedAt: _str(m['source_accessed_at']),
     );
   }
 
   String text(bool isTl) => isTl && textTl.trim().isNotEmpty ? textTl : textEn;
+
+  bool get hasSource =>
+      sourceTitle.trim().isNotEmpty ||
+      sourceOrganization.trim().isNotEmpty ||
+      sourceUrl.trim().isNotEmpty;
+}
+
+class LearningSource {
+  final String title;
+  final String organization;
+  final String url;
+  final String accessedAt;
+
+  LearningSource({
+    required this.title,
+    required this.organization,
+    required this.url,
+    required this.accessedAt,
+  });
 }
 
 class LearningMediaAsset {
@@ -1270,6 +1345,7 @@ class _ModuleCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final accent = _moduleAccent(moduleNo);
+    final imgSize = (MediaQuery.of(context).size.width * 0.21).clamp(70.0, 90.0);
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -1292,8 +1368,8 @@ class _ModuleCard extends StatelessWidget {
           child: Row(
             children: [
               Container(
-                width: 86,
-                height: 86,
+                width: imgSize,
+                height: imgSize,
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: accent.withOpacity(0.08),
@@ -1962,10 +2038,12 @@ class _ImageGallery extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                     child: Container(
                       width: double.infinity,
-                      height: 160,
                       color: Colors.white,
                       padding: const EdgeInsets.all(10),
-                      child: _DbImage(asset: img),
+                      child: AspectRatio(
+                        aspectRatio: 16 / 9,
+                        child: _DbImage(asset: img),
+                      ),
                     ),
                   ),
                   if (img.alt(isTl).trim().isNotEmpty) ...[
@@ -2048,6 +2126,131 @@ class _MessageCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _SourceReferenceCard extends StatelessWidget {
+  final List<LearningSource> sources;
+  final bool isTl;
+  final Color accent;
+
+  const _SourceReferenceCard({
+    required this.sources,
+    required this.isTl,
+    required this.accent,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (sources.isEmpty) return const SizedBox.shrink();
+
+    final title = isTl ? 'Pinagmulan ng impormasyon' : 'Information source';
+    final note = isTl
+        ? 'Ang nilalaman ng pahinang ito ay batay sa sumusunod na sanggunian.'
+        : 'This page is based on the following reference.';
+
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(top: 8),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: accent.withOpacity(0.06),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: accent.withOpacity(0.18)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            Icons.verified_outlined,
+            color: accent,
+            size: 20,
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    color: accent,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 13,
+                    fontFamily: 'Poppins',
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  note,
+                  style: const TextStyle(
+                    color: Color(0xFF4B5563),
+                    fontSize: 11.5,
+                    height: 1.35,
+                    fontFamily: 'Poppins',
+                  ),
+                ),
+                const SizedBox(height: 10),
+                ...sources.map(
+                  (source) {
+                    final organization = source.organization.trim();
+                    final sourceTitle = source.title.trim();
+                    final accessedAt = source.accessedAt.trim();
+
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 6),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            organization.isNotEmpty
+                                ? organization
+                                : (isTl ? 'Hindi tinukoy na organisasyon' : 'Unspecified organization'),
+                            style: const TextStyle(
+                              color: Color(0xFF111827),
+                              fontWeight: FontWeight.w800,
+                              fontSize: 12,
+                              height: 1.3,
+                              fontFamily: 'Poppins',
+                            ),
+                          ),
+                          if (sourceTitle.isNotEmpty) ...[
+                            const SizedBox(height: 2),
+                            Text(
+                              sourceTitle,
+                              style: const TextStyle(
+                                color: Color(0xFF374151),
+                                fontSize: 12,
+                                height: 1.35,
+                                fontFamily: 'Poppins',
+                              ),
+                            ),
+                          ],
+                          if (accessedAt.isNotEmpty) ...[
+                            const SizedBox(height: 2),
+                            Text(
+                              isTl
+                                  ? 'Na-access noong: $accessedAt'
+                                  : 'Accessed: $accessedAt',
+                              style: const TextStyle(
+                                color: Color(0xFF6B7280),
+                                fontSize: 10.5,
+                                height: 1.3,
+                                fontFamily: 'Poppins',
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

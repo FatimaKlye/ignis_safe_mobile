@@ -7,7 +7,9 @@ plugins {
 android {
     namespace = "com.example.ignis_safe"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    // ndkVersion = flutter.ndkVersion  // commented out: pinned explicitly below to match ndk.dir in local.properties
+    // ndkVersion = "26.3.11579264"  // commented out: updated to match installed NDK 27.0.12077973
+    ndkVersion = "27.0.12077973"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11

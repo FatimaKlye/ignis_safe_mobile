@@ -247,7 +247,11 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
   Future<void> _logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('last_tab_index');
-    await Supabase.instance.client.auth.signOut();
+    try {
+      await Supabase.instance.client.auth.signOut();
+    } catch (e) {
+      debugPrint('Error signing out: $e');
+    }
 
     if (!mounted) return;
 
@@ -556,7 +560,7 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
             top: 0,
             left: 0,
             right: 0,
-            height: 900,
+            height: MediaQuery.of(context).size.height,
             child: Image.asset('assets/bg.png', fit: BoxFit.cover),
           ),
           SafeArea(
@@ -620,7 +624,8 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
                         ),
                       ),
                       const SizedBox(width: 10),
-                      Column(
+                      Expanded(
+                        child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
@@ -630,6 +635,8 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
                                     'hi_name',
                                     params: {'name': '$_firstName $_lastName'.trim()},
                                   ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 12,
@@ -647,14 +654,16 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
                           ),
                         ],
                       ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 30),
                   Center(
                     child: Text(
                       context.tr('fire_scenario_module'),
+                      textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 30,
+                        fontSize: (MediaQuery.of(context).size.width * 0.075).clamp(20.0, 30.0),
                         fontWeight: FontWeight.w800,
                         color: Color(0xFF222222),
                       ),
@@ -861,6 +870,7 @@ class _ModuleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final imgSize = (MediaQuery.of(context).size.width * 0.22).clamp(72.0, 92.0);
     return Stack(
       clipBehavior: Clip.none,
       children: [
@@ -882,8 +892,8 @@ class _ModuleCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                width: 90,
-                height: 90,
+                width: imgSize,
+                height: imgSize,
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(10),
@@ -1217,14 +1227,17 @@ class _OutlineActionButton extends StatelessWidget {
                   color: Color(0xFF999999),
                 ),
               ),
-            Text(
-              label,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 11.5,
-                fontWeight: FontWeight.w900,
-                color: enabled ? Colors.black : const Color(0xFF999999),
-                height: 1.1,
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                label,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 11.5,
+                  fontWeight: FontWeight.w900,
+                  color: enabled ? Colors.black : const Color(0xFF999999),
+                  height: 1.1,
+                ),
               ),
             ),
           ],

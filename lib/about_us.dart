@@ -55,7 +55,11 @@ class _AboutUsPageState extends State<AboutUsPage> {
   Future<void> _logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('last_tab_index');
-    await Supabase.instance.client.auth.signOut();
+    try {
+      await Supabase.instance.client.auth.signOut();
+    } catch (e) {
+      debugPrint('Error signing out: $e');
+    }
     if (!mounted) return;
 
     Navigator.pushAndRemoveUntil(

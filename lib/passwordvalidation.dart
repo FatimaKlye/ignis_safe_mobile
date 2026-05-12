@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'forgotpass.dart';
 import 'login.dart';
+import 'network_error_helper.dart';
 
 String _t(BuildContext context, String en, String tl) {
   return Localizations.localeOf(context).languageCode == 'tl' ? tl : en;
@@ -503,18 +504,22 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
         );
       }
     } catch (e) {
-      await _showPopup(
-        _t(
-          context,
-          'Something went wrong while creating your account.\n\n$e',
-          'May nangyaring mali habang ginagawa ang iyong account.\n\n$e',
-        ),
-        title: _t(
-          context,
-          'Account Setup Failed',
-          'Hindi Natapos ang Pag-set up ng Account',
-        ),
-      );
+      if (isNetworkError(e)) {
+        if (mounted) await showNoInternetDialog(context);
+      } else {
+        await _showPopup(
+          _t(
+            context,
+            'Something went wrong while creating your account. Please try again.',
+            'May nangyaring mali habang ginagawa ang iyong account. Subukang muli.',
+          ),
+          title: _t(
+            context,
+            'Account Setup Failed',
+            'Hindi Natapos ang Pag-set up ng Account',
+          ),
+        );
+      }
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);

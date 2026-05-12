@@ -10,6 +10,10 @@ dependencies {
 
 android {
     namespace "com.unity3d.player"
+    //ndkPath "C:/Program Files/Unity/Hub/Editor/6000.4.1f1/Editor/Data/PlaybackEngines/AndroidPlayer/NDK"
+    ndkPath "C:/Users/Asus/AppData/Local/Android/Sdk/ndk/27.0.12077973"
+    //ndkVersion "27.2.12479018"
+    ndkVersion "27.0.12077973"
     compileSdk 36
 
     defaultConfig {
