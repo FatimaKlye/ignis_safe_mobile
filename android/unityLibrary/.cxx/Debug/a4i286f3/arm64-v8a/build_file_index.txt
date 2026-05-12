@@ -1,2 +1,0 @@
-C:\Users\Andrei\Desktop\FinalIgnisSafeApp\ignisflutterapp\ignis_safe_mobile\android\unityLibrary\src\main\cpp\CMakeLists.txt
-C:\Users\Andrei\Desktop\FinalIgnisSafeApp\ignisflutterapp\ignis_safe_mobile\android\unityLibrary\src\main\cpp\GameActivity\CMakeLists.txt

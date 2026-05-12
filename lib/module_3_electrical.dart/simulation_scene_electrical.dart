@@ -1,6 +1,7 @@
 // simulation_scene.dart
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import '../unity_launcher.dart';
 import '../profile_progress_sync.dart';
@@ -148,7 +149,11 @@ class _SimulationScene3State extends State<SimulationScene3> {
       );
     } finally {
       if (unityReturned && mounted) {
-        Navigator.pop(context, true);
+        final nav = Navigator.of(context);
+        SchedulerBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+          nav.pop(true);
+        });
       }
     }
   }

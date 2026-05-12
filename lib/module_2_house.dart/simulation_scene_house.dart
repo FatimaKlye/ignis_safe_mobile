@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import '../localization/language_controller.dart';
 import '../unity_launcher.dart';
@@ -143,7 +144,11 @@ class _SimulationScene2State extends State<SimulationScene2> {
       );
     } finally {
       if (unityReturned && mounted) {
-        Navigator.pop(context, true);
+        final nav = Navigator.of(context);
+        SchedulerBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+          nav.pop(true);
+        });
       }
     }
   }

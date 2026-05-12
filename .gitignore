@@ -50,3 +50,10 @@ android/.gradle/
 android/build/
 android/app/build/
 android/unityLibrary/build/
+
+android/local.properties
+app-debug.zip
+android/unityLibrary/.cxx/
+android/unityLibrary/src/main/Il2CppOutputProject/Source/il2cppOutput/compile-data.json
+android/unityLibrary/src/main/jniLibs/arm64-v8a/libil2cpp.so
+android/unityLibrary/symbols/

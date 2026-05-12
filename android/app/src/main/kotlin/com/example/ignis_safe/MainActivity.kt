@@ -1,6 +1,5 @@
 ﻿package com.example.ignis_safe
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Handler
 import android.os.Looper
@@ -10,43 +9,46 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
 class MainActivity : FlutterActivity() {
-    private val CHANNEL = "ignis_safe/unity"
-    private val UNITY_REQUEST_CODE = 1001
-    private val TAG = "MainActivity"
+
+    private val channelName = "ignis_safe/unity"
+    private val unityRequestCode = 1001
+    private val tag = "MainActivity"
 
     private var pendingResult: MethodChannel.Result? = null
     private var pendingSceneName: String? = null
     private var waitingForUnityReturn = false
+    private var unityChannelReplyDelivered = false
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
 
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL)
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, channelName)
             .setMethodCallHandler { call, result ->
                 when (call.method) {
                     "openUnityScene" -> {
                         try {
                             val sceneName = call.argument<String>("sceneName")
-                            Log.d(TAG, "[Flutter->Unity] Flutter requested scene: $sceneName")
+                            Log.d(tag, "Opening Unity scene: $sceneName")
 
-                            val unityActivityClass = Class.forName("com.unity3d.player.UnityFlutterHostActivity")
-                            val intent = Intent(this, unityActivityClass)
-                            intent.putExtra("sceneName", sceneName)
-                            // [FIX] FLAG_ACTIVITY_SINGLE_TOP mirrors the manifest launchMode="singleTop".
-                            // If UnityFlutterHostActivity is already at the top of the stack (e.g.,
-                            // process survived from a previous session), this triggers onNewIntent()
-                            // instead of creating a new conflicting instance in the same :unity process.
-                            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                            val intent = Intent().apply {
+                                setClassName(
+                                    this@MainActivity,
+                                    "com.unity3d.player.UnityPlayerGameActivity"
+                                )
+                                putExtra("sceneName", sceneName)
+                                addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                            }
 
                             pendingResult = result
                             pendingSceneName = sceneName
                             waitingForUnityReturn = true
+                            unityChannelReplyDelivered = false
 
-                            Log.d(TAG, "[Flutter->Unity] Starting UnityFlutterHostActivity for scene: $sceneName")
                             @Suppress("DEPRECATION")
-                            startActivityForResult(intent, UNITY_REQUEST_CODE)
+                            startActivityForResult(intent, unityRequestCode)
                         } catch (e: Exception) {
-                            Log.e(TAG, "[Flutter->Unity] Failed to open Unity: ${e.message}", e)
+                            clearUnityPendingState()
+                            Log.e(tag, "Failed to open Unity", e)
                             result.error(
                                 "UNITY_OPEN_FAILED",
                                 "Cannot open Unity: ${e.message}",
@@ -54,7 +56,6 @@ class MainActivity : FlutterActivity() {
                             )
                         }
                     }
-
                     else -> result.notImplemented()
                 }
             }
@@ -63,40 +64,48 @@ class MainActivity : FlutterActivity() {
     @Suppress("DEPRECATION")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        Log.d(TAG, "[Unity->Flutter] onActivityResult requestCode=$requestCode resultCode=$resultCode scene=$pendingSceneName waitingForUnity=$waitingForUnityReturn")
-
-        if (requestCode == UNITY_REQUEST_CODE) {
-            Log.d(TAG, "[Unity->Flutter] Unity Activity returned — completing pending result")
-            completePendingUnityResult()
+        if (requestCode == unityRequestCode) {
+            completePendingResult()
         }
     }
 
     override fun onResume() {
         super.onResume()
-        Log.d(TAG, "[Flutter] onResume waitingForUnityReturn=$waitingForUnityReturn pendingResult=${pendingResult != null}")
         if (waitingForUnityReturn && pendingResult != null) {
-            // Fallback: onActivityResult may be skipped if the Unity process was killed.
-            // onResume always fires when Flutter comes back to foreground, so this catches it.
-            Log.d(TAG, "[Flutter] Completing Unity result via onResume fallback for scene: $pendingSceneName")
-            Handler(Looper.getMainLooper()).post { completePendingUnityResult() }
+            Handler(Looper.getMainLooper()).post {
+                completePendingResult()
+            }
         }
     }
 
-    private fun completePendingUnityResult() {
-        val pr = pendingResult ?: return
-        val sceneName = pendingSceneName
+    private fun clearUnityPendingState() {
         pendingResult = null
         pendingSceneName = null
         waitingForUnityReturn = false
+        unityChannelReplyDelivered = false
+    }
 
-        Log.d(TAG, "[Flutter] Sending completed=true back to Flutter for scene: $sceneName")
-        pr.success(
-            mapOf(
-                "completed" to true,
-                "sceneName" to sceneName
-            )
-        )
+    private fun completePendingResult() {
+        synchronized(this) {
+            if (unityChannelReplyDelivered) return
+            val result = pendingResult ?: return
+
+            unityChannelReplyDelivered = true
+            pendingResult = null
+            val scene = pendingSceneName
+            pendingSceneName = null
+            waitingForUnityReturn = false
+
+            try {
+                result.success(
+                    mapOf(
+                        "completed" to true,
+                        "sceneName" to scene
+                    )
+                )
+            } catch (e: IllegalStateException) {
+                Log.w(tag, "Unity channel reply already completed", e)
+            }
+        }
     }
 }
-
-

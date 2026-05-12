@@ -1,2 +1,0 @@
-C:\Projects\ignis_safe_mobile\android\unityLibrary\src\main\cpp\CMakeLists.txt
-C:\Projects\ignis_safe_mobile\android\unityLibrary\src\main\cpp\GameActivity\CMakeLists.txt

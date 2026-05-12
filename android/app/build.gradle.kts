@@ -1,31 +1,28 @@
 plugins {
     id("com.android.application")
-    id("kotlin-android")
+    id("org.jetbrains.kotlin.android")
     id("dev.flutter.flutter-gradle-plugin")
 }
 
 android {
     namespace = "com.example.ignis_safe"
-    compileSdk = flutter.compileSdkVersion
-    // ndkVersion = flutter.ndkVersion  // commented out: pinned explicitly below to match ndk.dir in local.properties
-    // ndkVersion = "26.3.11579264"  // commented out: updated to match installed NDK 27.0.12077973
-    ndkVersion = "27.0.12077973"
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
-    }
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.ignis_safe"
         minSdk = 25
-        targetSdk = flutter.targetSdkVersion
-        versionCode = flutter.versionCode
-        versionName = flutter.versionName
+        targetSdk = 36
+        versionCode = 1
+        versionName = "1.0"
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = "17"
     }
 
     buildTypes {
@@ -35,12 +32,10 @@ android {
     }
 }
 
-flutter {
-    source = "../.."
+dependencies {
+    implementation(project(":unityLibrary"))
 }
 
-dependencies {
-    // Place your exported Unity .aar file(s) in android/app/libs/
-    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar", "*.aar"))))
-    implementation(project(":unityLibrary"))
+flutter {
+    source = "../.."
 }

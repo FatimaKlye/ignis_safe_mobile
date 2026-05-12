@@ -1,5 +1,0 @@
-C:/Users/Asus/OneDrive - National University/Desktop/ignis_safe_mobile/android/unityLibrary/.cxx/Debug/4o6d5e33/arm64-v8a/CMakeFiles/edit_cache.dir
-C:/Users/Asus/OneDrive - National University/Desktop/ignis_safe_mobile/android/unityLibrary/.cxx/Debug/4o6d5e33/arm64-v8a/CMakeFiles/rebuild_cache.dir
-C:/Users/Asus/OneDrive - National University/Desktop/ignis_safe_mobile/android/unityLibrary/.cxx/Debug/4o6d5e33/arm64-v8a/GameActivity/CMakeFiles/game.dir
-C:/Users/Asus/OneDrive - National University/Desktop/ignis_safe_mobile/android/unityLibrary/.cxx/Debug/4o6d5e33/arm64-v8a/GameActivity/CMakeFiles/edit_cache.dir
-C:/Users/Asus/OneDrive - National University/Desktop/ignis_safe_mobile/android/unityLibrary/.cxx/Debug/4o6d5e33/arm64-v8a/GameActivity/CMakeFiles/rebuild_cache.dir
