@@ -18,6 +18,7 @@ dependencies:
   animations: ^2.0.11
   image_picker: ^1.2.1
   provider: ^6.1.1
+  video_player: ^2.9.2
 
 dev_dependencies:
   flutter_test:
@@ -58,6 +59,10 @@ flutter:
     - assets/response_kitchen.png
     - assets/prevent_tenement.png
     - assets/response_tenement.png
+    - assets/pass_pull_pin.mp4
+    - assets/pass_aim_nozzle.mp4
+    - assets/pass_squeeze_handle.mp4
+    - assets/pass_sweep_side_to_side.mp4
 
   fonts:
     - family: Poppins

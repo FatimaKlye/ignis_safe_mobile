@@ -1,6 +1,133 @@
 import 'package:flutter/material.dart';
-import 'pre_assess_instruction.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'post_assess_instruction.dart';
 
+// ============================================================================
+// APP COLORS — Module 5 Purple/Violet Palette (DO NOT CHANGE)
+// ============================================================================
+class AppColors {
+  static const Color purple50  = Color(0xFFF5F3FF);
+  static const Color purple100 = Color(0xFFEDE9FE);
+  static const Color purple200 = Color(0xFFDDD6FE);
+  static const Color purple300 = Color(0xFFC4B5FD);
+  static const Color purple400 = Color(0xFFA78BFA);
+  static const Color purple500 = Color(0xFF8B5CF6);
+  static const Color purple600 = Color(0xFF7C3AED);
+  static const Color purple700 = Color(0xFF6D28D9);
+  static const Color purple800 = Color(0xFF5B21B6);
+  static const Color purple900 = Color(0xFF4C1D95);
+  static const Color purple950 = Color(0xFF2E1065);
+
+  static const LinearGradient module5Gradient = LinearGradient(
+    colors: [Color(0xFF7C3AED), Color(0xFF6D28D9), Color(0xFF4C1D95)],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  static const Color brandRed      = Color(0xFF7C3AED);
+  static const Color brandRedDark  = Color(0xFF5B21B6);
+  static const Color brandRedDeep  = Color(0xFF2E1065);
+  static const Color brandRedLight = Color(0xFFA78BFA);
+  static const Color brandRedSoft  = Color(0xFFEDE9FE);
+
+  static const Color background  = Color(0xFFF5F3FF);
+  static const Color surface     = Color(0xFFFFFFFF);
+  static const Color surfaceSoft = Color(0xFFEDE9FE);
+
+  static const Color textPrimary   = Color(0xFF2E1065);
+  static const Color textSecondary = Color(0xFF6B7280);
+  static const Color textMuted     = Color(0xFF9CA3AF);
+  static const Color textOnRed     = Color(0xFFFFFFFF);
+
+  static const Color border  = Color(0xFFDDD6FE);
+  static const Color divider = Color(0xFFEDE9FE);
+
+  static const Color success = Color(0xFF16A34A);
+  static const Color warning = Color(0xFFF59E0B);
+  static const Color error   = Color(0xFFD32F2F);
+  static const Color info    = Color(0xFF2563EB);
+
+  static const Color primaryButton        = Color(0xFF7C3AED);
+  static const Color primaryButtonPressed = Color(0xFF5B21B6);
+  static const Color secondaryButton      = Color(0xFFEDE9FE);
+  static const Color shadow               = Color(0x1A000000);
+}
+
+// ============================================================================
+// DATABASE CONTENT HELPERS — Module 5
+// ============================================================================
+const int _moduleNo = 5;
+const String _learningMaterialsBucketName = 'Learning Materials';
+
+class _SourceReference {
+  const _SourceReference({
+    required this.organization,
+    required this.url,
+  });
+
+  final String organization;
+  final String url;
+}
+
+class _Module5LearningMaterialStore {
+  static Map<String, String> textEn = <String, String>{};
+  static Map<String, String> textTl = <String, String>{};
+  static Map<String, _SourceReference> sources =
+      <String, _SourceReference>{};
+  static String previewImagePath = '';
+
+  static void update({
+    required Map<String, String> en,
+    required Map<String, String> tl,
+    required Map<String, _SourceReference> sourceRefs,
+    required String previewPath,
+  }) {
+    textEn = Map<String, String>.unmodifiable(en);
+    textTl = Map<String, String>.unmodifiable(tl);
+    sources = Map<String, _SourceReference>.unmodifiable(sourceRefs);
+    previewImagePath = previewPath;
+  }
+}
+
+String _dbText(
+  BuildContext context,
+  String key, {
+  Map<String, String>? params,
+}) {
+  final isTl = Localizations.localeOf(context).languageCode == 'tl';
+  var value = isTl
+      ? (_Module5LearningMaterialStore.textTl[key] ??
+          _Module5LearningMaterialStore.textEn[key])
+      : _Module5LearningMaterialStore.textEn[key];
+
+  value ??= key;
+
+  if (params != null) {
+    params.forEach((placeholder, replacement) {
+      value = value!
+          .replaceAll('{$placeholder}', replacement)
+          .replaceAll('\$$placeholder', replacement);
+    });
+  }
+
+  return value!;
+}
+
+String _sourceOrganization(String sourceKey) {
+  return _Module5LearningMaterialStore.sources[sourceKey]?.organization ?? '';
+}
+
+String _sourceUrl(String sourceKey) {
+  return _Module5LearningMaterialStore.sources[sourceKey]?.url ?? '';
+}
+
+String _previewImagePath() {
+  return _Module5LearningMaterialStore.previewImagePath;
+}
+
+// ============================================================================
+// MAIN PAGE
+// ============================================================================
 class LearningMaterialTenementPage extends StatefulWidget {
   const LearningMaterialTenementPage({super.key});
 
@@ -9,63 +136,196 @@ class LearningMaterialTenementPage extends StatefulWidget {
       _LearningMaterialTenementPageState();
 }
 
+/// Compatibility wrapper so older routes that call BuildingPage still work.
+class LearningMaterialBuildingPage extends StatelessWidget {
+  const LearningMaterialBuildingPage({super.key});
+
+  @override
+  Widget build(BuildContext context) => const LearningMaterialTenementPage();
+}
+
 class _LearningMaterialTenementPageState
     extends State<LearningMaterialTenementPage> {
-  static const accent = Color(0xFF7C3AED); // purple primary
-  static const accent2 = Color(0xFF4338CA); // deep indigo
+  static const accent  = AppColors.brandRed;
+  static const accent2 = AppColors.brandRedDark;
 
-  final PageController _pageCtrl = PageController();
+  final PageController   _pageCtrl  = PageController();
   final ScrollController _scrollCtrl = ScrollController();
 
-  int _pageIndex = 0;
+  final List<Set<int>> _readSections = [<int>{}, <int>{}, <int>{}];
 
-  double _progress = 0.0;
-  bool _canNext = false;
-  bool _isSwitchingPage = false;
-  bool _lastPageCompleted = false;
+  int    _pageIndex        = 0;
+  double _progress         = 0.0;
+  bool   _canNext          = false;
+  bool   _isSwitchingPage  = false;
+  bool   _lastPageCompleted = false;
+  bool   _introShown       = false;
+  bool   _unreadPromptVisible = false;
+  bool   _isLoadingContent = true;
+  String? _contentError;
 
-  String _t(BuildContext context, String en, String tl) {
-    return Localizations.localeOf(context).languageCode == 'tl' ? tl : en;
-  }
+  final SupabaseClient _supabase = Supabase.instance.client;
 
   @override
   void initState() {
     super.initState();
     _scrollCtrl.addListener(_onScroll);
-    WidgetsBinding.instance.addPostFrameCallback((_) => _onScroll());
+    _loadLearningMaterialContent();
   }
 
-  void _onScroll() {
-    if (!_scrollCtrl.hasClients) return;
-    if (_isSwitchingPage) return;
+  Future<void> _loadLearningMaterialContent() async {
+    setState(() {
+      _isLoadingContent = true;
+      _contentError = null;
+    });
 
-    final max = _scrollCtrl.position.maxScrollExtent;
-    final off = _scrollCtrl.offset;
+    try {
+      final materialRaw = await _supabase
+          .from('learning_materials')
+          .select('id,title,title_tl,subtitle,subtitle_tl,hero_asset')
+          .eq('module_no', _moduleNo)
+          .eq('is_active', true)
+          .maybeSingle();
 
-    if (max <= 0) {
-      if (_progress != 1.0 || !_canNext) {
-        setState(() {
-          _progress = 1.0;
-          _canNext = _pageIndex != 2;
-        });
+      if (materialRaw == null) {
+        throw StateError('No content found');
       }
-      return;
-    }
 
-    final p = (off / max).clamp(0.0, 1.0);
-    final nearBottom = off >= (max - 8);
+      final material = Map<String, dynamic>.from(materialRaw);
+      final learningMaterialId = material['id'] as String;
 
-    if (_progress != p || _canNext != nearBottom) {
+      final pagesRaw = await _supabase
+          .from('learning_material_pages')
+          .select('page_no,page_key,title_en,title_tl')
+          .eq('module_no', _moduleNo)
+          .eq('is_active', true)
+          .order('page_no');
+
+      final blocksRaw = await _supabase
+          .from('learning_material_blocks')
+          .select(
+            'page_no,block_no,block_key,block_type,text_en,text_tl,'
+            'source_title,source_organization,source_url',
+          )
+          .eq('module_no', _moduleNo)
+          .eq('is_active', true)
+          .order('page_no')
+          .order('block_no');
+
+      final textsRaw = await _supabase
+          .from('learning_material_texts')
+          .select('text_order,text_key,text_en,text_tl')
+          .eq('module_no', _moduleNo)
+          .eq('usage_context', 'module_5_learning_material')
+          .eq('is_active', true)
+          .order('text_order');
+
+      final mediaRaw = await _supabase
+          .from('learning_material_media_assets')
+          .select('asset_key,asset_path,public_url,asset_type')
+          .eq('learning_material_id', learningMaterialId)
+          .eq('module_no', _moduleNo)
+          .eq('is_active', true)
+          .order('display_order');
+
+      final en = <String, String>{};
+      final tl = <String, String>{};
+      final sources = <String, _SourceReference>{};
+
+      void putText(String key, Object? enValue, Object? tlValue) {
+        final cleanKey = key.trim();
+        if (cleanKey.isEmpty) return;
+
+        final enText = (enValue ?? '').toString().trim();
+        final tlText = (tlValue ?? '').toString().trim();
+
+        if (enText.isNotEmpty) en[cleanKey] = enText;
+        if (tlText.isNotEmpty) tl[cleanKey] = tlText;
+      }
+
+      putText(
+        'header.module_title',
+        material['title'],
+        material['title_tl'],
+      );
+
+      for (final raw in pagesRaw) {
+        final row = Map<String, dynamic>.from(raw as Map);
+        final pageNo = row['page_no'] as int;
+        putText('page$pageNo.title', row['title_en'], row['title_tl']);
+      }
+
+      for (final raw in blocksRaw) {
+        final row = Map<String, dynamic>.from(raw as Map);
+        final blockKey = (row['block_key'] ?? '').toString().trim();
+
+        putText(blockKey, row['text_en'], row['text_tl']);
+
+        final sourceOrganization =
+            (row['source_organization'] ?? '').toString().trim();
+        final sourceUrl = (row['source_url'] ?? '').toString().trim();
+
+        if (blockKey.isNotEmpty &&
+            sourceOrganization.isNotEmpty &&
+            sourceUrl.isNotEmpty) {
+          sources[blockKey] = _SourceReference(
+            organization: sourceOrganization,
+            url: sourceUrl,
+          );
+        }
+      }
+
+      for (final raw in textsRaw) {
+        final row = Map<String, dynamic>.from(raw as Map);
+        putText(row['text_key'].toString(), row['text_en'], row['text_tl']);
+      }
+
+      var previewPath = (material['hero_asset'] ?? '').toString().trim();
+      for (final raw in mediaRaw) {
+        final row = Map<String, dynamic>.from(raw as Map);
+        final assetKey = (row['asset_key'] ?? '').toString().trim();
+        if (assetKey == 'module5_tenement_fire_preview_image') {
+          final publicUrl = (row['public_url'] ?? '').toString().trim();
+          final assetPath = (row['asset_path'] ?? '').toString().trim();
+          previewPath = publicUrl.isNotEmpty ? publicUrl : assetPath;
+          break;
+        }
+      }
+
+      _Module5LearningMaterialStore.update(
+        en: en,
+        tl: tl,
+        sourceRefs: sources,
+        previewPath: previewPath,
+      );
+
+      if (!mounted) return;
       setState(() {
-        _progress = p;
-        _canNext = nearBottom;
+        _isLoadingContent = false;
+        _contentError = null;
+      });
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _onScroll();
+        _showIntroAfterContentLoad();
+      });
+    } catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _isLoadingContent = false;
+        _contentError = error.toString();
       });
     }
-
-    if (_pageIndex == 2 && nearBottom) {
-      _lastPageCompleted = true;
-    }
   }
+
+  void _showIntroAfterContentLoad() {
+    if (_introShown) return;
+    _introShown = true;
+    Future.delayed(const Duration(milliseconds: 400), () {
+      if (mounted) _showIntroPopup();
+    });
+  }
+
 
   @override
   void dispose() {
@@ -75,14 +335,42 @@ class _LearningMaterialTenementPageState
     super.dispose();
   }
 
+  void _onScroll() {
+    if (!_scrollCtrl.hasClients || _isSwitchingPage) return;
+
+    final max = _scrollCtrl.position.maxScrollExtent;
+    final off = _scrollCtrl.offset;
+
+    if (max <= 0) {
+      if (_progress != 1.0 || !_canNext) {
+        setState(() {
+          _progress = 1.0;
+          _canNext  = _pageIndex != 2;
+        });
+      }
+      return;
+    }
+
+    final p         = (off / max).clamp(0.0, 1.0).toDouble();
+    final nearBottom = off >= (max - 8);
+
+    if (_progress != p || _canNext != nearBottom) {
+      setState(() {
+        _progress = p;
+        _canNext  = nearBottom;
+      });
+    }
+
+    if (_pageIndex == 2 && nearBottom) _lastPageCompleted = true;
+  }
+
   void _resetForNewPage() {
     setState(() {
-      _isSwitchingPage = true;
-      _progress = 0.0;
-      _canNext = false;
+      _isSwitchingPage   = true;
+      _progress          = 0.0;
+      _canNext           = false;
       _lastPageCompleted = false;
     });
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       if (_scrollCtrl.hasClients) _scrollCtrl.jumpTo(0);
@@ -91,36 +379,119 @@ class _LearningMaterialTenementPageState
     });
   }
 
-  void _goBack() {
-    if (_pageIndex == 0) {
-      Navigator.pop(context);
-      return;
+  int _requiredSectionCountForPage(int pageIndex) {
+    switch (pageIndex) {
+      case 0: case 1: case 2: return 4;
+      default: return 0;
     }
+  }
+
+  bool _hasReadAllRequiredSections(int pageIndex) {
+    if (pageIndex < 0 || pageIndex >= _readSections.length) return false;
+    return _readSections[pageIndex].length >=
+        _requiredSectionCountForPage(pageIndex);
+  }
+
+  void _goBack() {
+    if (_pageIndex == 0) { Navigator.pop(context); return; }
     _pageCtrl.previousPage(
-      duration: const Duration(milliseconds: 260),
-      curve: Curves.easeOutCubic,
-    );
+        duration: const Duration(milliseconds: 260), curve: Curves.easeOutCubic);
   }
 
   void _goNext() {
-    if (!_canNext) return;
-
+    if (!_hasReadAllRequiredSections(_pageIndex)) {
+      _showUnreadSectionsPopup();
+      return;
+    }
     if (_pageIndex < 2) {
-      _pageCtrl.nextPage(
-        duration: const Duration(milliseconds: 260),
-        curve: Curves.easeOutCubic,
-      );
+      _showPageCompletePopup(_pageIndex, () {
+        _pageCtrl.nextPage(
+            duration: const Duration(milliseconds: 260),
+            curve: Curves.easeOutCubic);
+      });
     } else {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => const PreAssessmentIntroPage2(),
-        ),
-      );
+      setState(() => _lastPageCompleted = true);
+      _showFinalCompletePopup();
     }
   }
 
-  // ---------- POPUPS ----------
+  // --------------------------------------------------------------------------
+  // POPUPS
+  // --------------------------------------------------------------------------
+
+  void _showUnreadSectionsPopup() {
+    if (_unreadPromptVisible) return;
+    _unreadPromptVisible = true;
+    showDialog(
+      context: context,
+      builder: (_) => _StyledDialog(
+        icon: Icons.menu_book_rounded,
+        iconColor: AppColors.brandRed,
+        title: _dbText(context, 'popup.keep_reading.title'),
+        body: _dbText(context, 'popup.keep_reading.body'),
+        buttonLabel: _dbText(context, 'common.got_it'),
+        onPressed: () => Navigator.pop(context),
+      ),
+    ).then((_) => _unreadPromptVisible = false);
+  }
+
+  void _showIntroPopup() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => _StyledDialog(
+        icon: Icons.auto_stories_rounded,
+        iconColor: accent,
+        title: _dbText(context, 'popup.intro.title'),
+        body: _dbText(context, 'popup.intro.body'),
+        buttonLabel: _dbText(context, 'common.got_it_exclamation'),
+        onPressed: () => Navigator.pop(context),
+      ),
+    );
+  }
+
+  void _showPageCompletePopup(int pageIndex, VoidCallback onContinue) {
+    final titles = [
+      _dbText(context, 'popup.page1_complete.title'),
+      _dbText(context, 'popup.page2_complete.title'),
+    ];
+    final bodies = [
+      _dbText(context, 'popup.page1_complete.body'),
+      _dbText(context, 'popup.page2_complete.body'),
+    ];
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => _StyledDialog(
+        icon: Icons.check_circle_rounded,
+        iconColor: AppColors.success,
+        title: titles[pageIndex],
+        body: bodies[pageIndex],
+        buttonLabel: _dbText(context, 'common.continue_arrow'),
+        onPressed: () { Navigator.pop(context); onContinue(); },
+      ),
+    );
+  }
+
+  void _showFinalCompletePopup() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => _StyledDialog(
+        icon: Icons.verified_rounded,
+        iconColor: AppColors.brandRed,
+        title: _dbText(context, 'popup.final.title'),
+        body: _dbText(context, 'popup.final.body'),
+        buttonLabel: _dbText(context, 'common.start_post_test_arrow'),
+        onPressed: () {
+          Navigator.pop(context);
+          Navigator.push(context,
+              MaterialPageRoute(builder: (_) => const PostAssessmentIntroPage()));
+        },
+      ),
+    );
+  }
+
   void _showInfoPopup({
     required String title,
     required String message,
@@ -129,194 +500,141 @@ class _LearningMaterialTenementPageState
   }) {
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Row(
-          children: [
-            Icon(icon, color: color),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                title,
-                style: TextStyle(fontWeight: FontWeight.w900, color: color),
-              ),
-            ),
-          ],
-        ),
-        content: Text(message, style: const TextStyle(height: 1.45)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(_t(context, "OK", "Sige")),
-          ),
-        ],
+      builder: (_) => _StyledDialog(
+        icon: icon,
+        iconColor: color,
+        title: title,
+        body: message,
+        buttonLabel: _dbText(context, 'common.got_it'),
+        onPressed: () => Navigator.pop(context),
       ),
     );
   }
 
   void _showDoThisNowPopup() {
     _showInfoPopup(
-      title: _t(context, "If there is a fire in a tenement building", "Kung may sunog sa tenement building"),
+      title: _dbText(context, 'popup.emergency_steps.title'),
       icon: Icons.local_fire_department_rounded,
-      color: const Color(0xFFDC2626),
-      message: _t(
-        context,
-        "1) Alert other occupants immediately.\n"
-            "2) Leave through the nearest safe exit.\n"
-            "3) Stay low if there is smoke.\n"
-            "4) Do NOT use elevators.\n"
-            "5) Close doors behind you if possible.\n"
-            "6) Go to the assembly area and call for help.",
-        "1) Ipaalam agad sa ibang nakatira.\n"
-            "2) Lumabas sa pinakamalapit na ligtas na daan.\n"
-            "3) Yumuko kung may usok.\n"
-            "4) HUWAG gumamit ng elevator.\n"
-            "5) Isara ang pinto sa likod kung maaari.\n"
-            "6) Pumunta sa assembly area at tumawag ng tulong.",
-      ),
+      color: AppColors.brandRed,
+      message: _dbText(context, 'popup.emergency_steps.body'),
     );
   }
 
+  // --------------------------------------------------------------------------
+  // BUILD
+  // --------------------------------------------------------------------------
+
   @override
   Widget build(BuildContext context) {
-    final isLast = _pageIndex == 2;
+    if (_isLoadingContent) {
+      return const Scaffold(
+        backgroundColor: AppColors.background,
+        body: Stack(
+          children: [
+            _LMGradientBackdrop(),
+            Center(
+              child: CircularProgressIndicator(color: AppColors.brandRed),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (_contentError != null) {
+      return Scaffold(
+        backgroundColor: AppColors.background,
+        body: Stack(
+          children: [
+            const _LMGradientBackdrop(),
+            SafeArea(
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.error_outline_rounded,
+                        color: AppColors.error,
+                        size: 42,
+                      ),
+                      const SizedBox(height: 12),
+                      const Text(
+                        'Error loading content',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: AppColors.textPrimary,
+                          fontWeight: FontWeight.w900,
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        _contentError!,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: AppColors.textSecondary,
+                          fontSize: 12,
+                          height: 1.35,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: _loadLearningMaterialContent,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.brandRed,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                        child: const Text(
+                          'Retry',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    final isLast     = _pageIndex == 2;
+    final nextEnabled = _hasReadAllRequiredSections(_pageIndex);
 
     return Scaffold(
+      backgroundColor: AppColors.background,
       body: Stack(
         children: [
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            height: 900,
-            child: Image.asset('assets/bg.png', fit: BoxFit.cover),
-          ),
+          const _LMGradientBackdrop(),
           SafeArea(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 5),
+                const SizedBox(height: 8),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      IconButton(
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
-                        icon: const Icon(Icons.close, color: Colors.white),
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                      const SizedBox(height: 10),
-                      SizedBox(
-                        width: double.infinity,
-                        child: Text(
-                          _t(context, "Learning Material", "Materyal sa Pag-aaral"),
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 15),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 18,
-                                vertical: 10,
-                              ),
-                              decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                  colors: [accent, accent2],
-                                ),
-                                borderRadius: BorderRadius.circular(10),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.18),
-                                    blurRadius: 10,
-                                    offset: const Offset(0, 6),
-                                  ),
-                                ],
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(Icons.apartment_rounded,
-                                      color: Colors.white, size: 18),
-                                  SizedBox(width: 8),
-                                  Text(
-                                    _t(context, "MODULE 5", "MODYUL 5"),
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(width: 15),
-                            Expanded(
-                              child: Text(
-                                _t(
-                                  context,
-                                  "Tenement Fire: What It Is, Common Causes, and What To Do",
-                                  "Sunog sa Tenement: Ano Ito, Karaniwang Sanhi, at Ano ang Gagawin",
-                                ),
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 14),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(999),
-                        child: SizedBox(
-                          height: 6,
-                          child: LinearProgressIndicator(
-                            value: _progress,
-                            backgroundColor: Colors.white.withOpacity(0.25),
-                            valueColor: const AlwaysStoppedAnimation(accent2),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: List.generate(3, (i) {
-                          final active = i == _pageIndex;
-                          return AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
-                            margin: const EdgeInsets.symmetric(horizontal: 4),
-                            width: active ? 18 : 8,
-                            height: 8,
-                            decoration: BoxDecoration(
-                              color: active
-                                  ? Colors.white
-                                  : Colors.white.withOpacity(0.35),
-                              borderRadius: BorderRadius.circular(999),
-                            ),
-                          );
-                        }),
-                      ),
-                      const SizedBox(height: 14),
-                    ],
+                  padding: const EdgeInsets.fromLTRB(18, 0, 18, 0),
+                  child: _LearningAssessmentHeader(
+                    sectionTitle: _dbText(context, 'header.section_title'),
+                    moduleLabel: _dbText(context, 'header.module_label'),
+                    moduleTitle: _dbText(context, 'header.module_title'),
+                    currentPage: _pageIndex + 1,
+                    totalPages:  3,
+                    progress:    _progress,
+                    onClose:     () => Navigator.pop(context),
                   ),
                 ),
+                const SizedBox(height: 14),
                 Expanded(
                   child: PageView(
                     controller: _pageCtrl,
+                    physics:    const NeverScrollableScrollPhysics(),
                     onPageChanged: (i) {
                       setState(() => _pageIndex = i);
                       _resetForNewPage();
@@ -328,47 +646,13 @@ class _LearningMaterialTenementPageState
                     ],
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(25, 8, 25, 18),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      OutlinedButton(
-                        style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color: Color(0xFF7C3AED)),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(22),
-                          ),
-                        ),
-                        onPressed: _goBack,
-                        child: Text(
-                          _t(context, "« BACK", "« BALIK"),
-                          style: TextStyle(
-                            color: Color(0xFF7C3AED),
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF7C3AED),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(22),
-                          ),
-                        ),
-                        onPressed: (isLast ? _lastPageCompleted : _canNext) ? _goNext : null,
-                        child: Text(
-                          isLast
-                              ? _t(context, "Start Pre-Assessment", "Simulan ang Paunang Pagsusulit")
-                              : _t(context, "NEXT »", "SUNOD »"),
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                _BottomNavBar(
+                  pageIndex:   _pageIndex,
+                  isLast:      isLast,
+                  nextEnabled: nextEnabled,
+                  onBack:      _goBack,
+                  onNext:      _goNext,
+                  context:     context,
                 ),
               ],
             ),
@@ -381,574 +665,1132 @@ class _LearningMaterialTenementPageState
   Widget _pageWrap(Widget child) {
     return SingleChildScrollView(
       controller: _scrollCtrl,
-      padding: const EdgeInsets.symmetric(horizontal: 25),
-      child: Column(
-        children: [
-          const SizedBox(height: 6),
-          child,
-          const SizedBox(height: 24),
-          const SizedBox(height: 70),
-        ],
+      physics:    const BouncingScrollPhysics(),
+      padding:    const EdgeInsets.fromLTRB(18, 0, 18, 14),
+      child: Align(
+        alignment: Alignment.topCenter,
+        child: Container(
+          width:  double.infinity,
+          margin: const EdgeInsets.only(bottom: 8),
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 18),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(32),
+            border: Border.all(color: Colors.white.withOpacity(0.95), width: 1.2),
+            boxShadow: [
+              BoxShadow(
+                  color: Colors.black.withOpacity(0.16),
+                  blurRadius: 24,
+                  offset: const Offset(0, 12)),
+              BoxShadow(
+                  color: AppColors.brandRed.withOpacity(0.08),
+                  blurRadius: 28,
+                  offset: const Offset(0, 8)),
+            ],
+          ),
+          child: child,
+        ),
       ),
     );
   }
 
-  // ===================== PAGE 1 =====================
+  // --------------------------------------------------------------------------
+  // PAGE 1 — OVERVIEW & TYPES
+  // --------------------------------------------------------------------------
   Widget _page1OverviewAndTypes() {
-    return _ModernCard(
-      accent1: accent,
-      accent2: accent2,
-      pageTitle: _t(
-        context,
-        "PAGE 1 – TENEMENT FIRE OVERVIEW",
-        "PAHINA 1 – PANGKALAHATANG TINGIN SA SUNOG SA TENEMENT",
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Center(
-            child: Text(
-              _t(context, "What is a Tenement Fire?", "Ano ang Sunog sa Tenement?"),
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: accent,
-                fontFamily: 'Poppins',
-              ),
-            ),
-          ),
-          const SizedBox(height: 18),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _ImageBox(
-                asset: "assets/condo.jpg",
-                c1: accent,
-                c2: accent2,
-              ),
-              const SizedBox(width: 15),
-              Expanded(
-                child: Text(
-                  _t(
-                    context,
-                    "A tenement fire happens in a residential building with many rooms or floors. It is dangerous because flames and smoke can spread quickly through hallways, stairs, doors, and nearby units.",
-                    "Ang sunog sa tenement ay nangyayari sa gusaling tirahan na may maraming silid o palapag. Mapanganib ito dahil mabilis kumalat ang apoy at usok sa pasilyo, hagdan, pinto, at mga katabing unit.",
-                  ),
-                  style: const TextStyle(
-                    fontSize: 14,
-                    height: 1.5,
-                    fontFamily: 'Poppins',
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
-          _Callout(
-            icon: Icons.warning_rounded,
-            color: const Color(0xFFDC2626),
-            title: _t(context, "Why it is dangerous", "Bakit ito mapanganib"),
-            lines: [
-              _t(context, "Many people may need to escape at the same time.", "Maraming tao ang maaaring kailangang lumikas nang sabay-sabay."),
-              _t(context, "Smoke can rise fast to upper floors.", "Mabilis umakyat ang usok sa mas matataas na palapag."),
-              _t(context, "Narrow exits and blocked hallways increase risk.", "Mas tumataas ang panganib kapag makitid ang labasan at barado ang pasilyo."),
-            ],
-          ),
-          const SizedBox(height: 14),
-          _ChipLine(
-            icon: Icons.menu_book_rounded,
-            color: const Color(0xFF7C3AED),
-            text: _t(context, "Tap the buttons below for quick pop-ups.", "Pindutin ang mga button sa ibaba para sa mabilis na impormasyon."),
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: _ActionPill(
-                  icon: Icons.help_rounded,
-                  label: _t(context, "Why it spreads", "Bakit ito kumakalat"),
-                  onTap: () => _showInfoPopup(
-                    title: _t(context, "Why tenement fires spread fast", "Bakit mabilis kumalat ang sunog sa tenement"),
-                    message: _t(
-                      context,
-                      "Fire can move from one room or floor to another through open doors, windows, stairways, electrical lines, and flammable materials stored close together.",
-                      "Maaaring kumalat ang apoy mula sa isang silid o palapag papunta sa iba sa pamamagitan ng bukas na pinto, bintana, hagdanan, linya ng kuryente, at magkakadikit na madaling masunog na gamit.",
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: _ActionPill(
-                  icon: Icons.local_fire_department_rounded,
-                  label: _t(context, "If fire starts", "Kung magsimula ang sunog"),
-                  onTap: _showDoThisNowPopup,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-          _SectionTitle(_t(context, "Common Types of Tenement Fires", "Karaniwang Uri ng Sunog sa Tenement")),
-          const SizedBox(height: 12),
-          _MiniTile(
-            color: Color(0xFF7C3AED),
-            icon: Icons.electrical_services_rounded,
-            title: _t(context, "Electrical Fire", "Sunog sa Kuryente"),
-            desc: _t(context, "Faulty wiring, overloaded outlets, or illegal connections cause ignition.", "Sirang wiring, overloaded outlets, o ilegal na koneksyon ang nagdudulot ng sindi."),
-          ),
-          const SizedBox(height: 10),
-          _MiniTile(
-            color: Color(0xFF6366F1),
-            icon: Icons.local_fire_department_rounded,
-            title: _t(context, "Cooking Fire", "Sunog sa Pagluluto"),
-            desc: _t(context, "Unattended stoves or open flames inside small living spaces start fires.", "Napabayaang kalan o bukas na apoy sa masisikip na tirahan ang nagdudulot ng sunog."),
-          ),
-          const SizedBox(height: 10),
-          _MiniTile(
-            color: Color(0xFF7C3AED),
-            icon: Icons.smoking_rooms_rounded,
-            title: _t(context, "Open Flame Fire", "Sunog mula sa Bukas na Apoy"),
-            desc: _t(context, "Candles, matches, or cigarettes ignite curtains, bedding, or trash.", "Kandila, posporo, o sigarilyo ang nagsisindi sa kurtina, kama, o basura."),
-          ),
-          const SizedBox(height: 10),
-          _MiniTile(
-            color: Color(0xFF8B5CF6),
-            icon: Icons.apartment_rounded,
-            title: _t(context, "Multi-floor Spread", "Pagkalat sa Maraming Palapag"),
-            desc: _t(context, "A small fire grows and spreads upward through stairs, hallways, and nearby rooms.", "Ang maliit na apoy ay lumalaki at kumakalat paitaas sa hagdanan, pasilyo, at katabing silid."),
-          ),
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _PageBanner(
+          icon: Icons.apartment_rounded,
+          accent1: accent,
+          accent2: accent2,
+          pageTag: _dbText(context, 'page1.tag'),
+          title: _dbText(context, 'page1.title'),
+          subtitle: _dbText(context, 'page1.subtitle'),
+        ),
+        const SizedBox(height: 16),
+        
+        _Tenement3DPhotoCard(
+          assetPath: _previewImagePath(),
+          title: _dbText(context, 'page1.preview.title'),
+          subtitle: _dbText(context, 'page1.preview.subtitle'),
+        ),
+        const SizedBox(height: 14),
+        _TenementIntroCard(
+          icon: Icons.apartment_rounded,
+          title: _dbText(context, 'page1.intro.title'),
+          body: _dbText(context, 'page1.intro.body'),
+        ),
+        const SizedBox(height: 8),
+        _ReferenceSourceCard(
+          label: _dbText(context, 'common.reference'),
+          title: _dbText(context, 'ref.usfa_apartment.title'),
+          organization: _sourceOrganization('ref.usfa_apartment.title'),
+          sourceUrl: _sourceUrl('ref.usfa_apartment.title'),
+          icon: Icons.verified_rounded,
+          compact: true,
+        ),
+        const SizedBox(height: 8),
+        _ReferenceSourceCard(
+          label: _dbText(context, 'common.reference'),
+          title: _dbText(context, 'ref.nfpa_highrise_tips.title'),
+          organization: _sourceOrganization('ref.nfpa_highrise_tips.title'),
+          sourceUrl: _sourceUrl('ref.nfpa_highrise_tips.title'),
+          icon: Icons.verified_rounded,
+          compact: true,
+        ),
+        const SizedBox(height: 14),
+        _ExpandableLesson(
+          sectionIndex: 0,
+          pageIndex:    0,
+          readSections: _readSections,
+          onRead: (i) => setState(() => _readSections[0].add(i)),
+          icon: Icons.warning_rounded,
+          accentColor: accent,
+          title: _dbText(context, 'page1.section1.title'),
+          child: _BodyText(_dbText(context, 'page1.section1.body')),
+        ),
+        const SizedBox(height: 12),
+        _ExpandableLesson(
+          sectionIndex: 1,
+          pageIndex:    0,
+          readSections: _readSections,
+          onRead: (i) => setState(() => _readSections[0].add(i)),
+          icon: Icons.electrical_services_rounded,
+          accentColor: accent,
+          title: _dbText(context, 'page1.section2.title'),
+          child: _BodyText(_dbText(context, 'page1.section2.body')),
+        ),
+        const SizedBox(height: 12),
+        _ExpandableLesson(
+          sectionIndex: 2,
+          pageIndex:    0,
+          readSections: _readSections,
+          onRead: (i) => setState(() => _readSections[0].add(i)),
+          icon: Icons.soup_kitchen_rounded,
+          accentColor: accent,
+          title: _dbText(context, 'page1.section3.title'),
+          child: _BodyText(_dbText(context, 'page1.section3.body')),
+        ),
+        const SizedBox(height: 12),
+        _ExpandableLesson(
+          sectionIndex: 3,
+          pageIndex:    0,
+          readSections: _readSections,
+          onRead: (i) => setState(() => _readSections[0].add(i)),
+          icon: Icons.stairs_rounded,
+          accentColor: accent,
+          title: _dbText(context, 'page1.section4.title'),
+          child: _BodyText(_dbText(context, 'page1.section4.body')),
+        ),
+        const SizedBox(height: 16),
+        _ReadingProgressBadge(
+          readCount:  _readSections[0].length,
+          totalCount: _requiredSectionCountForPage(0),
+          context:    context,
+        ),
+      ],
     );
   }
 
-  // ===================== PAGE 2 =====================
+  // --------------------------------------------------------------------------
+  // PAGE 2 — CAUSES & PREVENTION
+  // --------------------------------------------------------------------------
   Widget _page2CausesAndPrevention() {
-    return _ModernCard(
-      accent1: accent2,
-      accent2: accent,
-      pageTitle: _t(
-        context,
-        "PAGE 2 – CAUSES & PREVENTION",
-        "PAHINA 2 – MGA SANHI AT PAG-IWAS",
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Center(
-            child: Text(
-              _t(context, "Common Causes of Tenement Fires", "Karaniwang Sanhi ng Sunog sa Tenement"),
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: accent,
-                fontFamily: 'Poppins',
-              ),
-            ),
-          ),
-          const SizedBox(height: 18),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _IconBox(
-                icon: Icons.apartment_rounded,
-                c1: accent2,
-                c2: accent,
-              ),
-              SizedBox(width: 15),
-              Expanded(
-                child: _Bullets(
-                  items: [
-                    _t(context, "Overloaded outlets and tangled extension cords", "Sobrang daming nakakabit sa saksakan at nagusot na extension cords"),
-                    _t(context, "Illegal or unsafe electrical wiring", "Ilegal o hindi ligtas na electrical wiring"),
-                    _t(context, "Unattended cooking inside rooms or shared areas", "Napabayaang pagluluto sa silid o common area"),
-                    _t(context, "Candles or cigarettes left burning", "Naiwang nakasindi ang kandila o sigarilyo"),
-                    _t(context, "Flammable items stored in narrow spaces", "Madaling masunog na bagay na nakaimbak sa masisikip na lugar"),
-                    _t(context, "Blocked exits, stairs, or hallways", "Nakaharang na labasan, hagdan, o pasilyo"),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
-          Row(
-            children: [
-              Expanded(
-                child: _ActionPill(
-                  icon: Icons.quiz_rounded,
-                  label: _t(context, "Quick check", "Mabilisang pagsusuri"),
-                  onTap: () => _showInfoPopup(
-                    title: _t(context, "Quick Check", "Mabilisang Pagsusuri"),
-                    icon: Icons.check_circle_rounded,
-                    color: const Color(0xFF4338CA),
-                    message:
-                        _t(context, "In crowded buildings, one unsafe outlet or blocked exit can put many families at risk, not just one room.", "Sa mataong gusali, isang delikadong saksakan o baradong labasan ay maaaring maglagay sa panganib sa maraming pamilya, hindi lang isang silid."),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: _ActionPill(
-                  icon: Icons.tips_and_updates_rounded,
-                  label: _t(context, "Safety tips", "Mga tip sa kaligtasan"),
-                  onTap: () => _showInfoPopup(
-                    title: _t(context, "Safety Tips", "Mga Tip sa Kaligtasan"),
-                    icon: Icons.tips_and_updates_rounded,
-                    color: const Color(0xFF6366F1),
-                    message: _t(
-                        context,
-                        "• Avoid overloading outlets.\n"
-                            "• Keep exits and stairs clear.\n"
-                            "• Check wiring regularly.\n"
-                            "• Do not leave open flames unattended.\n"
-                            "• Know the nearest safe exit.",
-                        "• Huwag sobrahan ang nakakabit sa saksakan.\n"
-                            "• Panatilihing walang harang ang labasan at hagdan.\n"
-                            "• Regular na suriin ang wiring.\n"
-                            "• Huwag pabayaang nakasindi ang bukas na apoy.\n"
-                            "• Alamin ang pinakamalapit na ligtas na labasan.",
-                      ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 18),
-          _ChipLine(
-            icon: Icons.fact_check_rounded,
-            color: Color(0xFF7C3AED),
-            text: _t(context, "Prevention protects the whole building, not only one room.", "Ang pag-iwas ay nagpoprotekta sa buong gusali, hindi lang sa isang silid."),
-          ),
-          const SizedBox(height: 24),
-          _SectionTitle(_t(context, "Prevention (Simple Steps)", "Pag-iwas (Simpleng Hakbang)")),
-          const SizedBox(height: 12),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _ImageBox(
-                asset: "assets/prevent_tenement.png",
-                c1: accent2,
-                c2: accent,
-              ),
-              const SizedBox(width: 15),
-              Expanded(
-                child: _Bullets(
-                  items: [
-                    _t(context, "Do not overload electrical outlets.", "Huwag sobrahan ang nakakabit sa electrical outlets."),
-                    _t(context, "Repair unsafe wiring immediately.", "Ayusin agad ang delikadong wiring."),
-                    _t(context, "Keep hallways, exits, and stairs clear.", "Panatilihing malinis at walang harang ang pasilyo, labasan, at hagdan."),
-                    _t(context, "Store flammable items away from heat.", "Itabi ang madaling masunog na gamit palayo sa init."),
-                    _t(context, "Turn off appliances when not in use.", "Patayin ang appliances kapag hindi ginagamit."),
-                    _t(context, "Teach everyone the evacuation route.", "Ituro sa lahat ang ruta ng paglikas."),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
-          _Callout(
-            icon: Icons.shield_rounded,
-            color: Color(0xFF4338CA),
-            title: _t(context, "Prevention goal", "Layunin ng pag-iwas"),
-            lines: [
-              _t(context, "Reduce ignition sources, keep escape paths open, and make evacuation easier for everyone.", "Bawasan ang pinagmumulan ng apoy, panatilihing bukas ang daanan ng paglikas, at gawing mas madali ang paglikas para sa lahat."),
-            ],
-          ),
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _PageBanner(
+          icon: Icons.shield_rounded,
+          accent1: accent2,
+          accent2: accent,
+          pageTag: _dbText(context, 'page2.tag'),
+          title: _dbText(context, 'page2.title'),
+          subtitle: _dbText(context, 'page2.subtitle'),
+        ),
+        const SizedBox(height: 16),
+        _SourceCard(
+          label: _dbText(context, 'common.source_reference'),
+          text: _dbText(context, 'page2.source_note.body'),
+        ),
+        const SizedBox(height: 8),
+        _ReferenceSourceCard(
+          label: _dbText(context, 'common.reference'),
+          title: _dbText(context, 'ref.usfa_highrise_infographic.title'),
+          organization: _sourceOrganization('ref.usfa_highrise_infographic.title'),
+          sourceUrl: _sourceUrl('ref.usfa_highrise_infographic.title'),
+          icon: Icons.verified_rounded,
+          compact: true,
+        ),
+        const SizedBox(height: 8),
+        _ReferenceSourceCard(
+          label: _dbText(context, 'common.reference'),
+          title: _dbText(context, 'ref.ready_home_fires.title'),
+          organization: _sourceOrganization('ref.ready_home_fires.title'),
+          sourceUrl: _sourceUrl('ref.ready_home_fires.title'),
+          icon: Icons.verified_rounded,
+          compact: true,
+        ),
+        const SizedBox(height: 14),
+        _ExpandableLesson(
+          sectionIndex: 0,
+          pageIndex:    1,
+          readSections: _readSections,
+          onRead: (i) => setState(() => _readSections[1].add(i)),
+          icon: Icons.power_rounded,
+          accentColor: accent,
+          title: _dbText(context, 'page2.section1.title'),
+          child: _BodyText(_dbText(context, 'page2.section1.body')),
+        ),
+        const SizedBox(height: 12),
+        _ExpandableLesson(
+          sectionIndex: 1,
+          pageIndex:    1,
+          readSections: _readSections,
+          onRead: (i) => setState(() => _readSections[1].add(i)),
+          icon: Icons.restaurant_rounded,
+          accentColor: accent,
+          title: _dbText(context, 'page2.section2.title'),
+          child: _BodyText(_dbText(context, 'page2.section2.body')),
+        ),
+        const SizedBox(height: 12),
+        _ExpandableLesson(
+          sectionIndex: 2,
+          pageIndex:    1,
+          readSections: _readSections,
+          onRead: (i) => setState(() => _readSections[1].add(i)),
+          icon: Icons.door_front_door_rounded,
+          accentColor: accent,
+          title: _dbText(context, 'page2.section3.title'),
+          child: _BodyText(_dbText(context, 'page2.section3.body')),
+        ),
+        const SizedBox(height: 12),
+        _ExpandableLesson(
+          sectionIndex: 3,
+          pageIndex:    1,
+          readSections: _readSections,
+          onRead: (i) => setState(() => _readSections[1].add(i)),
+          icon: Icons.campaign_rounded,
+          accentColor: accent,
+          title: _dbText(context, 'page2.section4.title'),
+          child: _BodyText(_dbText(context, 'page2.section4.body')),
+        ),
+        const SizedBox(height: 12),
+        _Callout(
+          icon:  Icons.shield_rounded,
+          color: AppColors.brandRedDark,
+          title: _dbText(context, 'page2.callout.title'),
+          lines: [
+            _dbText(context, 'page2.callout.body'),
+          ],
+        ),
+        const SizedBox(height: 16),
+        _ReadingProgressBadge(
+          readCount:  _readSections[1].length,
+          totalCount: _requiredSectionCountForPage(1),
+          context:    context,
+        ),
+      ],
     );
   }
 
-  // ===================== PAGE 3 =====================
+  // --------------------------------------------------------------------------
+  // PAGE 3 — EMERGENCY RESPONSE
+  // --------------------------------------------------------------------------
   Widget _page3EmergencyResponse() {
-    return _ModernCard(
-      accent1: const Color(0xFF6366F1),
-      accent2: accent,
-      pageTitle: _t(
-        context,
-        "PAGE 3 – WHAT TO DO DURING A TENEMENT FIRE",
-        "PAHINA 3 – ANO ANG GAGAWIN KAPAG MAY SUNOG SA TENEMENT",
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Center(
-            child: Text(
-              _t(context, "Emergency Response", "Pagtugon sa Emerhensiya"),
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: accent,
-                fontFamily: 'Poppins',
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _PageBanner(
+          icon: Icons.notifications_active_rounded,
+          accent1: AppColors.brandRed,
+          accent2: accent2,
+          pageTag: _dbText(context, 'page3.tag'),
+          title: _dbText(context, 'page3.title'),
+          subtitle: _dbText(context, 'page3.subtitle'),
+        ),
+        const SizedBox(height: 16),
+        _SourceCard(
+          label: _dbText(context, 'common.simulation_context'),
+          text: _dbText(context, 'page3.simulation_context.body'),
+        ),
+        const SizedBox(height: 8),
+        _ReferenceSourceCard(
+          label: _dbText(context, 'common.reference'),
+          title: _dbText(context, 'ref.nfpa_highrise_building.title'),
+          organization: _sourceOrganization('ref.nfpa_highrise_building.title'),
+          sourceUrl: _sourceUrl('ref.nfpa_highrise_building.title'),
+          icon: Icons.verified_rounded,
+          compact: true,
+        ),
+        const SizedBox(height: 8),
+        _ReferenceSourceCard(
+          label: _dbText(context, 'common.reference'),
+          title: _dbText(context, 'ref.ready_home_escape.title'),
+          organization: _sourceOrganization('ref.ready_home_escape.title'),
+          sourceUrl: _sourceUrl('ref.ready_home_escape.title'),
+          icon: Icons.verified_rounded,
+          compact: true,
+        ),
+        const SizedBox(height: 14),
+        _ExpandableLesson(
+          sectionIndex: 0,
+          pageIndex:    2,
+          readSections: _readSections,
+          onRead: (i) => setState(() => _readSections[2].add(i)),
+          icon: Icons.notifications_active_rounded,
+          accentColor: accent,
+          title: _dbText(context, 'page3.section1.title'),
+          child: _BodyText(_dbText(context, 'page3.section1.body')),
+        ),
+        const SizedBox(height: 12),
+        _ExpandableLesson(
+          sectionIndex: 1,
+          pageIndex:    2,
+          readSections: _readSections,
+          onRead: (i) => setState(() => _readSections[2].add(i)),
+          icon: Icons.smoke_free_rounded,
+          accentColor: accent,
+          title: _dbText(context, 'page3.section2.title'),
+          child: _BodyText(_dbText(context, 'page3.section2.body')),
+        ),
+        const SizedBox(height: 12),
+        _ExpandableLesson(
+          sectionIndex: 2,
+          pageIndex:    2,
+          readSections: _readSections,
+          onRead: (i) => setState(() => _readSections[2].add(i)),
+          icon: Icons.block_rounded,
+          accentColor: accent,
+          title: _dbText(context, 'page3.section3.title'),
+          child: _BodyText(_dbText(context, 'page3.section3.body')),
+        ),
+        const SizedBox(height: 12),
+        _ExpandableLesson(
+          sectionIndex: 3,
+          pageIndex:    2,
+          readSections: _readSections,
+          onRead: (i) => setState(() => _readSections[2].add(i)),
+          icon: Icons.report_rounded,
+          accentColor: accent,
+          title: _dbText(context, 'page3.section4.title'),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _BodyText(_dbText(context, 'page3.section4.body')),
+              const SizedBox(height: 10),
+              _ActionPill(
+                icon:  Icons.local_fire_department_rounded,
+                label: _dbText(context, 'page3.section4.action_label'),
+                onTap: _showDoThisNowPopup,
               ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        _Callout(
+          icon:  Icons.verified_user_rounded,
+          color: AppColors.success,
+          title: _dbText(context, 'page3.callout.title'),
+          lines: [
+            _dbText(context, 'page3.callout.body'),
+          ],
+        ),
+        const SizedBox(height: 16),
+        _ReadingProgressBadge(
+          readCount:  _readSections[2].length,
+          totalCount: _requiredSectionCountForPage(2),
+          context:    context,
+        ),
+      ],
+    );
+  }
+}
+
+// ============================================================================
+// GRADIENT BACKDROP  (aligned to Modules 1–4 structure, purple palette)
+// ============================================================================
+class _LMGradientBackdrop extends StatelessWidget {
+  const _LMGradientBackdrop();
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        Container(color: AppColors.background),
+        Container(
+          height: 280,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end:   Alignment.bottomRight,
+              colors: [
+                AppColors.brandRedDeep,
+                AppColors.brandRedDark,
+                AppColors.brandRed,
+              ],
+            ),
+            borderRadius: BorderRadius.only(
+              bottomLeft:  Radius.circular(34),
+              bottomRight: Radius.circular(34),
             ),
           ),
-          const SizedBox(height: 18),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _IconBox(
-                icon: Icons.fire_extinguisher_rounded,
-                c1: Color(0xFF6366F1),
-                c2: Color(0xFF7C3AED),
-              ),
-              SizedBox(width: 15),
-              Expanded(
-                child: _Bullets(
-                  items: [
-                    _t(context, "Alert nearby occupants immediately.", "Ipaalam agad sa mga taong nasa paligid."),
-                    _t(context, "Leave using the nearest safe stairway or exit.", "Lumabas gamit ang pinakamalapit na ligtas na hagdan o labasan."),
-                    _t(context, "Stay low if smoke is present.", "Yumuko kung may usok."),
-                    _t(context, "Do NOT use elevators.", "HUWAG gumamit ng elevator."),
-                    _t(context, "Close doors behind you if possible.", "Isara ang pinto sa likod kung maaari."),
-                    _t(context, "Go to a safe open area and wait for responders.", "Pumunta sa ligtas na bukas na lugar at hintayin ang responders."),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
-          Row(
-            children: [
-              Expanded(
-                child: _ActionPill(
-                  icon: Icons.smoke_free_rounded,
-                  label: _t(context, "Smoke rule", "Patakaran sa usok"),
-                  onTap: () => _showInfoPopup(
-                    title: _t(context, "Smoke Rule", "Patakaran sa Usok"),
-                    icon: Icons.block_rounded,
-                    color: const Color(0xFFDC2626),
-                    message:
-                        _t(context, "Smoke rises and spreads fast in multi-floor buildings. Stay low to breathe cleaner air and move carefully toward the nearest safe exit.", "Mabilis umakyat at kumalat ang usok sa multi-floor na gusali. Yumuko para makahinga ng mas malinis na hangin at maingat na kumilos papunta sa pinakamalapit na ligtas na labasan."),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: _ActionPill(
-                  icon: Icons.help_center_rounded,
-                  label: _t(context, "When trapped", "Kapag na-trap"),
-                  onTap: () => _showInfoPopup(
-                    title: _t(context, "If you are trapped", "Kung na-trap ka"),
-                    icon: Icons.warning_amber_rounded,
-                    color: const Color(0xFFDC2626),
-                    message:
-                        _t(context, "Stay inside a room if the hallway is full of smoke or fire. Close the door, block gaps if possible, signal from a window, and call for help.", "Manatili sa silid kung puno ng usok o apoy ang pasilyo. Isara ang pinto, harangan ang mga siwang kung kaya, magsenyas sa bintana, at tumawag ng tulong."),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 18),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _ImageBox(
-                asset: "assets/response_tenement.png",
-                c1: const Color(0xFF4338CA),
-                c2: accent,
-              ),
-              const SizedBox(width: 15),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _SectionTitle(_t(context, "One-minute plan", "Isang minutong plano")),
-                    const SizedBox(height: 10),
-                    _Bullets(
-                      items: [
-                        _t(context, "Warn others.", "Babalaan ang iba."),
-                        _t(context, "Use the safest exit.", "Gamitin ang pinakaligtas na labasan."),
-                        _t(context, "Stay low in smoke.", "Yumuko kung may usok."),
-                        _t(context, "Do not go back inside.", "Huwag nang bumalik sa loob."),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    _ActionPill(
-                      icon: Icons.play_circle_rounded,
-                      label: _t(context, "Show steps", "Ipakita ang mga hakbang"),
-                      onTap: _showDoThisNowPopup,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
-          _Callout(
-            icon: Icons.block_rounded,
-            color: Color(0xFFDC2626),
-            title: _t(context, "Remember", "Tandaan"),
-            lines: [
-              _t(context, "In a crowded multi-floor building, evacuation must be fast and orderly. Your safety comes first.", "Sa mataong gusaling may maraming palapag, dapat mabilis at maayos ang paglikas. Kaligtasan mo ang nauuna."),
-            ],
-          ),
-        ],
+        ),
+        const Positioned(
+            top: 50, right: -36,
+            child: _LMDecorCircle(size: 138, opacity: 0.17)),
+        const Positioned(
+            top: 178, left: -42,
+            child: _LMDecorCircle(size: 124, opacity: 0.13)),
+      ],
+    );
+  }
+}
+
+class _LMDecorCircle extends StatelessWidget {
+  const _LMDecorCircle({required this.size, required this.opacity});
+  final double size;
+  final double opacity;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size, height: size,
+      decoration: BoxDecoration(
+        color:  AppColors.textOnRed.withOpacity(opacity),
+        shape:  BoxShape.circle,
       ),
     );
   }
 }
 
-// ===================== UI WIDGETS =====================
+// ============================================================================
+// HEADER  (aligned to Modules 1–4 _LearningAssessmentHeader, purple palette)
+// ============================================================================
+class _LearningAssessmentHeader extends StatelessWidget {
+  const _LearningAssessmentHeader({
+    required this.sectionTitle,
+    required this.moduleLabel,
+    required this.moduleTitle,
+    required this.currentPage,
+    required this.totalPages,
+    required this.progress,
+    required this.onClose,
+  });
 
-class _ModernCard extends StatelessWidget {
-  final Color accent1;
-  final Color accent2;
-  final String pageTitle;
-  final Widget child;
+  final String    sectionTitle;
+  final String    moduleLabel;
+  final String    moduleTitle;
+  final int       currentPage;
+  final int       totalPages;
+  final double    progress;
+  final VoidCallback onClose;
 
-  const _ModernCard({
-    required this.accent1,
-    required this.accent2,
-    required this.pageTitle,
-    required this.child,
+  @override
+  Widget build(BuildContext context) {
+    final safeProgress = progress.clamp(0.0, 1.0).toDouble();
+    final pageLabel = _dbText(context, 'header.page_label');
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Row(
+          children: [
+            InkWell(
+              onTap: onClose,
+              borderRadius: BorderRadius.circular(999),
+              child: Container(
+                width: 40, height: 40,
+                decoration: BoxDecoration(
+                  color:  AppColors.textOnRed.withOpacity(0.18),
+                  shape:  BoxShape.circle,
+                  border: Border.all(
+                      color: AppColors.textOnRed.withOpacity(0.24)),
+                ),
+                child: const Icon(Icons.close_rounded,
+                    color: AppColors.textOnRed, size: 21),
+              ),
+            ),
+            const Spacer(),
+          ],
+        ),
+        const SizedBox(height: 14),
+        SizedBox(
+          width: double.infinity,
+          child: Text(
+            sectionTitle,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color:        AppColors.textOnRed,
+              fontSize:     27,
+              height:       1.12,
+              fontWeight:   FontWeight.w900,
+              letterSpacing: -0.3,
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: AppColors.brandRedLight,
+                borderRadius: BorderRadius.circular(999),
+                boxShadow: [
+                  BoxShadow(
+                    color:     AppColors.brandRed.withOpacity(0.24),
+                    blurRadius: 12,
+                    offset:    const Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.apartment_rounded,
+                      color: AppColors.textOnRed, size: 15),
+                  const SizedBox(width: 6),
+                  Text(
+                    moduleLabel,
+                    style: const TextStyle(
+                      color:      AppColors.textOnRed,
+                      fontSize:   12,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                moduleTitle,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color:      AppColors.textOnRed.withOpacity(0.88),
+                  fontSize:   12.5,
+                  height:     1.28,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 14),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(999),
+          child: LinearProgressIndicator(
+            value:           safeProgress,
+            minHeight:       8,
+            backgroundColor: AppColors.textOnRed.withOpacity(0.22),
+            valueColor:      const AlwaysStoppedAnimation<Color>(
+                AppColors.textOnRed),
+          ),
+        ),
+        const SizedBox(height: 10),
+        Row(
+          children: [
+            Text(
+              '$pageLabel $currentPage/$totalPages',
+              style: TextStyle(
+                color:      AppColors.textOnRed.withOpacity(0.76),
+                fontSize:   12,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const Spacer(),
+            Wrap(
+              spacing: 6,
+              children: List.generate(totalPages, (index) {
+                final active = index == currentPage - 1;
+                return AnimatedContainer(
+                  duration: const Duration(milliseconds: 180),
+                  width:  active ? 28 : 10,
+                  height: 10,
+                  decoration: BoxDecoration(
+                    color: active
+                        ? AppColors.textOnRed
+                        : AppColors.textOnRed.withOpacity(0.34),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                );
+              }),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+// ============================================================================
+// BOTTOM NAV BAR  (aligned to Modules 1–4 style, purple palette)
+// ============================================================================
+class _BottomNavBar extends StatelessWidget {
+  final int          pageIndex;
+  final bool         isLast;
+  final bool         nextEnabled;
+  final VoidCallback onBack;
+  final VoidCallback onNext;
+  final BuildContext context;
+
+  const _BottomNavBar({
+    required this.pageIndex,
+    required this.isLast,
+    required this.nextEnabled,
+    required this.onBack,
+    required this.onNext,
+    required this.context,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext ctx) {
+    final nextLabel = isLast
+        ? _dbText(context, 'nav.start_post_test')
+        : _dbText(context, 'nav.next');
+
     return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.fromLTRB(18, 10, 18, 18),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.black.withOpacity(0.06)),
+        color: AppColors.background,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.14),
-            blurRadius: 18,
-            offset: const Offset(0, 8),
+              color:     Colors.black.withOpacity(0.06),
+              blurRadius: 12,
+              offset:    const Offset(0, -4)),
+        ],
+      ),
+      child: Row(
+        children: [
+          Flexible(
+            flex: 4,
+            child: SizedBox(
+              height: 48,
+              child: OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  side:  const BorderSide(color: AppColors.brandRed),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(22)),
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                ),
+                onPressed: onBack,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.arrow_back_ios_rounded,
+                        size: 14, color: AppColors.brandRed),
+                    const SizedBox(width: 6),
+                    Flexible(
+                      child: Text(
+                        _dbText(context, 'nav.back'),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                            color:      AppColors.brandRed,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
+          const SizedBox(width: 12),
+          Flexible(
+            flex: 7,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 250),
+              height:   48,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: nextEnabled
+                      ? AppColors.brandRed
+                      : AppColors.brandRedSoft,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(22)),
+                  padding:     const EdgeInsets.symmetric(horizontal: 12),
+                  elevation:   nextEnabled ? 4 : 0,
+                  shadowColor: AppColors.brandRed.withOpacity(0.35),
+                ),
+                onPressed: onNext,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      isLast
+                          ? Icons.play_arrow_rounded
+                          : Icons.arrow_forward_ios_rounded,
+                      size: 16,
+                      color: nextEnabled
+                          ? Colors.white
+                          : AppColors.brandRed.withOpacity(0.4),
+                    ),
+                    const SizedBox(width: 7),
+                    Flexible(
+                      child: Text(
+                        nextLabel,
+                        maxLines:  1,
+                        overflow:  TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: nextEnabled
+                              ? Colors.white
+                              : AppColors.brandRed.withOpacity(0.4),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ============================================================================
+// PAGE BANNER  (aligned to Modules 1–4 _PageBanner, purple palette)
+// ============================================================================
+class _PageBanner extends StatelessWidget {
+  const _PageBanner({
+    required this.icon,
+    required this.accent1,
+    required this.accent2,
+    required this.pageTag,
+    required this.title,
+    required this.subtitle,
+  });
+
+  final IconData icon;
+  final Color    accent1;
+  final Color    accent2;
+  final String   pageTag;
+  final String   title;
+  final String   subtitle;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width:   double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin:  Alignment.topLeft,
+          end:    Alignment.bottomRight,
+          colors: [accent1.withOpacity(0.08), accent2.withOpacity(0.04)],
+        ),
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: accent1.withOpacity(0.12)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 52, height: 52,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin:  Alignment.topLeft,
+                end:    Alignment.bottomRight,
+                colors: [accent1, accent2],
+              ),
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                    color:      accent1.withOpacity(0.3),
+                    blurRadius: 12,
+                    offset:     const Offset(0, 6)),
+              ],
+            ),
+            child: Icon(icon, color: Colors.white, size: 26),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(pageTag,
+                    style: TextStyle(
+                        fontSize:   11,
+                        fontWeight: FontWeight.w900,
+                        color:      accent1,
+                        letterSpacing: 1.0)),
+                const SizedBox(height: 3),
+                Text(title,
+                    style: const TextStyle(
+                        fontSize:   18,
+                        fontWeight: FontWeight.w900,
+                        color:      Color(0xFF111827),
+                        height:     1.2)),
+                const SizedBox(height: 3),
+                Text(subtitle,
+                    style: const TextStyle(
+                        fontSize: 12, color: Color(0xFF6B7280), height: 1.3)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ============================================================================
+// EXPANDABLE LESSON  (aligned to Modules 1–4, purple palette)
+// ============================================================================
+class _ExpandableLesson extends StatefulWidget {
+  const _ExpandableLesson({
+    required this.sectionIndex,
+    required this.pageIndex,
+    required this.readSections,
+    required this.onRead,
+    required this.icon,
+    required this.accentColor,
+    required this.title,
+    required this.child,
+  });
+
+  final int               sectionIndex;
+  final int               pageIndex;
+  final List<Set<int>>    readSections;
+  final ValueChanged<int> onRead;
+  final IconData          icon;
+  final Color             accentColor;
+  final String            title;
+  final Widget            child;
+
+  @override
+  State<_ExpandableLesson> createState() => _ExpandableLessonState();
+}
+
+class _ExpandableLessonState extends State<_ExpandableLesson>
+    with SingleTickerProviderStateMixin {
+  bool _expanded = false;
+  late AnimationController _animCtrl;
+  late Animation<double>   _expandAnim;
+
+  bool get _isRead =>
+      widget.readSections[widget.pageIndex].contains(widget.sectionIndex);
+
+  @override
+  void initState() {
+    super.initState();
+    _animCtrl = AnimationController(
+        duration: const Duration(milliseconds: 250), vsync: this);
+    _expandAnim =
+        CurvedAnimation(parent: _animCtrl, curve: Curves.easeOutCubic);
+  }
+
+  @override
+  void dispose() {
+    _animCtrl.dispose();
+    super.dispose();
+  }
+
+  void _toggle() {
+    setState(() {
+      _expanded = !_expanded;
+      if (_expanded) {
+        _animCtrl.forward();
+        widget.onRead(widget.sectionIndex);
+      } else {
+        _animCtrl.reverse();
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final color = widget.accentColor;
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: _isRead
+              ? AppColors.success.withOpacity(0.3)
+              : color.withOpacity(0.10),
+        ),
+        boxShadow: [
+          BoxShadow(
+              color:      Colors.black.withOpacity(0.05),
+              blurRadius: 12,
+              offset:     const Offset(0, 4)),
         ],
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [accent1, accent2],
-              ),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Text(
-              pageTitle,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w800,
-                fontSize: 12,
-                letterSpacing: 0.2,
+          InkWell(
+            onTap: _toggle,
+            borderRadius: BorderRadius.circular(20),
+            child: Padding(
+              padding: const EdgeInsets.all(14),
+              child: Row(
+                children: [
+                  Container(
+                    width: 38, height: 38,
+                    decoration: BoxDecoration(
+                      color: _isRead
+                          ? AppColors.success.withOpacity(0.1)
+                          : color.withOpacity(0.10),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(
+                      _isRead ? Icons.check_rounded : widget.icon,
+                      color: _isRead ? AppColors.success : color,
+                      size:  20,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      widget.title,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w900,
+                        fontSize:   14.5,
+                        color: _isRead
+                            ? AppColors.success
+                            : const Color(0xFF111827),
+                      ),
+                    ),
+                  ),
+                  if (_isRead)
+                    Flexible(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: AppColors.success.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(99),
+                        ),
+                        child: Text(
+                          _dbText(context, 'lesson.read_badge'),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                              fontSize:   11,
+                              color:      AppColors.success,
+                              fontWeight: FontWeight.w800),
+                        ),
+                      ),
+                    ),
+                  const SizedBox(width: 6),
+                  AnimatedRotation(
+                    turns:    _expanded ? 0.5 : 0,
+                    duration: const Duration(milliseconds: 250),
+                    child: Icon(Icons.keyboard_arrow_down_rounded,
+                        color: color, size: 22),
+                  ),
+                ],
               ),
             ),
           ),
-          const SizedBox(height: 14),
-          child,
+          SizeTransition(
+            sizeFactor: _expandAnim,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
+              child: Column(
+                children: [
+                  const Divider(height: 1),
+                  const SizedBox(height: 12),
+                  widget.child,
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
 }
 
-class _ImageBox extends StatelessWidget {
-  final String asset;
-  final Color c1;
-  final Color c2;
+// ============================================================================
+// READING PROGRESS BADGE  (aligned to Modules 1–4 style, purple palette)
+// ============================================================================
+class _ReadingProgressBadge extends StatelessWidget {
+  const _ReadingProgressBadge({
+    required this.readCount,
+    required this.totalCount,
+    required this.context,
+  });
 
-  const _ImageBox({required this.asset, required this.c1, required this.c2});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 110,
-      height: 110,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [c1.withOpacity(0.12), c2.withOpacity(0.10)],
-        ),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.black.withOpacity(0.06)),
-      ),
-      padding: const EdgeInsets.all(10),
-      child: Image.asset(asset, fit: BoxFit.contain),
-    );
-  }
-}
-
-class _IconBox extends StatelessWidget {
-  final IconData icon;
-  final Color c1;
-  final Color c2;
-
-  const _IconBox({required this.icon, required this.c1, required this.c2});
+  final int          readCount;
+  final int          totalCount;
+  final BuildContext context;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext ctx) {
+    final done  = readCount >= totalCount;
+    final color = done ? AppColors.success : AppColors.brandRed;
+    final label = done
+        ? _dbText(context, 'progress.all_sections_read')
+        : _dbText(context, 'progress.sections_read', params: {'readCount': readCount.toString(), 'totalCount': totalCount.toString()});
+
     return Container(
-      width: 110,
-      height: 110,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [c1.withOpacity(0.14), c2.withOpacity(0.10)],
-        ),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.black.withOpacity(0.06)),
+        color:        color.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(16),
+        border:       Border.all(color: color.withOpacity(0.2)),
       ),
-      child: Center(
-        child: Container(
-          width: 58,
-          height: 58,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [c1, c2],
-            ),
-            shape: BoxShape.circle,
-            boxShadow: [
-              BoxShadow(
-                color: c2.withOpacity(0.28),
-                blurRadius: 14,
-                offset: const Offset(0, 6),
-              ),
-            ],
+      child: Row(
+        children: [
+          Icon(done ? Icons.check_circle_rounded : Icons.menu_book_rounded,
+              color: color, size: 20),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(label,
+                style: TextStyle(
+                    color: color, fontWeight: FontWeight.w800, fontSize: 13)),
           ),
-          child: Icon(icon, color: Colors.white, size: 28),
-        ),
+          if (!done)
+            Flexible(
+              child: Text(
+                _dbText(context, 'progress.scroll_tap_sections'),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(color: color.withOpacity(0.6), fontSize: 11),
+              ),
+            ),
+        ],
       ),
     );
   }
 }
 
-class _SectionTitle extends StatelessWidget {
-  final String text;
-  const _SectionTitle(this.text);
+// ============================================================================
+// TENEMENT INTRO CARD  (non-gated overview card, replaces _IntroMediaBox)
+// ============================================================================
+class _TenementIntroCard extends StatelessWidget {
+  const _TenementIntroCard({
+    required this.icon,
+    required this.title,
+    required this.body,
+  });
+
+  final IconData icon;
+  final String   title;
+  final String   body;
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: const TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.w900,
-        color: Color(0xFF111827),
+    return Container(
+      width:   double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFFEDE9FE), Color(0xFFF5F3FF)],
+          begin:  Alignment.topLeft,
+          end:    Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 58, height: 58,
+            decoration: BoxDecoration(
+              gradient:     AppColors.module5Gradient,
+              borderRadius: BorderRadius.circular(18),
+            ),
+            child: Icon(icon, color: AppColors.textOnRed, size: 30),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title,
+                    style: const TextStyle(
+                        color:      AppColors.textPrimary,
+                        fontWeight: FontWeight.w900,
+                        fontSize:   16)),
+                const SizedBox(height: 6),
+                Text(body,
+                    style: const TextStyle(
+                        color:      AppColors.textSecondary,
+                        height:     1.45,
+                        fontWeight: FontWeight.w600)),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
-class _Callout extends StatelessWidget {
-  final IconData icon;
-  final Color color;
-  final String title;
-  final List<String> lines;
+// ============================================================================
+// SOURCE CARD  (visual style aligned to Modules 1–4, purple palette)
+// ============================================================================
+class _SourceCard extends StatelessWidget {
+  const _SourceCard({required this.label, required this.text});
 
+  final String label;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width:   double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color:        AppColors.brandRedSoft.withOpacity(0.62),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.brandRed.withOpacity(0.16)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 32, height: 32,
+            decoration: BoxDecoration(
+              color: AppColors.brandRed.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: const Icon(Icons.verified_rounded,
+                color: AppColors.brandRed, size: 17),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(label,
+                    style: const TextStyle(
+                        color:      AppColors.brandRed,
+                        fontSize:   12.5,
+                        fontWeight: FontWeight.w900,
+                        height:     1.2)),
+                const SizedBox(height: 3),
+                Text(text,
+                    style: const TextStyle(
+                        color:      AppColors.textPrimary,
+                        fontSize:   11.5,
+                        fontWeight: FontWeight.w600,
+                        height:     1.3)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ============================================================================
+// CALLOUT  (kept from original Module 5, purple palette)
+// ============================================================================
+class _Callout extends StatelessWidget {
   const _Callout({
     required this.icon,
     required this.color,
@@ -956,14 +1798,19 @@ class _Callout extends StatelessWidget {
     required this.lines,
   });
 
+  final IconData     icon;
+  final Color        color;
+  final String       title;
+  final List<String> lines;
+
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.08),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: color.withOpacity(0.22)),
+        color:        color.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(16),
+        border:       Border.all(color: color.withOpacity(0.22)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -974,17 +1821,17 @@ class _Callout extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  style: TextStyle(fontWeight: FontWeight.w900, color: color),
-                ),
+                Text(title,
+                    style: TextStyle(fontWeight: FontWeight.w900, color: color)),
                 const SizedBox(height: 8),
-                ...lines.map(
-                  (l) => Padding(
-                    padding: const EdgeInsets.only(bottom: 6),
-                    child: Text(l, style: const TextStyle(height: 1.4)),
-                  ),
-                ),
+                ...lines.map((line) => Padding(
+                      padding: const EdgeInsets.only(bottom: 6),
+                      child: Text(line,
+                          style: const TextStyle(
+                              color:      AppColors.textSecondary,
+                              height:     1.4,
+                              fontWeight: FontWeight.w600)),
+                    )),
               ],
             ),
           ),
@@ -994,139 +1841,19 @@ class _Callout extends StatelessWidget {
   }
 }
 
-class _ChipLine extends StatelessWidget {
-  final IconData icon;
-  final Color color;
-  final String text;
-
-  const _ChipLine({
-    required this.icon,
-    required this.color,
-    required this.text,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.10),
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: color.withOpacity(0.20)),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: color, size: 18),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              text,
-              style: TextStyle(color: color, fontWeight: FontWeight.w800),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _MiniTile extends StatelessWidget {
-  final Color color;
-  final IconData icon;
-  final String title;
-  final String desc;
-
-  const _MiniTile({
-    required this.color,
-    required this.icon,
-    required this.title,
-    required this.desc,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.black.withOpacity(0.06)),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 34,
-            height: 34,
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.12),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(icon, color: color, size: 18),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w900,
-                    color: Color(0xFF111827),
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(desc, style: const TextStyle(height: 1.4)),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _Bullets extends StatelessWidget {
-  final List<String> items;
-  const _Bullets({required this.items});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: items
-          .map(
-            (t) => Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "•  ",
-                    style: TextStyle(fontWeight: FontWeight.w900),
-                  ),
-                  Expanded(
-                    child: Text(t, style: const TextStyle(height: 1.45)),
-                  ),
-                ],
-              ),
-            ),
-          )
-          .toList(),
-    );
-  }
-}
-
+// ============================================================================
+// ACTION PILL  (aligned to Modules 1–4 style, purple palette)
+// ============================================================================
 class _ActionPill extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final VoidCallback? onTap;
-
   const _ActionPill({
     required this.icon,
     required this.label,
     required this.onTap,
   });
+
+  final IconData      icon;
+  final String        label;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -1136,20 +1863,591 @@ class _ActionPill extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.04),
+          color:        AppColors.brandRedSoft.withOpacity(0.82),
           borderRadius: BorderRadius.circular(999),
-          border: Border.all(color: Colors.black.withOpacity(0.06)),
+          border: Border.all(color: AppColors.brandRed.withOpacity(0.16)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize:      MainAxisSize.min,
           children: [
-            Icon(icon, size: 18, color: const Color(0xFF7C3AED)),
+            Icon(icon, size: 18, color: AppColors.brandRed),
             const SizedBox(width: 8),
             Flexible(
-              child: Text(
-                label,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontWeight: FontWeight.w900),
+              child: Text(label,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                      fontWeight: FontWeight.w900,
+                      color:      AppColors.textPrimary)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ============================================================================
+// BODY TEXT  (helper widget, aligned to Modules 1–4)
+// ============================================================================
+class _BodyText extends StatelessWidget {
+  const _BodyText(this.text);
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(text,
+        style: const TextStyle(
+            fontSize: 13.5, height: 1.55, color: Color(0xFF4B5563)));
+  }
+}
+
+// ============================================================================
+// REFERENCE SOURCE CARD  (mirrors Module 1 _ReferenceSourceCard, purple palette)
+// ============================================================================
+class _ReferenceSourceCard extends StatelessWidget {
+  final String label;
+  final String title;
+  final String organization;
+  final String sourceUrl;
+  final IconData icon;
+  final bool compact;
+
+  const _ReferenceSourceCard({
+    required this.label,
+    required this.title,
+    required this.organization,
+    required this.sourceUrl,
+    this.icon = Icons.verified_rounded,
+    this.compact = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final verticalPadding = compact ? 9.0 : 11.0;
+    final iconSize = compact ? 30.0 : 34.0;
+
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(horizontal: 12, vertical: verticalPadding),
+      decoration: BoxDecoration(
+        color: AppColors.brandRedSoft.withOpacity(0.62),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.brandRed.withOpacity(0.16)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: iconSize,
+            height: iconSize,
+            decoration: BoxDecoration(
+              color: AppColors.brandRed.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(icon,
+                color: AppColors.brandRed, size: compact ? 17 : 19),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  maxLines: compact ? 1 : 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: AppColors.brandRed,
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w900,
+                    height: 1.2,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  '$title • $organization',
+                  maxLines: compact ? 2 : 3,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w700,
+                    height: 1.25,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  sourceUrl,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.w600,
+                    height: 1.2,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ============================================================================
+// TENEMENT 3D PHOTO CARD  (mirrors Module 1 _Extinguisher3DPhotoCard, purple palette)
+// ============================================================================
+class _Tenement3DPhotoCard extends StatelessWidget {
+  final String assetPath;
+  final String title;
+  final String subtitle;
+
+  const _Tenement3DPhotoCard({
+    required this.assetPath,
+    required this.title,
+    required this.subtitle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final availableWidth = constraints.maxWidth.isFinite
+            ? constraints.maxWidth
+            : MediaQuery.of(context).size.width - 68;
+        final compact = availableWidth < 340;
+        final visualWidth = compact
+            ? (availableWidth * 0.68).clamp(118.0, 166.0).toDouble()
+            : (availableWidth * 0.36).clamp(112.0, 148.0).toDouble();
+
+        return Container(
+          width: double.infinity,
+          padding: EdgeInsets.all(compact ? 14 : 16),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(26),
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [AppColors.purple50, AppColors.purple100],
+            ),
+            border: Border.all(
+              color: AppColors.brandRed.withOpacity(0.12),
+              width: 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.brandRed.withOpacity(0.10),
+                blurRadius: 18,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: compact
+              ? Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _Tenement3DInfoBlock(
+                        title: title, subtitle: subtitle, compact: true),
+                    const SizedBox(height: 14),
+                    Align(
+                      alignment: Alignment.center,
+                      child: SizedBox(
+                        width: visualWidth,
+                        child: _Tenement3DVisualStack(assetPath: assetPath),
+                      ),
+                    ),
+                  ],
+                )
+              : Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: _Tenement3DInfoBlock(
+                          title: title, subtitle: subtitle, compact: false),
+                    ),
+                    const SizedBox(width: 12),
+                    SizedBox(
+                      width: visualWidth,
+                      child: _Tenement3DVisualStack(assetPath: assetPath),
+                    ),
+                  ],
+                ),
+        );
+      },
+    );
+  }
+}
+
+class _Tenement3DInfoBlock extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final bool compact;
+
+  const _Tenement3DInfoBlock({
+    required this.title,
+    required this.subtitle,
+    required this.compact,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: compact ? 44 : 48,
+          height: compact ? 44 : 48,
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [AppColors.brandRed, AppColors.brandRedDark],
+            ),
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.brandRed.withOpacity(0.28),
+                blurRadius: 12,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: const Icon(Icons.view_in_ar_rounded, color: Colors.white, size: 25),
+        ),
+        SizedBox(height: compact ? 10 : 12),
+        Text(
+          title,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontSize: compact ? 15.5 : 16.5,
+            height: 1.15,
+            fontWeight: FontWeight.w900,
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          subtitle,
+          maxLines: compact ? 4 : 3,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(
+            color: AppColors.textSecondary,
+            fontSize: 12.5,
+            height: 1.35,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: 10),
+        const _TenementInPageVisualChip(),
+      ],
+    );
+  }
+}
+
+class _TenementInPageVisualChip extends StatelessWidget {
+  const _TenementInPageVisualChip();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      constraints: const BoxConstraints(maxWidth: 148),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+      decoration: BoxDecoration(
+        color: AppColors.brandRed.withOpacity(0.10),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: AppColors.brandRed.withOpacity(0.12)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.visibility_rounded,
+              color: AppColors.brandRed, size: 13),
+          const SizedBox(width: 5),
+          Flexible(
+            child: Text(
+              _dbText(context, 'preview.visual_chip'),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: AppColors.brandRed,
+                fontSize: 10,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 0.45,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PreviewImage extends StatelessWidget {
+  const _PreviewImage({
+    required this.assetPath,
+    required this.fallbackText,
+  });
+
+  final String assetPath;
+  final String fallbackText;
+
+  String _cleanPath(String value) {
+    final path = value.trim();
+    if (path.startsWith('/')) return path.substring(1);
+    return path;
+  }
+
+  String _resolveImageUrl(String value) {
+    final path = _cleanPath(value);
+    if (path.isEmpty ||
+        path.startsWith('http://') ||
+        path.startsWith('https://') ||
+        path.startsWith('assets/')) {
+      return path;
+    }
+
+    return Supabase.instance.client.storage
+        .from(_learningMaterialsBucketName)
+        .getPublicUrl(path);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final imagePath = _resolveImageUrl(assetPath);
+
+    if (imagePath.isEmpty) {
+      return _PreviewImageFallback(text: fallbackText);
+    }
+
+    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+      return Image.network(
+        imagePath,
+        fit: BoxFit.contain,
+        errorBuilder: (_, __, ___) =>
+            _PreviewImageFallback(text: fallbackText),
+      );
+    }
+
+    return Image.asset(
+      imagePath,
+      fit: BoxFit.contain,
+      errorBuilder: (_, __, ___) => _PreviewImageFallback(text: fallbackText),
+    );
+  }
+}
+
+class _PreviewImageFallback extends StatelessWidget {
+  const _PreviewImageFallback({required this.text});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final small = constraints.maxHeight < 106;
+        return Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: AppColors.brandRedSoft.withOpacity(0.65),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: AppColors.brandRed.withOpacity(0.16)),
+          ),
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.view_in_ar_rounded,
+                  color: AppColors.brandRed,
+                  size: small ? 26 : 34,
+                ),
+                if (!small) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    text,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: AppColors.brandRed,
+                      fontSize: 10.5,
+                      height: 1.25,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _Tenement3DVisualStack extends StatelessWidget {
+  final String assetPath;
+
+  const _Tenement3DVisualStack({required this.assetPath});
+
+  @override
+  Widget build(BuildContext context) {
+    return AspectRatio(
+      aspectRatio: 0.88,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Positioned.fill(
+            top: 2, left: 14, right: 0, bottom: 14,
+            child: Transform.rotate(
+              angle: -0.08,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.72),
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(
+                      color: Colors.white.withOpacity(0.85), width: 1),
+                ),
+              ),
+            ),
+          ),
+          Positioned.fill(
+            top: 16, left: 0, right: 20, bottom: 6,
+            child: Transform.rotate(
+              angle: 0.08,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: AppColors.brandRed.withOpacity(0.08),
+                  borderRadius: BorderRadius.circular(22),
+                  border: Border.all(
+                      color: AppColors.brandRed.withOpacity(0.12), width: 1),
+                ),
+              ),
+            ),
+          ),
+          Positioned.fill(
+            top: 20, left: 16, right: 8, bottom: 0,
+            child: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(26),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.12),
+                    blurRadius: 18,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: _PreviewImage(
+                  assetPath: assetPath,
+                  fallbackText: _dbText(context, 'preview.image_missing'),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ============================================================================
+// STYLED DIALOG  (aligned to Modules 1–4 style: centered icon + close X)
+// ============================================================================
+class _StyledDialog extends StatelessWidget {
+  const _StyledDialog({
+    required this.icon,
+    required this.iconColor,
+    required this.title,
+    required this.body,
+    required this.buttonLabel,
+    required this.onPressed,
+  });
+
+  final IconData     icon;
+  final Color        iconColor;
+  final String       title;
+  final String       body;
+  final String       buttonLabel;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape:        RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 28),
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Align(
+              alignment: Alignment.topRight,
+              child: SizedBox(
+                width: 34, height: 34,
+                child: Material(
+                  color: Colors.white,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                  child: IconButton(
+                    padding:     EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    icon:  const Icon(Icons.close_rounded, size: 18),
+                    color: Colors.black54,
+                    onPressed: () => Navigator.pop(context),
+                    tooltip:   _dbText(context, 'dialog.close'),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Container(
+              width: 64, height: 64,
+              decoration: BoxDecoration(
+                  color: iconColor.withOpacity(0.1), shape: BoxShape.circle),
+              child: Icon(icon, color: iconColor, size: 32),
+            ),
+            const SizedBox(height: 16),
+            Text(title,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize:   18,
+                    fontWeight: FontWeight.w900,
+                    color:      iconColor)),
+            const SizedBox(height: 10),
+            Text(body,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                    fontSize: 14, height: 1.55, color: Color(0xFF374151))),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: iconColor,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16)),
+                  padding:     const EdgeInsets.symmetric(vertical: 14),
+                  elevation:   3,
+                  shadowColor: iconColor.withOpacity(0.3),
+                ),
+                onPressed: onPressed,
+                child: Text(buttonLabel,
+                    style: const TextStyle(
+                        color:      Colors.white,
+                        fontWeight: FontWeight.w900,
+                        fontSize:   15)),
               ),
             ),
           ],

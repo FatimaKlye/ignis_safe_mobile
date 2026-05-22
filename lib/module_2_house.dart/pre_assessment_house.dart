@@ -1,38 +1,81 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
 import '../localization/localized_db_text.dart';
 import '../localization/language_controller.dart';
 import 'pre_assess_completion_page.dart';
 import '../profile_progress_sync.dart';
-import 'package:flutter/material.dart';
-import 'pre_assess_instruction.dart' as intro;
 
-const Color kBrandOrange = Color(0xFFF97316);
-const Color kBrandAmber = Color(0xFFF59E0B);
+const Color kHouseOrange = Color(0xFFF97316);
+const Color kHouseAmber = Color(0xFFF59E0B);
+const Color kHouseOrangeSoft = Color(0xFFFFF7ED);
 const Color kDarkText = Color(0xFF1F2937);
 const Color kSoftBg = Color(0xFFF8FAFC);
+
+class AppColors {
+  // Module 2 House Fire palette
+  static const Color brandRed = kHouseOrange;
+  static const Color brandRedDark = Color(0xFFEA580C);
+  static const Color brandRedDeep = kHouseAmber;
+  static const Color brandRedLight = kHouseAmber;
+  static const Color brandRedSoft = kHouseOrangeSoft;
+
+  // Background Colors
+  static const Color background = kSoftBg;
+  static const Color surface = Color(0xFFFFFFFF);
+  static const Color surfaceSoft = kHouseOrangeSoft;
+
+  // Text Colors
+  static const Color textPrimary = kDarkText;
+  static const Color textSecondary = Color(0xFF64748B);
+  static const Color textMuted = Color(0xFF94A3B8);
+  static const Color textOnRed = Color(0xFFFFFFFF);
+
+  // Borders / Dividers
+  static const Color border = Color(0xFFF1D8C5);
+  static const Color divider = Color(0xFFFDEAD7);
+
+  // Status Colors
+  static const Color success = Color(0xFF16A34A);
+  static const Color warning = kHouseAmber;
+  static const Color error = Color(0xFFD32F2F);
+  static const Color info = Color(0xFF2563EB);
+
+  // Buttons
+  static const Color primaryButton = kHouseOrange;
+  static const Color primaryButtonPressed = Color(0xFFEA580C);
+  static const Color secondaryButton = kHouseOrangeSoft;
+
+  // Shadows
+  static const Color shadow = Color(0x1A000000);
+}
 
 class PreAssessmentHousePage extends StatefulWidget {
   const PreAssessmentHousePage({super.key});
 
   @override
-  State<PreAssessmentHousePage> createState() => _PreAssessmentHousePageState();
+  State<PreAssessmentHousePage> createState() =>
+      _PreAssessmentHousePageState();
 }
 
 class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
   static const int _moduleNo = 2;
   static const String _assessmentType = 'pre';
+  static const int _quizDurationSeconds = 300;
 
   final PageController _pageCtrl = PageController();
 
-  bool get _isTl => Localizations.localeOf(context).languageCode == 'tl';
-  String _txt(String en, String tl) => _isTl ? tl : en;
+  Timer? _quizTimer;
 
   bool _isLoading = true;
   bool _isSubmitting = false;
   bool _showSummary = false;
   bool _showReview = false;
   bool _editingFromSummary = false;
+  bool _timeExpired = false;
+  bool _oneMinuteWarningShown = false;
 
   String? _moduleId;
   String? _assessmentId;
@@ -42,10 +85,23 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
 
   int _currentIndex = 0;
   int _score = 0;
+  int _remainingSeconds = _quizDurationSeconds;
 
   List<_QuestionVm> _questions = [];
   List<String?> _selectedOptionIds = [];
   Set<int> _flaggedIndexes = {};
+
+  bool get _isTl => Localizations.localeOf(context).languageCode == 'tl';
+
+  String _txt(String en, String tl) {
+    return _isTl ? tl : en;
+  }
+
+  String get _timeLabel {
+    final minutes = _remainingSeconds ~/ 60;
+    final seconds = _remainingSeconds % 60;
+    return '$minutes:${seconds.toString().padLeft(2, '0')}';
+  }
 
   @override
   void initState() {
@@ -55,6 +111,7 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
 
   @override
   void dispose() {
+    _stopQuizTimer();
     _pageCtrl.dispose();
     super.dispose();
   }
@@ -69,9 +126,99 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
     return user;
   }
 
+  void _stopQuizTimer() {
+    _quizTimer?.cancel();
+    _quizTimer = null;
+  }
+
+  void _startQuizTimer() {
+    _stopQuizTimer();
+
+    if (!mounted || _isLoading || _showReview || _questions.isEmpty) return;
+
+    _quizTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+
+      if (_isSubmitting || _showReview) {
+        timer.cancel();
+        return;
+      }
+
+      if (_remainingSeconds <= 1) {
+        timer.cancel();
+        _handleTimeExpired();
+        return;
+      }
+
+      setState(() {
+        _remainingSeconds--;
+      });
+
+      if (_remainingSeconds <= 60 && !_oneMinuteWarningShown) {
+        _oneMinuteWarningShown = true;
+        _showOneMinuteWarning();
+      }
+    });
+  }
+
+  Future<void> _handleTimeExpired() async {
+    if (!mounted || _timeExpired || _isSubmitting || _showReview) return;
+
+    setState(() {
+      _remainingSeconds = 0;
+      _timeExpired = true;
+      _showSummary = false;
+      _editingFromSummary = false;
+    });
+
+    await _showAutoCloseInfoDialog(
+      title: _txt('Time is up', 'Tapos na ang oras'),
+      message: _txt(
+        'Your quiz will be submitted automatically. Unanswered questions will be marked incorrect.',
+        'Awtomatikong ipapasa ang pagsusulit. Ang hindi nasagutang tanong ay mamarkahang mali.',
+      ),
+    );
+
+    await _submitAssessment(forceSubmit: true, dueToTimeUp: true);
+  }
+
+  void _showOneMinuteWarning() {
+    if (!mounted) return;
+
+    showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      builder: (ctx) => AlertDialog(
+        title: Text(_txt('Time Warning', 'Babala sa Oras')),
+        content: Text(
+          _txt(
+            'You only have 1 minute left. Please answer the remaining questions.',
+            'Mayroon ka na lamang 1 minuto. Sagutan na ang mga natitirang tanong.',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(_txt('OK', 'Sige')),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _loadOrCreateAttempt({bool forceNewAttempt = false}) async {
+    _stopQuizTimer();
+
     try {
-      setState(() => _isLoading = true);
+      setState(() {
+        _isLoading = true;
+        _timeExpired = false;
+        _remainingSeconds = _quizDurationSeconds;
+        _oneMinuteWarningShown = false;
+      });
 
       final user = _user;
 
@@ -101,12 +248,14 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
       }
 
       final assessmentId = assessmentRow['id'].toString();
+
       final assessmentTitle = LocalizedDbText.pick(
         context,
         assessmentRow,
         'title',
         'title_tl',
-        fallback: _assessmentType == 'post' ? 'Post-Assessment' : 'Pre-Assessment',
+        fallback:
+            _assessmentType == 'post' ? 'Post-Assessment' : 'Pre-Assessment',
       );
 
       final instructions = LocalizedDbText.pick(
@@ -118,7 +267,9 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
 
       final questionRows = await _supabase
           .from('assessment_questions')
-          .select('id, question_no, prompt, prompt_tl, explanation, explanation_tl')
+          .select(
+            'id, question_no, prompt, prompt_tl, explanation, explanation_tl',
+          )
           .eq('assessment_id', assessmentId)
           .eq('is_active', true)
           .order('question_no');
@@ -140,6 +291,7 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
           .order('display_order');
 
       final optionsByQuestion = <String, List<_OptionVm>>{};
+
       for (final row in optionRows) {
         final questionId = row['question_id'].toString();
         optionsByQuestion.putIfAbsent(questionId, () => []);
@@ -171,6 +323,7 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
 
       final baseQuestions = questionRows.map((row) {
         final questionId = row['id'].toString();
+
         return _QuestionVm(
           id: questionId,
           prompt: LocalizedDbText.pick(
@@ -226,14 +379,14 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
               attemptId: attemptId,
               questions: baseQuestions,
             );
+
             orderedQuestions = created.questions;
             selectedOptionIds =
                 List<String?>.filled(orderedQuestions.length, null);
             flaggedIndexes = {};
           } else {
-            final existingQuestionIds = savedRows
-                .map((row) => row['question_id'].toString())
-                .toSet();
+            final existingQuestionIds =
+                savedRows.map((row) => row['question_id'].toString()).toSet();
 
             final missingQuestions = baseQuestions
                 .where((q) => !existingQuestionIds.contains(q.id))
@@ -243,16 +396,16 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
               final startOrder = savedRows.length;
 
               await _supabase.from('assessment_attempt_answers').insert(
-                List.generate(
-                  missingQuestions.length,
-                  (index) => {
-                    'attempt_id': attemptId,
-                    'question_id': missingQuestions[index].id,
-                    'display_order': startOrder + index,
-                    'is_flagged': false,
-                  },
-                ),
-              );
+                    List.generate(
+                      missingQuestions.length,
+                      (index) => {
+                        'attempt_id': attemptId,
+                        'question_id': missingQuestions[index].id,
+                        'display_order': startOrder + index,
+                        'is_flagged': false,
+                      },
+                    ),
+                  );
             }
 
             final refreshedSavedRows = await _supabase
@@ -275,12 +428,11 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
               final row = refreshedSavedRows[i];
               final questionId = row['question_id'].toString();
               final question = questionMap[questionId];
+
               if (question == null) continue;
 
               orderedQuestions.add(question);
-              selectedOptionIds.add(
-                row['selected_option_id']?.toString(),
-              );
+              selectedOptionIds.add(row['selected_option_id']?.toString());
 
               if ((row['is_flagged'] ?? false) as bool) {
                 flaggedIndexes.add(i);
@@ -293,6 +445,7 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
                 assessmentId: assessmentId,
                 questions: baseQuestions,
               );
+
               attemptId = created.attemptId;
               orderedQuestions = created.questions;
               selectedOptionIds =
@@ -306,6 +459,7 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
             assessmentId: assessmentId,
             questions: baseQuestions,
           );
+
           attemptId = created.attemptId;
           orderedQuestions = created.questions;
           selectedOptionIds =
@@ -318,6 +472,7 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
           assessmentId: assessmentId,
           questions: baseQuestions,
         );
+
         attemptId = created.attemptId;
         orderedQuestions = created.questions;
         selectedOptionIds =
@@ -341,21 +496,32 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
         _showSummary = false;
         _showReview = false;
         _editingFromSummary = false;
+        _timeExpired = false;
+        _remainingSeconds = _quizDurationSeconds;
         _isLoading = false;
       });
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+
         if (_pageCtrl.hasClients) {
           _pageCtrl.jumpToPage(0);
         }
+
+        _startQuizTimer();
       });
     } catch (e) {
       if (!mounted) return;
 
-      setState(() => _isLoading = false);
+      setState(() {
+        _isLoading = false;
+      });
 
       await _showInfoDialog(
-        title: _txt('Failed to load pre-assessment', 'Hindi na-load ang paunang pagsusulit'),
+        title: _txt(
+          'Failed to load pre-assessment',
+          'Hindi na-load ang paunang pagsusulit',
+        ),
         message: '$e',
         buttonText: _txt('OK', 'Sige'),
       );
@@ -385,18 +551,21 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
     final attemptId = insertedAttempt['id'].toString();
 
     await _supabase.from('assessment_attempt_answers').insert(
-      List.generate(
-        shuffled.length,
-        (index) => {
-          'attempt_id': attemptId,
-          'question_id': shuffled[index].id,
-          'display_order': index,
-          'is_flagged': false,
-        },
-      ),
-    );
+          List.generate(
+            shuffled.length,
+            (index) => {
+              'attempt_id': attemptId,
+              'question_id': shuffled[index].id,
+              'display_order': index,
+              'is_flagged': false,
+            },
+          ),
+        );
 
-    return _CreatedAttempt(attemptId: attemptId, questions: shuffled);
+    return _CreatedAttempt(
+      attemptId: attemptId,
+      questions: shuffled,
+    );
   }
 
   Future<_CreatedAttempt> _createAnswerRowsForExistingAttempt({
@@ -406,21 +575,26 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
     final shuffled = List<_QuestionVm>.from(questions)..shuffle();
 
     await _supabase.from('assessment_attempt_answers').insert(
-      List.generate(
-        shuffled.length,
-        (index) => {
-          'attempt_id': attemptId,
-          'question_id': shuffled[index].id,
-          'display_order': index,
-          'is_flagged': false,
-        },
-      ),
-    );
+          List.generate(
+            shuffled.length,
+            (index) => {
+              'attempt_id': attemptId,
+              'question_id': shuffled[index].id,
+              'display_order': index,
+              'is_flagged': false,
+            },
+          ),
+        );
 
-    return _CreatedAttempt(attemptId: attemptId, questions: shuffled);
+    return _CreatedAttempt(
+      attemptId: attemptId,
+      questions: shuffled,
+    );
   }
 
   Future<void> _handleRefresh() async {
+    if (_timeExpired || _isSubmitting) return;
+
     if (_showReview) {
       final confirmed = await _showConfirmDialog(
         title: _txt('Start new attempt?', 'Magsimula ng bagong subok?'),
@@ -435,11 +609,15 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
       if (confirmed == true) {
         await _loadOrCreateAttempt(forceNewAttempt: true);
       }
+
       return;
     }
 
     await _showInfoDialog(
-      title: _txt('Current attempt preserved', 'Napanatili ang kasalukuyang subok'),
+      title: _txt(
+        'Current attempt preserved',
+        'Napanatili ang kasalukuyang subok',
+      ),
       message: _txt(
         'This pre-assessment is still unfinished, so refresh will keep the same attempt and the same questions.',
         'Hindi pa tapos ang paunang pagsusulit na ito, kaya ang i-refresh ay magpapanatili ng parehong subok at mga tanong.',
@@ -451,6 +629,8 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
   }
 
   Future<void> _selectAnswer(int questionIndex, String optionId) async {
+    if (_timeExpired || _isSubmitting || _showReview) return;
+
     setState(() {
       _selectedOptionIds[questionIndex] = optionId;
     });
@@ -471,6 +651,8 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
   }
 
   Future<void> _toggleFlag(int questionIndex) async {
+    if (_timeExpired || _isSubmitting || _showReview) return;
+
     final newFlagState = !_flaggedIndexes.contains(questionIndex);
 
     setState(() {
@@ -503,19 +685,21 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
 
   _OptionVm? _selectedOptionFor(int questionIndex) {
     final selectedId = _selectedOptionIds[questionIndex];
+
     if (selectedId == null) return null;
 
     for (final option in _questions[questionIndex].options) {
       if (option.id == selectedId) return option;
     }
+
     return null;
   }
 
   _OptionVm _correctOptionFor(int questionIndex) {
     return _questions[questionIndex].options.firstWhere(
-      (opt) => opt.isCorrect,
-      orElse: () => _questions[questionIndex].options.first,
-    );
+          (opt) => opt.isCorrect,
+          orElse: () => _questions[questionIndex].options.first,
+        );
   }
 
   String _reviewExplanationFor(int questionIndex) {
@@ -529,24 +713,37 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
     return 'The correct answer is "${correct.text}" based on the lesson content for this module.';
   }
 
-  int get _answeredCount => _selectedOptionIds.where((v) => v != null).length;
-  int get _unansweredCount => _selectedOptionIds.where((v) => v == null).length;
+  int get _answeredCount =>
+      _selectedOptionIds.where((value) => value != null).length;
+
+  int get _unansweredCount =>
+      _selectedOptionIds.where((value) => value == null).length;
+
   bool get _hasUnansweredQuestions => _unansweredCount > 0;
 
   List<int> get _unansweredIndexes {
     final result = <int>[];
+
     for (int i = 0; i < _selectedOptionIds.length; i++) {
       if (_selectedOptionIds[i] == null) {
         result.add(i);
       }
     }
+
     return result;
   }
 
   String _optionLetter(_QuestionVm question, _OptionVm option) {
     final index = question.options.indexWhere((opt) => opt.id == option.id);
-    if (index >= 0) return String.fromCharCode(65 + index);
-    if (option.key.trim().isNotEmpty) return option.key.trim().toUpperCase();
+
+    if (index >= 0) {
+      return String.fromCharCode(65 + index);
+    }
+
+    if (option.key.trim().isNotEmpty) {
+      return option.key.trim().toUpperCase();
+    }
+
     return 'A';
   }
 
@@ -560,17 +757,25 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
     final correct = _correctOptionFor(questionIndex);
 
     if (selected == null) {
-      return 'No answer selected. Correct answer: ${_optionDisplay(question, correct)}';
+      return _txt(
+        'No answer selected. Correct answer: ${_optionDisplay(question, correct)}',
+        'Walang napiling sagot. Tamang sagot: ${_optionDisplay(question, correct)}',
+      );
     }
 
     if (selected.id == correct.id) {
       return _optionDisplay(question, selected);
     }
 
-    return '${_optionDisplay(question, selected)}. Correct answer: ${_optionDisplay(question, correct)}';
+    return _txt(
+      'Your answer: ${_optionDisplay(question, selected)}\nCorrect answer: ${_optionDisplay(question, correct)}',
+      'Sagot mo: ${_optionDisplay(question, selected)}\nTamang sagot: ${_optionDisplay(question, correct)}',
+    );
   }
 
   void _goNext() {
+    if (_timeExpired || _isSubmitting) return;
+
     if (_editingFromSummary) {
       setState(() {
         _showSummary = true;
@@ -585,15 +790,21 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
         curve: Curves.easeOutCubic,
       );
     } else {
-      setState(() => _showSummary = true);
+      setState(() {
+        _showSummary = true;
+      });
     }
   }
 
   void _goBack() {
+    if (_isSubmitting) return;
+
     if (_showReview) {
       Navigator.pop(context);
       return;
     }
+
+    if (_timeExpired) return;
 
     if (_showSummary) {
       setState(() {
@@ -623,6 +834,8 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
   }
 
   void _openQuestionFromSummary(int index) {
+    if (_timeExpired || _isSubmitting) return;
+
     setState(() {
       _showSummary = false;
       _showReview = false;
@@ -637,67 +850,60 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
     });
   }
 
-  void _showIncompleteSnackBar() {
+  Future<void> _showIncompletePopup() async {
     final missing = _unansweredIndexes.map((i) => 'Q${i + 1}').toList();
     final preview = missing.take(8).join(', ');
     final suffix = missing.length > 8 ? '...' : '';
 
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: const Color(0xFFB45309),
-          margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
-          ),
-          content: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Padding(
-                padding: EdgeInsets.only(top: 2),
-                child: Icon(Icons.info_outline_rounded, color: Colors.white),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  _txt(
-                    'Please answer all questions before submitting. Missing: $preview$suffix',
-                    'Sagutan muna ang lahat ng tanong bago ipasa. Kulang: $preview$suffix',
-                  ),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w700,
-                    height: 1.35,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
+    await _showInfoDialog(
+      title: _txt('Incomplete answers', 'May hindi pa nasasagutan'),
+      message: _txt(
+        'Please answer all questions before submitting.\n\nMissing: $preview$suffix',
+        'Sagutan muna ang lahat ng tanong bago ipasa.\n\nKulang: $preview$suffix',
+      ),
+      buttonText: _txt('OK', 'Sige'),
+    );
   }
 
-  Future<void> _submitAssessment() async {
-    if (_hasUnansweredQuestions) {
-      _showIncompleteSnackBar();
+  Future<void> _submitAssessment({
+    bool forceSubmit = false,
+    bool dueToTimeUp = false,
+  }) async {
+    if (_isSubmitting) return;
+
+    if (!forceSubmit && _hasUnansweredQuestions) {
+      await _showIncompletePopup();
       return;
     }
 
-    final confirmed = await _showConfirmDialog(
-      title: _txt('Submit Pre-Assessment', 'Ipasa ang Paunang Pagsusulit'),
-      message: _txt(
-        'Answered: $_answeredCount / ${_questions.length}\n\nAfter submission, you will be redirected to the completion page.',
-        'Nasagutan: $_answeredCount / ${_questions.length}\n\nPagkatapos ipasa, dadalhin ka sa completion page.',
-      ),
-      confirmText: _txt('Submit', 'Ipasa'),
-      cancelText: _txt('Review Again', 'Suriin Muli'),
-    );
+    if (!forceSubmit) {
+      final confirmed = await _showConfirmDialog(
+        title: _txt('Submit Pre-Assessment', 'Ipasa ang Paunang Pagsusulit'),
+        message: _txt(
+          'Answered: $_answeredCount / ${_questions.length}\n\n'
+          'After submission, you will be redirected to the completion page.',
+          'Nasagutan: $_answeredCount / ${_questions.length}\n\n'
+          'Pagkatapos ipasa, dadalhin ka sa completion page.',
+        ),
+        confirmText: _txt('Submit', 'Ipasa'),
+        cancelText: _txt('Review Again', 'Suriin Muli'),
+      );
 
-    if (confirmed != true) return;
+      if (confirmed != true) return;
+    }
 
-    setState(() => _isSubmitting = true);
+    _stopQuizTimer();
+
+    if (!mounted) return;
+
+    setState(() {
+      _isSubmitting = true;
+
+      if (dueToTimeUp) {
+        _timeExpired = true;
+        _remainingSeconds = 0;
+      }
+    });
 
     try {
       int correctCount = 0;
@@ -707,7 +913,9 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
         final isCorrect =
             selectedId == null ? false : _isCorrectSelection(i, selectedId);
 
-        if (isCorrect) correctCount++;
+        if (isCorrect) {
+          correctCount++;
+        }
 
         await _supabase
             .from('assessment_attempt_answers')
@@ -779,7 +987,10 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
       );
     } finally {
       if (!mounted) return;
-      setState(() => _isSubmitting = false);
+
+      setState(() {
+        _isSubmitting = false;
+      });
     }
   }
 
@@ -791,33 +1002,150 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
   }) {
     return showDialog<bool>(
       context: context,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w900)),
-        content: Text(message, style: const TextStyle(height: 1.45)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(cancelText),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: kBrandOrange,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
+      barrierDismissible: true,
+      builder: (dialogContext) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 28),
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.fromLTRB(22, 22, 22, 20),
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.shadow.withOpacity(0.80),
+                  blurRadius: 30,
+                  offset: const Offset(0, 16),
+                ),
+              ],
             ),
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(
-              confirmText,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w900,
-              ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(99),
+                    onTap: () => Navigator.pop(dialogContext),
+                    child: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: AppColors.surfaceSoft,
+                        borderRadius: BorderRadius.circular(99),
+                      ),
+                      child: const Icon(
+                        Icons.close_rounded,
+                        size: 20,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Container(
+                  height: 68,
+                  width: 68,
+                  decoration: const BoxDecoration(
+                    color: AppColors.brandRedSoft,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.error_outline_rounded,
+                    color: AppColors.brandRed,
+                    size: 36,
+                  ),
+                ),
+                const SizedBox(height: 18),
+                Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 22,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.textPrimary,
+                    height: 1.18,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  height: 2,
+                  width: 90,
+                  decoration: BoxDecoration(
+                    color: AppColors.brandRed,
+                    borderRadius: BorderRadius.circular(99),
+                  ),
+                ),
+                const SizedBox(height: 18),
+                Text(
+                  message,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.textSecondary,
+                    height: 1.45,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.pop(dialogContext, true),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primaryButton,
+                      elevation: 4,
+                      shadowColor: AppColors.primaryButton.withOpacity(0.35),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    child: Text(
+                      confirmText,
+                      style: const TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textOnRed,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: OutlinedButton(
+                    onPressed: () => Navigator.pop(dialogContext, false),
+                    style: OutlinedButton.styleFrom(
+                      side: const BorderSide(
+                        color: AppColors.primaryButton,
+                        width: 1.3,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    child: Text(
+                      cancelText,
+                      style: const TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.primaryButton,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -828,98 +1156,327 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
   }) {
     return showDialog<void>(
       context: context,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w900)),
-        content: Text(message, style: const TextStyle(height: 1.45)),
-        actions: [
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: kBrandOrange,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
+      barrierDismissible: true,
+      builder: (dialogContext) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 28),
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.fromLTRB(22, 22, 22, 20),
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.shadow.withOpacity(0.80),
+                  blurRadius: 30,
+                  offset: const Offset(0, 16),
+                ),
+              ],
             ),
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              buttonText,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w900,
-              ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(99),
+                    onTap: () => Navigator.pop(dialogContext),
+                    child: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: AppColors.surfaceSoft,
+                        borderRadius: BorderRadius.circular(99),
+                      ),
+                      child: const Icon(
+                        Icons.close_rounded,
+                        size: 20,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Container(
+                  height: 68,
+                  width: 68,
+                  decoration: const BoxDecoration(
+                    color: AppColors.brandRedSoft,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.error_outline_rounded,
+                    color: AppColors.brandRed,
+                    size: 36,
+                  ),
+                ),
+                const SizedBox(height: 18),
+                Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 22,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.textPrimary,
+                    height: 1.18,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  height: 2,
+                  width: 90,
+                  decoration: BoxDecoration(
+                    color: AppColors.brandRed,
+                    borderRadius: BorderRadius.circular(99),
+                  ),
+                ),
+                const SizedBox(height: 18),
+                Text(
+                  message,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.textSecondary,
+                    height: 1.45,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.pop(dialogContext),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primaryButton,
+                      elevation: 4,
+                      shadowColor: AppColors.primaryButton.withOpacity(0.35),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    child: Text(
+                      buttonText,
+                      style: const TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textOnRed,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
-  Widget _buildQuizView() {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
-          child: _StatsRow(
-            answered: _answeredCount,
-            total: _questions.length,
-            flagged: _flaggedIndexes.length,
+  Future<void> _showAutoCloseInfoDialog({
+    required String title,
+    required String message,
+    Duration duration = const Duration(milliseconds: 1400),
+  }) async {
+    if (!mounted) return;
+
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 28),
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.fromLTRB(22, 24, 22, 22),
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.shadow.withOpacity(0.80),
+                  blurRadius: 30,
+                  offset: const Offset(0, 16),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  height: 68,
+                  width: 68,
+                  decoration: BoxDecoration(
+                    color: AppColors.error.withOpacity(0.10),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.timer_off_rounded,
+                    color: AppColors.error,
+                    size: 36,
+                  ),
+                ),
+                const SizedBox(height: 18),
+                Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 22,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.textPrimary,
+                    height: 1.18,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  message,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textSecondary,
+                    height: 1.45,
+                  ),
+                ),
+                const SizedBox(height: 18),
+                const SizedBox(
+                  width: 26,
+                  height: 26,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 3,
+                    color: AppColors.primaryButton,
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-        Expanded(
-          child: PageView.builder(
-            controller: _pageCtrl,
-            itemCount: _questions.length,
-            onPageChanged: (index) {
-              setState(() => _currentIndex = index);
-            },
-            itemBuilder: (context, index) {
-              final question = _questions[index];
-              final selectedId = _selectedOptionIds[index];
-              final isFlagged = _flaggedIndexes.contains(index);
+        );
+      },
+    );
 
-              return SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _QuestionHeaderCard(
-                      questionNumber: index + 1,
-                      totalQuestions: _questions.length,
-                      question: question.prompt,
-                      isFlagged: isFlagged,
-                      onFlagTap: () => _toggleFlag(index),
-                    ),
-                    const SizedBox(height: 16),
-                    ...question.options.asMap().entries.map((entry) {
-                      final option = entry.value;
-                      final selected = selectedId == option.id;
-                      final label = String.fromCharCode(65 + entry.key);
+    await Future.delayed(duration);
 
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: _OptionCard(
-                          label: label,
-                          text: option.text,
-                          selected: selected,
-                          onTap: () => _selectAnswer(index, option.id),
-                        ),
-                      );
-                    }),
-                    const SizedBox(height: 8),
-                    _HintCard(
-                      icon: Icons.info_outline_rounded,
-                      text: _txt(
-                        'Use the summary to jump back to any question before submitting.',
-                        'Gamitin ang buod upang bumalik sa anumang tanong bago magpasa.',
+    if (!mounted) return;
+
+    final navigator = Navigator.of(context, rootNavigator: true);
+
+    if (navigator.canPop()) {
+      navigator.pop();
+    }
+  }
+
+  Widget _buildQuizView() {
+    return PageView.builder(
+      controller: _pageCtrl,
+      physics: _timeExpired || _isSubmitting
+          ? const NeverScrollableScrollPhysics()
+          : const PageScrollPhysics(),
+      itemCount: _questions.length,
+      onPageChanged: (index) {
+        if (_timeExpired || _isSubmitting) return;
+
+        setState(() {
+          _currentIndex = index;
+        });
+      },
+      itemBuilder: (context, index) {
+        final question = _questions[index];
+        final selectedId = _selectedOptionIds[index];
+        final isFlagged = _flaggedIndexes.contains(index);
+        final locked = _timeExpired || _isSubmitting;
+
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            final compact = constraints.maxHeight < 610;
+            final sidePadding = compact ? 18.0 : 20.0;
+            final verticalGap = compact ? 8.0 : 12.0;
+            final optionGap = compact ? 7.0 : 9.0;
+
+            return Padding(
+              padding: EdgeInsets.fromLTRB(sidePadding, 0, sidePadding, 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _QuizProgressHeader(
+                    questionNumber: index + 1,
+                    totalQuestions: _questions.length,
+                    answered: _answeredCount,
+                    flagged: _flaggedIndexes.length,
+                    timeLabel: _timeLabel,
+                    timeWarning: _remainingSeconds <= 30,
+                    compact: compact,
+                  ),
+                  SizedBox(height: verticalGap),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _QuestionHeaderCard(
+                            questionNumber: index + 1,
+                            totalQuestions: _questions.length,
+                            question: question.prompt,
+                            isFlagged: isFlagged,
+                            onFlagTap:
+                                locked ? null : () => _toggleFlag(index),
+                            compact: compact,
+                          ),
+                          SizedBox(height: verticalGap),
+                          Text(
+                            _txt('Choose one answer', 'Pumili ng isang sagot'),
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontSize: compact ? 12.5 : 13,
+                              fontWeight: FontWeight.w800,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                          SizedBox(height: compact ? 6 : 8),
+                          Column(
+                            children:
+                                question.options.asMap().entries.map((entry) {
+                              final option = entry.value;
+                              final selected = selectedId == option.id;
+                              final label = String.fromCharCode(65 + entry.key);
+                              final isLastOption =
+                                  entry.key == question.options.length - 1;
+
+                              return Padding(
+                                padding: EdgeInsets.only(
+                                  bottom: isLastOption ? 0 : optionGap,
+                                ),
+                                child: _OptionCard(
+                                  label: label,
+                                  text: option.text,
+                                  selected: selected,
+                                  enabled: !locked,
+                                  onTap: locked
+                                      ? null
+                                      : () => _selectAnswer(index, option.id),
+                                  compact: compact,
+                                  maxTextLines: compact ? 2 : 3,
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
-              );
-            },
-          ),
-        ),
-      ],
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
@@ -947,7 +1504,7 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
                 return _SummaryCard(
                   questionNumber: index + 1,
                   question: question.prompt,
-                    selectedAnswer: selected == null
+                  selectedAnswer: selected == null
                       ? _txt('No answer selected', 'Walang napiling sagot')
                       : _optionDisplay(question, selected),
                   answered: selected != null,
@@ -968,7 +1525,10 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
       padding: const EdgeInsets.fromLTRB(24, 0, 24, 18),
       child: Column(
         children: [
-          _ReviewTopCard(score: _score, total: _questions.length),
+          _ReviewTopCard(
+            score: _score,
+            total: _questions.length,
+          ),
           const SizedBox(height: 14),
           Expanded(
             child: ListView.separated(
@@ -997,50 +1557,119 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
   }
 
   Widget _buildBottomBar() {
+    Widget primaryButton({
+      required String label,
+      required VoidCallback? onPressed,
+      IconData? icon,
+      Color color = AppColors.primaryButton,
+    }) {
+      return SizedBox(
+        height: 54,
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: color,
+            disabledBackgroundColor: AppColors.textMuted,
+            elevation: onPressed == null ? 0 : 7,
+            shadowColor: color.withOpacity(0.32),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(18),
+            ),
+          ),
+          onPressed: onPressed,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Flexible(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: AppColors.textOnRed,
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.w900,
+                    fontSize: 14.5,
+                  ),
+                ),
+              ),
+              if (icon != null) ...[
+                const SizedBox(width: 7),
+                Icon(icon, color: AppColors.textOnRed, size: 19),
+              ],
+            ],
+          ),
+        ),
+      );
+    }
+
+    Widget secondaryButton({
+      required String label,
+      required VoidCallback? onPressed,
+      IconData? icon,
+    }) {
+      return SizedBox(
+        height: 54,
+        child: OutlinedButton(
+          style: OutlinedButton.styleFrom(
+            backgroundColor: AppColors.secondaryButton,
+            side: const BorderSide(
+              color: AppColors.primaryButton,
+              width: 1.2,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(18),
+            ),
+          ),
+          onPressed: onPressed,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (icon != null) ...[
+                Icon(icon, color: AppColors.primaryButton, size: 18),
+                const SizedBox(width: 7),
+              ],
+              Flexible(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: AppColors.primaryButton,
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.w900,
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     if (_showReview) {
-      return Padding(
-        padding: const EdgeInsets.fromLTRB(24, 8, 24, 20),
+      return SafeArea(
+        top: false,
+        minimum: const EdgeInsets.fromLTRB(20, 10, 20, 18),
         child: Row(
           children: [
             Expanded(
-              child: OutlinedButton(
-                style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: kBrandOrange),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18),
-                  ),
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                ),
+              child: secondaryButton(
+                label: _txt('Back', 'Bumalik'),
+                icon: Icons.arrow_back_rounded,
                 onPressed: () => Navigator.pop(context),
-                child: Text(
-                  _txt('Back', 'Bumalik'),
-                  style: const TextStyle(
-                    color: kBrandOrange,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
               ),
             ),
             const SizedBox(width: 10),
             Expanded(
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: kBrandAmber,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18),
-                  ),
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                ),
+              child: primaryButton(
+                label: _txt('New Attempt', 'Bagong Subok'),
+                icon: Icons.replay_rounded,
                 onPressed: _isSubmitting
                     ? null
                     : () => _loadOrCreateAttempt(forceNewAttempt: true),
-                child: Text(
-                  _txt('New Attempt', 'Bagong Subok'),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
               ),
             ),
           ],
@@ -1051,62 +1680,39 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
     if (_showSummary) {
       final locked = _hasUnansweredQuestions;
 
-      return Padding(
-        padding: const EdgeInsets.fromLTRB(24, 8, 24, 20),
+      return SafeArea(
+        top: false,
+        minimum: const EdgeInsets.fromLTRB(20, 10, 20, 18),
         child: Row(
           children: [
             Expanded(
-              child: OutlinedButton(
-                style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: kBrandOrange),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18),
-                  ),
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                ),
-                onPressed: () {
-                  setState(() {
-                    _showSummary = false;
-                    _editingFromSummary = false;
-                  });
-                },
-                child: SizedBox(
-                  width: double.infinity,
-                  child: Text(
-                    _txt('Back to Questions', 'Bumalik sa Tanong'),
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: kBrandOrange,
-                      fontWeight: FontWeight.w900,
-                      fontSize: 14,
-                      height: 1.2,
-                    ),
-                  ),
-                ),
+              child: secondaryButton(
+                label: _txt('Questions', 'Mga Tanong'),
+                icon: Icons.arrow_back_rounded,
+                onPressed: _timeExpired || _isSubmitting
+                    ? null
+                    : () {
+                        setState(() {
+                          _showSummary = false;
+                          _editingFromSummary = false;
+                        });
+                      },
               ),
             ),
             const SizedBox(width: 10),
             Expanded(
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: locked ? Colors.grey.shade400 : kBrandOrange,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18),
-                  ),
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                ),
-                onPressed: _isSubmitting ? null : _submitAssessment,
-                child: Text(
-                  _isSubmitting
-                      ? _txt('Submitting...', 'Ipinapasa...')
-                      : locked
-                          ? _txt('Complete All', 'Kumpletuhin Lahat')
-                          : _txt('Submit', 'Ipasa'),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
+              child: primaryButton(
+                label: _isSubmitting
+                    ? _txt('Submitting...', 'Ipinapasa...')
+                    : locked
+                        ? _txt('Complete All', 'Kumpletuhin')
+                        : _txt('Submit', 'Ipasa'),
+                icon:
+                    locked ? Icons.lock_outline_rounded : Icons.check_rounded,
+                onPressed: _isSubmitting || _timeExpired
+                    ? null
+                    : () => _submitAssessment(),
+                color: locked ? AppColors.textMuted : AppColors.primaryButton,
               ),
             ),
           ],
@@ -1115,53 +1721,38 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
     }
 
     final isLast = _currentIndex == _questions.length - 1;
-    final nextLabel = _editingFromSummary
-      ? _txt('Review Summary', 'Suriin ang Buod')
-      : (isLast ? _txt('Review Summary', 'Suriin ang Buod') : _txt('Next', 'Susunod'));
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 8, 24, 20),
+    final nextLabel = _editingFromSummary
+        ? _txt('Review Summary', 'Suriin ang Buod')
+        : isLast
+            ? _txt('Review Summary', 'Suriin ang Buod')
+            : _txt('Next Question', 'Susunod');
+
+    return SafeArea(
+      top: false,
+      minimum: const EdgeInsets.fromLTRB(20, 10, 20, 18),
       child: Row(
         children: [
           Expanded(
-            child: OutlinedButton(
-              style: OutlinedButton.styleFrom(
-                side: const BorderSide(color: kBrandOrange),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(18),
-                ),
-                padding: const EdgeInsets.symmetric(vertical: 14),
-              ),
-              onPressed: _goBack,
-              child: Text(
-                _editingFromSummary
-                    ? _txt('Back to Summary', 'Bumalik sa Buod')
-                    : (_currentIndex == 0 ? _txt('Exit', 'Lumabas') : _txt('Back', 'Bumalik')),
-                style: const TextStyle(
-                  color: kBrandOrange,
-                  fontWeight: FontWeight.w900,
-                ),
-              ),
+            child: secondaryButton(
+              label: _editingFromSummary
+                  ? _txt('Summary', 'Buod')
+                  : _currentIndex == 0
+                      ? _txt('Exit', 'Lumabas')
+                      : _txt('Back', 'Bumalik'),
+              icon: _currentIndex == 0 && !_editingFromSummary
+                  ? Icons.close_rounded
+                  : Icons.arrow_back_rounded,
+              onPressed: _isSubmitting ? null : _goBack,
             ),
           ),
           const SizedBox(width: 10),
           Expanded(
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: kBrandOrange,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(18),
-                ),
-                padding: const EdgeInsets.symmetric(vertical: 14),
-              ),
-              onPressed: _goNext,
-              child: Text(
-                nextLabel,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w900,
-                ),
-              ),
+            child: primaryButton(
+              label:
+                  _isSubmitting ? _txt('Submitting...', 'Ipinapasa...') : nextLabel,
+              icon: Icons.arrow_forward_rounded,
+              onPressed: _timeExpired || _isSubmitting ? null : _goNext,
             ),
           ),
         ],
@@ -1172,138 +1763,362 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: kSoftBg,
+      backgroundColor: AppColors.background,
       body: Stack(
         children: [
-          Positioned.fill(
-            child: Image.asset('assets/bg.png', fit: BoxFit.cover),
-          ),
+          const _AssessmentGradientBackdrop(),
           SafeArea(
             child: _isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : RefreshIndicator(
-                    onRefresh: _handleRefresh,
-                    child: Column(
-                      children: [
-                        const SizedBox(height: 15),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 9, right: 25),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              IconButton(
-                                padding: EdgeInsets.zero,
-                                constraints: const BoxConstraints(),
-                                icon:
-                                    const Icon(Icons.close, color: Colors.white),
-                                onPressed: () => Navigator.pop(context),
-                              ),
-                              const SizedBox(height: 15),
-                              Center(
-                                child: Text(
-                                  _txt('Pre Assessment', 'Paunang Pagsusulit'),
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: 'Poppins',
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 15),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 25),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 18,
-                                        vertical: 10,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        gradient: const LinearGradient(
-                                          begin: Alignment.topLeft,
-                                          end: Alignment.bottomRight,
-                                          colors: [kBrandOrange, kBrandAmber],
-                                        ),
-                                        borderRadius: BorderRadius.circular(10),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.black.withOpacity(0.18),
-                                            blurRadius: 10,
-                                            offset: const Offset(0, 6),
-                                          ),
-                                        ],
-                                      ),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          const Icon(
-                                            Icons.home_rounded,
-                                            color: Colors.white,
-                                            size: 18,
-                                          ),
-                                          const SizedBox(width: 8),
-                                          Text(
-                                            _isTl ? 'MODYUL 2' : 'MODULE 2',
-                                            style: const TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.white,
-                                              fontFamily: 'Poppins',
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    const SizedBox(width: 15),
-                                    Expanded(
-                                      child: Text(
-                                        _txt(
-                                          'House Fire: How to Get Out Safely During a Fire',
-                                          'Sunog sa Bahay: Paano Makalabas nang Ligtas',
-                                        ),
-                                        style: const TextStyle(
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.w600,
-                                          fontFamily: 'Poppins',
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              if (_instructions.trim().isNotEmpty &&
-                                  !_showReview) ...[
-                                const SizedBox(height: 15),
-                                Align(
-                                  alignment: Alignment.center,
-                                  child: Text(
-                                    _instructions,
-                                    textAlign: TextAlign.center,
-                                    style: const TextStyle(
-                                      color: Colors.black87,
-                                      fontWeight: FontWeight.w600,
-                                      height: 1.35,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ],
+                ? const Center(child: _LoadingCard())
+                : Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(18, 8, 18, 0),
+                        child: _TopAssessmentBar(
+                          title: 'Pre-Assessment',
+                          moduleLabel: _isTl ? 'MODYUL 2' : 'MODULE 2',
+                          moduleTitle: _txt(
+                            'House Fire: How to Get Out Safely During a Fire',
+                            'Sunog sa Bahay: Paano Ligtas na Makalabas Habang May Sunog',
                           ),
+                          instructions: _instructions,
+                          onClose: () => Navigator.pop(context),
+                          onRefresh: _handleRefresh,
                         ),
-                        const SizedBox(height: 30),
-                        Expanded(
-                          child: _showReview
-                              ? _buildReviewView()
-                              : _showSummary
-                                  ? _buildSummaryView()
-                                  : _buildQuizView(),
-                        ),
-                        _buildBottomBar(),
-                      ],
+                      ),
+                      const SizedBox(height: 10),
+                      Expanded(
+                        child: _showReview
+                            ? _buildReviewView()
+                            : _showSummary
+                                ? _buildSummaryView()
+                                : _buildQuizView(),
+                      ),
+                      _buildBottomBar(),
+                    ],
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AssessmentGradientBackdrop extends StatelessWidget {
+  const _AssessmentGradientBackdrop();
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        Container(color: AppColors.background),
+        Container(
+          height: 280,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                AppColors.brandRedDeep,
+                AppColors.brandRedDark,
+                AppColors.brandRed,
+              ],
+            ),
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(34),
+              bottomRight: Radius.circular(34),
+            ),
+          ),
+        ),
+        const Positioned(
+          top: 50,
+          right: -36,
+          child: _DecorCircle(size: 138, opacity: 0.17),
+        ),
+        const Positioned(
+          top: 178,
+          left: -42,
+          child: _DecorCircle(size: 124, opacity: 0.13),
+        ),
+      ],
+    );
+  }
+}
+
+class _DecorCircle extends StatelessWidget {
+  const _DecorCircle({
+    required this.size,
+    required this.opacity,
+  });
+
+  final double size;
+  final double opacity;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: AppColors.textOnRed.withOpacity(opacity),
+        shape: BoxShape.circle,
+      ),
+    );
+  }
+}
+
+class _LoadingCard extends StatelessWidget {
+  const _LoadingCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 32),
+      padding: const EdgeInsets.all(22),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: const [
+          BoxShadow(
+            color: AppColors.shadow,
+            blurRadius: 24,
+            offset: Offset(0, 12),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const CircularProgressIndicator(color: AppColors.primaryButton),
+          const SizedBox(height: 14),
+          Text(
+            t(context, 'Loading assessment...', 'Nilo-load ang pagsusulit...'),
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontFamily: 'Poppins',
+              fontWeight: FontWeight.w800,
+              color: AppColors.textPrimary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TopAssessmentBar extends StatelessWidget {
+  const _TopAssessmentBar({
+    required this.title,
+    required this.moduleLabel,
+    required this.moduleTitle,
+    required this.instructions,
+    required this.onClose,
+    required this.onRefresh,
+  });
+
+  final String title;
+  final String moduleLabel;
+  final String moduleTitle;
+  final String instructions;
+  final VoidCallback onClose;
+  final Future<void> Function() onRefresh;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Row(
+          children: [
+            _TopIconButton(
+              icon: Icons.close_rounded,
+              onTap: onClose,
+            ),
+            const Spacer(),
+            _TopIconButton(
+              icon: Icons.refresh_rounded,
+              onTap: () {
+                onRefresh();
+              },
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        SizedBox(
+          width: double.infinity,
+          child: Text(
+            title,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: AppColors.textOnRed,
+              fontFamily: 'Poppins',
+              fontSize: 30,
+              height: 1.08,
+              fontWeight: FontWeight.w900,
+              letterSpacing: -0.45,
+            ),
+          ),
+        ),
+        const SizedBox(height: 14),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 13,
+                vertical: 9,
+              ),
+              decoration: BoxDecoration(
+                color: AppColors.brandRedLight,
+                borderRadius: BorderRadius.circular(999),
+                border: Border.all(
+                  color: AppColors.textOnRed.withOpacity(0.15),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.brandRed.withOpacity(0.24),
+                    blurRadius: 12,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.home_rounded,
+                    color: AppColors.textOnRed,
+                    size: 16,
+                  ),
+                  const SizedBox(width: 7),
+                  Text(
+                    moduleLabel,
+                    style: const TextStyle(
+                      color: AppColors.textOnRed,
+                      fontFamily: 'Poppins',
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 0.2,
                     ),
                   ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                moduleTitle,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: AppColors.textOnRed.withOpacity(0.92),
+                  fontFamily: 'Poppins',
+                  fontSize: 13.5,
+                  height: 1.28,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _TopIconButton extends StatelessWidget {
+  const _TopIconButton({
+    required this.icon,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(999),
+      child: Container(
+        width: 42,
+        height: 42,
+        decoration: BoxDecoration(
+          color: AppColors.textOnRed.withOpacity(0.18),
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: AppColors.textOnRed.withOpacity(0.28),
+            width: 1.2,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 10,
+              offset: const Offset(0, 5),
+            ),
+          ],
+        ),
+        child: Icon(
+          icon,
+          color: AppColors.textOnRed,
+          size: 23,
+        ),
+      ),
+    );
+  }
+}
+
+class _InstructionBanner extends StatelessWidget {
+  const _InstructionBanner({required this.instructions});
+
+  final String instructions;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(13),
+      decoration: BoxDecoration(
+        color: AppColors.surface.withOpacity(0.96),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppColors.border),
+        boxShadow: const [
+          BoxShadow(
+            color: AppColors.shadow,
+            blurRadius: 14,
+            offset: Offset(0, 7),
+          ),
+        ],
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: AppColors.brandRedSoft,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(
+              Icons.info_outline_rounded,
+              color: AppColors.brandRed,
+              size: 17,
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              instructions,
+              style: const TextStyle(
+                fontFamily: 'Poppins',
+                color: AppColors.textPrimary,
+                fontSize: 12.5,
+                height: 1.34,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
         ],
       ),
@@ -1351,6 +2166,165 @@ class _OptionVm {
   });
 }
 
+class _QuizProgressHeader extends StatelessWidget {
+  const _QuizProgressHeader({
+    required this.questionNumber,
+    required this.totalQuestions,
+    required this.answered,
+    required this.flagged,
+    required this.timeLabel,
+    required this.timeWarning,
+    required this.compact,
+  });
+
+  final int questionNumber;
+  final int totalQuestions;
+  final int answered;
+  final int flagged;
+  final String timeLabel;
+  final bool timeWarning;
+  final bool compact;
+
+  @override
+  Widget build(BuildContext context) {
+    final progress =
+        totalQuestions == 0 ? 0.0 : questionNumber / totalQuestions;
+    final timerColor = timeWarning ? AppColors.warning : AppColors.textOnRed;
+
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(compact ? 12 : 16),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            AppColors.brandRedDeep,
+            AppColors.brandRedDark,
+            AppColors.brandRed,
+          ],
+        ),
+        borderRadius: BorderRadius.circular(compact ? 22 : 26),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.brandRed.withOpacity(0.22),
+            blurRadius: 22,
+            offset: const Offset(0, 12),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              _HeaderPill(
+                icon: Icons.quiz_rounded,
+                label:
+                    '${t(context, 'Question', 'Tanong')} $questionNumber/$totalQuestions',
+              ),
+              const Spacer(),
+              _HeaderPill(
+                icon: Icons.timer_outlined,
+                label: timeLabel,
+                foregroundColor: timerColor,
+              ),
+            ],
+          ),
+          SizedBox(height: compact ? 10 : 15),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(999),
+            child: LinearProgressIndicator(
+              value: progress.clamp(0.0, 1.0).toDouble(),
+              minHeight: compact ? 7 : 9,
+              backgroundColor: AppColors.textOnRed.withOpacity(0.22),
+              valueColor: const AlwaysStoppedAnimation<Color>(
+                AppColors.textOnRed,
+              ),
+            ),
+          ),
+          SizedBox(height: compact ? 8 : 12),
+          Row(
+            children: [
+              Text(
+                t(context, 'Progress', 'Progreso'),
+                style: TextStyle(
+                  color: AppColors.textOnRed.withOpacity(0.76),
+                  fontFamily: 'Poppins',
+                  fontSize: compact ? 11.5 : 12.5,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const Spacer(),
+              Text(
+                '${t(context, 'Answered', 'Nasagutan')}: $answered/$totalQuestions',
+                style: TextStyle(
+                  color: AppColors.textOnRed,
+                  fontFamily: 'Poppins',
+                  fontSize: compact ? 11.5 : 12.5,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+              if (flagged > 0) ...[
+                const SizedBox(width: 10),
+                Text(
+                  '${t(context, 'Flagged', 'Naka-flag')}: $flagged',
+                  style: TextStyle(
+                    color: AppColors.textOnRed,
+                    fontFamily: 'Poppins',
+                    fontSize: compact ? 11.5 : 12.5,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HeaderPill extends StatelessWidget {
+  const _HeaderPill({
+    required this.icon,
+    required this.label,
+    this.foregroundColor = AppColors.textOnRed,
+  });
+
+  final IconData icon;
+  final String label;
+  final Color foregroundColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: AppColors.textOnRed.withOpacity(0.18),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: AppColors.textOnRed.withOpacity(0.22)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: foregroundColor, size: 15),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: TextStyle(
+              color: foregroundColor,
+              fontFamily: 'Poppins',
+              fontSize: 12,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _StatsRow extends StatelessWidget {
   const _StatsRow({
     required this.answered,
@@ -1371,7 +2345,7 @@ class _StatsRow extends StatelessWidget {
             icon: Icons.check_circle_outline_rounded,
             label: t(context, 'Answered', 'Nasagutan'),
             value: '$answered / $total',
-            color: const Color(0xFF16A34A),
+            color: AppColors.success,
           ),
         ),
         const SizedBox(width: 10),
@@ -1380,7 +2354,7 @@ class _StatsRow extends StatelessWidget {
             icon: Icons.outlined_flag_rounded,
             label: t(context, 'Flagged', 'Naka-flag'),
             value: '$flagged',
-            color: kBrandOrange,
+            color: AppColors.brandRed,
           ),
         ),
       ],
@@ -1404,11 +2378,18 @@ class _StatChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 13),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withOpacity(0.16)),
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: color.withOpacity(0.15)),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadow,
+            blurRadius: 12,
+            offset: const Offset(0, 6),
+          ),
+        ],
       ),
       child: Row(
         children: [
@@ -1416,8 +2397,8 @@ class _StatChip extends StatelessWidget {
             width: 34,
             height: 34,
             decoration: BoxDecoration(
-              color: color.withOpacity(0.12),
-              shape: BoxShape.circle,
+              color: color.withOpacity(0.10),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(icon, color: color, size: 18),
           ),
@@ -1428,16 +2409,21 @@ class _StatChip extends StatelessWidget {
               children: [
                 Text(
                   label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                    fontSize: 12,
+                    fontFamily: 'Poppins',
+                    fontSize: 11.5,
                     fontWeight: FontWeight.w700,
-                    color: Colors.black54,
+                    color: AppColors.textMuted,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   value,
                   style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 14,
                     fontWeight: FontWeight.w900,
                     color: color,
                   ),
@@ -1458,28 +2444,30 @@ class _QuestionHeaderCard extends StatelessWidget {
     required this.question,
     required this.isFlagged,
     required this.onFlagTap,
+    required this.compact,
   });
 
   final int questionNumber;
   final int totalQuestions;
   final String question;
   final bool isFlagged;
-  final VoidCallback onFlagTap;
+  final VoidCallback? onFlagTap;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(18),
+      padding: EdgeInsets.all(compact ? 14 : 20),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.black.withOpacity(0.06)),
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(compact ? 22 : 28),
+        border: Border.all(color: AppColors.border),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.09),
-            blurRadius: 18,
-            offset: const Offset(0, 8),
+            color: AppColors.shadow,
+            blurRadius: 24,
+            offset: const Offset(0, 14),
           ),
         ],
       ),
@@ -1492,17 +2480,16 @@ class _QuestionHeaderCard extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [kBrandOrange, kBrandAmber],
-                  ),
-                  borderRadius: BorderRadius.circular(12),
+                  color: AppColors.brandRedSoft,
+                  borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
-                  '${t(context, 'QUESTION', 'TANONG')} $questionNumber / $totalQuestions',
+                  '${t(context, 'Question', 'Tanong')} $questionNumber',
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: AppColors.brandRed,
+                    fontFamily: 'Poppins',
                     fontWeight: FontWeight.w900,
-                    fontSize: 12,
+                    fontSize: 12.5,
                   ),
                 ),
               ),
@@ -1512,31 +2499,40 @@ class _QuestionHeaderCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(999),
                 child: Container(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                   decoration: BoxDecoration(
                     color: isFlagged
-                        ? kBrandOrange.withOpacity(0.12)
-                        : Colors.black.withOpacity(0.04),
+                        ? AppColors.brandRedSoft
+                        : AppColors.surfaceSoft,
                     borderRadius: BorderRadius.circular(999),
                     border: Border.all(
-                      color: isFlagged ? kBrandOrange : Colors.black12,
+                      color: isFlagged ? AppColors.brandRed : AppColors.border,
                     ),
                   ),
                   child: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(
                         isFlagged
                             ? Icons.flag_rounded
                             : Icons.outlined_flag_rounded,
                         size: 16,
-                        color: isFlagged ? kBrandOrange : kDarkText,
+                        color: isFlagged
+                            ? AppColors.brandRed
+                            : AppColors.textSecondary,
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        isFlagged ? t(context, 'Flagged', 'Naka-flag') : t(context, 'Flag', 'I-flag'),
+                        isFlagged
+                            ? t(context, 'Flagged', 'Naka-flag')
+                            : t(context, 'Flag', 'I-flag'),
                         style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 12,
                           fontWeight: FontWeight.w800,
-                          color: isFlagged ? kBrandOrange : kDarkText,
+                          color: isFlagged
+                              ? AppColors.brandRed
+                              : AppColors.textSecondary,
                         ),
                       ),
                     ],
@@ -1545,14 +2541,16 @@ class _QuestionHeaderCard extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: compact ? 10 : 18),
           Text(
             question,
-            style: const TextStyle(
-              fontSize: 20,
-              height: 1.4,
-              fontWeight: FontWeight.w800,
-              color: kDarkText,
+            style: TextStyle(
+              fontFamily: 'Poppins',
+              fontSize: compact ? 16.5 : 20,
+              height: compact ? 1.28 : 1.38,
+              fontWeight: FontWeight.w900,
+              color: AppColors.textPrimary,
+              letterSpacing: -0.2,
             ),
           ),
         ],
@@ -1566,39 +2564,52 @@ class _OptionCard extends StatelessWidget {
     required this.label,
     required this.text,
     required this.selected,
+    required this.enabled,
     required this.onTap,
+    required this.compact,
+    required this.maxTextLines,
   });
 
   final String label;
   final String text;
   final bool selected;
-  final VoidCallback onTap;
+  final bool enabled;
+  final VoidCallback? onTap;
+  final bool compact;
+  final int maxTextLines;
 
   @override
   Widget build(BuildContext context) {
-    final borderColor =
-        selected ? kBrandOrange : Colors.black.withOpacity(0.08);
-    final bgColor = selected ? kBrandOrange.withOpacity(0.08) : Colors.white;
+    final borderColor = selected ? AppColors.brandRed : AppColors.border;
+    final bgColor = selected ? AppColors.brandRedSoft : AppColors.surface;
 
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(18),
-        child: Container(
-          padding: const EdgeInsets.all(16),
+        onTap: enabled ? onTap : null,
+        borderRadius: BorderRadius.circular(compact ? 18 : 22),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          curve: Curves.easeOutCubic,
+          width: double.infinity,
+          padding: EdgeInsets.symmetric(
+            horizontal: compact ? 11 : 15,
+            vertical: compact ? 9 : 15,
+          ),
           decoration: BoxDecoration(
             color: bgColor,
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(compact ? 18 : 22),
             border: Border.all(
               color: borderColor,
-              width: selected ? 1.4 : 1,
+              width: selected ? 1.6 : 1,
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 12,
-                offset: const Offset(0, 6),
+                color: selected
+                    ? AppColors.brandRed.withOpacity(0.14)
+                    : AppColors.shadow,
+                blurRadius: selected ? 18 : 12,
+                offset: const Offset(0, 7),
               ),
             ],
           ),
@@ -1606,34 +2617,53 @@ class _OptionCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                width: 34,
-                height: 34,
+                width: compact ? 32 : 38,
+                height: compact ? 32 : 38,
                 decoration: BoxDecoration(
-                  color: selected ? kBrandOrange : Colors.grey.shade100,
-                  shape: BoxShape.circle,
+                  color: selected ? AppColors.brandRed : AppColors.surfaceSoft,
+                  borderRadius: BorderRadius.circular(compact ? 11 : 14),
                 ),
                 child: Center(
                   child: Text(
                     label,
                     style: TextStyle(
-                      color: selected ? Colors.white : Colors.black87,
+                      color: selected
+                          ? AppColors.textOnRed
+                          : AppColors.textSecondary,
+                      fontFamily: 'Poppins',
                       fontWeight: FontWeight.w900,
                     ),
                   ),
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: compact ? 10 : 13),
               Expanded(
-                child: Text(
-                  text,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    height: 1.45,
-                    fontWeight: FontWeight.w700,
-                    color: kDarkText,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 1),
+                  child: Text(
+                    text,
+                    maxLines: maxTextLines,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: compact ? 13.2 : 15,
+                      height: compact ? 1.28 : 1.45,
+                      fontWeight: FontWeight.w700,
+                      color: enabled
+                          ? AppColors.textPrimary
+                          : AppColors.textMuted,
+                    ),
                   ),
                 ),
               ),
+              if (selected) ...[
+                const SizedBox(width: 8),
+                const Icon(
+                  Icons.check_circle_rounded,
+                  color: AppColors.brandRed,
+                  size: 22,
+                ),
+              ],
             ],
           ),
         ),
@@ -1654,22 +2684,34 @@ class _HintCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(13),
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: kBrandOrange.withOpacity(0.08),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: kBrandOrange.withOpacity(0.18)),
+        color: AppColors.surfaceSoft,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppColors.border),
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: kBrandOrange, size: 18),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: AppColors.brandRedSoft,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: AppColors.brandRed, size: 18),
+          ),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
               text,
               style: const TextStyle(
-                height: 1.35,
+                fontFamily: 'Poppins',
+                fontSize: 13,
+                height: 1.4,
                 fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary,
               ),
             ),
           ),
@@ -1696,45 +2738,89 @@ class _SummaryHeaderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final statusColor = hasUnanswered ? AppColors.warning : AppColors.success;
+
     return Container(
-      padding: const EdgeInsets.all(16),
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: hasUnanswered
-              ? Colors.orange.withOpacity(0.25)
-              : Colors.black.withOpacity(0.06),
-        ),
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(26),
+        border: Border.all(color: statusColor.withOpacity(0.20)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 16,
-            offset: const Offset(0, 8),
+            color: AppColors.shadow,
+            blurRadius: 22,
+            offset: const Offset(0, 12),
           ),
         ],
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            t(context, 'Review all questions before you submit', 'Suriin ang lahat ng tanong bago ipasa'),
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w900,
-              color: kDarkText,
-            ),
-          ),
-          if (hasUnanswered) ...[
-            const SizedBox(height: 8),
-            Text(
-              t(context, '$unansweredCount question(s) still need an answer.', '$unansweredCount tanong pa ang kailangang sagutin.'),
-              style: const TextStyle(
-                color: Colors.orange,
-                fontWeight: FontWeight.w800,
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: statusColor.withOpacity(0.11),
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: Icon(
+                  hasUnanswered
+                      ? Icons.warning_amber_rounded
+                      : Icons.check_circle_outline_rounded,
+                  color: statusColor,
+                  size: 24,
+                ),
               ),
-            ),
-          ],
-          const SizedBox(height: 10),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      t(
+                        context,
+                        'Review before submitting',
+                        'Suriin bago ipasa',
+                      ),
+                      style: const TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 17,
+                        fontWeight: FontWeight.w900,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      hasUnanswered
+                          ? t(
+                              context,
+                              '$unansweredCount question(s) still need an answer.',
+                              '$unansweredCount tanong pa ang kailangang sagutin.',
+                            )
+                          : t(
+                              context,
+                              'All questions have an answer.',
+                              'Nasagutan na ang lahat ng tanong.',
+                            ),
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 13,
+                        height: 1.35,
+                        fontWeight: FontWeight.w700,
+                        color: statusColor,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
           _StatsRow(
             answered: answered,
             total: total,
@@ -1767,17 +2853,24 @@ class _SummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final statusColor = answered ? const Color(0xFF16A34A) : Colors.orange;
+    final statusColor = answered ? AppColors.success : AppColors.error;
+
+    final cardBackground =
+        answered ? AppColors.surface : AppColors.error.withOpacity(0.12);
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: answered ? Colors.white : const Color(0xFFFFFBEB),
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: statusColor.withOpacity(0.22)),
+        color: cardBackground,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(
+          color: answered
+              ? AppColors.success.withOpacity(0.18)
+              : AppColors.error.withOpacity(0.55),
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.07),
+            color: AppColors.shadow,
             blurRadius: 16,
             offset: const Offset(0, 8),
           ),
@@ -1792,14 +2885,15 @@ class _SummaryCard extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                 decoration: BoxDecoration(
-                  color: kBrandOrange.withOpacity(0.10),
+                  color: AppColors.brandRedSoft,
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
                   'Q$questionNumber',
                   style: const TextStyle(
+                    fontFamily: 'Poppins',
                     fontWeight: FontWeight.w900,
-                    color: kBrandOrange,
+                    color: AppColors.brandRed,
                   ),
                 ),
               ),
@@ -1808,63 +2902,50 @@ class _SummaryCard extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                 decoration: BoxDecoration(
-                  color: statusColor.withOpacity(0.12),
+                  color: statusColor.withOpacity(0.11),
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
-                  answered ? t(context, 'Answered', 'Nasagutan') : t(context, 'Unanswered', 'Hindi pa nasasagutan'),
+                  answered
+                      ? t(context, 'Answered', 'Nasagutan')
+                      : t(context, 'Unanswered', 'Hindi pa nasasagutan'),
                   style: TextStyle(
+                    fontFamily: 'Poppins',
                     fontWeight: FontWeight.w900,
                     color: statusColor,
                     fontSize: 12,
                   ),
                 ),
               ),
-              if (flagged) ...[
-                const SizedBox(width: 8),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-                  decoration: BoxDecoration(
-                    color: kBrandOrange.withOpacity(0.12),
-                    borderRadius: BorderRadius.circular(999),
-                  ),
-                  child: Text(
-                    t(context, 'Flagged', 'Naka-flag'),
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w900,
-                      color: kBrandOrange,
-                      fontSize: 12,
-                    ),
-                  ),
-                ),
-              ],
               const Spacer(),
               IconButton(
+                tooltip: t(context, 'Flag', 'I-flag'),
                 onPressed: onFlagTap,
                 icon: Icon(
                   flagged ? Icons.flag_rounded : Icons.outlined_flag_rounded,
-                  color: flagged ? kBrandOrange : Colors.grey.shade600,
+                  color: flagged ? AppColors.brandRed : AppColors.textSecondary,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 9),
           Text(
             question,
             style: const TextStyle(
+              fontFamily: 'Poppins',
               fontWeight: FontWeight.w800,
-              fontSize: 15,
+              fontSize: 14.5,
               height: 1.4,
-              color: kDarkText,
+              color: AppColors.textPrimary,
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 11),
           Text(
             selectedAnswer,
             style: TextStyle(
-              color: answered ? Colors.black87 : Colors.orange.shade800,
-              fontWeight: FontWeight.w600,
+              fontFamily: 'Poppins',
+              color: answered ? AppColors.textSecondary : AppColors.error,
+              fontWeight: FontWeight.w800,
               height: 1.35,
             ),
           ),
@@ -1873,21 +2954,23 @@ class _SummaryCard extends StatelessWidget {
             alignment: Alignment.centerRight,
             child: ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
-                backgroundColor: kBrandOrange,
+                backgroundColor: AppColors.primaryButton,
+                elevation: 0,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(14),
                 ),
               ),
               onPressed: onEdit,
               icon: const Icon(
                 Icons.edit_rounded,
-                color: Colors.white,
-                size: 18,
+                color: AppColors.textOnRed,
+                size: 17,
               ),
               label: Text(
                 t(context, 'Edit', 'I-edit'),
                 style: const TextStyle(
-                  color: Colors.white,
+                  color: AppColors.textOnRed,
+                  fontFamily: 'Poppins',
                   fontWeight: FontWeight.w900,
                 ),
               ),
@@ -1910,47 +2993,77 @@ class _ReviewTopCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final percent = total == 0 ? 0 : ((score / total) * 100).round();
+    final strong = percent >= 75;
+    final color = strong ? AppColors.success : AppColors.warning;
+
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: Colors.black.withOpacity(0.06)),
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(26),
+        border: Border.all(color: color.withOpacity(0.18)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 16,
-            offset: const Offset(0, 8),
+            color: AppColors.shadow,
+            blurRadius: 22,
+            offset: const Offset(0, 12),
           ),
         ],
       ),
       child: Column(
         children: [
+          Icon(
+            strong
+                ? Icons.emoji_events_rounded
+                : Icons.tips_and_updates_rounded,
+            color: color,
+            size: 38,
+          ),
+          const SizedBox(height: 8),
           Text(
-            t(context, 'Pre-Assessment Result', 'Resulta ng Paunang Pagsusulit'),
+            t(
+              context,
+              'Pre-Assessment Result',
+              'Resulta ng Paunang Pagsusulit',
+            ),
+            textAlign: TextAlign.center,
             style: const TextStyle(
+              fontFamily: 'Poppins',
               fontSize: 18,
               fontWeight: FontWeight.w900,
-              color: kDarkText,
+              color: AppColors.textPrimary,
             ),
           ),
           const SizedBox(height: 10),
           Text(
             '$score / $total',
             style: const TextStyle(
-              fontSize: 30,
+              fontFamily: 'Poppins',
+              fontSize: 34,
               fontWeight: FontWeight.w900,
-              color: kBrandOrange,
+              color: AppColors.textPrimary,
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 6),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(999),
+            child: LinearProgressIndicator(
+              value: total == 0 ? 0.0 : score / total,
+              minHeight: 9,
+              backgroundColor: AppColors.surfaceSoft,
+              valueColor: AlwaysStoppedAnimation<Color>(color),
+            ),
+          ),
+          const SizedBox(height: 8),
           Text(
-            t(context, 'This pre-assessment is not graded', 'Hindi graded ang paunang pagsusulit na ito'),
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-              color: Color(0xFFEA580C),
+            '$percent%',
+            style: TextStyle(
+              fontFamily: 'Poppins',
+              fontSize: 16,
+              fontWeight: FontWeight.w900,
+              color: color,
             ),
           ),
         ],
@@ -1978,17 +3091,17 @@ class _ReviewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final statusColor = isCorrect ? const Color(0xFF16A34A) : kBrandOrange;
+    final statusColor = isCorrect ? AppColors.success : AppColors.error;
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(22),
         border: Border.all(color: statusColor.withOpacity(0.18)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.07),
+            color: AppColors.shadow,
             blurRadius: 16,
             offset: const Offset(0, 8),
           ),
@@ -2003,12 +3116,13 @@ class _ReviewCard extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                 decoration: BoxDecoration(
-                  color: statusColor.withOpacity(0.12),
+                  color: statusColor.withOpacity(0.11),
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
                   'Q$questionNumber',
                   style: TextStyle(
+                    fontFamily: 'Poppins',
                     fontWeight: FontWeight.w900,
                     color: statusColor,
                   ),
@@ -2019,87 +3133,144 @@ class _ReviewCard extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                 decoration: BoxDecoration(
-                  color: statusColor.withOpacity(0.12),
+                  color: statusColor.withOpacity(0.11),
                   borderRadius: BorderRadius.circular(999),
                 ),
-                child: Text(
-                  isCorrect ? t(context, 'Correct', 'Tama') : t(context, 'Incorrect', 'Mali'),
-                  style: TextStyle(
-                    fontWeight: FontWeight.w900,
-                    color: statusColor,
-                    fontSize: 12,
-                  ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      isCorrect ? Icons.check_rounded : Icons.close_rounded,
+                      color: statusColor,
+                      size: 15,
+                    ),
+                    const SizedBox(width: 5),
+                    Text(
+                      isCorrect
+                          ? t(context, 'Correct', 'Tama')
+                          : t(context, 'Incorrect', 'Mali'),
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.w900,
+                        color: statusColor,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 11),
           Text(
             question,
             style: const TextStyle(
+              fontFamily: 'Poppins',
               fontWeight: FontWeight.w800,
-              fontSize: 15,
-              height: 1.4,
-              color: kDarkText,
+              fontSize: 14.5,
+              height: 1.42,
+              color: AppColors.textPrimary,
             ),
           ),
-          const SizedBox(height: 12),
-          Text(
-            t(context, 'Answer Review', 'Pagsusuri ng Sagot'),
-            style: const TextStyle(
-              fontWeight: FontWeight.w900,
-              color: Colors.black54,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            userAnswer,
-            style: TextStyle(
-              color: statusColor,
-              fontWeight: FontWeight.w700,
-              height: 1.35,
-            ),
+          const SizedBox(height: 14),
+          _AnswerBlock(
+            title: t(context, 'Your Answer', 'Sagot Mo'),
+            body: userAnswer,
+            color: statusColor,
           ),
           if (!isCorrect) ...[
             const SizedBox(height: 12),
-            Text(
-              t(context, 'Correct Answer', 'Tamang Sagot'),
-              style: const TextStyle(
-                fontWeight: FontWeight.w900,
-                color: Colors.black54,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              correctAnswer,
-              style: const TextStyle(
-                color: Color(0xFF16A34A),
-                fontWeight: FontWeight.w700,
-                height: 1.35,
-              ),
+            _AnswerBlock(
+              title: t(context, 'Correct Answer', 'Tamang Sagot'),
+              body: correctAnswer,
+              color: AppColors.success,
             ),
           ],
           if (!isCorrect &&
               explanation != null &&
               explanation!.trim().isNotEmpty) ...[
             const SizedBox(height: 12),
-            Text(
-              t(context, 'Why this is wrong', 'Bakit mali ito'),
-              style: const TextStyle(
-                fontWeight: FontWeight.w900,
-                color: Colors.black54,
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(13),
+              decoration: BoxDecoration(
+                color: AppColors.surfaceSoft,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppColors.border),
               ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              explanation!,
-              style: const TextStyle(
-                color: kDarkText,
-                fontWeight: FontWeight.w600,
-                height: 1.45,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    t(context, 'Explanation', 'Paliwanag'),
+                    style: const TextStyle(
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.w900,
+                      color: AppColors.brandRed,
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    explanation!,
+                    style: const TextStyle(
+                      fontFamily: 'Poppins',
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w600,
+                      height: 1.45,
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
+        ],
+      ),
+    );
+  }
+}
+
+class _AnswerBlock extends StatelessWidget {
+  const _AnswerBlock({
+    required this.title,
+    required this.body,
+    required this.color,
+  });
+
+  final String title;
+  final String body;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(13),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: color.withOpacity(0.16)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              fontFamily: 'Poppins',
+              fontWeight: FontWeight.w900,
+              color: color,
+            ),
+          ),
+          const SizedBox(height: 5),
+          Text(
+            body,
+            style: const TextStyle(
+              fontFamily: 'Poppins',
+              color: AppColors.textPrimary,
+              fontWeight: FontWeight.w700,
+              height: 1.4,
+            ),
+          ),
         ],
       ),
     );

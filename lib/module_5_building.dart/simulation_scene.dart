@@ -1,7 +1,6 @@
 // simulation_scene.dart
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import '../unity_launcher.dart';
 import '../profile_progress_sync.dart';
@@ -28,6 +27,9 @@ class _SimulationScene5State extends State<SimulationScene5> {
   String? _moduleId;
   String? _simulationAttemptId;
   bool _simulationMarkedComplete = false;
+  // FIX: Add guard to prevent multiple Unity launches from button clicks
+  // WHY: Prevents duplicate onPressed calls while Unity is launching/running, avoiding ANR and freeze
+  bool _isUnityLaunching = false;
 
   @override
   void initState() {
@@ -85,6 +87,12 @@ class _SimulationScene5State extends State<SimulationScene5> {
   }
 
   Future<void> _openSceneFlow() async {
+    // FIX: Check if Unity is already launching to prevent multiple concurrent launches
+    // WHY: User cannot tap "Start Simulation" button multiple times during the same launch
+    if (_isUnityLaunching) {
+      return;
+    }
+
     final picked = await _showScenePickerPopup();
     if (!mounted || picked == null) return;
 
@@ -108,6 +116,13 @@ class _SimulationScene5State extends State<SimulationScene5> {
 
     var unityReturned = false;
     try {
+      // FIX: Set flag before launching Unity
+      // WHY: Button onPressed can now check this flag and exit early
+      // _isUnityLaunching = true; // old: no setState — widget never rebuilt, button stayed enabled
+      // FIX: Wrap in setState so the widget rebuilds and button visually disables
+      // WHY: Without setState, enabled: !_isUnityLaunching in _ModuleCard never updates → button stays tappable
+      setState(() { _isUnityLaunching = true; });
+
       if (_moduleId == null || _simulationAttemptId == null) {
         await _startSimulationTracking();
       }
@@ -148,12 +163,35 @@ class _SimulationScene5State extends State<SimulationScene5> {
         ),
       );
     } finally {
+      // FIX: Reset flag after Unity returns
+      // WHY: Allows button to be clicked again for the next simulation
+      // _isUnityLaunching = false; // old: no setState — button stayed visually disabled
+      // FIX: Use setState with mounted guard so button visually re-enables after Unity closes
+      // WHY: Without setState the widget never rebuilds; button appears frozen/disabled
+      if (mounted) {
+        setState(() { _isUnityLaunching = false; });
+      } else {
+        _isUnityLaunching = false;
+      }
+
       if (unityReturned && mounted) {
         final nav = Navigator.of(context);
-        SchedulerBinding.instance.addPostFrameCallback((_) {
-          if (!mounted) return;
+        // // FIX: Remove addPostFrameCallback — unreliable after Unity returns
+        // // WHY: addPostFrameCallback only fires after the next rendered frame. When Flutter resumes
+        // //      from Unity being in the foreground, the engine may not immediately schedule a frame.
+        // //      The pop is delayed indefinitely → Navigator.push in _goToSim never returns →
+        // //      _loadModuleProgressFromDatabase() never called → progress bar never updates.
+        // SchedulerBinding.instance.addPostFrameCallback((_) {
+        //   if (!mounted) return;
+        //   nav.pop(true);
+        // });
+        // FIX: Call nav.pop(true) directly instead of deferring to a frame callback
+        // WHY: Direct pop fires immediately when the finally block runs, before any frame scheduling.
+        //      This guarantees Navigator.push() in _goToSim() returns promptly so that
+        //      _loadModuleProgressFromDatabase() runs and the progress bar updates.
+        if (nav.canPop()) {
           nav.pop(true);
-        });
+        }
       }
     }
   }
@@ -246,98 +284,75 @@ class _SimulationScene5State extends State<SimulationScene5> {
     return Scaffold(
       body: Stack(
         children: [
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            height: 900,
+          Positioned.fill(
             child: Image.asset('assets/bg.png', fit: BoxFit.cover),
           ),
           SafeArea(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 15),
                 Padding(
-                  padding: const EdgeInsets.only(left: 9, right: 25),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  padding: const EdgeInsets.fromLTRB(9, 15, 16, 0),
+                  child: Row(
                     children: [
                       IconButton(
                         padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
+                        constraints: const BoxConstraints(
+                          minWidth: 44,
+                          minHeight: 44,
+                        ),
                         icon: const Icon(Icons.close, color: Colors.white),
                         onPressed: () => Navigator.maybePop(context),
                       ),
-                      const SizedBox(height: 15),
-                      Center(
+                      Expanded(
                         child: Text(
                           _isTl ? "Simulasyon" : "Simulation Scenes",
+                          textAlign: TextAlign.center,
                           style: const TextStyle(
                             color: Colors.white,
-                            fontSize: 30,
+                            fontSize: 26,
                             fontWeight: FontWeight.bold,
                             fontFamily: 'Poppins',
+                            height: 1.25,
                           ),
                         ),
                       ),
-                      const SizedBox(height: 15),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 18,
-                                vertical: 10,
-                              ),
-                              decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                  colors: [accent, accent2],
-                                ),
-                                borderRadius: BorderRadius.circular(10),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.18),
-                                    blurRadius: 10,
-                                    offset: const Offset(0, 6),
-                                  ),
-                                ],
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const Icon(
-                                    Icons.local_fire_department_rounded,
-                                    color: Colors.white,
-                                    size: 18,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    _isTl ? "MODYUL 5" : "MODULE 5",
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                      fontFamily: 'Poppins',
-                                    ),
-                                  ),
-                                ],
-                              ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 7,
+                        ),
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [accent, accent2],
+                          ),
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.18),
+                              blurRadius: 8,
+                              offset: const Offset(0, 4),
                             ),
-                            const SizedBox(width: 15),
-                            Expanded(
-                              child: Text(
-                                _isTl
-                                    ? "Sunog sa Tenement: Ano Ito, Karaniwang Sanhi, at Ano ang Dapat Gawin"
-                                    : "Tenement Fire: What It Is, Common Causes, and What To Do",
-                                style: const TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.w600,
-                                  fontFamily: 'Poppins',
-                                ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.apartment_rounded,
+                              color: Colors.white,
+                              size: 15,
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              _isTl ? "MODYUL 5" : "MODULE 5",
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w800,
+                                color: Colors.white,
+                                fontFamily: 'Poppins',
+                                fontSize: 12,
                               ),
                             ),
                           ],
@@ -346,7 +361,22 @@ class _SimulationScene5State extends State<SimulationScene5> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 30),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(18, 10, 18, 0),
+                  child: Text(
+                    _isTl
+                        ? "Sunog sa Tenement: Ano Ito, Karaniwang Sanhi, at Ano ang Dapat Gawin"
+                        : "Tenement Fire: What It Is, Common Causes, and What To Do",
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: 'Poppins',
+                      height: 1.35,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
                 Expanded(
                   child: ListView(
                     padding: const EdgeInsets.fromLTRB(16, 14, 16, 18),
@@ -360,6 +390,9 @@ class _SimulationScene5State extends State<SimulationScene5> {
                         asset: "assets/condo.jpg",
                         buttonText: _isTl ? "Eksena" : "Scene",
                         onPressed: _openSceneFlow,
+                        // FIX: Pass enabled state so button visually disables while Unity is running
+                        // WHY: Without this, button stays tappable and user can launch Unity multiple times → ANR
+                        enabled: !_isUnityLaunching,
                       ),
                     ],
                   ),
@@ -380,6 +413,9 @@ class _ModuleCard extends StatelessWidget {
   final String asset;
   final String buttonText;
   final VoidCallback onPressed;
+  // FIX: Add enabled parameter to disable button while Unity is launching
+  // WHY: Prevents multiple concurrent Unity launches
+  final bool enabled;
 
   const _ModuleCard({
     required this.moduleLabel,
@@ -388,6 +424,7 @@ class _ModuleCard extends StatelessWidget {
     required this.asset,
     required this.buttonText,
     required this.onPressed,
+    this.enabled = true,
   });
 
   static const Color brandAmber = Color(0xFF7C3AED);
@@ -420,7 +457,7 @@ class _ModuleCard extends StatelessWidget {
                 height: 78,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF7F7F7),
+                  color: const Color(0xFFEDE9FE),
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: Image.asset(asset, fit: BoxFit.contain),
@@ -445,7 +482,7 @@ class _ModuleCard extends StatelessWidget {
                       description,
                       style: const TextStyle(
                         fontFamily: 'Poppins',
-                        color: Color(0xFF222222),
+                        color: Color(0xFF2E1065),
                         fontSize: 12.8,
                         height: 1.3,
                         fontWeight: FontWeight.w500,
@@ -464,8 +501,13 @@ class _ModuleCard extends StatelessWidget {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
+                            // FIX: Disable button while Unity is launching
+                            // WHY: User cannot click the button multiple times during launch
+                            disabledBackgroundColor: brandAmber.withOpacity(0.5),
                           ),
-                          onPressed: onPressed,
+                          // FIX: Check enabled parameter before allowing onPressed
+                          // WHY: Prevents multiple concurrent Unity launches
+                          onPressed: enabled ? onPressed : null,
                           child: Text(
                             buttonText,
                             style: const TextStyle(
@@ -531,7 +573,8 @@ class _ScenePickerPopup extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: Container(
-        width: 345,
+        width: MediaQuery.of(context).size.width - 40,
+        constraints: const BoxConstraints(maxWidth: 380),
         padding: const EdgeInsets.fromLTRB(18, 16, 18, 18),
         decoration: BoxDecoration(
           color: Colors.white.withOpacity(0.98),
@@ -760,7 +803,8 @@ class _SceneConfirmPopup extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: Container(
-        width: 345,
+        width: MediaQuery.of(context).size.width - 40,
+        constraints: const BoxConstraints(maxWidth: 380),
         padding: const EdgeInsets.fromLTRB(18, 16, 18, 18),
         decoration: BoxDecoration(
           color: Colors.white.withOpacity(0.98),
@@ -816,7 +860,7 @@ class _SceneConfirmPopup extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: const Color(0xFFF7F7F7),
+                color: const Color(0xFFEDE9FE),
                 borderRadius: BorderRadius.circular(18),
                 border: Border.all(color: Colors.black.withOpacity(0.06)),
               ),

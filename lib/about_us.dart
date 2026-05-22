@@ -70,7 +70,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
   }
 
   Future<void> _goToProfile() async {
-    widget.onRequestTabChange?.call(2);
+    widget.onRequestTabChange?.call(1);
   }
 
   void _onSearchChanged(String v) => setState(() => _searchQuery = v);

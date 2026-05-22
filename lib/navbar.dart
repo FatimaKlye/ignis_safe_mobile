@@ -239,7 +239,6 @@ class _FloatingNavBarState extends State<FloatingNavBar>
   String _getLabel(int index) {
     final labels = [
       context.tr('learn'),
-      context.tr('fire_module'),
       context.tr('profile'),
       context.tr('about'),
     ];

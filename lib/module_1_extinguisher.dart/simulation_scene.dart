@@ -1,12 +1,11 @@
 // simulation_scene.dart
-import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
-import '../unity_launcher.dart';
+
+import '../module_progress_db.dart';
 import '../profile_progress_sync.dart';
 import '../simulation_history_service.dart';
-import '../module_progress_db.dart';
+import '../unity_launcher.dart';
 
 class SimulationScene extends StatefulWidget {
   const SimulationScene({super.key});
@@ -19,6 +18,8 @@ class _SimulationSceneState extends State<SimulationScene> {
   static const Color accent = Color(0xFFB11217);
   static const Color accent2 = Color(0xFF7A1014);
   static const int _moduleNo = 1;
+  static const String _unitySceneName = 'FireExtinguisher_PASS';
+  static const String _sceneLabel = 'Module 1 - Scene 1';
 
   final SimulationHistoryService _simulationHistoryService =
       SimulationHistoryService();
@@ -26,30 +27,20 @@ class _SimulationSceneState extends State<SimulationScene> {
   String? _moduleId;
   String? _simulationAttemptId;
   bool _simulationMarkedComplete = false;
+  bool _isUnityLaunching = false;
+  String? _launchError;
+
   bool get _isTl => Localizations.localeOf(context).languageCode == 'tl';
 
   @override
   void initState() {
     super.initState();
-    _startSimulationTracking();
-  }
 
-  String _sceneLabelFor(int scene) {
-    switch (scene) {
-      case 1:
-        return 'Module 1 - Scene 1';
-      default:
-        return 'Module 1 - Unknown Scene';
-    }
-  }
-
-  String? _unitySceneNameFor(int scene) {
-    switch (scene) {
-      case 1:
-        return 'FireExtinguisher_PASS';
-      default:
-        return null;
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _openSceneFlow();
+      }
+    });
   }
 
   Future<void> _startSimulationTracking() async {
@@ -84,39 +75,26 @@ class _SimulationSceneState extends State<SimulationScene> {
   }
 
   Future<void> _openSceneFlow() async {
-    final picked = await _showScenePickerPopup();
-    if (!mounted || picked == null) return;
-
-    final confirmed = await _showSceneConfirmPopup(picked);
-    if (!mounted || confirmed != true) return;
-
-    final unitySceneName = _unitySceneNameFor(picked);
-
-    if (unitySceneName == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            _isTl
-                ? 'Ang Eksena $picked ay hindi pa available sa Unity.'
-                : 'Scene $picked is not yet available in Unity.',
-          ),
-        ),
-      );
-      return;
-    }
+    if (_isUnityLaunching) return;
 
     var unityReturned = false;
+
     try {
+      setState(() {
+        _isUnityLaunching = true;
+        _launchError = null;
+      });
+
       if (_moduleId == null || _simulationAttemptId == null) {
         await _startSimulationTracking();
       }
 
-      final unityResult = await UnityLauncher.openScene(unitySceneName);
+      final unityResult = await UnityLauncher.openScene(_unitySceneName);
       unityReturned = true;
 
       if (!mounted) return;
 
-      await ProfileProgressSync.updateLastSimulation(_sceneLabelFor(picked));
+      await ProfileProgressSync.updateLastSimulation(_sceneLabel);
 
       if (unityResult.completed == true) {
         await _completeSimulationTracking();
@@ -126,759 +104,262 @@ class _SimulationSceneState extends State<SimulationScene> {
       }
     } on PlatformException catch (e) {
       if (!mounted) return;
+
+      final message = _isTl
+          ? 'Hindi mabuksan ang Unity: ${e.message ?? e.code}'
+          : 'Failed to open Unity: ${e.message ?? e.code}';
+
+      setState(() => _launchError = message);
+
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            _isTl
-                ? 'Hindi mabuksan ang Unity: ${e.message ?? e.code}'
-                : 'Failed to open Unity: ${e.message ?? e.code}',
-          ),
-        ),
+        SnackBar(content: Text(message)),
       );
     } catch (e) {
       if (!mounted) return;
+
+      final message = _isTl
+          ? 'Hindi ma-save ang progreso ng simulasyon: $e'
+          : 'Failed to save simulation progress: $e';
+
+      setState(() => _launchError = message);
+
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            _isTl
-                ? 'Hindi ma-save ang progreso ng simulasyon: $e'
-                : 'Failed to save simulation progress: $e',
-          ),
-        ),
+        SnackBar(content: Text(message)),
       );
     } finally {
+      if (mounted) {
+        setState(() => _isUnityLaunching = false);
+      } else {
+        _isUnityLaunching = false;
+      }
+
       if (unityReturned && mounted) {
         final nav = Navigator.of(context);
-        SchedulerBinding.instance.addPostFrameCallback((_) {
-          if (!mounted) return;
+        if (nav.canPop()) {
           nav.pop(true);
-        });
+        }
       }
     }
   }
 
-  Future<int?> _showScenePickerPopup() {
-    return showGeneralDialog<int>(
-      context: context,
-      barrierLabel: "scene_picker",
-      barrierDismissible: true,
-      barrierColor: Colors.black.withOpacity(0.35),
-      transitionDuration: const Duration(milliseconds: 220),
-      pageBuilder: (_, __, ___) {
-        return SafeArea(
-          child: Stack(
-            children: [
-              BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-                child: Container(color: Colors.transparent),
-              ),
-              Center(
-                child: _ScenePickerPopup(
-                  onClose: () => Navigator.pop(context),
-                  onPickScene1: () => Navigator.pop(context, 1),
-                  isTl: _isTl,
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-      transitionBuilder: (_, anim, __, child) {
-        final curved = CurvedAnimation(
-          parent: anim,
-          curve: Curves.easeOutCubic,
-        );
-        return FadeTransition(
-          opacity: curved,
-          child: ScaleTransition(
-            scale: Tween<double>(begin: 0.97, end: 1.0).animate(curved),
-            child: child,
-          ),
-        );
-      },
-    );
-  }
-
-  Future<bool?> _showSceneConfirmPopup(int scene) {
-    return showGeneralDialog<bool>(
-      context: context,
-      barrierLabel: "scene_confirm",
-      barrierDismissible: true,
-      barrierColor: Colors.black.withOpacity(0.35),
-      transitionDuration: const Duration(milliseconds: 220),
-      pageBuilder: (_, __, ___) {
-        return SafeArea(
-          child: Stack(
-            children: [
-              BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-                child: Container(color: Colors.transparent),
-              ),
-              Center(
-                child: _SceneConfirmPopup(
-                  scene: scene,
-                  onClose: () => Navigator.pop(context, false),
-                  onStart: () => Navigator.pop(context, true),
-                  isTl: _isTl,
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-      transitionBuilder: (_, anim, __, child) {
-        final curved = CurvedAnimation(
-          parent: anim,
-          curve: Curves.easeOutCubic,
-        );
-        return FadeTransition(
-          opacity: curved,
-          child: ScaleTransition(
-            scale: Tween<double>(begin: 0.97, end: 1.0).animate(curved),
-            child: child,
-          ),
-        );
-      },
-    );
+  void _close() {
+    if (Navigator.of(context).canPop()) {
+      Navigator.of(context).pop(false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final title = _isTl
+        ? 'Binubuksan ang Eksena 1'
+        : 'Opening Scene 1';
+    final subtitle = _isTl
+        ? 'PASS Method Tutorial'
+        : 'PASS Method Tutorial';
+    final message = _isTl
+        ? 'Ididirekta ka sa Unity simulation. Mangyaring maghintay.'
+        : 'Redirecting you to the Unity simulation. Please wait.';
+    final retryText = _isTl ? 'SUBUKAN MULI' : 'RETRY';
+
     return Scaffold(
       body: Stack(
         children: [
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            height: 900,
+          Positioned.fill(
             child: Image.asset('assets/bg.png', fit: BoxFit.cover),
           ),
           SafeArea(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 15),
                 Padding(
-                  padding: const EdgeInsets.only(left: 9, right: 25),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  padding: const EdgeInsets.fromLTRB(9, 15, 16, 0),
+                  child: Row(
                     children: [
                       IconButton(
                         padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
+                        constraints: const BoxConstraints(
+                          minWidth: 44,
+                          minHeight: 44,
+                        ),
                         icon: const Icon(Icons.close, color: Colors.white),
-                        onPressed: () => Navigator.maybePop(context),
+                        onPressed: _close,
                       ),
-                      const SizedBox(height: 15),
-                      SizedBox(
-                        width: double.infinity,
+                      Expanded(
                         child: Text(
-                          _isTl ? "Simulasyon" : "Simulation",
+                          _isTl ? 'Simulasyon' : 'Simulation',
                           textAlign: TextAlign.center,
                           style: const TextStyle(
                             color: Colors.white,
-                            fontSize: 30,
+                            fontSize: 26,
                             fontWeight: FontWeight.bold,
                             fontFamily: 'Poppins',
                             height: 1.25,
                           ),
                         ),
                       ),
-                      const SizedBox(height: 15),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 25),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 18,
-                                vertical: 10,
-                              ),
-                              decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                  colors: [accent, accent2],
-                                ),
-                                borderRadius: BorderRadius.circular(10),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.18),
-                                    blurRadius: 10,
-                                    offset: const Offset(0, 6),
-                                  ),
-                                ],
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    Icons.bolt_rounded,
-                                    color: Colors.white,
-                                    size: 18,
-                                  ),
-                                  SizedBox(width: 8),
-                                  Text(
-                                    _isTl ? "MODYUL 1" : "MODULE 1",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                      fontFamily: 'Poppins',
-                                    ),
-                                  ),
-                                ],
-                              ),
+                      const SizedBox(width: 44),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Center(
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        final compact = constraints.maxWidth < 360;
+
+                        return Container(
+                          width: double.infinity,
+                          margin: EdgeInsets.symmetric(
+                            horizontal: compact ? 18 : 24,
+                          ),
+                          constraints: const BoxConstraints(maxWidth: 430),
+                          padding: EdgeInsets.all(compact ? 18 : 22),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.96),
+                            borderRadius: BorderRadius.circular(24),
+                            border: Border.all(
+                              color: Colors.black.withOpacity(0.06),
                             ),
-                            const SizedBox(width: 15),
-                            Expanded(
-                              child: Text(
-                                _isTl
-                                    ? "Pamatay-Sunog: Mga Batayan, Uri, at Tamang Paggamit"
-                                    : "Fire Extinguisher: Basics, Types, and How to Use",
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.18),
+                                blurRadius: 24,
+                                offset: const Offset(0, 12),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                width: compact ? 60 : 68,
+                                height: compact ? 60 : 68,
+                                decoration: BoxDecoration(
+                                  gradient: const LinearGradient(
+                                    colors: [accent, accent2],
+                                  ),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: const Icon(
+                                  Icons.sports_esports_rounded,
+                                  color: Colors.white,
+                                  size: 34,
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: accent.withOpacity(0.10),
+                                  borderRadius: BorderRadius.circular(999),
+                                ),
+                                child: Text(
+                                  _isTl ? 'MODYUL 1' : 'MODULE 1',
+                                  style: const TextStyle(
+                                    color: accent,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w900,
+                                    fontFamily: 'Poppins',
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                title,
+                                textAlign: TextAlign.center,
                                 style: TextStyle(
-                                  color: Colors.black,
+                                  color: const Color(0xFF111827),
+                                  fontSize: compact ? 19 : 21,
+                                  fontWeight: FontWeight.w900,
+                                  height: 1.2,
+                                  fontFamily: 'Poppins',
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                subtitle,
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  color: accent,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w800,
+                                  height: 1.3,
+                                  fontFamily: 'Poppins',
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                _launchError ?? message,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: _launchError == null
+                                      ? const Color(0xFF4B5563)
+                                      : accent,
+                                  fontSize: 13,
+                                  height: 1.45,
                                   fontWeight: FontWeight.w600,
                                   fontFamily: 'Poppins',
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 30),
-                Expanded(
-                  child: ListView(
-                    padding: const EdgeInsets.fromLTRB(16, 14, 16, 18),
-                    children: [
-                      _ModuleCard(
-                        moduleLabel: _isTl ? "MODYUL 1" : "MODULE 1",
-                        title: _isTl ? "PAMATAY-SUNOG" : "FIRE EXTINGUISHER",
-                        description: _isTl
-                            ? "Alamin ang tama at ligtas na paggamit ng pamatay-sunog para sa epektibong pagtugon sa emerhensiyang may sunog."
-                            : "Learn the proper and safe use of fire extinguishers for effective response during fire emergencies.",
-                        asset: "assets/fire_ex.png",
-                        buttonText: _isTl ? "Eksena" : "Scene",
-                        onPressed: _openSceneFlow,
-                      ),
-                    ],
+                              const SizedBox(height: 20),
+                              if (_isUnityLaunching) ...[
+                                const CircularProgressIndicator(
+                                  color: accent,
+                                ),
+                              ] else if (_launchError != null) ...[
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: DecoratedBox(
+                                    decoration: BoxDecoration(
+                                      gradient: const LinearGradient(
+                                        colors: [accent, accent2],
+                                      ),
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                    child: ElevatedButton.icon(
+                                      style: ElevatedButton.styleFrom(
+                                        elevation: 0,
+                                        backgroundColor: Colors.transparent,
+                                        shadowColor: Colors.transparent,
+                                        foregroundColor: Colors.white,
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 14,
+                                          horizontal: 12,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(16),
+                                        ),
+                                      ),
+                                      onPressed: _openSceneFlow,
+                                      icon: const Icon(
+                                        Icons.refresh_rounded,
+                                        size: 22,
+                                      ),
+                                      label: Text(
+                                        retryText,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w900,
+                                          fontFamily: 'Poppins',
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                        );
+                      },
+                    ),
                   ),
                 ),
               ],
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _ModuleCard extends StatelessWidget {
-  final String moduleLabel;
-  final String title;
-  final String description;
-  final String asset;
-  final String buttonText;
-  final VoidCallback onPressed;
-
-  const _ModuleCard({
-    required this.moduleLabel,
-    required this.title,
-    required this.description,
-    required this.asset,
-    required this.buttonText,
-    required this.onPressed,
-  });
-
-  static const Color brandRed = Color(0xFFB11217);
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        Container(
-          margin: const EdgeInsets.only(top: 12),
-          padding: const EdgeInsets.fromLTRB(16, 22, 16, 16),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.92),
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: Colors.black.withOpacity(0.06)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.16),
-                blurRadius: 16,
-                offset: const Offset(0, 8),
-              ),
-            ],
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: 78,
-                height: 78,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF7F7F7),
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Image.asset(asset, fit: BoxFit.contain),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: const TextStyle(
-                        fontFamily: 'Poppins',
-                        color: brandRed,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 0.2,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      description,
-                      style: const TextStyle(
-                        fontFamily: 'Poppins',
-                        color: Color(0xFF222222),
-                        fontSize: 12.8,
-                        height: 1.3,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(height: 14),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: SizedBox(
-                        height: 34,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: brandRed,
-                            elevation: 8,
-                            padding: const EdgeInsets.symmetric(horizontal: 18),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                          onPressed: onPressed,
-                          child: Text(
-                            buttonText,
-                            style: const TextStyle(
-                              fontFamily: 'Poppins',
-                              fontSize: 13,
-                              fontWeight: FontWeight.w800,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-        Positioned(
-          top: 0,
-          left: 14,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
-            decoration: BoxDecoration(
-              color: brandRed,
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.22),
-                  blurRadius: 10,
-                  offset: const Offset(0, 6),
-                ),
-              ],
-            ),
-            child: Text(
-              moduleLabel,
-              style: const TextStyle(
-                fontFamily: 'Poppins',
-                color: Colors.white,
-                fontSize: 12,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _ScenePickerPopup extends StatelessWidget {
-  final VoidCallback onClose;
-  final VoidCallback onPickScene1;
-  final bool isTl;
-
-  const _ScenePickerPopup({
-    required this.onClose,
-    required this.onPickScene1,
-    required this.isTl,
-  });
-
-  static const Color brandRed = Color(0xFFB11217);
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: Container(
-        width: 345,
-        padding: const EdgeInsets.fromLTRB(18, 16, 18, 18),
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.98),
-          borderRadius: BorderRadius.circular(26),
-          border: Border.all(color: Colors.black.withOpacity(0.06)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.18),
-              blurRadius: 30,
-              offset: const Offset(0, 18),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              children: [
-                Container(
-                  width: 38,
-                  height: 38,
-                  decoration: BoxDecoration(
-                    color: brandRed.withOpacity(0.10),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(
-                    Icons.playlist_add_check_rounded,
-                    color: brandRed,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    isTl ? "Pumili ng Eksena" : "Choose a Scene",
-                    style: TextStyle(
-                      fontFamily: 'Poppins',
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.black87,
-                    ),
-                  ),
-                ),
-                IconButton(
-                  onPressed: onClose,
-                  icon: const Icon(Icons.close_rounded),
-                  color: Colors.black54,
-                  splashRadius: 18,
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            Text(
-              isTl
-                  ? "Ang Modyul 1 (Pamatay-Sunog) ay kasalukuyang may isang available na eksena."
-                  : "Module 1 (Fire Extinguisher) currently has one scene available.",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontFamily: 'Poppins',
-                fontSize: 12.5,
-                height: 1.35,
-                color: Colors.black.withOpacity(0.55),
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            const SizedBox(height: 16),
-            _ModernSceneTile(
-              title: "Scene 1",
-              subtitle: isTl
-                  ? "Tutorial ng Paraang PASS"
-                  : "PASS Method Tutorial",
-              icon: Icons.school_rounded,
-              onTap: onPickScene1,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _ModernSceneTile extends StatelessWidget {
-  final String title;
-  final String subtitle;
-  final IconData icon;
-  final VoidCallback onTap;
-
-  const _ModernSceneTile({
-    required this.title,
-    required this.subtitle,
-    required this.icon,
-    required this.onTap,
-  });
-
-  static const Color brandRed = Color(0xFFB11217);
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(18),
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(18),
-          color: Colors.white,
-          border: Border.all(color: Colors.black.withOpacity(0.06)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.08),
-              blurRadius: 16,
-              offset: const Offset(0, 10),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 46,
-              height: 46,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    brandRed.withOpacity(0.92),
-                    brandRed.withOpacity(0.72),
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(14),
-                boxShadow: [
-                  BoxShadow(
-                    color: brandRed.withOpacity(0.22),
-                    blurRadius: 14,
-                    offset: const Offset(0, 8),
-                  ),
-                ],
-              ),
-              child: Icon(icon, color: Colors.white),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontFamily: 'Poppins',
-                      fontSize: 13,
-                      fontWeight: FontWeight.w900,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    subtitle,
-                    style: TextStyle(
-                      fontFamily: 'Poppins',
-                      fontSize: 12.5,
-                      height: 1.25,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black.withOpacity(0.62),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 10),
-            Icon(
-              Icons.chevron_right_rounded,
-              size: 26,
-              color: Colors.black.withOpacity(0.35),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _SceneConfirmPopup extends StatelessWidget {
-  final int scene;
-  final VoidCallback onClose;
-  final VoidCallback onStart;
-  final bool isTl;
-
-  const _SceneConfirmPopup({
-    required this.scene,
-    required this.onClose,
-    required this.onStart,
-    required this.isTl,
-  });
-
-  static const Color brandRed = Color(0xFFB11217);
-
-  String get _title =>
-    isTl ? "Napiling Eksena: Eksena $scene" : "Chosen Scene: Scene $scene";
-
-  String get _body {
-    switch (scene) {
-      case 1:
-        return isTl
-      ? "Pinili mo ang Eksena 1: Tutorial ng Paraang PASS.\n\n"
-        "Sa eksenang ito, matututuhan mo ang tamang hakbang sa paggamit ng pamatay-sunog:\n"
-                  "• Hilahin ang pin\n"
-                  "• Itutok sa pinakailalim ng apoy\n"
-                  "• Pisilin ang hawakan\n"
-                  "• Iwasiwas pakanan at pakaliwa"
-            : "You chose Scene 1: PASS Method Tutorial.\n\n"
-                  "In this scene, you will learn the correct steps to use a fire extinguisher:\n"
-                  "• Pull the pin\n"
-                  "• Aim at the base of the fire\n"
-                  "• Squeeze the handle\n"
-                  "• Sweep side to side";
-      default:
-        return isTl
-            ? "May pinili kang eksena. Pindutin ang Start upang magpatuloy."
-            : "You chose a scene. Press Start to continue.";
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: Container(
-        width: 345,
-        padding: const EdgeInsets.fromLTRB(18, 16, 18, 18),
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.98),
-          borderRadius: BorderRadius.circular(26),
-          border: Border.all(color: Colors.black.withOpacity(0.06)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.18),
-              blurRadius: 30,
-              offset: const Offset(0, 18),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              children: [
-                Container(
-                  width: 38,
-                  height: 38,
-                  decoration: BoxDecoration(
-                    color: brandRed.withOpacity(0.10),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(
-                    Icons.check_circle_rounded,
-                    color: brandRed,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    _title,
-                    style: const TextStyle(
-                      fontFamily: 'Poppins',
-                      fontSize: 16,
-                      fontWeight: FontWeight.w900,
-                      color: Colors.black87,
-                    ),
-                  ),
-                ),
-                IconButton(
-                  onPressed: onClose,
-                  icon: const Icon(Icons.close_rounded),
-                  color: Colors.black.withOpacity(0.45),
-                  splashRadius: 18,
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF7F7F7),
-                borderRadius: BorderRadius.circular(18),
-                border: Border.all(color: Colors.black.withOpacity(0.06)),
-              ),
-              child: Text(
-                _body,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 13,
-                  height: 1.45,
-                  color: Colors.black.withOpacity(0.70),
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              height: 54,
-              child: ElevatedButton(
-                onPressed: onStart,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: brandRed,
-                  elevation: 10,
-                  shadowColor: Colors.black.withOpacity(0.25),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                ),
-                child: Text(
-                  isTl ? "SIMULAN ANG SIMULASYON" : "START SIMULATION",
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: 14.5,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.white,
-                    letterSpacing: 0.5,
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              isTl
-                  ? "Ididirekta ka ng button na ito sa Unity simulation."
-                  : "This button will redirect you to the Unity simulation.",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontFamily: 'Poppins',
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: Colors.black.withOpacity(0.38),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

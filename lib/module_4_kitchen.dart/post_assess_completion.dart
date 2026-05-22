@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
 
 import '../localization/language_controller.dart';
-import 'module_3_learningmaterials.dart';
 
 class AppColors {
-  // Module 3 Electrical Fire blue palette
-  static const Color brandRed = Color(0xFF2563EB);
-  static const Color brandRedDark = Color(0xFF1D4ED8);
-  static const Color brandRedDeep = Color(0xFF1E3A8A);
-  static const Color brandRedLight = Color(0xFF60A5FA);
-  static const Color brandRedSoft = Color(0xFFEFF6FF);
+  // Module 4 Kitchen Fire amber/orange palette
+  static const Color brandRed = Color(0xFFF59E0B);
+  static const Color brandRedDark = Color(0xFFD97706);
+  static const Color brandRedDeep = Color(0xFF92400E);
+  static const Color brandRedLight = Color(0xFFFBBF24);
+  static const Color brandRedSoft = Color(0xFFFFFBEB);
 
   // Background Colors
-  static const Color background = Color(0xFFF8FAFC);
+  static const Color background = Color(0xFFFFFBF2);
   static const Color surface = Color(0xFFFFFFFF);
-  static const Color surfaceSoft = Color(0xFFEFF6FF);
+  static const Color surfaceSoft = Color(0xFFFFF7ED);
 
   // Text Colors
   static const Color textPrimary = Color(0xFF1F2937);
@@ -23,8 +22,8 @@ class AppColors {
   static const Color textOnRed = Color(0xFFFFFFFF);
 
   // Borders / Dividers
-  static const Color border = Color(0xFFBFDBFE);
-  static const Color divider = Color(0xFFDBEAFE);
+  static const Color border = Color(0xFFFDE68A);
+  static const Color divider = Color(0xFFFEF3C7);
 
   // Status Colors
   static const Color success = Color(0xFF16A34A);
@@ -33,16 +32,16 @@ class AppColors {
   static const Color info = Color(0xFF2563EB);
 
   // Buttons
-  static const Color primaryButton = Color(0xFF2563EB);
-  static const Color primaryButtonPressed = Color(0xFF1D4ED8);
-  static const Color secondaryButton = Color(0xFFEFF6FF);
+  static const Color primaryButton = Color(0xFFF59E0B);
+  static const Color primaryButtonPressed = Color(0xFFD97706);
+  static const Color secondaryButton = Color(0xFFFFFBEB);
 
   // Shadows
   static const Color shadow = Color(0x1A000000);
 }
 
-class PreAssessmentCompletionPage1 extends StatelessWidget {
-  const PreAssessmentCompletionPage1({
+class PostAssessmentCompletionPage extends StatelessWidget {
+  const PostAssessmentCompletionPage({
     super.key,
     required this.score,
     required this.totalQuestions,
@@ -150,8 +149,8 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
                                 Text(
                                   t(
                                     context,
-                                    'Pre-Assessment Completed',
-                                    'Nakumpleto ang Paunang Pagsusulit',
+                                    'Post-Assessment Completed',
+                                    'Nakumpleto ang Panghuling Pagsusulit',
                                   ),
                                   textAlign: TextAlign.center,
                                   softWrap: true,
@@ -168,8 +167,8 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
                                 Text(
                                   t(
                                     context,
-                                    'You have completed the Module 3 Pre-Assessment.',
-                                    'Natapos mo na ang Paunang Pagsusulit ng Modyul 3.',
+                                    'You have completed the Module 4 Post-Assessment.',
+                                    'Natapos mo na ang Panghuling Pagsusulit ng Modyul 4.',
                                   ),
                                   textAlign: TextAlign.center,
                                   softWrap: true,
@@ -220,8 +219,8 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
                                       Text(
                                         t(
                                           context,
-                                          'This result shows your starting knowledge before studying the Module 3 Electrical Fire Learning Materials.',
-                                          'Ipinapakita ng resultang ito ang paunang kaalaman mo bago pag-aralan ang Modyul 3 tungkol sa electrical fire.',
+                                          'Congratulations! Your score shows how well you understood the Module 4 Learning Materials.',
+                                          'Binabati ka namin! Ipinapakita ng iyong score kung gaano mo naunawaan ang Modyul 4 sa Pag-aaral.',
                                         ),
                                         textAlign: TextAlign.center,
                                         softWrap: true,
@@ -250,8 +249,8 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
                                       Text(
                                         t(
                                           context,
-                                          'Score',
-                                          'Iskor',
+                                          'Final Score',
+                                          'Panghuling Iskor',
                                         ),
                                         style: const TextStyle(
                                           fontFamily: 'Poppins',
@@ -330,8 +329,8 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
                                         child: Text(
                                           t(
                                             context,
-                                            'Your pre-assessment result has been recorded. This is not graded; it is used to check your knowledge before the lesson about electrical fire causes, warning signs, prevention, and safe emergency actions.',
-                                            'Naitala na ang iyong resulta sa paunang pagsusulit. Hindi ito graded; ginagamit ito upang masukat ang kaalaman mo bago ang aralin tungkol sa sanhi, babala, pag-iwas, at ligtas na aksyon sa electrical fire.',
+                                            'Your post-assessment result has been recorded. This score helps identify what you learned about kitchen fire basics, common causes, prevention, and proper emergency response.',
+                                            'Naitala na ang iyong resulta sa panghuling pagsusulit. Ang score na ito ay tumutulong matukoy kung ano ang natutunan mo tungkol sa batayan ng sunog sa kusina, mga karaniwang sanhi, pag-iwas, at tamang pagtugon sa emerhensiya.',
                                           ),
                                           softWrap: true,
                                           style: const TextStyle(
@@ -397,8 +396,8 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
                                           child: Text(
                                             t(
                                               context,
-                                              'Continue to Learning Materials',
-                                              'Magpatuloy sa Modyul sa Pag-aaral',
+                                              'Finish Module',
+                                              'Tapusin ang Modyul',
                                             ),
                                             textAlign: TextAlign.center,
                                             maxLines: 2,
@@ -413,7 +412,7 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
                                         ),
                                         const SizedBox(width: 8),
                                         const Icon(
-                                          Icons.arrow_forward_rounded,
+                                          Icons.done_all_rounded,
                                           color: AppColors.textOnRed,
                                           size: 21,
                                         ),
@@ -443,11 +442,7 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
       return;
     }
 
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (_) => const LearningMaterialElectricalPage(),
-      ),
-    );
+    Navigator.of(context).popUntil((route) => route.isFirst);
   }
 }
 

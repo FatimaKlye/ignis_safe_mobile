@@ -3,11 +3,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'navbar.dart';
 import 'learning_materials.dart';
-import 'fire_modules.dart';
 import 'profile.dart';
 import 'about_us.dart';
 
-enum HomeTab { learn, simulation, profile, about }
+enum HomeTab { learn, profile, about }
 
 class IgnisHomePage extends StatefulWidget {
   const IgnisHomePage({super.key, this.initialTabIndex = 0});
@@ -25,16 +24,12 @@ class _IgnisHomePageState extends State<IgnisHomePage> {
 
   final List<IconData> _icons = const [
     Icons.menu_book_rounded,
-    Icons.view_in_ar_rounded,
     Icons.person_outline_rounded,
     Icons.info_outline_rounded,
   ];
 
   late final List<Widget> _pages = [
     LearningMaterialsTab(
-      onRequestTabChange: _onItemTapped,
-    ),
-    FireMaterialsTab(
       onRequestTabChange: _onItemTapped,
     ),
     const ProfilePage(),

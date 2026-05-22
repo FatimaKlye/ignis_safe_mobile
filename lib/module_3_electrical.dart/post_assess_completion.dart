@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../localization/language_controller.dart';
-import 'module_3_learningmaterials.dart';
 
 class AppColors {
   // Module 3 Electrical Fire blue palette
@@ -41,8 +40,8 @@ class AppColors {
   static const Color shadow = Color(0x1A000000);
 }
 
-class PreAssessmentCompletionPage1 extends StatelessWidget {
-  const PreAssessmentCompletionPage1({
+class PostAssessmentCompletionPage extends StatelessWidget {
+  const PostAssessmentCompletionPage({
     super.key,
     required this.score,
     required this.totalQuestions,
@@ -150,8 +149,8 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
                                 Text(
                                   t(
                                     context,
-                                    'Pre-Assessment Completed',
-                                    'Nakumpleto ang Paunang Pagsusulit',
+                                    'Post-Assessment Completed',
+                                    'Nakumpleto ang Panghuling Pagsusulit',
                                   ),
                                   textAlign: TextAlign.center,
                                   softWrap: true,
@@ -168,8 +167,8 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
                                 Text(
                                   t(
                                     context,
-                                    'You have completed the Module 3 Pre-Assessment.',
-                                    'Natapos mo na ang Paunang Pagsusulit ng Modyul 3.',
+                                    'You have completed the Module 3 Post-Assessment.',
+                                    'Natapos mo na ang Panghuling Pagsusulit ng Modyul 3.',
                                   ),
                                   textAlign: TextAlign.center,
                                   softWrap: true,
@@ -220,8 +219,8 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
                                       Text(
                                         t(
                                           context,
-                                          'This result shows your starting knowledge before studying the Module 3 Electrical Fire Learning Materials.',
-                                          'Ipinapakita ng resultang ito ang paunang kaalaman mo bago pag-aralan ang Modyul 3 tungkol sa electrical fire.',
+                                          'Congratulations! Your score shows how well you understood the Module 3 Electrical Fire Learning Materials.',
+                                          'Binabati ka namin! Ipinapakita ng iyong score kung gaano mo naunawaan ang Modyul 3 tungkol sa electrical fire.',
                                         ),
                                         textAlign: TextAlign.center,
                                         softWrap: true,
@@ -250,8 +249,8 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
                                       Text(
                                         t(
                                           context,
-                                          'Score',
-                                          'Iskor',
+                                          'Final Score',
+                                          'Panghuling Iskor',
                                         ),
                                         style: const TextStyle(
                                           fontFamily: 'Poppins',
@@ -330,8 +329,8 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
                                         child: Text(
                                           t(
                                             context,
-                                            'Your pre-assessment result has been recorded. This is not graded; it is used to check your knowledge before the lesson about electrical fire causes, warning signs, prevention, and safe emergency actions.',
-                                            'Naitala na ang iyong resulta sa paunang pagsusulit. Hindi ito graded; ginagamit ito upang masukat ang kaalaman mo bago ang aralin tungkol sa sanhi, babala, pag-iwas, at ligtas na aksyon sa electrical fire.',
+                                            'Your post-assessment result has been recorded. This score helps identify what you learned about electrical fire causes, warning signs, prevention, and safe emergency actions.',
+                                            'Naitala na ang iyong resulta sa panghuling pagsusulit. Ang score na ito ay tumutulong matukoy kung ano ang natutunan mo tungkol sa sanhi, babala, pag-iwas, at ligtas na aksyon sa electrical fire.',
                                           ),
                                           softWrap: true,
                                           style: const TextStyle(
@@ -397,8 +396,8 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
                                           child: Text(
                                             t(
                                               context,
-                                              'Continue to Learning Materials',
-                                              'Magpatuloy sa Modyul sa Pag-aaral',
+                                              'Finish Module',
+                                              'Tapusin ang Modyul',
                                             ),
                                             textAlign: TextAlign.center,
                                             maxLines: 2,
@@ -413,7 +412,7 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
                                         ),
                                         const SizedBox(width: 8),
                                         const Icon(
-                                          Icons.arrow_forward_rounded,
+                                          Icons.done_all_rounded,
                                           color: AppColors.textOnRed,
                                           size: 21,
                                         ),
@@ -443,11 +442,7 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
       return;
     }
 
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (_) => const LearningMaterialElectricalPage(),
-      ),
-    );
+    Navigator.of(context).popUntil((route) => route.isFirst);
   }
 }
 

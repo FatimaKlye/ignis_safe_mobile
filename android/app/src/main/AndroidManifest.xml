@@ -28,10 +28,41 @@
             </intent-filter>
         </activity>
 
+        <!--
+            FIX: Added android:process=":unity" to run UnityPlayerGameActivity in a separate OS process
+            WHY: Without this, Unity and Flutter share the same process. When Unity tears down
+                 (UnityApplication::DestroyInstance) it calls System.exit(0) to ensure a clean
+                 native-library shutdown. System.exit() kills the ENTIRE process, including the
+                 Flutter engine and MainActivity — causing "Lost connection to device" in adb and
+                 leaving the user with a crashed app instead of returning to the progress screen.
+                 With android:process=":unity", Unity runs in com.example.ignis_safe:unity.
+                 When Unity calls System.exit(), only the :unity process dies. The main Flutter
+                 process (com.example.ignis_safe) stays alive, receives onActivityResult normally,
+                 delivers the completion result to Dart, and nav.pop() fires → progress bar updates.
+                 startActivityForResult / onActivityResult continue to work across processes via
+                 Android's Binder IPC — no changes to MainActivity.kt are required.
+
+            FIX: Changed android:launchMode from "singleTop" to "standard"
+            WHY: singleTop (and the FLAG_ACTIVITY_SINGLE_TOP intent flag used in MainActivity)
+                 allows Android to call onNewIntent() instead of onCreate() if the Unity activity
+                 is still alive in the back stack — for example, when the :unity process survives
+                 because System.exit(0) is delayed or not called immediately after finish().
+                 When onNewIntent() is called instead of onCreate(), FlutterBridge.Start() is NOT
+                 re-executed. The DontDestroyOnLoad FlutterBridge from the previous launch is still
+                 alive with _lastLaunchToken set to the previous token. FlutterBridge's
+                 TryLoadSceneFromIntent() compares the new token and loads the correct scene via
+                 OnApplicationFocus, but if the old object is not cleaned up, two bridges coexist.
+                 "standard" (Android's default launchMode) guarantees that every
+                 startActivityForResult call creates a brand-new UnityPlayerGameActivity instance
+                 via onCreate(). There is no "reuse existing activity" behavior.
+                 Multiple simultaneous Unity instances are still prevented by the _isUnityLaunching
+                 guard in Flutter — the user cannot tap "Start Simulation" while a scene is running.
+        -->
         <activity
             android:name="com.unity3d.player.UnityPlayerGameActivity"
             android:exported="true"
-            android:launchMode="singleTask"
+            android:launchMode="standard"
+            android:process=":unity"
             android:theme="@style/BaseUnityGameActivityTheme"
             android:screenOrientation="landscape"
             android:hardwareAccelerated="true"

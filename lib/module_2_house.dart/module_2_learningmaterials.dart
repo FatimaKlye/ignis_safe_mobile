@@ -1,6 +1,285 @@
 import 'package:flutter/material.dart';
-import 'pre_assess_instruction.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:video_player/video_player.dart';
+import 'post_assess_instruction.dart';
 
+// =============================================================================
+// MODULE 2 HOUSE FIRE COLORS
+// =============================================================================
+const Color kHouseOrange = Color(0xFFF97316);
+const Color kHouseAmber = Color(0xFFF59E0B);
+const Color kHouseOrangeSoft = Color(0xFFFFF7ED);
+const Color kDarkText = Color(0xFF1F2937);
+const Color kSoftBg = Color(0xFFF8FAFC);
+
+class AppColors {
+  // Module 2 House Fire palette
+  static const Color brandRed = kHouseOrange;
+  static const Color brandRedDark = Color(0xFFEA580C);
+  static const Color brandRedDeep = kHouseAmber;
+  static const Color brandRedLight = kHouseAmber;
+  static const Color brandRedSoft = kHouseOrangeSoft;
+
+  // Background Colors
+  static const Color background = kSoftBg;
+  static const Color surface = Color(0xFFFFFFFF);
+  static const Color surfaceSoft = kHouseOrangeSoft;
+
+  // Text Colors
+  static const Color textPrimary = kDarkText;
+  static const Color textSecondary = Color(0xFF64748B);
+  static const Color textMuted = Color(0xFF94A3B8);
+  static const Color textOnRed = Color(0xFFFFFFFF);
+
+  // Borders / Dividers
+  static const Color border = Color(0xFFF1D8C5);
+  static const Color divider = Color(0xFFFDEAD7);
+
+  // Status Colors
+  static const Color success = Color(0xFF16A34A);
+  static const Color warning = kHouseAmber;
+  static const Color error = Color(0xFFD32F2F);
+  static const Color info = Color(0xFF2563EB);
+
+  // Buttons
+  static const Color primaryButton = kHouseOrange;
+  static const Color primaryButtonPressed = Color(0xFFEA580C);
+  static const Color secondaryButton = kHouseOrangeSoft;
+
+  // Shadows
+  static const Color shadow = Color(0x1A000000);
+}
+
+class _LmTextRow {
+  final String en;
+  final String? tl;
+
+  const _LmTextRow({required this.en, this.tl});
+
+  String value(bool isTl) {
+    if (isTl && tl != null && tl!.trim().isNotEmpty) return tl!;
+    return en;
+  }
+}
+
+class _LmSourceRow extends _LmTextRow {
+  final String? sourceTitle;
+  final String? sourceOrganization;
+  final String? sourceUrl;
+
+  const _LmSourceRow({
+    required super.en,
+    super.tl,
+    this.sourceTitle,
+    this.sourceOrganization,
+    this.sourceUrl,
+  });
+}
+
+class _LmPageRow {
+  final int pageNo;
+  final String titleEn;
+  final String titleTl;
+
+  const _LmPageRow({
+    required this.pageNo,
+    required this.titleEn,
+    required this.titleTl,
+  });
+
+  String title(bool isTl) => isTl && titleTl.trim().isNotEmpty ? titleTl : titleEn;
+}
+
+class _LmMediaRow {
+  final String assetPath;
+  final String? publicUrl;
+
+  const _LmMediaRow({required this.assetPath, this.publicUrl});
+
+  String get displayPath {
+    if (publicUrl != null && publicUrl!.trim().isNotEmpty) return publicUrl!.trim();
+    return assetPath.trim();
+  }
+}
+
+typedef _LmTextResolver = String Function(
+  String key, {
+  Map<String, String>? args,
+});
+
+class _LmCopyScope extends InheritedWidget {
+  final _LmTextResolver text;
+
+  const _LmCopyScope({
+    required this.text,
+    required super.child,
+  });
+
+  static _LmCopyScope? maybeOf(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<_LmCopyScope>();
+  }
+
+  @override
+  bool updateShouldNotify(_LmCopyScope oldWidget) => text != oldWidget.text;
+}
+
+String _lm(BuildContext context, String key, {Map<String, String>? args}) {
+  final scope = _LmCopyScope.maybeOf(context);
+  if (scope == null) return key;
+  return scope.text(key, args: args);
+}
+
+bool _isNetworkPath(String path) {
+  final lower = path.trim().toLowerCase();
+  return lower.startsWith('http://') || lower.startsWith('https://');
+}
+
+const String _learningMaterialsBucket = 'Learning Materials';
+
+String _resolveLearningMaterialStoragePath(String path) {
+  final trimmed = path.trim();
+  if (trimmed.isEmpty || _isNetworkPath(trimmed)) return trimmed;
+  return Supabase.instance.client.storage
+      .from(_learningMaterialsBucket)
+      .getPublicUrl(trimmed);
+}
+
+const List<String> _requiredLearningMaterialKeys = <String>[
+  'header_section_title',
+  'module_label',
+  'header_page_label',
+  'dialog_keep_reading_title',
+  'dialog_keep_reading_body',
+  'dialog_keep_reading_button',
+  'dialog_intro_title',
+  'dialog_intro_body',
+  'dialog_intro_button',
+  'dialog_page1_complete_title',
+  'dialog_page1_complete_body',
+  'dialog_page2_complete_title',
+  'dialog_page2_complete_body',
+  'dialog_continue_button',
+  'dialog_final_title',
+  'dialog_final_body',
+  'dialog_final_button',
+  'dialog_info_ok',
+  'popup_door_rule_title',
+  'popup_door_rule_body',
+  'popup_stop_drop_roll_title',
+  'popup_stop_drop_roll_body',
+  'nav_start_post_test',
+  'nav_next',
+  'nav_back',
+  'progress_all_sections_read',
+  'progress_sections_read',
+  'progress_scroll_tap_sections',
+  'video_preview_unavailable',
+  'video_preview_holder',
+  'widget_video_3d_preview_title',
+  'house_fire_3d_chip',
+  'house_fire_3d_missing_asset',
+  'page_1_tag',
+  'page_1_subtitle',
+  'page_1_intro_title',
+  'page_1_intro_text',
+  'page_1_preview_title',
+  'page_1_preview_subtitle',
+  'source_p1_shared',
+  'p1_s1_title',
+  'p1_s1_subtitle',
+  'p1_s1_headline',
+  'p1_s1_body',
+  'p1_s1_callout_title',
+  'p1_s1_callout_line_1',
+  'p1_s2_title',
+  'p1_s2_subtitle',
+  'p1_s2_bullet_1',
+  'p1_s2_bullet_2',
+  'p1_s2_bullet_3',
+  'p1_s2_tip_title',
+  'p1_s2_tip_message',
+  'p1_s3_title',
+  'p1_s3_subtitle',
+  'p1_s3_chip_1',
+  'p1_s3_chip_2',
+  'p1_s3_chip_3',
+  'p1_s3_chip_4',
+  'p1_action_title',
+  'p1_action_body',
+  'p1_action_button',
+  'page_2_tag',
+  'page_2_subtitle',
+  'page_2_section_title',
+  'page_2_section_subtitle',
+  'source_escape_steps',
+  'p2_step1_title',
+  'p2_step1_subtitle',
+  'p2_step1_preview_title',
+  'p2_step1_preview_description',
+  'p2_step2_title',
+  'p2_step2_subtitle',
+  'p2_step2_preview_title',
+  'p2_step2_preview_description',
+  'p2_step3_title',
+  'p2_step3_subtitle',
+  'p2_step3_preview_title',
+  'p2_step3_preview_description',
+  'p2_step4_title',
+  'p2_step4_subtitle',
+  'p2_step4_preview_title',
+  'p2_step4_preview_description',
+  'source_video_holder',
+  'p2_reminders_title',
+  'p2_reminders_subtitle',
+  'p2_reminder_bullet_1',
+  'p2_reminder_bullet_2',
+  'p2_reminder_bullet_3',
+  'p2_reminder_bullet_4',
+  'p2_reminder_bullet_5',
+  'p2_reminder_action_label',
+  'page_3_tag',
+  'page_3_subtitle',
+  'source_p3_shared',
+  'p3_s1_title',
+  'p3_s1_subtitle',
+  'p3_s1_body',
+  'p3_s1_callout_title',
+  'p3_s1_callout_line_1',
+  'p3_s2_title',
+  'p3_s2_subtitle',
+  'p3_s2_bullet_1',
+  'p3_s2_bullet_2',
+  'p3_s2_bullet_3',
+  'p3_s2_bullet_4',
+  'p3_s3_title',
+  'p3_s3_subtitle',
+  'p3_s3_bullet_1',
+  'p3_s3_bullet_2',
+  'p3_s3_bullet_3',
+  'p3_s3_tip_title',
+  'p3_s3_tip_message',
+  'p3_s4_title',
+  'p3_s4_subtitle',
+  'source_smoke_alarms',
+  'p3_s4_bullet_1',
+  'p3_s4_bullet_2',
+  'p3_s4_bullet_3',
+  'p3_s4_bullet_4',
+  'p3_quick_check_title',
+  'p3_quick_check_message',
+];
+
+const List<String> _requiredSourceKeys = <String>[
+  'source_p1_shared',
+  'source_escape_steps',
+  'source_video_holder',
+  'source_p3_shared',
+  'source_smoke_alarms',
+];
+
+// =============================================================================
+// MAIN PAGE
+// =============================================================================
 class LearningMaterialHousePage extends StatefulWidget {
   const LearningMaterialHousePage({super.key});
 
@@ -10,28 +289,268 @@ class LearningMaterialHousePage extends StatefulWidget {
 }
 
 class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
-  static const accent = Color(0xFFF97316); // primary orange
-  static const accent2 = Color(0xFFF59E0B); // warm amber
+  static const accent = AppColors.brandRed;
+  static const accent2 = AppColors.brandRedDark;
 
   final PageController _pageCtrl = PageController();
   final ScrollController _scrollCtrl = ScrollController();
 
-  int _pageIndex = 0;
+  final Map<String, _LmTextRow> _copy = <String, _LmTextRow>{};
+  final Map<String, _LmSourceRow> _sources = <String, _LmSourceRow>{};
+  final Map<int, _LmPageRow> _pages = <int, _LmPageRow>{};
+  final Map<String, _LmMediaRow> _media = <String, _LmMediaRow>{};
 
+  String _materialTitleEn = '';
+  String _materialTitleTl = '';
+  String? _heroAssetPath;
+  bool _isLoading = true;
+  String? _loadError;
+
+  int _pageIndex = 0;
   double _progress = 0.0;
   bool _canNext = false;
   bool _isSwitchingPage = false;
   bool _lastPageCompleted = false;
 
-  String _t(BuildContext context, String en, String tl) {
-    return Localizations.localeOf(context).languageCode == 'tl' ? tl : en;
+  // Page 0: 3 expandable sections
+  // Page 1: 4 escape steps + 1 important reminder section
+  // Page 2: 4 after-escape / preparedness sections
+  final List<Set<int>> _readSections = [<int>{}, <int>{}, <int>{}];
+
+  bool _introShown = false;
+  bool _unreadPromptVisible = false;
+
+  bool get _isTl =>
+      Localizations.localeOf(context).languageCode.toLowerCase().startsWith('tl');
+
+  String _localized(String en, String? tl) {
+    if (_isTl && tl != null && tl.trim().isNotEmpty) return tl;
+    return en;
   }
+
+  String _txt(String key, {Map<String, String>? args}) {
+    var value = _copy[key]?.value(_isTl) ?? key;
+    if (args != null && args.isNotEmpty) {
+      for (final entry in args.entries) {
+        value = value.replaceAll('{${entry.key}}', entry.value);
+      }
+    }
+    return value;
+  }
+
+  String _pageTitle(int pageNo) {
+    final page = _pages[pageNo];
+    if (page == null) return 'page_$pageNo';
+    return page.title(_isTl);
+  }
+
+  String _sourceTitle(String key) => _sources[key]?.sourceTitle ?? key;
+
+  String _sourceUrl(String key) => _sources[key]?.sourceUrl ?? '';
+
+  String? _assetPath(String key) {
+    final media = _media[key];
+    if (media == null || media.displayPath.isEmpty) return null;
+    return media.displayPath;
+  }
+
+  String? get _previewAssetPath {
+    final mediaPath = _assetPath('module2_house_fire_preview_image');
+    if (mediaPath != null) return mediaPath;
+    if (_heroAssetPath != null && _heroAssetPath!.trim().isNotEmpty) {
+      return _heroAssetPath!.trim();
+    }
+    return null;
+  }
+
+  String get _moduleTitle => _localized(_materialTitleEn, _materialTitleTl);
 
   @override
   void initState() {
     super.initState();
     _scrollCtrl.addListener(_onScroll);
-    WidgetsBinding.instance.addPostFrameCallback((_) => _onScroll());
+    _loadLearningMaterials();
+  }
+
+  Future<void> _loadLearningMaterials() async {
+    try {
+      final client = Supabase.instance.client;
+
+      final material = await client
+          .from('learning_materials')
+          .select('id,module_no,title,title_tl,subtitle,subtitle_tl,hero_asset')
+          .eq('module_no', 2)
+          .eq('is_active', true)
+          .maybeSingle();
+
+      if (material == null) {
+        throw StateError('Missing active learning_materials row for module_no = 2.');
+      }
+
+      final materialId = material['id'] as String;
+      final pages = await client
+          .from('learning_material_pages')
+          .select('id,module_no,page_no,page_key,title_en,title_tl')
+          .eq('learning_material_id', materialId)
+          .eq('module_no', 2)
+          .eq('is_active', true)
+          .order('page_no');
+
+      final blocks = await client
+          .from('learning_material_blocks')
+          .select('id,page_id,module_no,page_no,block_no,block_key,block_type,text_en,text_tl,metadata,source_title,source_organization,source_url')
+          .eq('module_no', 2)
+          .eq('is_active', true)
+          .order('page_no')
+          .order('block_no');
+
+      final texts = await client
+          .from('learning_material_texts')
+          .select('text_order,text_key,text_en,text_tl')
+          .eq('learning_material_id', materialId)
+          .eq('module_no', 2)
+          .eq('usage_context', 'mobile_learning_material')
+          .eq('is_active', true)
+          .order('text_order');
+
+      final mediaRows = await client
+          .from('learning_material_media_assets')
+          .select('asset_key,asset_path,public_url,asset_type,display_order')
+          .eq('learning_material_id', materialId)
+          .eq('module_no', 2)
+          .eq('is_active', true)
+          .order('display_order');
+
+      final loadedCopy = <String, _LmTextRow>{};
+      final loadedSources = <String, _LmSourceRow>{};
+      final loadedPages = <int, _LmPageRow>{};
+      final loadedMedia = <String, _LmMediaRow>{};
+
+      for (final row in (texts as List<dynamic>)) {
+        final map = Map<String, dynamic>.from(row as Map);
+        final key = (map['text_key'] as String?)?.trim();
+        if (key == null || key.isEmpty) continue;
+        loadedCopy[key] = _LmTextRow(
+          en: (map['text_en'] as String?) ?? '',
+          tl: map['text_tl'] as String?,
+        );
+      }
+
+      for (final row in (pages as List<dynamic>)) {
+        final map = Map<String, dynamic>.from(row as Map);
+        final pageNo = map['page_no'] as int?;
+        if (pageNo == null) continue;
+        loadedPages[pageNo] = _LmPageRow(
+          pageNo: pageNo,
+          titleEn: (map['title_en'] as String?) ?? '',
+          titleTl: (map['title_tl'] as String?) ?? '',
+        );
+      }
+
+      for (final row in (blocks as List<dynamic>)) {
+        final map = Map<String, dynamic>.from(row as Map);
+        final key = (map['block_key'] as String?)?.trim();
+        if (key == null || key.isEmpty) continue;
+        final source = _LmSourceRow(
+          en: (map['text_en'] as String?) ?? '',
+          tl: map['text_tl'] as String?,
+          sourceTitle: map['source_title'] as String?,
+          sourceOrganization: map['source_organization'] as String?,
+          sourceUrl: map['source_url'] as String?,
+        );
+        loadedCopy[key] = source;
+        if ((source.sourceTitle ?? '').trim().isNotEmpty ||
+            (source.sourceUrl ?? '').trim().isNotEmpty) {
+          loadedSources[key] = source;
+        }
+      }
+
+      for (final row in (mediaRows as List<dynamic>)) {
+        final map = Map<String, dynamic>.from(row as Map);
+        final key = (map['asset_key'] as String?)?.trim();
+        final path = (map['asset_path'] as String?)?.trim();
+        final publicUrl = (map['public_url'] as String?)?.trim();
+        if (key == null || key.isEmpty || path == null || path.isEmpty) continue;
+        loadedMedia[key] = _LmMediaRow(
+          assetPath: publicUrl != null && publicUrl.isNotEmpty
+              ? path
+              : _resolveLearningMaterialStoragePath(path),
+          publicUrl: publicUrl,
+        );
+      }
+
+      _assertRequiredContent(loadedCopy, loadedSources, loadedPages);
+
+      if (!mounted) return;
+      setState(() {
+        _materialTitleEn = (material['title'] as String?) ?? '';
+        _materialTitleTl = (material['title_tl'] as String?) ?? '';
+        final heroAsset = (material['hero_asset'] as String?)?.trim();
+        _heroAssetPath = heroAsset == null || heroAsset.isEmpty
+            ? null
+            : _resolveLearningMaterialStoragePath(heroAsset);
+        _copy
+          ..clear()
+          ..addAll(loadedCopy);
+        _sources
+          ..clear()
+          ..addAll(loadedSources);
+        _pages
+          ..clear()
+          ..addAll(loadedPages);
+        _media
+          ..clear()
+          ..addAll(loadedMedia);
+        _isLoading = false;
+        _loadError = null;
+      });
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        _onScroll();
+        if (!_introShown) {
+          _introShown = true;
+          Future.delayed(const Duration(milliseconds: 400), () {
+            if (mounted) _showIntroPopup();
+          });
+        }
+      });
+    } catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+        _loadError = error.toString();
+      });
+    }
+  }
+
+  void _assertRequiredContent(
+    Map<String, _LmTextRow> copy,
+    Map<String, _LmSourceRow> sources,
+    Map<int, _LmPageRow> pages,
+  ) {
+    final missing = <String>[];
+    for (final key in _requiredLearningMaterialKeys) {
+      final value = copy[key];
+      if (value == null || value.en.trim().isEmpty) missing.add(key);
+    }
+    for (final pageNo in <int>[1, 2, 3]) {
+      final page = pages[pageNo];
+      if (page == null || page.titleEn.trim().isEmpty || page.titleTl.trim().isEmpty) {
+        missing.add('learning_material_pages.page_no_$pageNo');
+      }
+    }
+    for (final key in _requiredSourceKeys) {
+      final source = sources[key];
+      if (source == null ||
+          (source.sourceTitle ?? '').trim().isEmpty ||
+          (source.sourceUrl ?? '').trim().isEmpty) {
+        missing.add('$key.source');
+      }
+    }
+    if (missing.isNotEmpty) {
+      throw StateError('Missing Module 2 database content: ${missing.join(', ')}');
+    }
   }
 
   void _onScroll() {
@@ -51,7 +570,7 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
       return;
     }
 
-    final p = (off / max).clamp(0.0, 1.0);
+    final p = (off / max).clamp(0.0, 1.0).toDouble();
     final nearBottom = off >= (max - 8);
 
     if (_progress != p || _canNext != nearBottom) {
@@ -84,7 +603,9 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      if (_scrollCtrl.hasClients) _scrollCtrl.jumpTo(0);
+      if (_scrollCtrl.hasClients) {
+        _scrollCtrl.jumpTo(0);
+      }
       setState(() => _isSwitchingPage = false);
       _onScroll();
     });
@@ -101,240 +622,1148 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
     );
   }
 
-  void _goNext() {
-    if (!_canNext) return;
-
-    if (_pageIndex < 2) {
-      _pageCtrl.nextPage(
-        duration: const Duration(milliseconds: 260),
-        curve: Curves.easeOutCubic,
-      );
-    } else {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => const PreAssessmentIntroPage2(),
-        ),
-      );
+  int _requiredSectionCountForPage(int pageIndex) {
+    switch (pageIndex) {
+      case 0:
+        return 3;
+      case 1:
+        return 5;
+      case 2:
+        return 4;
+      default:
+        return 0;
     }
   }
 
+  bool _hasReadAllRequiredSections(int pageIndex) {
+    if (pageIndex < 0 || pageIndex >= _readSections.length) return false;
+    return _readSections[pageIndex].length >=
+        _requiredSectionCountForPage(pageIndex);
+  }
+
+  void _markSectionRead(int pageIndex, int sectionIndex) {
+    if (pageIndex < 0 || pageIndex >= _readSections.length) return;
+    if (_readSections[pageIndex].contains(sectionIndex)) return;
+    setState(() {
+      _readSections[pageIndex].add(sectionIndex);
+    });
+  }
+
+  void _goNext() {
+    if (!_hasReadAllRequiredSections(_pageIndex)) {
+      _showUnreadSectionsPopup();
+      return;
+    }
+
+    if (_pageIndex < 2) {
+      _showPageCompletePopup(_pageIndex, () {
+        _pageCtrl.nextPage(
+          duration: const Duration(milliseconds: 260),
+          curve: Curves.easeOutCubic,
+        );
+      });
+    } else {
+      setState(() => _lastPageCompleted = true);
+      _showFinalCompletePopup();
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // POPUPS
+  // ---------------------------------------------------------------------------
+
+  void _showUnreadSectionsPopup() {
+    if (_unreadPromptVisible) return;
+
+    _unreadPromptVisible = true;
+
+    showDialog(
+      context: context,
+      builder: (_) => _StyledDialog(
+        icon: Icons.menu_book_rounded,
+        iconColor: AppColors.brandRed,
+        title: _txt('dialog_keep_reading_title'),
+        body: _txt('dialog_keep_reading_body'),
+        buttonLabel: _txt('dialog_keep_reading_button'),
+        onPressed: () => Navigator.pop(context),
+      ),
+    ).then((_) {
+      _unreadPromptVisible = false;
+    });
+  }
+
+  void _showIntroPopup() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => _StyledDialog(
+        icon: Icons.home_work_rounded,
+        iconColor: accent,
+        title: _txt('dialog_intro_title'),
+        body: _txt('dialog_intro_body'),
+        buttonLabel: _txt('dialog_intro_button'),
+        onPressed: () => Navigator.pop(context),
+      ),
+    );
+  }
+
+  void _showPageCompletePopup(int pageIndex, VoidCallback onContinue) {
+    final title = pageIndex == 0
+        ? _txt('dialog_page1_complete_title')
+        : _txt('dialog_page2_complete_title');
+    final body = pageIndex == 0
+        ? _txt('dialog_page1_complete_body')
+        : _txt('dialog_page2_complete_body');
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => _StyledDialog(
+        icon: Icons.check_circle_rounded,
+        iconColor: AppColors.success,
+        title: title,
+        body: body,
+        buttonLabel: _txt('dialog_continue_button'),
+        onPressed: () {
+          Navigator.pop(context);
+          onContinue();
+        },
+      ),
+    );
+  }
+
+  void _showFinalCompletePopup() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => _StyledDialog(
+        icon: Icons.emoji_events_rounded,
+        iconColor: AppColors.brandRed,
+        title: _txt('dialog_final_title'),
+        body: _txt('dialog_final_body'),
+        buttonLabel: _txt('dialog_final_button'),
+        onPressed: () {
+          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const PostAssessmentIntroPage()),
+          );
+        },
+      ),
+    );
+  }
+
+  void _showInfoPopup({
+    required String title,
+    required String message,
+    IconData icon = Icons.info_rounded,
+    Color color = accent,
+  }) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        contentPadding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+        titlePadding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
+        title: Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.12),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, color: color, size: 22),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                title,
+                style: TextStyle(
+                  fontWeight: FontWeight.w900,
+                  color: color,
+                  fontSize: 15,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          message,
+          style: const TextStyle(
+            height: 1.55,
+            color: Color(0xFF374151),
+            fontSize: 14,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              _txt('dialog_info_ok'),
+              style: TextStyle(color: color, fontWeight: FontWeight.w900),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showDoorCheckPopup() {
+    _showInfoPopup(
+      title: _txt('popup_door_rule_title'),
+      icon: Icons.door_front_door_rounded,
+      color: AppColors.brandRedDark,
+      message: _txt('popup_door_rule_body'),
+    );
+  }
+
+  void _showStopDropRollPopup() {
+    _showInfoPopup(
+      title: _txt('popup_stop_drop_roll_title'),
+      icon: Icons.accessibility_new_rounded,
+      color: AppColors.error,
+      message: _txt('popup_stop_drop_roll_body'),
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // BUILD
+  // ---------------------------------------------------------------------------
+
   @override
   Widget build(BuildContext context) {
-    final isLast = _pageIndex == 2;
+    if (_isLoading) {
+      return const Scaffold(
+        backgroundColor: AppColors.background,
+        body: Stack(
+          children: [
+            _LMGradientBackdrop(),
+            SafeArea(child: Center(child: _LoadingCard())),
+          ],
+        ),
+      );
+    }
 
-    return Scaffold(
-      body: Stack(
-        children: [
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            height: 900,
-            child: Image.asset('assets/bg.png', fit: BoxFit.cover),
+    if (_loadError != null) {
+      return Scaffold(
+        backgroundColor: AppColors.background,
+        body: Stack(
+          children: [
+            const _LMGradientBackdrop(),
+            SafeArea(
+              child: Center(
+                child: _ErrorCard(
+                  message: _loadError!,
+                  onRetry: () {
+                    setState(() {
+                      _isLoading = true;
+                      _loadError = null;
+                    });
+                    _loadLearningMaterials();
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    final isLast = _pageIndex == 2;
+    final nextEnabled = _hasReadAllRequiredSections(_pageIndex);
+
+    return _LmCopyScope(
+      text: _txt,
+      child: Scaffold(
+        backgroundColor: AppColors.background,
+        body: Stack(
+          children: [
+            const _LMGradientBackdrop(),
+            SafeArea(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 8),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(18, 0, 18, 0),
+                    child: _LearningAssessmentHeader(
+                      sectionTitle: _txt('header_section_title'),
+                      moduleLabel: _txt('module_label'),
+                      moduleTitle: _moduleTitle,
+                      currentPage: _pageIndex + 1,
+                      totalPages: 3,
+                      progress: _progress,
+                      onClose: () => Navigator.pop(context),
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  Expanded(
+                    child: PageView(
+                      controller: _pageCtrl,
+                      physics: const NeverScrollableScrollPhysics(),
+                      onPageChanged: (i) {
+                        setState(() => _pageIndex = i);
+                        _resetForNewPage();
+                      },
+                      children: [
+                        _pageWrap(_page1HouseFireOverview()),
+                        _pageWrap(_page2EscapeSteps()),
+                        _pageWrap(_page3AfterEscapeAndPrepare()),
+                      ],
+                    ),
+                  ),
+                  _BottomNavBar(
+                    pageIndex: _pageIndex,
+                    isLast: isLast,
+                    nextEnabled: nextEnabled,
+                    onBack: _goBack,
+                    onNext: _goNext,
+                    context: context,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _pageWrap(Widget child) {
+    return SingleChildScrollView(
+      controller: _scrollCtrl,
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(18, 0, 18, 14),
+      child: Align(
+        alignment: Alignment.topCenter,
+        child: Container(
+          width: double.infinity,
+          margin: const EdgeInsets.only(bottom: 8),
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 18),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(32),
+            border: Border.all(
+              color: Colors.white.withOpacity(0.95),
+              width: 1.2,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.14),
+                blurRadius: 24,
+                offset: const Offset(0, 12),
+              ),
+              BoxShadow(
+                color: AppColors.brandRed.withOpacity(0.10),
+                blurRadius: 28,
+                offset: const Offset(0, 8),
+              ),
+            ],
           ),
-          SafeArea(
+          child: child,
+        ),
+      ),
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // PAGE 1: HOUSE FIRE OVERVIEW
+  // ---------------------------------------------------------------------------
+  Widget _page1HouseFireOverview() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _PageBanner(
+          icon: Icons.home_work_rounded,
+          accent1: accent,
+          accent2: accent2,
+          pageTag: _txt('page_1_tag'),
+          title: _pageTitle(1),
+          subtitle: _txt('page_1_subtitle'),
+        ),
+        const SizedBox(height: 16),
+        _LessonIntroStrip(
+          icon: Icons.local_fire_department_rounded,
+          title: _txt('page_1_intro_title'),
+          text: _txt('page_1_intro_text'),
+        ),
+        const SizedBox(height: 16),
+        _HouseFire3DPhotoCard(
+          assetPath: _previewAssetPath,
+          title: _txt('page_1_preview_title'),
+          subtitle: _txt('page_1_preview_subtitle'),
+        ),
+        const SizedBox(height: 16),
+        _ReferenceSourceCard(
+          label: _txt('source_p1_shared'),
+          title: _sourceTitle('source_p1_shared'),
+          url: _sourceUrl('source_p1_shared'),
+          icon: Icons.verified_rounded,
+          color: AppColors.info,
+        ),
+        const SizedBox(height: 16),
+        _ExpandableLesson(
+          icon: Icons.whatshot_rounded,
+          title: _txt('p1_s1_title'),
+          subtitle: _txt('p1_s1_subtitle'),
+          isRead: _readSections[0].contains(0),
+          onOpened: () => _markSectionRead(0, 0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _MiniHeadline(_txt('p1_s1_headline')),
+              _BodyText(_txt('p1_s1_body')),
+              const SizedBox(height: 12),
+              _Callout(
+                icon: Icons.timer_rounded,
+                color: AppColors.brandRedDark,
+                title: _txt('p1_s1_callout_title'),
+                lines: [_txt('p1_s1_callout_line_1')],
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        _ExpandableLesson(
+          icon: Icons.air_rounded,
+          title: _txt('p1_s2_title'),
+          subtitle: _txt('p1_s2_subtitle'),
+          isRead: _readSections[0].contains(1),
+          onOpened: () => _markSectionRead(0, 1),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _Bullets(
+                items: [
+                  _txt('p1_s2_bullet_1'),
+                  _txt('p1_s2_bullet_2'),
+                  _txt('p1_s2_bullet_3'),
+                ],
+              ),
+              const SizedBox(height: 12),
+              _SafetyTipCard(
+                title: _txt('p1_s2_tip_title'),
+                message: _txt('p1_s2_tip_message'),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        _ExpandableLesson(
+          icon: Icons.warning_amber_rounded,
+          title: _txt('p1_s3_title'),
+          subtitle: _txt('p1_s3_subtitle'),
+          isRead: _readSections[0].contains(2),
+          onOpened: () => _markSectionRead(0, 2),
+          child: Column(
+            children: [
+              _ChipLine(
+                icon: Icons.smoke_free_rounded,
+                color: AppColors.textSecondary,
+                text: _txt('p1_s3_chip_1'),
+              ),
+              const SizedBox(height: 8),
+              _ChipLine(
+                icon: Icons.campaign_rounded,
+                color: AppColors.brandRedDark,
+                text: _txt('p1_s3_chip_2'),
+              ),
+              const SizedBox(height: 8),
+              _ChipLine(
+                icon: Icons.local_fire_department_rounded,
+                color: AppColors.error,
+                text: _txt('p1_s3_chip_3'),
+              ),
+              const SizedBox(height: 8),
+              _ChipLine(
+                icon: Icons.device_thermostat_rounded,
+                color: AppColors.warning,
+                text: _txt('p1_s3_chip_4'),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+        _ActionWideCard(
+          icon: Icons.door_front_door_rounded,
+          title: _txt('p1_action_title'),
+          body: _txt('p1_action_body'),
+          buttonLabel: _txt('p1_action_button'),
+          onTap: _showDoorCheckPopup,
+        ),
+        const SizedBox(height: 16),
+        _ReadingProgressBadge(
+          readCount: _readSections[0].length,
+          totalCount: _requiredSectionCountForPage(0),
+          context: context,
+        ),
+      ],
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // PAGE 2: ESCAPE STEPS
+  // ---------------------------------------------------------------------------
+  Widget _page2EscapeSteps() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _PageBanner(
+          icon: Icons.directions_run_rounded,
+          accent1: accent2,
+          accent2: accent,
+          pageTag: _txt('page_2_tag'),
+          title: _pageTitle(2),
+          subtitle: _txt('page_2_subtitle'),
+        ),
+        const SizedBox(height: 16),
+        _SectionHeader(
+          icon: Icons.route_rounded,
+          title: _txt('page_2_section_title'),
+          subtitle: _txt('page_2_section_subtitle'),
+        ),
+        const SizedBox(height: 10),
+        _ReferenceSourceCard(
+          label: _txt('source_escape_steps'),
+          title: _sourceTitle('source_escape_steps'),
+          url: _sourceUrl('source_escape_steps'),
+          icon: Icons.verified_user_rounded,
+          color: AppColors.info,
+        ),
+        const SizedBox(height: 12),
+        _EscapeStepExpandable(
+          number: '1',
+          icon: Icons.notifications_active_rounded,
+          title: _txt('p2_step1_title'),
+          subtitle: _txt('p2_step1_subtitle'),
+          isRead: _readSections[1].contains(0),
+          onOpened: () => _markSectionRead(1, 0),
+          child: _StepPreviewVideoCard(
+            title: _txt('p2_step1_preview_title'),
+            description: _txt('p2_step1_preview_description'),
+            icon: Icons.notifications_active_rounded,
+            videoAssetPath: _assetPath('module2_escape_step_1_video'),
+          ),
+        ),
+        const SizedBox(height: 12),
+        _EscapeStepExpandable(
+          number: '2',
+          icon: Icons.door_front_door_rounded,
+          title: _txt('p2_step2_title'),
+          subtitle: _txt('p2_step2_subtitle'),
+          isRead: _readSections[1].contains(1),
+          onOpened: () => _markSectionRead(1, 1),
+          child: _StepPreviewVideoCard(
+            title: _txt('p2_step2_preview_title'),
+            description: _txt('p2_step2_preview_description'),
+            icon: Icons.back_hand_rounded,
+            videoAssetPath: _assetPath('module2_escape_step_2_video'),
+          ),
+        ),
+        const SizedBox(height: 12),
+        _EscapeStepExpandable(
+          number: '3',
+          icon: Icons.air_rounded,
+          title: _txt('p2_step3_title'),
+          subtitle: _txt('p2_step3_subtitle'),
+          isRead: _readSections[1].contains(2),
+          onOpened: () => _markSectionRead(1, 2),
+          child: _StepPreviewVideoCard(
+            title: _txt('p2_step3_preview_title'),
+            description: _txt('p2_step3_preview_description'),
+            icon: Icons.accessibility_new_rounded,
+            videoAssetPath: _assetPath('module2_escape_step_3_video'),
+          ),
+        ),
+        const SizedBox(height: 12),
+        _EscapeStepExpandable(
+          number: '4',
+          icon: Icons.logout_rounded,
+          title: _txt('p2_step4_title'),
+          subtitle: _txt('p2_step4_subtitle'),
+          isRead: _readSections[1].contains(3),
+          onOpened: () => _markSectionRead(1, 3),
+          child: _StepPreviewVideoCard(
+            title: _txt('p2_step4_preview_title'),
+            description: _txt('p2_step4_preview_description'),
+            icon: Icons.family_restroom_rounded,
+            videoAssetPath: _assetPath('module2_escape_step_4_video'),
+          ),
+        ),
+        const SizedBox(height: 14),
+        _VideoSourceCard(
+          title: _txt('source_video_holder'),
+          url: _sourceUrl('source_video_holder'),
+        ),
+        const SizedBox(height: 14),
+        _ExpandableLesson(
+          icon: Icons.rule_rounded,
+          title: _txt('p2_reminders_title'),
+          subtitle: _txt('p2_reminders_subtitle'),
+          isRead: _readSections[1].contains(4),
+          onOpened: () => _markSectionRead(1, 4),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _Bullets(
+                items: [
+                  _txt('p2_reminder_bullet_1'),
+                  _txt('p2_reminder_bullet_2'),
+                  _txt('p2_reminder_bullet_3'),
+                  _txt('p2_reminder_bullet_4'),
+                  _txt('p2_reminder_bullet_5'),
+                ],
+              ),
+              const SizedBox(height: 12),
+              _ActionPill(
+                icon: Icons.accessibility_new_rounded,
+                label: _txt('p2_reminder_action_label'),
+                onTap: _showStopDropRollPopup,
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+        _ReadingProgressBadge(
+          readCount: _readSections[1].length,
+          totalCount: _requiredSectionCountForPage(1),
+          context: context,
+        ),
+      ],
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // PAGE 3: AFTER ESCAPE AND PREPARATION
+  // ---------------------------------------------------------------------------
+  Widget _page3AfterEscapeAndPrepare() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _PageBanner(
+          icon: Icons.health_and_safety_rounded,
+          accent1: AppColors.warning,
+          accent2: accent,
+          pageTag: _txt('page_3_tag'),
+          title: _pageTitle(3),
+          subtitle: _txt('page_3_subtitle'),
+        ),
+        const SizedBox(height: 16),
+        _ReferenceSourceCard(
+          label: _txt('source_p3_shared'),
+          title: _sourceTitle('source_p3_shared'),
+          url: _sourceUrl('source_p3_shared'),
+          icon: Icons.verified_rounded,
+          color: AppColors.error,
+        ),
+        const SizedBox(height: 14),
+        _ExpandableLesson(
+          icon: Icons.groups_rounded,
+          title: _txt('p3_s1_title'),
+          subtitle: _txt('p3_s1_subtitle'),
+          isRead: _readSections[2].contains(0),
+          onOpened: () => _markSectionRead(2, 0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _BodyText(_txt('p3_s1_body')),
+              const SizedBox(height: 12),
+              _Callout(
+                icon: Icons.location_on_rounded,
+                color: AppColors.brandRed,
+                title: _txt('p3_s1_callout_title'),
+                lines: [_txt('p3_s1_callout_line_1')],
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        _ExpandableLesson(
+          icon: Icons.phone_in_talk_rounded,
+          title: _txt('p3_s2_title'),
+          subtitle: _txt('p3_s2_subtitle'),
+          isRead: _readSections[2].contains(1),
+          onOpened: () => _markSectionRead(2, 1),
+          child: _Bullets(
+            items: [
+              _txt('p3_s2_bullet_1'),
+              _txt('p3_s2_bullet_2'),
+              _txt('p3_s2_bullet_3'),
+              _txt('p3_s2_bullet_4'),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        _ExpandableLesson(
+          icon: Icons.support_agent_rounded,
+          title: _txt('p3_s3_title'),
+          subtitle: _txt('p3_s3_subtitle'),
+          isRead: _readSections[2].contains(2),
+          onOpened: () => _markSectionRead(2, 2),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _Bullets(
+                items: [
+                  _txt('p3_s3_bullet_1'),
+                  _txt('p3_s3_bullet_2'),
+                  _txt('p3_s3_bullet_3'),
+                ],
+              ),
+              const SizedBox(height: 12),
+              _SafetyTipCard(
+                title: _txt('p3_s3_tip_title'),
+                message: _txt('p3_s3_tip_message'),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        _ExpandableLesson(
+          icon: Icons.fact_check_rounded,
+          title: _txt('p3_s4_title'),
+          subtitle: _txt('p3_s4_subtitle'),
+          isRead: _readSections[2].contains(3),
+          onOpened: () => _markSectionRead(2, 3),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _ReferenceSourceCard(
+                label: _txt('source_smoke_alarms'),
+                title: _sourceTitle('source_smoke_alarms'),
+                url: _sourceUrl('source_smoke_alarms'),
+                icon: Icons.sensors_rounded,
+                color: AppColors.info,
+              ),
+              const SizedBox(height: 12),
+              _Bullets(
+                items: [
+                  _txt('p3_s4_bullet_1'),
+                  _txt('p3_s4_bullet_2'),
+                  _txt('p3_s4_bullet_3'),
+                  _txt('p3_s4_bullet_4'),
+                ],
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+        _DidYouKnowCard(
+          title: _txt('p3_quick_check_title'),
+          message: _txt('p3_quick_check_message'),
+        ),
+        const SizedBox(height: 16),
+        _ReadingProgressBadge(
+          readCount: _readSections[2].length,
+          totalCount: _requiredSectionCountForPage(2),
+          context: context,
+        ),
+      ],
+    );
+  }
+}
+
+class _LoadingCard extends StatelessWidget {
+  const _LoadingCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(22),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.10),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: const Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            width: 22,
+            height: 22,
+            child: CircularProgressIndicator(strokeWidth: 2.4),
+          ),
+          SizedBox(width: 12),
+          Flexible(
+            child: Text(
+              'Loading learning materials...',
+              style: TextStyle(
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ErrorCard extends StatelessWidget {
+  final String message;
+  final VoidCallback onRetry;
+
+  const _ErrorCard({required this.message, required this.onRetry});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(22),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.10),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            children: [
+              Icon(Icons.error_outline_rounded, color: AppColors.error),
+              SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Learning materials could not be loaded',
+                  style: TextStyle(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Text(
+            message,
+            style: const TextStyle(
+              color: AppColors.textSecondary,
+              height: 1.35,
+              fontSize: 12.5,
+            ),
+          ),
+          const SizedBox(height: 14),
+          Align(
+            alignment: Alignment.centerRight,
+            child: ElevatedButton(
+              onPressed: onRetry,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.brandRed,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Retry'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// =============================================================================
+// BOTTOM NAVIGATION
+// =============================================================================
+class _BottomNavBar extends StatelessWidget {
+  final int pageIndex;
+  final bool isLast;
+  final bool nextEnabled;
+  final VoidCallback onBack;
+  final VoidCallback onNext;
+  final BuildContext context;
+
+  const _BottomNavBar({
+    required this.pageIndex,
+    required this.isLast,
+    required this.nextEnabled,
+    required this.onBack,
+    required this.onNext,
+    required this.context,
+  });
+
+  @override
+  Widget build(BuildContext ctx) {
+    final nextLabel = isLast
+        ? _lm(ctx, 'nav_start_post_test')
+        : _lm(ctx, 'nav_next');
+
+    return Container(
+      padding: const EdgeInsets.fromLTRB(18, 10, 18, 18),
+      decoration: BoxDecoration(
+        color: AppColors.background,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 12,
+            offset: const Offset(0, -4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Flexible(
+            flex: 4,
+            child: SizedBox(
+              height: 48,
+              child: OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: AppColors.brandRed),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(22),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                ),
+                onPressed: onBack,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.arrow_back_ios_rounded,
+                      size: 14,
+                      color: AppColors.brandRed,
+                    ),
+                    const SizedBox(width: 6),
+                    Flexible(
+                      child: Text(
+                        _lm(ctx, 'nav_back'),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: AppColors.brandRed,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Flexible(
+            flex: 7,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 250),
+              height: 48,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor:
+                      nextEnabled ? AppColors.brandRed : AppColors.brandRedSoft,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(22),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  elevation: nextEnabled ? 4 : 0,
+                  shadowColor: AppColors.brandRed.withOpacity(0.35),
+                ),
+                onPressed: onNext,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      isLast
+                          ? Icons.play_arrow_rounded
+                          : Icons.arrow_forward_ios_rounded,
+                      size: 16,
+                      color: nextEnabled
+                          ? Colors.white
+                          : AppColors.brandRed.withOpacity(0.4),
+                    ),
+                    const SizedBox(width: 7),
+                    Flexible(
+                      child: Text(
+                        nextLabel,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: nextEnabled
+                              ? Colors.white
+                              : AppColors.brandRed.withOpacity(0.4),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// =============================================================================
+// READING PROGRESS BADGE
+// =============================================================================
+class _ReadingProgressBadge extends StatelessWidget {
+  final int readCount;
+  final int totalCount;
+  final BuildContext context;
+
+  const _ReadingProgressBadge({
+    required this.readCount,
+    required this.totalCount,
+    required this.context,
+  });
+
+  @override
+  Widget build(BuildContext ctx) {
+    final done = readCount >= totalCount;
+    final color = done ? AppColors.success : AppColors.brandRed;
+    final label = done
+        ? _lm(ctx, 'progress_all_sections_read')
+        : _lm(
+            ctx,
+            'progress_sections_read',
+            args: {'read': '$readCount', 'total': '$totalCount'},
+          );
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: color.withOpacity(0.2)),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            done ? Icons.check_circle_rounded : Icons.menu_book_rounded,
+            color: color,
+            size: 20,
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(
+                color: color,
+                fontWeight: FontWeight.w800,
+                fontSize: 13,
+              ),
+            ),
+          ),
+          if (!done)
+            Flexible(
+              child: Text(
+                _lm(ctx, 'progress_scroll_tap_sections'),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.right,
+                style: TextStyle(color: color.withOpacity(0.6), fontSize: 11),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+// =============================================================================
+// PAGE BANNER
+// =============================================================================
+class _PageBanner extends StatelessWidget {
+  final IconData icon;
+  final Color accent1;
+  final Color accent2;
+  final String pageTag;
+  final String title;
+  final String subtitle;
+
+  const _PageBanner({
+    required this.icon,
+    required this.accent1,
+    required this.accent2,
+    required this.pageTag,
+    required this.title,
+    required this.subtitle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [accent1.withOpacity(0.08), accent2.withOpacity(0.04)],
+        ),
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: accent1.withOpacity(0.12)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 52,
+            height: 52,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [accent1, accent2],
+              ),
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: accent1.withOpacity(0.3),
+                  blurRadius: 12,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            child: Icon(icon, color: Colors.white, size: 26),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 5),
-                Padding(
-                  padding: const EdgeInsets.only(left: 9, right: 25),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      IconButton(
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
-                        icon: const Icon(Icons.close, color: Colors.white),
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                      const SizedBox(height: 10),
-                      Center(
-                        child: Text(
-                          _t(context, "Learning Material", "Materyal sa Pag-aaral"),
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 15),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 16),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 18,
-                                vertical: 10,
-                              ),
-                              decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                  colors: [accent, accent2],
-                                ),
-                                borderRadius: BorderRadius.circular(10),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.18),
-                                    blurRadius: 10,
-                                    offset: const Offset(0, 6),
-                                  ),
-                                ],
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(Icons.home_rounded,
-                                      color: Colors.white, size: 18),
-                                  SizedBox(width: 8),
-                                  Text(
-                                    _t(context, "MODULE 2", "MODYUL 2"),
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(width: 15),
-                            Expanded(
-                              child: Text(
-                                _t(
-                                  context,
-                                  "House Fire: How to Get Out Safely During a Fire",
-                                  "Sunog sa Bahay: Paano Makalabas nang Ligtas",
-                                ),
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 14),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(999),
-                        child: SizedBox(
-                          height: 6,
-                          child: LinearProgressIndicator(
-                            value: _progress,
-                            backgroundColor: Colors.white.withOpacity(0.25),
-                            valueColor:
-                                const AlwaysStoppedAnimation(accent2),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: List.generate(3, (i) {
-                          final active = i == _pageIndex;
-                          return AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
-                            margin: const EdgeInsets.symmetric(horizontal: 4),
-                            width: active ? 18 : 8,
-                            height: 8,
-                            decoration: BoxDecoration(
-                              color: active
-                                  ? Colors.white
-                                  : Colors.white.withOpacity(0.35),
-                              borderRadius: BorderRadius.circular(999),
-                            ),
-                          );
-                        }),
-                      ),
-                      const SizedBox(height: 14),
-                    ],
+                Text(
+                  pageTag,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w900,
+                    color: accent1,
+                    letterSpacing: 1.0,
                   ),
                 ),
-                Expanded(
-                  child: PageView(
-                    controller: _pageCtrl,
-                    onPageChanged: (i) {
-                      setState(() => _pageIndex = i);
-                      _resetForNewPage();
-                    },
-                    children: [
-                      _pageWrap(_page1Overview()),
-                      _pageWrap(_page2HowToEscape()),
-                      _pageWrap(_page3AfterEscape()),
-                    ],
+                const SizedBox(height: 3),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xFF111827),
+                    height: 1.2,
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(25, 8, 25, 18),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (isLast && !_canNext)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: Text(
-                            _t(
-                              context,
-                              'Please finish reading the material before starting the pre-assessment.',
-                              'Pakibasang mabuti at tapusin muna ang materyal bago simulan ang paunang pagsusulit.',
-                            ),
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 12.5,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white.withOpacity(0.85),
-                            ),
-                          ),
-                        ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          OutlinedButton(
-                            style: OutlinedButton.styleFrom(
-                              side: const BorderSide(color: Color(0xFFF97316)),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(22),
-                              ),
-                            ),
-                            onPressed: _goBack,
-                            child: Text(
-                              _t(context, "« BACK", "« BALIK"),
-                              style: TextStyle(
-                                color: Color(0xFFF97316),
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFFF97316),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(22),
-                              ),
-                            ),
-                            onPressed: (isLast ? _lastPageCompleted : _canNext) ? _goNext : null,
-                            child: Text(
-                              isLast
-                                  ? _t(
-                                      context,
-                                      "Start pre test",
-                                      "Simulan ang paunang pagsusulit",
-                                    )
-                                  : _t(context, "NEXT »", "SUNOD »"),
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                const SizedBox(height: 3),
+                Text(
+                  subtitle,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Color(0xFF6B7280),
+                    height: 1.3,
                   ),
                 ),
               ],
@@ -344,295 +1773,376 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
       ),
     );
   }
+}
 
-  Widget _pageWrap(Widget child) {
-    return SingleChildScrollView(
-      controller: _scrollCtrl,
-      padding: const EdgeInsets.symmetric(horizontal: 25),
+// =============================================================================
+// EXPANDABLE LESSON SECTION
+// =============================================================================
+class _ExpandableLesson extends StatefulWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final Widget child;
+  final bool isRead;
+  final VoidCallback onOpened;
+
+  const _ExpandableLesson({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.child,
+    required this.isRead,
+    required this.onOpened,
+  });
+
+  @override
+  State<_ExpandableLesson> createState() => _ExpandableLessonState();
+}
+
+class _ExpandableLessonState extends State<_ExpandableLesson>
+    with SingleTickerProviderStateMixin {
+  bool _expanded = false;
+
+  void _toggle() {
+    setState(() => _expanded = !_expanded);
+    if (!_expanded) return;
+    widget.onOpened();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 220),
+      curve: Curves.easeOutCubic,
+      decoration: BoxDecoration(
+        color: widget.isRead
+            ? AppColors.brandRedSoft.withOpacity(0.58)
+            : AppColors.surface,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(
+          color: widget.isRead
+              ? AppColors.brandRed.withOpacity(0.28)
+              : AppColors.border,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(22),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: _toggle,
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 46,
+                        height: 46,
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [AppColors.brandRed, AppColors.brandRedDark],
+                          ),
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.brandRed.withOpacity(0.25),
+                              blurRadius: 10,
+                              offset: const Offset(0, 5),
+                            ),
+                          ],
+                        ),
+                        child: Icon(widget.icon, color: Colors.white, size: 24),
+                      ),
+                      const SizedBox(width: 13),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    widget.title,
+                                    style: const TextStyle(
+                                      fontSize: 15.5,
+                                      fontWeight: FontWeight.w900,
+                                      color: AppColors.textPrimary,
+                                      height: 1.22,
+                                    ),
+                                  ),
+                                ),
+                                if (widget.isRead)
+                                  const Icon(
+                                    Icons.check_circle_rounded,
+                                    color: AppColors.success,
+                                    size: 18,
+                                  ),
+                              ],
+                            ),
+                            const SizedBox(height: 5),
+                            Text(
+                              widget.subtitle,
+                              style: const TextStyle(
+                                fontSize: 12.8,
+                                height: 1.35,
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Icon(
+                        _expanded
+                            ? Icons.keyboard_arrow_up_rounded
+                            : Icons.keyboard_arrow_down_rounded,
+                        color: AppColors.brandRed,
+                        size: 26,
+                      ),
+                    ],
+                  ),
+                  AnimatedCrossFade(
+                    firstChild: const SizedBox.shrink(),
+                    secondChild: Padding(
+                      padding: const EdgeInsets.only(top: 16),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: widget.child,
+                      ),
+                    ),
+                    crossFadeState: _expanded
+                        ? CrossFadeState.showSecond
+                        : CrossFadeState.showFirst,
+                    duration: const Duration(milliseconds: 220),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// =============================================================================
+// ESCAPE STEP EXPANDABLE / VIDEO STYLE CARDS
+// =============================================================================
+class _EscapeStepExpandable extends StatefulWidget {
+  final String number;
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final Widget child;
+  final bool isRead;
+  final VoidCallback onOpened;
+
+  const _EscapeStepExpandable({
+    required this.number,
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.child,
+    required this.isRead,
+    required this.onOpened,
+  });
+
+  @override
+  State<_EscapeStepExpandable> createState() => _EscapeStepExpandableState();
+}
+
+class _EscapeStepExpandableState extends State<_EscapeStepExpandable> {
+  bool _expanded = false;
+
+  void _toggle() {
+    setState(() => _expanded = !_expanded);
+    if (_expanded) widget.onOpened();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: widget.isRead ? AppColors.brandRedSoft.withOpacity(0.64) : Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: widget.isRead
+              ? AppColors.brandRed.withOpacity(0.25)
+              : AppColors.border,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 16,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: _toggle,
+            child: Padding(
+              padding: const EdgeInsets.all(15),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        width: 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [AppColors.brandRed, AppColors.brandRedDark],
+                          ),
+                          borderRadius: BorderRadius.circular(17),
+                        ),
+                        child: Center(
+                          child: Text(
+                            widget.number,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(widget.icon, size: 17, color: AppColors.brandRed),
+                                const SizedBox(width: 6),
+                                Expanded(
+                                  child: Text(
+                                    widget.title,
+                                    style: const TextStyle(
+                                      fontSize: 15.5,
+                                      fontWeight: FontWeight.w900,
+                                      color: AppColors.textPrimary,
+                                    ),
+                                  ),
+                                ),
+                                if (widget.isRead)
+                                  const Icon(
+                                    Icons.check_circle_rounded,
+                                    color: AppColors.success,
+                                    size: 18,
+                                  ),
+                              ],
+                            ),
+                            const SizedBox(height: 5),
+                            Text(
+                              widget.subtitle,
+                              style: const TextStyle(
+                                fontSize: 12.5,
+                                height: 1.32,
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Icon(
+                        _expanded
+                            ? Icons.keyboard_arrow_up_rounded
+                            : Icons.play_circle_fill_rounded,
+                        color: AppColors.brandRed,
+                        size: 28,
+                      ),
+                    ],
+                  ),
+                  AnimatedCrossFade(
+                    firstChild: const SizedBox.shrink(),
+                    secondChild: Padding(
+                      padding: const EdgeInsets.only(top: 14),
+                      child: widget.child,
+                    ),
+                    crossFadeState: _expanded
+                        ? CrossFadeState.showSecond
+                        : CrossFadeState.showFirst,
+                    duration: const Duration(milliseconds: 220),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _StepPreviewVideoCard extends StatelessWidget {
+  final String title;
+  final String description;
+  final IconData icon;
+  final String? videoAssetPath;
+
+  const _StepPreviewVideoCard({
+    required this.title,
+    required this.description,
+    required this.icon,
+    this.videoAssetPath,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.divider),
+      ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          AspectRatio(
+            aspectRatio: 16 / 9,
+            child: videoAssetPath == null
+                ? _VideoPlaceholder(icon: icon)
+                : _InlineAssetVideoPlayer(source: videoAssetPath!),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 14.5,
+              fontWeight: FontWeight.w900,
+              color: AppColors.textPrimary,
+            ),
+          ),
           const SizedBox(height: 6),
-          child,
-          const SizedBox(height: 24),
-          const SizedBox(height: 70),
-        ],
-      ),
-    );
-  }
-
-  Widget _page1Overview() {
-    return _ModernCard(
-      accent1: accent,
-      accent2: accent2,
-      pageTitle: _t(
-        context,
-        "PAGE 1 – HOUSE FIRE OVERVIEW",
-        "PAHINA 1 – PANGKALAHATANG TINGIN SA SUNOG SA BAHAY",
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Center(
-            child: Text(
-              _t(context, "What is a House Fire?", "Ano ang Sunog sa Bahay?"),
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: accent,
-                fontFamily: 'Poppins',
-              ),
+          Text(
+            description,
+            style: const TextStyle(
+              fontSize: 13,
+              height: 1.45,
+              color: AppColors.textSecondary,
             ),
-          ),
-          const SizedBox(height: 18),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _ImageBox(
-                asset: "assets/house.jpg",
-                c1: accent,
-                c2: accent2,
-              ),
-              const SizedBox(width: 15),
-              Expanded(
-                child: Text(
-                  _t(
-                    context,
-                    "A house fire is a dangerous emergency that can spread very quickly through rooms, ceilings, and hallways. Smoke, heat, and flames can block exits in just a few minutes, so every second matters.",
-                    "Ang sunog sa bahay ay mapanganib na emerhensiya na mabilis kumalat sa mga silid, kisame, at pasilyo. Ang usok, init, at apoy ay maaaring humarang sa labasan sa loob lamang ng ilang minuto.",
-                  ),
-                  style: TextStyle(
-                    fontSize: 14,
-                    height: 1.5,
-                    fontFamily: 'Poppins',
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          _Callout(
-            icon: Icons.warning_rounded,
-            color: Color(0xFFDC2626),
-            title: _t(context, "Why house fires are dangerous", "Bakit mapanganib ang sunog sa bahay"),
-            lines: [
-              _t(context, "Smoke can make it hard to see and breathe.", "Maaaring pahirapan ng usok ang paningin at paghinga."),
-              _t(context, "Fire spreads fast through curtains, wood, and furniture.", "Mabilis kumalat ang apoy sa kurtina, kahoy, at muwebles."),
-              _t(context, "Heat can make doors and escape paths unsafe.", "Maaaring maging delikado ang mga pinto at daanan dahil sa matinding init."),
-            ],
-          ),
-          const SizedBox(height: 14),
-          _ChipLine(
-            icon: Icons.access_time_rounded,
-            color: Color(0xFFB11217),
-            text: _t(
-              context,
-              "When a house is on fire, leave immediately. Do not stop to collect belongings.",
-              "Kapag may sunog sa bahay, lumikas agad. Huwag nang huminto para kumuha ng gamit.",
-            ),
-          ),
-          const SizedBox(height: 24),
-          _SectionTitle(
-            _t(context, "Common Signs of a House Fire", "Karaniwang Palatandaan ng Sunog sa Bahay"),
-          ),
-          const SizedBox(height: 12),
-          _MiniTile(
-            color: Color(0xFFF59E0B),
-            icon: Icons.smoke_free_rounded,
-            title: _t(context, "Smoke", "Usok"),
-            desc: _t(
-              context,
-              "Thick smoke in a room or hallway is an early sign that a fire is spreading nearby.",
-              "Ang makapal na usok sa silid o pasilyo ay maagang palatandaan na may kumakalat na apoy sa malapit.",
-            ),
-          ),
-          const SizedBox(height: 10),
-          _MiniTile(
-            color: Color(0xFFFB923C),
-            icon: Icons.campaign_rounded,
-            title: _t(context, "Smoke Alarm", "Smoke Alarm"),
-            desc: _t(
-              context,
-              "If the alarm sounds, treat it as a real emergency and begin evacuating at once.",
-              "Kapag tumunog ang alarm, ituring itong tunay na emerhensiya at agad na lumikas.",
-            ),
-          ),
-          const SizedBox(height: 10),
-          _MiniTile(
-            color: Color(0xFFEA580C),
-            icon: Icons.local_fire_department_rounded,
-            title: _t(context, "Visible Flames", "Nakikitang Apoy"),
-            desc: _t(
-              context,
-              "Flames from appliances, curtains, walls, or ceilings mean the fire is already active and dangerous.",
-              "Kapag may apoy mula sa appliances, kurtina, pader, o kisame, aktibo at mapanganib na ang sunog.",
-            ),
-          ),
-          const SizedBox(height: 10),
-          _MiniTile(
-            color: Color(0xFFF97316),
-            icon: Icons.whatshot_rounded,
-            title: _t(context, "Hot Doors or Walls", "Mainit na Pinto o Pader"),
-            desc: _t(
-              context,
-              "A hot door may mean fire is on the other side. Do not open it right away.",
-              "Ang mainit na pinto ay maaaring senyales na may apoy sa kabilang panig. Huwag agad buksan.",
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _page2HowToEscape() {
-    return _ModernCard(
-      accent1: accent2,
-      accent2: accent,
-      pageTitle: _t(
-        context,
-        "PAGE 2 – HOW TO GET OUT SAFELY",
-        "PAHINA 2 – PAANO MAKALABAS NANG LIGTAS",
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Center(
-            child: Text(
-              _t(context, "Steps to Escape from a House Fire", "Mga Hakbang sa Paglikas mula sa Sunog sa Bahay"),
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: accent,
-                fontFamily: 'Poppins',
-              ),
-            ),
-          ),
-          const SizedBox(height: 18),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _IconBox(
-                icon: Icons.directions_run_rounded,
-                c1: accent2,
-                c2: accent,
-              ),
-              SizedBox(width: 15),
-              Expanded(
-                child: _Bullets(
-                  items: [
-                    _t(context, "Stay calm and move quickly to the nearest safe exit.", "Manatiling kalmado at kumilos agad papunta sa pinakamalapit na ligtas na labasan."),
-                    _t(context, "Check doors with the back of your hand before opening.", "Suriin ang pinto gamit ang likod ng kamay bago ito buksan."),
-                    _t(context, "If the door is hot, do not open it. Use another way out.", "Kung mainit ang pinto, huwag itong buksan. Humanap ng ibang labasan."),
-                    _t(context, "Crawl low under smoke where the air is cleaner.", "Gumapang nang mababa sa ilalim ng usok kung saan mas malinis ang hangin."),
-                    _t(context, "Help children, older persons, and others who need assistance.", "Tulungan ang mga bata, nakatatanda, at iba pang nangangailangan ng tulong."),
-                    _t(context, "Do not use elevators if you are in a multi-level home or building.", "Huwag gumamit ng elevator kung nasa multi-level na bahay o gusali."),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
-          _ChipLine(
-            icon: Icons.health_and_safety_rounded,
-            color: Color(0xFFF97316),
-            text: _t(
-              context,
-              "Stay low, move fast, and head outside using the safest exit.",
-              "Manatiling mababa, kumilos nang mabilis, at lumabas gamit ang pinakaligtas na daan.",
-            ),
-          ),
-          const SizedBox(height: 26),
-          _SectionTitle(
-            _t(context, "Important Escape Reminders", "Mahahalagang Paalala sa Paglikas"),
-          ),
-          const SizedBox(height: 12),
-          _Bullets(
-            items: [
-              _t(context, "Do not hide during a fire.", "Huwag magtago kapag may sunog."),
-              _t(context, "Do not go back inside for phones, bags, or valuables.", "Huwag nang bumalik sa loob para sa telepono, bag, o mahahalagang gamit."),
-              _t(context, "Close doors behind you if possible to slow the spread of fire.", "Isara ang pinto sa likod mo kung kaya upang bumagal ang pagkalat ng apoy."),
-              _t(context, "Use windows only if doors are blocked and it is safe to do so.", "Gamitin lamang ang bintana kung barado ang pinto at ligtas itong gawin."),
-              _t(context, "If your clothes catch fire: Stop, Drop, and Roll.", "Kung magliyab ang damit: Tumigil, Humiga, at Gumulong."),
-              _t(context, "Once outside, keep moving away from the house.", "Kapag nasa labas na, lumayo pa sa bahay."),
-            ],
-          ),
-          const SizedBox(height: 14),
-          _Callout(
-            icon: Icons.block_rounded,
-            color: Color(0xFFDC2626),
-            title: _t(context, "Never do this", "Huwag itong gawin"),
-            lines: [
-              _t(context, "Never go back into a burning house after you have escaped.", "Huwag kailanman bumalik sa nasusunog na bahay kapag nakalabas ka na."),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _page3AfterEscape() {
-    return _ModernCard(
-      accent1: Color(0xFFF59E0B),
-      accent2: accent,
-      pageTitle: _t(
-        context,
-        "PAGE 3 – AFTER YOU GET OUT",
-        "PAHINA 3 – PAGKATAPOS MONG MAKALABAS",
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Center(
-            child: Text(
-              _t(context, "What to Do After Escaping", "Ano ang Gagawin Pagkatapos Makalikas"),
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: accent,
-                fontFamily: 'Poppins',
-              ),
-            ),
-          ),
-          const SizedBox(height: 18),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _IconBox(
-                icon: Icons.support_agent_rounded,
-                c1: Color(0xFFF59E0B),
-                c2: Color(0xFFF97316),
-              ),
-              SizedBox(width: 15),
-              Expanded(
-                child: _Bullets(
-                  items: [
-                    _t(context, "Go to a safe meeting place outside the house.", "Pumunta sa ligtas na tagpuan sa labas ng bahay."),
-                    _t(context, "Call emergency services immediately.", "Tumawag agad sa emergency services."),
-                    _t(context, "Tell firefighters if someone may still be inside.", "Sabihin sa mga bumbero kung may maaaring naiwan pa sa loob."),
-                    _t(context, "Stay outside and wait for professional help.", "Manatili sa labas at hintayin ang mga propesyonal na responder."),
-                    _t(context, "Do not re-enter the house for any reason.", "Huwag nang pumasok muli sa bahay anuman ang dahilan."),
-                    _t(context, "Follow instructions from firefighters or responders.", "Sundin ang utos ng mga bumbero o responder."),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
-          _Callout(
-            icon: Icons.groups_rounded,
-            color: Color(0xFFF97316),
-            title: _t(context, "Meeting Place", "Tagpuan"),
-            lines: [
-              _t(context, "Choose a safe family meeting place outside, such as near a gate, tree, or neighbor’s house.", "Pumili ng ligtas na tagpuan ng pamilya sa labas, tulad ng malapit sa gate, puno, o bahay ng kapitbahay."),
-            ],
-          ),
-          const SizedBox(height: 14),
-          _Callout(
-            icon: Icons.phone_in_talk_rounded,
-            color: Color(0xFFEA580C),
-            title: _t(context, "Call for Help", "Tumawag ng Tulong"),
-            lines: [
-              _t(context, "Call your local fire department or emergency hotline as soon as you are safe.", "Tumawag sa lokal na bumbero o emergency hotline sa sandaling ligtas ka na."),
-            ],
           ),
         ],
       ),
@@ -640,64 +2150,909 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
   }
 }
 
-// ===================== UI WIDGETS =====================
+class _InlineAssetVideoPlayer extends StatefulWidget {
+  final String source;
 
-class _ModernCard extends StatelessWidget {
-  final Color accent1;
-  final Color accent2;
-  final String pageTitle;
-  final Widget child;
+  const _InlineAssetVideoPlayer({required this.source});
 
-  const _ModernCard({
-    required this.accent1,
-    required this.accent2,
-    required this.pageTitle,
-    required this.child,
+  @override
+  State<_InlineAssetVideoPlayer> createState() => _InlineAssetVideoPlayerState();
+}
+
+class _InlineAssetVideoPlayerState extends State<_InlineAssetVideoPlayer> {
+  VideoPlayerController? _controller;
+  bool _initializing = true;
+  bool _hasError = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initVideo();
+  }
+
+  Future<void> _initVideo() async {
+    try {
+      final isNetwork = _isNetworkPath(widget.source);
+      final controller = isNetwork
+          ? VideoPlayerController.networkUrl(Uri.parse(widget.source))
+          : VideoPlayerController.asset(widget.source);
+      await controller.initialize();
+      await controller.setLooping(true);
+      if (!mounted) {
+        await controller.dispose();
+        return;
+      }
+      setState(() {
+        _controller = controller;
+        _initializing = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _hasError = true;
+        _initializing = false;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_initializing) {
+      return const _VideoPlaceholder(isLoading: true);
+    }
+
+    if (_hasError || _controller == null) {
+      return const _VideoPlaceholder(hasError: true);
+    }
+
+    final controller = _controller!;
+
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: FittedBox(
+            fit: BoxFit.cover,
+            child: SizedBox(
+              width: controller.value.size.width,
+              height: controller.value.size.height,
+              child: VideoPlayer(controller),
+            ),
+          ),
+        ),
+        Positioned.fill(
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(16),
+              onTap: () {
+                setState(() {
+                  controller.value.isPlaying
+                      ? controller.pause()
+                      : controller.play();
+                });
+              },
+              child: Center(
+                child: AnimatedOpacity(
+                  opacity: controller.value.isPlaying ? 0.0 : 1.0,
+                  duration: const Duration(milliseconds: 200),
+                  child: Container(
+                    width: 56,
+                    height: 56,
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.42),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.play_arrow_rounded,
+                      color: Colors.white,
+                      size: 36,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _VideoPlaceholder extends StatelessWidget {
+  final bool isLoading;
+  final bool hasError;
+  final IconData icon;
+
+  const _VideoPlaceholder({
+    this.isLoading = false,
+    this.hasError = false,
+    this.icon = Icons.smart_display_rounded,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.white,
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            AppColors.brandRed.withOpacity(0.14),
+            AppColors.warning.withOpacity(0.12),
+          ],
+        ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.black.withOpacity(0.06)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.14),
-            blurRadius: 18,
-            offset: const Offset(0, 8),
-          ),
-        ],
+        border: Border.all(color: AppColors.brandRed.withOpacity(0.16)),
       ),
-      child: Column(
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (isLoading)
+              const SizedBox(
+                width: 28,
+                height: 28,
+                child: CircularProgressIndicator(strokeWidth: 2.4),
+              )
+            else
+              Icon(
+                hasError ? Icons.error_outline_rounded : icon,
+                color: AppColors.brandRed,
+                size: 38,
+              ),
+            const SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Text(
+                hasError
+                    ? _lm(context, 'video_preview_unavailable')
+                    : _lm(context, 'video_preview_holder'),
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: AppColors.textSecondary,
+                  fontWeight: FontWeight.w800,
+                  fontSize: 12.5,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// =============================================================================
+// SOURCE / REFERENCE UI
+// =============================================================================
+class _VideoSourceCard extends StatelessWidget {
+  final String title;
+  final String url;
+
+  const _VideoSourceCard({required this.title, required this.url});
+
+  @override
+  Widget build(BuildContext context) {
+    return _ReferenceSourceCard(
+      label: title,
+      title: _lm(context, 'widget_video_3d_preview_title'),
+      url: url,
+      icon: Icons.smart_display_rounded,
+      color: AppColors.brandRed,
+    );
+  }
+}
+
+class _ReferenceSourceCard extends StatelessWidget {
+  final String label;
+  final String title;
+  final String url;
+  final IconData icon;
+  final Color color;
+
+  const _ReferenceSourceCard({
+    required this.label,
+    required this.title,
+    required this.url,
+    required this.icon,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(13),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.07),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: color.withOpacity(0.18)),
+      ),
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            width: 38,
+            height: 38,
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [accent1, accent2],
-              ),
+              color: color.withOpacity(0.12),
               borderRadius: BorderRadius.circular(12),
             ),
+            child: Icon(icon, color: color, size: 20),
+          ),
+          const SizedBox(width: 11),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(
+                    color: color,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 0.35,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w900,
+                    height: 1.25,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  url,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 11.5,
+                    height: 1.3,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// =============================================================================
+// 3D PHOTO CARD HOLDER
+// =============================================================================
+class _HouseFire3DPhotoCard extends StatelessWidget {
+  final String? assetPath;
+  final String title;
+  final String subtitle;
+
+  const _HouseFire3DPhotoCard({
+    required this.assetPath,
+    required this.title,
+    required this.subtitle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final availableWidth = constraints.maxWidth.isFinite
+            ? constraints.maxWidth
+            : MediaQuery.of(context).size.width - 68;
+        final compact = availableWidth < 340;
+        final visualWidth = compact
+            ? (availableWidth * 0.68).clamp(118.0, 166.0).toDouble()
+            : (availableWidth * 0.36).clamp(112.0, 148.0).toDouble();
+
+        return Container(
+          width: double.infinity,
+          padding: EdgeInsets.all(compact ? 14 : 16),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(26),
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Color(0xFFFFF7F7), Color(0xFFFFE8EA)],
+            ),
+            border: Border.all(
+              color: AppColors.brandRed.withOpacity(0.12),
+              width: 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.brandRed.withOpacity(0.10),
+                blurRadius: 18,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: compact
+              ? Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _HouseFire3DInfoBlock(
+                      title: title,
+                      subtitle: subtitle,
+                      compact: true,
+                    ),
+                    const SizedBox(height: 14),
+                    Align(
+                      alignment: Alignment.center,
+                      child: SizedBox(
+                        width: visualWidth,
+                        child: _HouseFire3DVisualStack(assetPath: assetPath),
+                      ),
+                    ),
+                  ],
+                )
+              : Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: _HouseFire3DInfoBlock(
+                        title: title,
+                        subtitle: subtitle,
+                        compact: false,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    SizedBox(
+                      width: visualWidth,
+                      child: _HouseFire3DVisualStack(assetPath: assetPath),
+                    ),
+                  ],
+                ),
+        );
+      },
+    );
+  }
+}
+
+class _HouseFire3DInfoBlock extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final bool compact;
+
+  const _HouseFire3DInfoBlock({
+    required this.title,
+    required this.subtitle,
+    required this.compact,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: compact ? 44 : 48,
+          height: compact ? 44 : 48,
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [AppColors.brandRed, AppColors.brandRedDark],
+            ),
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.brandRed.withOpacity(0.28),
+                blurRadius: 12,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: const Icon(
+            Icons.view_in_ar_rounded,
+            color: Colors.white,
+            size: 25,
+          ),
+        ),
+        SizedBox(height: compact ? 10 : 12),
+        Text(
+          title,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontSize: compact ? 15.5 : 16.5,
+            height: 1.15,
+            fontWeight: FontWeight.w900,
+            fontFamily: 'Poppins',
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          subtitle,
+          maxLines: compact ? 4 : 3,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(
+            color: AppColors.textSecondary,
+            fontSize: 12.5,
+            height: 1.35,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: 10),
+        const _HouseFireInPageChip(),
+      ],
+    );
+  }
+}
+
+class _HouseFireInPageChip extends StatelessWidget {
+  const _HouseFireInPageChip();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      constraints: const BoxConstraints(maxWidth: 148),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+      decoration: BoxDecoration(
+        color: AppColors.brandRed.withOpacity(0.10),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: AppColors.brandRed.withOpacity(0.12)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.visibility_rounded, color: AppColors.brandRed, size: 13),
+          const SizedBox(width: 5),
+          Flexible(
             child: Text(
-              pageTitle,
+              _lm(context, 'house_fire_3d_chip'),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w800,
-                fontSize: 12,
-                letterSpacing: 0.2,
+                color: AppColors.brandRed,
+                fontSize: 10,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 0.45,
               ),
             ),
           ),
-          const SizedBox(height: 14),
-          child,
         ],
+      ),
+    );
+  }
+}
+
+class _HouseFire3DVisualStack extends StatelessWidget {
+  final String? assetPath;
+
+  const _HouseFire3DVisualStack({required this.assetPath});
+
+  @override
+  Widget build(BuildContext context) {
+    return AspectRatio(
+      aspectRatio: 0.88,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Positioned.fill(
+            top: 2,
+            left: 14,
+            right: 0,
+            bottom: 14,
+            child: Transform.rotate(
+              angle: -0.08,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.72),
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(
+                    color: Colors.white.withOpacity(0.85),
+                    width: 1,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Positioned.fill(
+            top: 16,
+            left: 0,
+            right: 20,
+            bottom: 6,
+            child: Transform.rotate(
+              angle: 0.08,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: AppColors.brandRed.withOpacity(0.08),
+                  borderRadius: BorderRadius.circular(22),
+                  border: Border.all(
+                    color: AppColors.brandRed.withOpacity(0.12),
+                    width: 1,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Positioned.fill(
+            top: 20,
+            left: 16,
+            right: 8,
+            bottom: 0,
+            child: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(26),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.12),
+                    blurRadius: 18,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: (assetPath != null && assetPath!.isNotEmpty)
+                    ? _HouseFirePreviewImage(path: assetPath!)
+                    : const _HouseFirePreviewPlaceholder(),              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+
+class _HouseFirePreviewImage extends StatelessWidget {
+  final String path;
+
+  const _HouseFirePreviewImage({required this.path});
+
+  @override
+  Widget build(BuildContext context) {
+    if (_isNetworkPath(path)) {
+      return Image.network(
+        path,
+        fit: BoxFit.contain,
+        errorBuilder: (_, __, ___) => const _HouseFirePreviewPlaceholder(),
+      );
+    }
+
+    return Image.asset(
+      path,
+      fit: BoxFit.contain,
+      errorBuilder: (_, __, ___) => const _HouseFirePreviewPlaceholder(),
+    );
+  }
+}
+
+class _HouseFirePreviewPlaceholder extends StatelessWidget {
+  const _HouseFirePreviewPlaceholder();
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final small = constraints.maxHeight < 106;
+        return Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: AppColors.brandRedSoft.withOpacity(0.65),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: AppColors.brandRed.withOpacity(0.16),
+            ),
+          ),
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.home_work_rounded,
+                  color: AppColors.brandRed,
+                  size: small ? 26 : 34,
+                ),
+                if (!small) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    _lm(context, 'house_fire_3d_missing_asset'),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: AppColors.brandRed,
+                      fontSize: 10.5,
+                      height: 1.25,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+// =============================================================================
+// CONTENT CARDS
+// =============================================================================
+class _DidYouKnowCard extends StatelessWidget {
+  final String title;
+  final String message;
+
+  const _DidYouKnowCard({required this.title, required this.message});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.warning.withOpacity(0.11),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.warning.withOpacity(0.24)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(Icons.lightbulb_rounded, color: AppColors.warning, size: 25),
+          const SizedBox(width: 11),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 14.5,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  message,
+                  style: const TextStyle(
+                    color: AppColors.textSecondary,
+                    height: 1.45,
+                    fontSize: 13,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SafetyTipCard extends StatelessWidget {
+  final String title;
+  final String message;
+
+  const _SafetyTipCard({required this.title, required this.message});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppColors.success.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppColors.success.withOpacity(0.20)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(Icons.health_and_safety_rounded,
+              color: AppColors.success, size: 22),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    color: AppColors.success,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 13.5,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  message,
+                  style: const TextStyle(
+                    color: AppColors.textSecondary,
+                    height: 1.45,
+                    fontSize: 13,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SectionHeader extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+
+  const _SectionHeader({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: 42,
+          height: 42,
+          decoration: BoxDecoration(
+            color: AppColors.brandRedSoft,
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: Icon(icon, color: AppColors.brandRed, size: 22),
+        ),
+        const SizedBox(width: 11),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w900,
+                  fontSize: 16,
+                  color: AppColors.textPrimary,
+                  height: 1.2,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                subtitle,
+                style: const TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 12.5,
+                  height: 1.35,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _StyledDialog extends StatelessWidget {
+  final IconData icon;
+  final Color iconColor;
+  final String title;
+  final String body;
+  final String buttonLabel;
+  final VoidCallback onPressed;
+
+  const _StyledDialog({
+    required this.icon,
+    required this.iconColor,
+    required this.title,
+    required this.body,
+    required this.buttonLabel,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 28),
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Align(
+              alignment: Alignment.topRight,
+              child: SizedBox(
+                width: 34,
+                height: 34,
+                child: Material(
+                  color: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: IconButton(
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    icon: const Icon(Icons.close_rounded, size: 18),
+                    color: Colors.black54,
+                    onPressed: () => Navigator.pop(context),
+                    tooltip: 'Close',
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Container(
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(
+                color: iconColor.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: iconColor, size: 32),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w900,
+                color: iconColor,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              body,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 14,
+                height: 1.55,
+                color: Color(0xFF374151),
+              ),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: onPressed,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: iconColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 13),
+                ),
+                child: Text(
+                  buttonLabel,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -725,70 +3080,103 @@ class _ImageBox extends StatelessWidget {
         border: Border.all(color: Colors.black.withOpacity(0.06)),
       ),
       padding: const EdgeInsets.all(10),
-      child: Image.asset(asset, fit: BoxFit.contain),
-    );
-  }
-}
-
-class _IconBox extends StatelessWidget {
-  final IconData icon;
-  final Color c1;
-  final Color c2;
-
-  const _IconBox({required this.icon, required this.c1, required this.c2});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 110,
-      height: 110,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [c1.withOpacity(0.14), c2.withOpacity(0.10)],
-        ),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.black.withOpacity(0.06)),
-      ),
-      child: Center(
-        child: Container(
-          width: 58,
-          height: 58,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [c1, c2],
-            ),
-            shape: BoxShape.circle,
-            boxShadow: [
-              BoxShadow(
-                color: c2.withOpacity(0.28),
-                blurRadius: 14,
-                offset: const Offset(0, 6),
-              ),
-            ],
-          ),
-          child: Icon(icon, color: Colors.white, size: 28),
-        ),
+      child: Image.asset(
+        asset,
+        fit: BoxFit.contain,
+        errorBuilder: (_, __, ___) => Icon(Icons.home_work_rounded, color: c1, size: 42),
       ),
     );
   }
 }
 
-class _SectionTitle extends StatelessWidget {
+class _MiniHeadline extends StatelessWidget {
   final String text;
-  const _SectionTitle(this.text);
+
+  const _MiniHeadline(this.text);
 
   @override
   Widget build(BuildContext context) {
     return Text(
       text,
       style: const TextStyle(
-        fontSize: 16,
+        fontSize: 13,
         fontWeight: FontWeight.w900,
-        color: Color(0xFF111827),
+        color: AppColors.brandRed,
+        letterSpacing: 0.2,
+      ),
+    );
+  }
+}
+
+class _BodyText extends StatelessWidget {
+  final String text;
+
+  const _BodyText(this.text);
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      text,
+      style: const TextStyle(
+        fontSize: 13.5,
+        color: AppColors.textSecondary,
+        height: 1.52,
+      ),
+    );
+  }
+}
+
+class _LessonIntroStrip extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String text;
+
+  const _LessonIntroStrip({
+    required this.icon,
+    required this.title,
+    required this.text,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(15),
+      decoration: BoxDecoration(
+        color: AppColors.brandRedSoft,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.brandRed.withOpacity(0.14)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: AppColors.brandRed, size: 24),
+          const SizedBox(width: 11),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    color: AppColors.brandRed,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 14,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  text,
+                  style: const TextStyle(
+                    color: AppColors.textSecondary,
+                    height: 1.45,
+                    fontSize: 13,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -833,7 +3221,10 @@ class _Callout extends StatelessWidget {
                 ...lines.map(
                   (l) => Padding(
                     padding: const EdgeInsets.only(bottom: 6),
-                    child: Text(l, style: const TextStyle(height: 1.4)),
+                    child: Text(
+                      l,
+                      style: const TextStyle(height: 1.4, color: AppColors.textSecondary),
+                    ),
                   ),
                 ),
               ],
@@ -881,55 +3272,132 @@ class _ChipLine extends StatelessWidget {
   }
 }
 
-class _MiniTile extends StatelessWidget {
-  final Color color;
+class _ActionPill extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  const _ActionPill({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: AppColors.brandRed,
+      borderRadius: BorderRadius.circular(999),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(999),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, color: Colors.white, size: 17),
+              const SizedBox(width: 8),
+              Flexible(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 12.5,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ActionWideCard extends StatelessWidget {
   final IconData icon;
   final String title;
-  final String desc;
+  final String body;
+  final String buttonLabel;
+  final VoidCallback onTap;
 
-  const _MiniTile({
-    required this.color,
+  const _ActionWideCard({
     required this.icon,
     required this.title,
-    required this.desc,
+    required this.body,
+    required this.buttonLabel,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.black.withOpacity(0.06)),
+        color: AppColors.surfaceSoft,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: AppColors.brandRed.withOpacity(0.15)),
       ),
-      child: Row(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: 34,
-            height: 34,
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.12),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(icon, color: color, size: 18),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w900,
-                    color: Color(0xFF111827),
-                  ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(icon, color: AppColors.brandRed, size: 24),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        color: AppColors.textPrimary,
+                        fontWeight: FontWeight.w900,
+                        fontSize: 15,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      body,
+                      style: const TextStyle(
+                        color: AppColors.textSecondary,
+                        height: 1.45,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 6),
-                Text(desc, style: const TextStyle(height: 1.4)),
-              ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: onTap,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.brandRed,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                padding: const EdgeInsets.symmetric(vertical: 12),
+              ),
+              icon: const Icon(Icons.touch_app_rounded, color: Colors.white, size: 18),
+              label: Text(
+                buttonLabel,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
             ),
           ),
         ],
@@ -940,6 +3408,7 @@ class _MiniTile extends StatelessWidget {
 
 class _Bullets extends StatelessWidget {
   final List<String> items;
+
   const _Bullets({required this.items});
 
   @override
@@ -953,11 +3422,17 @@ class _Bullets extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    "•  ",
+                    '•  ',
                     style: TextStyle(fontWeight: FontWeight.w900),
                   ),
                   Expanded(
-                    child: Text(t, style: const TextStyle(height: 1.45)),
+                    child: Text(
+                      t,
+                      style: const TextStyle(
+                        height: 1.45,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -967,3 +3442,245 @@ class _Bullets extends StatelessWidget {
     );
   }
 }
+
+// =============================================================================
+// HEADER
+// =============================================================================
+class _LearningAssessmentHeader extends StatelessWidget {
+  final String sectionTitle;
+  final String moduleLabel;
+  final String moduleTitle;
+  final int currentPage;
+  final int totalPages;
+  final double progress;
+  final VoidCallback onClose;
+
+  const _LearningAssessmentHeader({
+    required this.sectionTitle,
+    required this.moduleLabel,
+    required this.moduleTitle,
+    required this.currentPage,
+    required this.totalPages,
+    required this.progress,
+    required this.onClose,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final safeProgress = progress.clamp(0.0, 1.0).toDouble();
+    final pageLabel = Localizations.localeOf(context).languageCode == 'tl'
+        ? 'Pahina'
+        : 'Page';
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Row(
+          children: [
+            InkWell(
+              onTap: onClose,
+              borderRadius: BorderRadius.circular(999),
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: AppColors.textOnRed.withOpacity(0.18),
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: AppColors.textOnRed.withOpacity(0.24),
+                  ),
+                ),
+                child: const Icon(
+                  Icons.close_rounded,
+                  color: AppColors.textOnRed,
+                  size: 21,
+                ),
+              ),
+            ),
+            const Spacer(),
+          ],
+        ),
+        const SizedBox(height: 14),
+        SizedBox(
+          width: double.infinity,
+          child: Text(
+            sectionTitle,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: AppColors.textOnRed,
+              fontFamily: 'Poppins',
+              fontSize: 27,
+              height: 1.12,
+              fontWeight: FontWeight.w900,
+              letterSpacing: -0.3,
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: AppColors.brandRedLight,
+                borderRadius: BorderRadius.circular(999),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.brandRed.withOpacity(0.24),
+                    blurRadius: 12,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.home_rounded,
+                    color: AppColors.textOnRed,
+                    size: 15,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    moduleLabel,
+                    style: const TextStyle(
+                      color: AppColors.textOnRed,
+                      fontFamily: 'Poppins',
+                      fontSize: 12,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                moduleTitle,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: AppColors.textOnRed.withOpacity(0.88),
+                  fontFamily: 'Poppins',
+                  fontSize: 12.5,
+                  height: 1.28,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 14),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(999),
+          child: LinearProgressIndicator(
+            value: safeProgress,
+            minHeight: 8,
+            backgroundColor: AppColors.textOnRed.withOpacity(0.22),
+            valueColor: const AlwaysStoppedAnimation<Color>(
+              AppColors.textOnRed,
+            ),
+          ),
+        ),
+        const SizedBox(height: 10),
+        Row(
+          children: [
+            Text(
+              '$pageLabel $currentPage/$totalPages',
+              style: TextStyle(
+                color: AppColors.textOnRed.withOpacity(0.76),
+                fontFamily: 'Poppins',
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const Spacer(),
+            Wrap(
+              spacing: 6,
+              children: List.generate(totalPages, (index) {
+                final active = index == currentPage - 1;
+                return AnimatedContainer(
+                  duration: const Duration(milliseconds: 180),
+                  width: active ? 28 : 10,
+                  height: 10,
+                  decoration: BoxDecoration(
+                    color: active
+                        ? AppColors.textOnRed
+                        : AppColors.textOnRed.withOpacity(0.34),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                );
+              }),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+// =============================================================================
+// GRADIENT BACKDROP
+// =============================================================================
+class _LMGradientBackdrop extends StatelessWidget {
+  const _LMGradientBackdrop();
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        Container(color: AppColors.background),
+        Container(
+          height: 280,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                AppColors.brandRedDeep,
+                AppColors.brandRedDark,
+                AppColors.brandRed,
+              ],
+            ),
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(34),
+              bottomRight: Radius.circular(34),
+            ),
+          ),
+        ),
+        const Positioned(
+          top: 50,
+          right: -36,
+          child: _LMDecorCircle(size: 138, opacity: 0.17),
+        ),
+        const Positioned(
+          top: 178,
+          left: -42,
+          child: _LMDecorCircle(size: 124, opacity: 0.13),
+        ),
+      ],
+    );
+  }
+}
+
+class _LMDecorCircle extends StatelessWidget {
+  const _LMDecorCircle({required this.size, required this.opacity});
+  final double size;
+  final double opacity;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: AppColors.textOnRed.withOpacity(opacity),
+        shape: BoxShape.circle,
+      ),
+    );
+  }
+}
+

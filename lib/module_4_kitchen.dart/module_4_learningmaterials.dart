@@ -1,5 +1,35 @@
 import 'package:flutter/material.dart';
-import 'pre_assess_instruction.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+import 'post_assess_instruction.dart';
+
+const int _moduleNo = 4;
+const String _learningMaterialsBucket = 'Learning Materials';
+
+class AppColors {
+  static const Color brandRed = Color(0xFFF59E0B);
+  static const Color brandRedDark = Color(0xFFD97706);
+  static const Color brandRedDeep = Color(0xFF92400E);
+  static const Color brandRedLight = Color(0xFFFBBF24);
+  static const Color brandRedSoft = Color(0xFFFFFBEB);
+  static const Color background = Color(0xFFFFFBF2);
+  static const Color surface = Color(0xFFFFFFFF);
+  static const Color surfaceSoft = Color(0xFFFFF7ED);
+  static const Color textPrimary = Color(0xFF1F2937);
+  static const Color textSecondary = Color(0xFF64748B);
+  static const Color textMuted = Color(0xFF94A3B8);
+  static const Color textOnRed = Color(0xFFFFFFFF);
+  static const Color border = Color(0xFFFDE68A);
+  static const Color divider = Color(0xFFFEF3C7);
+  static const Color success = Color(0xFF16A34A);
+  static const Color warning = Color(0xFFF59E0B);
+  static const Color error = Color(0xFFD32F2F);
+  static const Color info = Color(0xFF2563EB);
+  static const Color primaryButton = brandRed;
+  static const Color primaryButtonPressed = brandRedDark;
+  static const Color secondaryButton = brandRedSoft;
+  static const Color shadow = Color(0x1A000000);
+}
 
 class LearningMaterialKitchenPage extends StatefulWidget {
   const LearningMaterialKitchenPage({super.key});
@@ -10,33 +40,157 @@ class LearningMaterialKitchenPage extends StatefulWidget {
 }
 
 class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPage> {
-  static const accent = Color(0xFFF59E0B); // amber primary
-  static const accent2 = Color(0xFFEA580C); // deep orange
+  static const accent = AppColors.brandRed;
+  static const accent2 = AppColors.brandRedDark;
 
   final PageController _pageCtrl = PageController();
   final ScrollController _scrollCtrl = ScrollController();
 
   int _pageIndex = 0;
-
   double _progress = 0.0;
   bool _canNext = false;
   bool _isSwitchingPage = false;
   bool _lastPageCompleted = false;
+  bool _isLoading = true;
+  bool _introShown = false;
+  bool _unreadPromptVisible = false;
+  String? _loadError;
 
-  String _t(BuildContext context, String en, String tl) {
-    return Localizations.localeOf(context).languageCode == 'tl' ? tl : en;
-  }
+  final List<Set<int>> _readSections = [<int>{}, <int>{}, <int>{}];
+  _LearningMaterialData? _data;
+
+  bool get _isTl => Localizations.localeOf(context).languageCode == 'tl';
 
   @override
   void initState() {
     super.initState();
     _scrollCtrl.addListener(_onScroll);
-    WidgetsBinding.instance.addPostFrameCallback((_) => _onScroll());
+    _loadLearningMaterials();
+  }
+
+  @override
+  void dispose() {
+    _scrollCtrl.removeListener(_onScroll);
+    _scrollCtrl.dispose();
+    _pageCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadLearningMaterials() async {
+    setState(() {
+      _isLoading = true;
+      _loadError = null;
+    });
+
+    try {
+      final client = Supabase.instance.client;
+
+      final materialRow = await client
+          .from('learning_materials')
+          .select('id,module_no,title,title_tl,subtitle,subtitle_tl,hero_asset')
+          .eq('module_no', _moduleNo)
+          .eq('is_active', true)
+          .maybeSingle();
+
+      if (materialRow == null) {
+        throw StateError('No active learning material found for Module $_moduleNo.');
+      }
+
+      final materialId = materialRow['id'] as String;
+
+      final pageRows = await client
+          .from('learning_material_pages')
+          .select('id,module_no,page_no,page_key,title_en,title_tl')
+          .eq('learning_material_id', materialId)
+          .eq('module_no', _moduleNo)
+          .eq('is_active', true)
+          .order('page_no', ascending: true);
+
+      final blockRows = await client
+          .from('learning_material_blocks')
+          .select('id,page_id,module_no,page_no,block_no,block_key,block_type,text_en,text_tl,metadata,source_title,source_organization,source_url')
+          .eq('module_no', _moduleNo)
+          .eq('is_active', true)
+          .order('page_no', ascending: true)
+          .order('block_no', ascending: true);
+
+      final textRows = await client
+          .from('learning_material_texts')
+          .select('text_key,text_en,text_tl')
+          .eq('learning_material_id', materialId)
+          .eq('module_no', _moduleNo)
+          .eq('is_active', true)
+          .order('text_order', ascending: true);
+
+      final mediaRows = await client
+          .from('learning_material_media_assets')
+          .select('asset_key,asset_path,public_url,asset_type,alt_en,alt_tl')
+          .eq('learning_material_id', materialId)
+          .eq('module_no', _moduleNo)
+          .eq('is_active', true)
+          .order('display_order', ascending: true);
+
+      if (!mounted) return;
+      setState(() {
+        _data = _LearningMaterialData.fromRows(
+          materialRow: Map<String, dynamic>.from(materialRow),
+          pageRows: List<Map<String, dynamic>>.from(
+            (pageRows as List).map((row) => Map<String, dynamic>.from(row as Map)),
+          ),
+          blockRows: List<Map<String, dynamic>>.from(
+            (blockRows as List).map((row) => Map<String, dynamic>.from(row as Map)),
+          ),
+          textRows: List<Map<String, dynamic>>.from(
+            (textRows as List).map((row) => Map<String, dynamic>.from(row as Map)),
+          ),
+          mediaRows: List<Map<String, dynamic>>.from(
+            (mediaRows as List).map((row) => Map<String, dynamic>.from(row as Map)),
+          ),
+        );
+        _isLoading = false;
+      });
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        _onScroll();
+        if (!_introShown) {
+          _introShown = true;
+          Future.delayed(const Duration(milliseconds: 400), () {
+            if (mounted) _showIntroPopup();
+          });
+        }
+      });
+    } catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+        _loadError = error.toString();
+      });
+    }
+  }
+
+  String _uiText(String key, {Map<String, String> values = const {}}) {
+    var text = _data?.texts[key]?.value(_isTl) ?? key;
+    values.forEach((placeholder, value) {
+      text = text.replaceAll('{$placeholder}', value);
+    });
+    return text;
+  }
+
+  String _pageTitle(int pageNo) => _data?.pagesByNo[pageNo]?.value(_isTl) ?? '';
+  _LearningBlockData? _block(String key) => _data?.blocksByKey[key];
+
+  String _blockTitle(String key) => _block(key)?.value(_isTl) ?? '';
+  String _mediaPath(String? keyOrPath) {
+    final raw = keyOrPath?.trim() ?? '';
+    if (raw.isEmpty) return '';
+    final asset = _data?.mediaByKey[raw];
+    if (asset != null) return asset.resolvedPath;
+    return raw;
   }
 
   void _onScroll() {
-    if (!_scrollCtrl.hasClients) return;
-    if (_isSwitchingPage) return;
+    if (!_scrollCtrl.hasClients || _isSwitchingPage) return;
 
     final max = _scrollCtrl.position.maxScrollExtent;
     final off = _scrollCtrl.offset;
@@ -51,7 +205,7 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
       return;
     }
 
-    final p = (off / max).clamp(0.0, 1.0);
+    final p = (off / max).clamp(0.0, 1.0).toDouble();
     final nearBottom = off >= (max - 8);
 
     if (_progress != p || _canNext != nearBottom) {
@@ -64,14 +218,6 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
     if (_pageIndex == 2 && nearBottom) {
       _lastPageCompleted = true;
     }
-  }
-
-  @override
-  void dispose() {
-    _scrollCtrl.removeListener(_onScroll);
-    _scrollCtrl.dispose();
-    _pageCtrl.dispose();
-    super.dispose();
   }
 
   void _resetForNewPage() {
@@ -90,6 +236,22 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
     });
   }
 
+  int _requiredSectionCountForPage(int pageIndex) {
+    switch (pageIndex) {
+      case 0:
+      case 1:
+      case 2:
+        return 4;
+      default:
+        return 0;
+    }
+  }
+
+  bool _hasReadAllRequiredSections(int pageIndex) {
+    if (pageIndex < 0 || pageIndex >= _readSections.length) return false;
+    return _readSections[pageIndex].length >= _requiredSectionCountForPage(pageIndex);
+  }
+
   void _goBack() {
     if (_pageIndex == 0) {
       Navigator.pop(context);
@@ -102,24 +264,102 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
   }
 
   void _goNext() {
-    if (!_canNext) return;
+    if (!_hasReadAllRequiredSections(_pageIndex)) {
+      _showUnreadSectionsPopup();
+      return;
+    }
 
     if (_pageIndex < 2) {
-      _pageCtrl.nextPage(
-        duration: const Duration(milliseconds: 260),
-        curve: Curves.easeOutCubic,
-      );
+      _showPageCompletePopup(_pageIndex, () {
+        _pageCtrl.nextPage(
+          duration: const Duration(milliseconds: 260),
+          curve: Curves.easeOutCubic,
+        );
+      });
     } else {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => const PreAssessmentIntroPage2(),
-        ),
-      );
+      setState(() => _lastPageCompleted = true);
+      _showFinalCompletePopup();
     }
   }
 
-  // ---------- POPUPS ----------
+  void _showUnreadSectionsPopup() {
+    if (_unreadPromptVisible) return;
+    _unreadPromptVisible = true;
+
+    showDialog(
+      context: context,
+      builder: (_) => _StyledDialog(
+        icon: Icons.menu_book_rounded,
+        iconColor: AppColors.brandRed,
+        title: _uiText('dialog_unread_title'),
+        body: _uiText('dialog_unread_body'),
+        buttonLabel: _uiText('dialog_unread_button'),
+        onPressed: () => Navigator.pop(context),
+      ),
+    ).then((_) => _unreadPromptVisible = false);
+  }
+
+  void _showIntroPopup() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => _StyledDialog(
+        icon: Icons.auto_stories_rounded,
+        iconColor: accent,
+        title: _uiText('dialog_intro_title'),
+        body: _uiText('dialog_intro_body'),
+        buttonLabel: _uiText('dialog_intro_button'),
+        onPressed: () => Navigator.pop(context),
+      ),
+    );
+  }
+
+  void _showPageCompletePopup(int pageIndex, VoidCallback onContinue) {
+    final titleKey = pageIndex == 0
+        ? 'dialog_page_1_complete_title'
+        : 'dialog_page_2_complete_title';
+    final bodyKey = pageIndex == 0
+        ? 'dialog_page_1_complete_body'
+        : 'dialog_page_2_complete_body';
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => _StyledDialog(
+        icon: Icons.check_circle_rounded,
+        iconColor: AppColors.success,
+        title: _uiText(titleKey),
+        body: _uiText(bodyKey),
+        buttonLabel: _uiText('dialog_continue_button'),
+        onPressed: () {
+          Navigator.pop(context);
+          onContinue();
+        },
+      ),
+    );
+  }
+
+  void _showFinalCompletePopup() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => _StyledDialog(
+        icon: Icons.emoji_events_rounded,
+        iconColor: AppColors.brandRed,
+        title: _uiText('dialog_final_title'),
+        body: _uiText('dialog_final_body'),
+        buttonLabel: _uiText('dialog_final_button'),
+        onPressed: () {
+          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const PostAssessmentIntroPage2()),
+          );
+        },
+      ),
+    );
+  }
+
   void _showInfoPopup({
     required String title,
     required String message,
@@ -128,199 +368,62 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
   }) {
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Row(
-          children: [
-            Icon(icon, color: color),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                title,
-                style: TextStyle(fontWeight: FontWeight.w900, color: color),
-              ),
-            ),
-          ],
-        ),
-        content: Text(message, style: const TextStyle(height: 1.45)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(_t(context, "OK", "Sige")),
-          ),
-        ],
+      builder: (_) => _StyledDialog(
+        icon: icon,
+        iconColor: color,
+        title: title,
+        body: message,
+        buttonLabel: _uiText('dialog_ok_button'),
+        onPressed: () => Navigator.pop(context),
       ),
     );
   }
 
   void _showDoThisNowPopup() {
     _showInfoPopup(
-      title: _t(context, "If a pan catches fire", "Kapag nagliyab ang kawali"),
+      title: _uiText('popup_pan_fire_title'),
       icon: Icons.local_fire_department_rounded,
-      color: const Color(0xFFDC2626),
-      message: _t(
-        context,
-        "1) Turn off the heat.\n"
-            "2) Cover the pan with a metal lid or baking tray.\n"
-            "3) Do NOT carry the pan.\n"
-            "4) Do NOT use water on burning oil.\n"
-            "5) If it grows, evacuate and call for help.",
-        "1) Patayin ang apoy o kalan.\n"
-            "2) Takpan ang kawali gamit ang metal na takip o tray.\n"
-            "3) HUWAG buhatin ang kawali.\n"
-            "4) HUWAG lagyan ng tubig ang nagliliyab na mantika.\n"
-            "5) Kung lumalaki, lumikas at tumawag ng tulong.",
-      ),
+      color: AppColors.error,
+      message: _uiText('popup_pan_fire_steps'),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) return _buildLoadingState();
+    if (_loadError != null || _data == null) return _buildErrorState();
+
     final isLast = _pageIndex == 2;
+    final nextEnabled = _hasReadAllRequiredSections(_pageIndex);
 
     return Scaffold(
+      backgroundColor: AppColors.background,
       body: Stack(
         children: [
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            height: 900,
-            child: Image.asset('assets/bg.png', fit: BoxFit.cover),
-          ),
-
+          const _LMGradientBackdrop(),
           SafeArea(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 5),
-
+                const SizedBox(height: 8),
                 Padding(
-                  padding: const EdgeInsets.only(left: 9, right: 25),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      IconButton(
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
-                        icon: const Icon(Icons.close, color: Colors.white),
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                      const SizedBox(height: 10),
-                      Center(
-                        child: Text(
-                          _t(context, "Learning Material", "Materyal sa Pag-aaral"),
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 15),
-
-                      Padding(
-                      padding: const EdgeInsets.only(left: 25), // adjust 12/16/20/24
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 18,
-                              vertical: 10,
-                            ),
-                            decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: [accent, accent2],
-                              ),
-                              borderRadius: BorderRadius.circular(10),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.18),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 6),
-                                ),
-                              ],
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(Icons.bolt_rounded, color: Colors.white, size: 18),
-                                SizedBox(width: 8),
-                                Text(
-                                  _t(context, "MODULE 4", "MODYUL 4"),
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          const SizedBox(width: 15),
-
-                          Expanded(
-                            child: Text(
-                              _t(
-                                context,
-                                "Kitchen Fire: What It Is, Common Types, and What To Do",
-                                "Sunog sa Kusina: Ano Ito, Karaniwang Uri, at Ano ang Dapat Gawin",
-                              ),
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                      const SizedBox(height: 14),
-
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(999),
-                        child: SizedBox(
-                          height: 6,
-                          child: LinearProgressIndicator(
-                            value: _progress,
-                            backgroundColor: Colors.white.withOpacity(0.25),
-                            valueColor: const AlwaysStoppedAnimation(accent2),
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 10),
-
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: List.generate(3, (i) {
-                          final active = i == _pageIndex;
-                          return AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
-                            margin: const EdgeInsets.symmetric(horizontal: 4),
-                            width: active ? 18 : 8,
-                            height: 8,
-                            decoration: BoxDecoration(
-                              color: active
-                                  ? Colors.white
-                                  : Colors.white.withOpacity(0.35),
-                              borderRadius: BorderRadius.circular(999),
-                            ),
-                          );
-                        }),
-                      ),
-
-                      const SizedBox(height: 14),
-                    ],
+                  padding: const EdgeInsets.fromLTRB(18, 0, 18, 0),
+                  child: _LearningAssessmentHeader(
+                    sectionTitle: _uiText('header_section_title'),
+                    moduleLabel: _uiText('header_module_label'),
+                    moduleTitle: _data!.title.value(_isTl),
+                    currentPage: _pageIndex + 1,
+                    totalPages: 3,
+                    progress: _progress,
+                    pageLabel: _uiText('header_page_label'),
+                    onClose: () => Navigator.pop(context),
                   ),
                 ),
-
+                const SizedBox(height: 14),
                 Expanded(
                   child: PageView(
                     controller: _pageCtrl,
+                    physics: const NeverScrollableScrollPhysics(),
                     onPageChanged: (i) {
                       setState(() => _pageIndex = i);
                       _resetForNewPage();
@@ -332,784 +435,640 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
                     ],
                   ),
                 ),
-
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(25, 8, 25, 18),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      OutlinedButton(
-                        style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color: Color(0xFFF59E0B)),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(22),
-                          ),
-                        ),
-                        onPressed: _goBack,
-                        child: Text(
-                          _t(context, "« BACK", "« BALIK"),
-                          style: TextStyle(
-                            color: Color(0xFFF59E0B),
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFF59E0B),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(22),
-                          ),
-                        ),
-                        onPressed: (isLast ? _lastPageCompleted : _canNext) ? _goNext : null,
-                        child: Text(
-                          isLast
-                              ? _t(context, "Start pre test", "Simulan ang paunang pagsusulit")
-                              : _t(context, "NEXT »", "SUNOD »"),
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                _BottomNavBar(
+                  pageIndex: _pageIndex,
+                  isLast: isLast,
+                  nextEnabled: nextEnabled,
+                  backLabel: _uiText('nav_back'),
+                  nextLabel: isLast
+                      ? _uiText('nav_start_post_test')
+                      : _uiText('nav_next'),
+                  onBack: _goBack,
+                  onNext: _goNext,
                 ),
               ],
             ),
           ),
         ],
       ),
-      // ✅ Removed floatingActionButton
+    );
+  }
+
+  Widget _buildLoadingState() {
+    return const Scaffold(
+      backgroundColor: AppColors.background,
+      body: Stack(
+        children: [
+          _LMGradientBackdrop(),
+          SafeArea(
+            child: Center(
+              child: _LoadingContentCard(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildErrorState() {
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      body: Stack(
+        children: [
+          const _LMGradientBackdrop(),
+          SafeArea(
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(22),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(24),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.10),
+                        blurRadius: 18,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.error_outline_rounded, color: AppColors.error, size: 34),
+                      const SizedBox(height: 10),
+                      const Text(
+                        'Error loading learning materials',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: AppColors.textPrimary,
+                          fontWeight: FontWeight.w900,
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        _loadError ?? 'No content found.',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: AppColors.textSecondary,
+                          fontSize: 12,
+                          height: 1.35,
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+                      ElevatedButton(
+                        onPressed: _loadLearningMaterials,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.brandRed,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                        child: const Text(
+                          'Retry',
+                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _pageWrap(Widget child) {
     return SingleChildScrollView(
       controller: _scrollCtrl,
-      padding: const EdgeInsets.symmetric(horizontal: 25),
-      child: Column(
-        children: [
-          const SizedBox(height: 6),
-          child,
-          const SizedBox(height: 24),
-          const SizedBox(height: 70),
-        ],
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(18, 0, 18, 14),
+      child: Align(
+        alignment: Alignment.topCenter,
+        child: Container(
+          width: double.infinity,
+          margin: const EdgeInsets.only(bottom: 8),
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 18),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(32),
+            border: Border.all(color: Colors.white.withOpacity(0.95), width: 1.2),
+            boxShadow: [
+              BoxShadow(color: Colors.black.withOpacity(0.16), blurRadius: 24, offset: const Offset(0, 12)),
+              BoxShadow(color: AppColors.brandRed.withOpacity(0.08), blurRadius: 28, offset: const Offset(0, 8)),
+            ],
+          ),
+          child: child,
+        ),
       ),
     );
   }
 
-  // ===================== PAGE 1 =====================
   Widget _page1OverviewAndTypes() {
-    return _ModernCard(
-      accent1: accent,
-      accent2: accent2,
-      pageTitle: _t(
-        context,
-        "PAGE 1 – KITCHEN FIRE OVERVIEW",
-        "PAHINA 1 – PANGKALAHATANG TINGIN SA SUNOG SA KUSINA",
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Center(
-            child: Text(
-              _t(context, "What is a Kitchen Fire?", "Ano ang Sunog sa Kusina?"),
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: accent,
-                fontFamily: 'Poppins',
-              ),
-            ),
-          ),
-          const SizedBox(height: 18),
-
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _ImageBox(
-                asset: "assets/kitchen.png",
-                c1: accent,
-                c2: accent2,
-              ),
-              const SizedBox(width: 15),
-              Expanded(
-                child: Text(
-                  _t(
-                    context,
-                    "A kitchen fire starts in the cooking area. It often happens when food, oil, or appliances overheat. Most kitchen fires spread fast because heat and grease build up quickly.",
-                    "Ang sunog sa kusina ay nagsisimula sa lugar ng pagluluto. Madalas itong nangyayari kapag sobrang uminit ang pagkain, mantika, o kagamitan. Mabilis kumalat ang karamihan ng sunog sa kusina dahil mabilis maipon ang init at sebo.",
-                  ),
-                  style: const TextStyle(
-                    fontSize: 14,
-                    height: 1.5,
-                    fontFamily: 'Poppins',
-                  ),
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 14),
-
-          _Callout(
-            icon: Icons.warning_rounded,
-            color: const Color(0xFFDC2626),
-            title: _t(context, "Common danger", "Karaniwang panganib"),
-            lines: [
-              _t(context, "Grease can ignite suddenly.", "Maaaring biglang magliyab ang sebo o mantika."),
-              _t(context, "Smoke can block vision fast.", "Mabilis mahahadlangan ng usok ang iyong paningin."),
-              _t(context, "Wrong action (like water on oil) can make it worse.", "Ang maling aksyon (tulad ng tubig sa mantika) ay maaaring magpalala ng sunog."),
-            ],
-          ),
-
-          const SizedBox(height: 14),
-
-          _ChipLine(
-            icon: Icons.menu_book_rounded,
-            color: const Color(0xFFF59E0B),
-            text: _t(context, "Tap the buttons below for quick pop-ups.", "Pindutin ang mga button sa ibaba para sa mabilis na impormasyon."),
-          ),
-
-          const SizedBox(height: 12),
-
-          Row(
-            children: [
-              Expanded(
-                child: _ActionPill(
-                  icon: Icons.help_rounded,
-                  label: _t(context, "Why it happens", "Bakit ito nangyayari"),
-                  onTap: () => _showInfoPopup(
-                    title: _t(context, "Why kitchen fires happen", "Bakit nagkakaroon ng sunog sa kusina"),
-                    message: _t(
-                      context,
-                      "Usually from unattended cooking, overheated oil, grease buildup, or flammable items near heat.",
-                      "Karaniwang dulot ng napabayaang pagluluto, sobrang init na mantika, naipong sebo, o madaling masunog na bagay malapit sa init.",
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: _ActionPill(
-                  icon: Icons.local_fire_department_rounded,
-                  label: _t(context, "If pan ignites", "Kapag nagliyab ang kawali"),
-                  onTap: _showDoThisNowPopup,
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 24),
-
-          _SectionTitle(_t(context, "Types of Kitchen Fires", "Mga Uri ng Sunog sa Kusina")),
-          const SizedBox(height: 12),
-
-          _MiniTile(
-            color: Color(0xFFF59E0B),
-            icon: Icons.oil_barrel_rounded,
-            title: _t(context, "Grease Fire", "Sunog sa Mantika"),
-            desc: _t(context, "Cooking oil or fat overheats and ignites (fast and intense).", "Sobrang umiinit ang mantika o taba at nagliliyab (mabilis at matindi)."),
-          ),
-          const SizedBox(height: 10),
-          _MiniTile(
-            color: Color(0xFFF59E0B),
-            icon: Icons.local_pizza_rounded,
-            title: _t(context, "Oven Fire", "Sunog sa Hurno"),
-            desc: _t(context, "Food spills or grease buildup burns inside the oven.", "Ang tapon na pagkain o naipong sebo ay nasusunog sa loob ng oven."),
-          ),
-          const SizedBox(height: 10),
-          _MiniTile(
-            color: Color(0xFFFB923C),
-            icon: Icons.microwave_rounded,
-            title: _t(context, "Microwave Fire", "Sunog sa Microwave"),
-            desc: _t(context, "Metal or overheated food ignites and causes flames/smoke.", "Ang metal o sobrang init na pagkain ay maaaring magliyab at magdulot ng apoy/usok."),
-          ),
-          const SizedBox(height: 10),
-          _MiniTile(
-            color: Color(0xFFEA580C),
-            icon: Icons.local_gas_station_rounded,
-            title: _t(context, "Gas Stove Fire", "Sunog sa Gas na Kalan"),
-            desc: _t(context, "Flame flare-ups or leaking gas ignites near the stove.", "Biglaang paglaki ng apoy o tumatagas na gas ang nagiging sanhi ng sindi malapit sa kalan."),
-          ),
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _PageBanner(
+          icon: Icons.restaurant_rounded,
+          accent1: accent,
+          accent2: accent2,
+          pageTag: _uiText('page_1_tag'),
+          title: _pageTitle(1),
+          subtitle: _block('p1_banner')?.metaText('subtitle', _isTl) ?? '',
+        ),
+        const SizedBox(height: 16),
+        _referenceSource('p1_reference'),
+        const SizedBox(height: 14),
+        _heroCard('p1_hero'),
+        const SizedBox(height: 14),
+        _lesson(
+          blockKey: 'p1_section_1',
+          sectionIndex: 0,
+          pageIndex: 0,
+          icon: Icons.info_outline_rounded,
+          accentColor: accent,
+        ),
+        const SizedBox(height: 12),
+        _lesson(
+          blockKey: 'p1_section_2',
+          sectionIndex: 1,
+          pageIndex: 0,
+          icon: Icons.local_fire_department_rounded,
+          accentColor: accent,
+        ),
+        const SizedBox(height: 12),
+        _lesson(
+          blockKey: 'p1_section_3',
+          sectionIndex: 2,
+          pageIndex: 0,
+          icon: Icons.warning_rounded,
+          accentColor: AppColors.error,
+        ),
+        const SizedBox(height: 12),
+        _lesson(
+          blockKey: 'p1_section_4',
+          sectionIndex: 3,
+          pageIndex: 0,
+          icon: Icons.touch_app_rounded,
+          accentColor: accent2,
+        ),
+        const SizedBox(height: 16),
+        _readingBadge(0),
+      ],
     );
   }
 
-  // ===================== PAGE 2 =====================
   Widget _page2CausesAndPrevention() {
-    return _ModernCard(
-      accent1: accent2,
-      accent2: accent,
-      pageTitle: _t(
-        context,
-        "PAGE 2 – CAUSES & PREVENTION",
-        "PAHINA 2 – MGA SANHI AT PAG-IWAS",
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Center(
-            child: Text(
-              _t(context, "Common Causes of Kitchen Fires", "Karaniwang Sanhi ng Sunog sa Kusina"),
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: accent,
-                fontFamily: 'Poppins',
-              ),
-            ),
-          ),
-          const SizedBox(height: 18),
-
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _IconBox(
-                icon: Icons.kitchen_rounded,
-                c1: accent2,
-                c2: accent,
-              ),
-              SizedBox(width: 15),
-              Expanded(
-                child: _Bullets(
-                  items: [
-                    _t(context, "Leaving cooking unattended", "Napapabayaang pagluluto"),
-                    _t(context, "Oil overheating while frying", "Sobrang pag-init ng mantika habang nagpiprito"),
-                    _t(context, "Grease buildup on stove/hood", "Naipong sebo sa stove o hood"),
-                    _t(context, "Towels or paper near flames", "Tuwalya o papel na malapit sa apoy"),
-                    _t(context, "Cooking while tired or distracted", "Pagluluto habang pagod o hindi nakatutok"),
-                    _t(context, "Wrong use of appliances (dirty toaster, etc.)", "Maling paggamit ng appliances (maruming toaster, atbp.)"),
-                  ],
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 14),
-
-          Row(
-            children: [
-              Expanded(
-                child: _ActionPill(
-                  icon: Icons.quiz_rounded,
-                  label: _t(context, "Quick check", "Mabilisang pagsusuri"),
-                  onTap: () => _showInfoPopup(
-                    title: _t(context, "Quick Check", "Mabilisang Pagsusuri"),
-                    icon: Icons.check_circle_rounded,
-                    color: const Color(0xFFF59E0B),
-                    message:
-                        _t(context, "If you leave the kitchen for even 1 minute while frying, risk increases a lot. Stay nearby and keep heat controlled.", "Kung iiwan mo ang kusina kahit 1 minuto habang nagpiprito, malaki ang pagtaas ng panganib. Manatili sa malapit at kontrolin ang init."),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: _ActionPill(
-                  icon: Icons.tips_and_updates_rounded,
-                  label: _t(context, "Safety tips", "Mga tip sa kaligtasan"),
-                  onTap: () => _showInfoPopup(
-                    title: _t(context, "Safety Tips", "Mga Tip sa Kaligtasan"),
-                    icon: Icons.tips_and_updates_rounded,
-                    color: const Color(0xFFEA580C),
-                    message:
-                        "• Keep a lid nearby when cooking.\n"
-                        "• Clean grease regularly.\n"
-                        "• Keep flammables away from heat.\n"
-                        "• Turn pot handles inward.\n"
-                        "• Don’t overheat oil.",
-                  ),
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 18),
-
-          _ChipLine(
-            icon: Icons.fact_check_rounded,
-            color: Color(0xFFF59E0B),
-            text: _t(context, "Small habits prevent most kitchen fires.", "Ang simpleng tamang gawi ay nakaiiwas sa karamihan ng sunog sa kusina."),
-          ),
-
-          const SizedBox(height: 24),
-
-          _SectionTitle(_t(context, "Prevention (Simple Steps)", "Pag-iwas (Simpleng Hakbang)")),
-          const SizedBox(height: 12),
-
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _ImageBox(
-                asset: "assets/prevent_kitchen.png",
-                c1: accent2,
-                c2: accent,
-              ),
-              const SizedBox(width: 15),
-              Expanded(
-                child: _Bullets(
-                  items: [
-                    _t(context, "Keep a lid near the pan when cooking.", "Maghanda ng takip malapit sa kawali habang nagluluto."),
-                    _t(context, "Clean grease from stove and hood.", "Linisin ang sebo sa stove at hood."),
-                    _t(context, "Keep flammables away from heat.", "Ilayo ang madaling masunog na bagay sa init."),
-                    _t(context, "Turn handles inward.", "Iharap paloob ang hawakan ng kawali."),
-                    _t(context, "Use the right heat level (don’t overheat oil).", "Gamitin ang tamang antas ng init (huwag paabutin sa sobrang init ang mantika)."),
-                    _t(context, "Know your extinguisher location.", "Alamin kung saan nakalagay ang pamatay-sunog."),
-                  ],
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 14),
-
-          _Callout(
-            icon: Icons.shield_rounded,
-            color: Color(0xFFF59E0B),
-            title: _t(context, "Prevention goal", "Layunin ng pag-iwas"),
-            lines: [
-              _t(context, "Reduce heat, reduce grease buildup, and keep flammable items away.", "Bawasan ang init, bawasan ang naipong sebo, at ilayo ang madaling masunog na bagay."),
-            ],
-          ),
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _PageBanner(
+          icon: Icons.shield_rounded,
+          accent1: accent2,
+          accent2: accent,
+          pageTag: _uiText('page_2_tag'),
+          title: _pageTitle(2),
+          subtitle: _block('p2_banner')?.metaText('subtitle', _isTl) ?? '',
+        ),
+        const SizedBox(height: 16),
+        _referenceSource('p2_reference'),
+        const SizedBox(height: 14),
+        _lesson(
+          blockKey: 'p2_section_1',
+          sectionIndex: 0,
+          pageIndex: 1,
+          icon: Icons.kitchen_rounded,
+          accentColor: accent,
+        ),
+        const SizedBox(height: 12),
+        _lesson(
+          blockKey: 'p2_section_2',
+          sectionIndex: 1,
+          pageIndex: 1,
+          icon: Icons.cleaning_services_rounded,
+          accentColor: accent2,
+        ),
+        const SizedBox(height: 12),
+        _lesson(
+          blockKey: 'p2_section_3',
+          sectionIndex: 2,
+          pageIndex: 1,
+          icon: Icons.power_settings_new_rounded,
+          accentColor: accent,
+        ),
+        const SizedBox(height: 12),
+        _lesson(
+          blockKey: 'p2_section_4',
+          sectionIndex: 3,
+          pageIndex: 1,
+          icon: Icons.block_rounded,
+          accentColor: AppColors.error,
+        ),
+        const SizedBox(height: 16),
+        _readingBadge(1),
+      ],
     );
   }
 
-  // ===================== PAGE 3 =====================
   Widget _page3EmergencyResponse() {
-    return _ModernCard(
-      accent1: const Color(0xFFEA580C),
-      accent2: accent,
-      pageTitle: _t(
-        context,
-        "PAGE 3 – WHAT TO DO DURING A KITCHEN FIRE",
-        "PAHINA 3 – ANO ANG GAGAWIN KAPAG MAY SUNOG SA KUSINA",
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Center(
-            child: Text(
-              _t(context, "Emergency Response", "Pagtugon sa Emerhensiya"),
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: accent,
-                fontFamily: 'Poppins',
-              ),
-            ),
-          ),
-          const SizedBox(height: 18),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _PageBanner(
+          icon: Icons.emergency_rounded,
+          accent1: AppColors.error,
+          accent2: accent,
+          pageTag: _uiText('page_3_tag'),
+          title: _pageTitle(3),
+          subtitle: _block('p3_banner')?.metaText('subtitle', _isTl) ?? '',
+        ),
+        const SizedBox(height: 16),
+        _referenceSource('p3_reference'),
+        const SizedBox(height: 14),
+        _lesson(
+          blockKey: 'p3_section_1',
+          sectionIndex: 0,
+          pageIndex: 2,
+          icon: Icons.checklist_rounded,
+          accentColor: accent,
+        ),
+        const SizedBox(height: 12),
+        _lesson(
+          blockKey: 'p3_section_2',
+          sectionIndex: 1,
+          pageIndex: 2,
+          icon: Icons.water_drop_rounded,
+          accentColor: AppColors.error,
+        ),
+        const SizedBox(height: 12),
+        _lesson(
+          blockKey: 'p3_section_3',
+          sectionIndex: 2,
+          pageIndex: 2,
+          icon: Icons.directions_run_rounded,
+          accentColor: accent2,
+        ),
+        const SizedBox(height: 12),
+        _lesson(
+          blockKey: 'p3_section_4',
+          sectionIndex: 3,
+          pageIndex: 2,
+          icon: Icons.view_in_ar_rounded,
+          accentColor: accent,
+        ),
+        const SizedBox(height: 16),
+        _readingBadge(2),
+      ],
+    );
+  }
 
-          Row(
+  Widget _referenceSource(String blockKey) {
+    final block = _block(blockKey);
+    if (block == null) return const SizedBox.shrink();
+    return _ReferenceSourceCard(
+      label: block.value(_isTl),
+      title: block.sourceTitle,
+      organization: block.sourceOrganization,
+      sourceUrl: block.sourceUrl,
+      icon: Icons.verified_rounded,
+      compact: true,
+    );
+  }
+
+  Widget _heroCard(String blockKey) {
+    final block = _block(blockKey);
+    if (block == null) return const SizedBox.shrink();
+
+    final assetKey = block.metaString('asset_key');
+    final assetPath = _mediaPath(assetKey.isEmpty ? _data?.heroAsset : assetKey);
+
+    return _KitchenFire3DCardHolder(
+      assetPath: assetPath,
+      title: block.value(_isTl),
+      subtitle: block.metaText('subtitle', _isTl),
+      chipLabel: _uiText('hero_chip_label'),
+    );
+  }
+
+  Widget _lesson({
+    required String blockKey,
+    required int sectionIndex,
+    required int pageIndex,
+    required IconData icon,
+    required Color accentColor,
+  }) {
+    final block = _block(blockKey);
+    if (block == null) return const SizedBox.shrink();
+
+    return _ExpandableLesson(
+      sectionIndex: sectionIndex,
+      pageIndex: pageIndex,
+      readSections: _readSections,
+      onRead: (i) => setState(() => _readSections[pageIndex].add(i)),
+      icon: icon,
+      accentColor: accentColor,
+      title: block.value(_isTl),
+      readLabel: _uiText('section_read_badge'),
+      child: _lessonContent(block),
+    );
+  }
+
+  Widget _lessonContent(_LearningBlockData block) {
+    final kind = block.metaString('content_kind');
+
+    if (kind == 'bullets') {
+      return _Bullets(items: block.metaList('bullets', _isTl));
+    }
+
+    if (kind == 'image_row') {
+      final imageKey = block.metaString('image_asset_key');
+      return LayoutBuilder(
+        builder: (context, constraints) {
+          final useColumn = !constraints.maxWidth.isFinite || constraints.maxWidth < 220;
+          final imageBox = _ImageBox(
+            asset: _mediaPath(imageKey),
+            c1: accent,
+            c2: accent2,
+            fallbackIcon: Icons.restaurant_rounded,
+          );
+          final secondaryText = _BodyText(block.metaText('body_secondary', _isTl));
+          return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _IconBox(
-                icon: Icons.fire_extinguisher_rounded,
-                c1: Color(0xFFEA580C),
-                c2: Color(0xFFF59E0B),
-              ),
-              SizedBox(width: 15),
-              Expanded(
-                child: _Bullets(
-                  items: [
-                    _t(context, "Turn off heat source if safe.", "Patayin ang pinagmumulan ng init kung ligtas."),
-                    _t(context, "Cover small pan fire with a metal lid/tray.", "Takpan ang maliit na apoy sa kawali gamit ang metal na takip/tray."),
-                    _t(context, "Do NOT use water on burning oil/grease.", "HUWAG gumamit ng tubig sa nagliliyab na mantika/sebo."),
-                    _t(context, "Use a fire extinguisher if trained and safe.", "Gumamit ng pamatay-sunog kung sanay at ligtas."),
-                    _t(context, "If it spreads: evacuate and call emergency services.", "Kung kumalat ang apoy: lumikas at tumawag sa serbisyong pang-emergency."),
-                    _t(context, "Close doors behind you to slow the fire.", "Isara ang pinto sa likod mo upang bumagal ang pagkalat ng apoy."),
-                  ],
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 14),
-
-          Row(
-            children: [
-              Expanded(
-                child: _ActionPill(
-                  icon: Icons.local_fire_department_rounded,
-                  label: _t(context, "Grease fire rule", "Patakaran sa sunog ng mantika"),
-                  onTap: () => _showInfoPopup(
-                    title: _t(context, "Grease Fire Rule", "Patakaran sa Sunog ng Mantika"),
-                    icon: Icons.block_rounded,
-                    color: const Color(0xFFDC2626),
-                    message:
-                        _t(context, "Never pour water on burning oil. Water can spread burning grease and cause flare-ups.", "Huwag kailanman magbuhos ng tubig sa nagliliyab na mantika. Maaaring kumalat ang apoy at lumala."),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: _ActionPill(
-                  icon: Icons.help_center_rounded,
-                  label: _t(context, "When to evacuate", "Kailan dapat lumikas"),
-                  onTap: () => _showInfoPopup(
-                    title: _t(context, "Evacuate when…", "Lumikas kapag…"),
-                    icon: Icons.directions_run_rounded,
-                    color: const Color(0xFFDC2626),
-                    message:
-                        _t(context, "Evacuate immediately if flames grow, smoke fills the room, or you can’t control it quickly. Call for help.", "Lumikas agad kung lumalaki ang apoy, napupuno ng usok ang silid, o hindi mo ito makontrol agad. Tumawag ng tulong."),
-                  ),
-                ),
-              ),
-            ],
-          ),
-
-            const SizedBox(height: 18),
-
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  width: 100,
-                  height: 100,
-                  child: _ImageBox(
-                    asset: "assets/response_kitchen.png",
-                    c1: const Color(0xFFEA580C),
-                    c2: accent,
-                  ),
-                ),
-                const SizedBox(width: 15),
-              Expanded(
-                child: Column(
+              _BodyText(block.metaText('body', _isTl)),
+              const SizedBox(height: 12),
+              if (useColumn) ...[
+                Align(alignment: Alignment.center, child: imageBox),
+                const SizedBox(height: 10),
+                secondaryText,
+              ] else
+                Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _SectionTitle(_t(context, "One-minute plan", "Isang minutong plano")),
-                    const SizedBox(height: 10),
-                    _Bullets(
-                      items: [
-                        _t(context, "Stop the heat.", "Patayin ang init."),
-                        _t(context, "Smother small flames.", "Takpan ang maliit na apoy."),
-                        _t(context, "Use extinguisher only if safe.", "Gumamit ng pamatay-sunog kung ligtas."),
-                        _t(context, "Get out if unsure.", "Lumabas kung hindi sigurado."),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    _ActionPill(
-                      icon: Icons.play_circle_rounded,
-                      label: _t(context, "Show steps", "Ipakita ang mga hakbang"),
-                      onTap: _showDoThisNowPopup,
-                    ),
+                    imageBox,
+                    const SizedBox(width: 14),
+                    Expanded(child: secondaryText),
                   ],
                 ),
-              ),
             ],
-          ),
+          );
+        },
+      );
+    }
 
-          const SizedBox(height: 14),
-
-          _Callout(
-            icon: Icons.block_rounded,
-            color: Color(0xFFDC2626),
-            title: _t(context, "Remember", "Tandaan"),
-            lines: [
-              _t(context, "Your safety is the priority. If you feel unsafe, evacuate and call for help.", "Kaligtasan mo ang prayoridad. Kung delikado na, lumikas at tumawag ng tulong."),
-            ],
+    if (kind == 'body_action') {
+      final actionKey = block.metaString('action_key');
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _BodyText(block.metaText('body', _isTl)),
+          const SizedBox(height: 10),
+          _ActionPill(
+            icon: actionKey == 'pan_fire_steps'
+                ? Icons.local_fire_department_rounded
+                : Icons.play_circle_rounded,
+            label: block.metaText('action_label', _isTl),
+            onTap: actionKey == 'pan_fire_steps' ? _showDoThisNowPopup : null,
           ),
         ],
+      );
+    }
+
+    return _BodyText(block.metaText('body', _isTl));
+  }
+
+  Widget _readingBadge(int pageIndex) {
+    return _ReadingProgressBadge(
+      readCount: _readSections[pageIndex].length,
+      totalCount: _requiredSectionCountForPage(pageIndex),
+      allSectionsReadLabel: _uiText('reading_all_sections_read'),
+      sectionsReadTemplate: _uiText(
+        'reading_sections_read_template',
+        values: {
+          'read': _readSections[pageIndex].length.toString(),
+          'total': _requiredSectionCountForPage(pageIndex).toString(),
+        },
       ),
+      helperLabel: _uiText('reading_helper_label'),
     );
   }
 }
 
-// ===================== UI WIDGETS =====================
-// (unchanged below)
+class _LocalizedText {
+  final String en;
+  final String tl;
 
-class _ModernCard extends StatelessWidget {
-  final Color accent1;
-  final Color accent2;
-  final String pageTitle;
-  final Widget child;
+  const _LocalizedText({required this.en, required this.tl});
 
-  const _ModernCard({
-    required this.accent1,
-    required this.accent2,
-    required this.pageTitle,
-    required this.child,
+  String value(bool isTl) {
+    final selected = isTl && tl.trim().isNotEmpty ? tl : en;
+    return selected.trim();
+  }
+}
+
+class _LearningMaterialData {
+  final String id;
+  final _LocalizedText title;
+  final String heroAsset;
+  final Map<int, _LearningPageData> pagesByNo;
+  final Map<String, _LearningBlockData> blocksByKey;
+  final Map<String, _LocalizedText> texts;
+  final Map<String, _LearningMediaAssetData> mediaByKey;
+
+  const _LearningMaterialData({
+    required this.id,
+    required this.title,
+    required this.heroAsset,
+    required this.pagesByNo,
+    required this.blocksByKey,
+    required this.texts,
+    required this.mediaByKey,
   });
+
+  factory _LearningMaterialData.fromRows({
+    required Map<String, dynamic> materialRow,
+    required List<Map<String, dynamic>> pageRows,
+    required List<Map<String, dynamic>> blockRows,
+    required List<Map<String, dynamic>> textRows,
+    required List<Map<String, dynamic>> mediaRows,
+  }) {
+    return _LearningMaterialData(
+      id: materialRow['id']?.toString() ?? '',
+      title: _LocalizedText(
+        en: materialRow['title']?.toString() ?? '',
+        tl: materialRow['title_tl']?.toString() ?? '',
+      ),
+      heroAsset: materialRow['hero_asset']?.toString() ?? '',
+      pagesByNo: {
+        for (final row in pageRows)
+          (row['page_no'] as num).toInt(): _LearningPageData.fromRow(row),
+      },
+      blocksByKey: {
+        for (final row in blockRows)
+          row['block_key'].toString(): _LearningBlockData.fromRow(row),
+      },
+      texts: {
+        for (final row in textRows)
+          row['text_key'].toString(): _LocalizedText(
+            en: row['text_en']?.toString() ?? '',
+            tl: row['text_tl']?.toString() ?? '',
+          ),
+      },
+      mediaByKey: {
+        for (final row in mediaRows)
+          row['asset_key'].toString(): _LearningMediaAssetData.fromRow(row),
+      },
+    );
+  }
+}
+
+class _LearningPageData extends _LocalizedText {
+  final int pageNo;
+  final String pageKey;
+
+  const _LearningPageData({
+    required this.pageNo,
+    required this.pageKey,
+    required super.en,
+    required super.tl,
+  });
+
+  factory _LearningPageData.fromRow(Map<String, dynamic> row) {
+    return _LearningPageData(
+      pageNo: (row['page_no'] as num).toInt(),
+      pageKey: row['page_key']?.toString() ?? '',
+      en: row['title_en']?.toString() ?? '',
+      tl: row['title_tl']?.toString() ?? '',
+    );
+  }
+}
+
+class _LearningBlockData extends _LocalizedText {
+  final int pageNo;
+  final int blockNo;
+  final String blockKey;
+  final String blockType;
+  final Map<String, dynamic> metadata;
+  final String sourceTitle;
+  final String sourceOrganization;
+  final String sourceUrl;
+
+  const _LearningBlockData({
+    required this.pageNo,
+    required this.blockNo,
+    required this.blockKey,
+    required this.blockType,
+    required super.en,
+    required super.tl,
+    required this.metadata,
+    required this.sourceTitle,
+    required this.sourceOrganization,
+    required this.sourceUrl,
+  });
+
+  factory _LearningBlockData.fromRow(Map<String, dynamic> row) {
+    final rawMetadata = row['metadata'];
+    return _LearningBlockData(
+      pageNo: (row['page_no'] as num).toInt(),
+      blockNo: (row['block_no'] as num).toInt(),
+      blockKey: row['block_key']?.toString() ?? '',
+      blockType: row['block_type']?.toString() ?? '',
+      en: row['text_en']?.toString() ?? '',
+      tl: row['text_tl']?.toString() ?? '',
+      metadata: rawMetadata is Map
+          ? Map<String, dynamic>.from(rawMetadata)
+          : <String, dynamic>{},
+      sourceTitle: row['source_title']?.toString() ?? '',
+      sourceOrganization: row['source_organization']?.toString() ?? '',
+      sourceUrl: row['source_url']?.toString() ?? '',
+    );
+  }
+
+  String metaString(String key) => metadata[key]?.toString().trim() ?? '';
+
+  String metaText(String key, bool isTl) {
+    final tlKey = '${key}_tl';
+    final enKey = '${key}_en';
+    final tlValue = metadata[tlKey]?.toString().trim() ?? '';
+    final enValue = metadata[enKey]?.toString().trim() ?? '';
+    if (isTl && tlValue.isNotEmpty) return tlValue;
+    return enValue;
+  }
+
+  List<String> metaList(String key, bool isTl) {
+    final selectedKey = isTl ? '${key}_tl' : '${key}_en';
+    final fallbackKey = '${key}_en';
+    final selected = metadata[selectedKey];
+    final fallback = metadata[fallbackKey];
+
+    if (selected is List && selected.isNotEmpty) {
+      return selected.map((item) => item.toString()).toList();
+    }
+    if (fallback is List) {
+      return fallback.map((item) => item.toString()).toList();
+    }
+    return const <String>[];
+  }
+}
+
+class _LearningMediaAssetData {
+  final String assetKey;
+  final String assetPath;
+  final String publicUrl;
+
+  const _LearningMediaAssetData({
+    required this.assetKey,
+    required this.assetPath,
+    required this.publicUrl,
+  });
+
+  String get resolvedPath => publicUrl.trim().isNotEmpty ? publicUrl.trim() : assetPath.trim();
+
+  factory _LearningMediaAssetData.fromRow(Map<String, dynamic> row) {
+    return _LearningMediaAssetData(
+      assetKey: row['asset_key']?.toString() ?? '',
+      assetPath: row['asset_path']?.toString() ?? '',
+      publicUrl: row['public_url']?.toString() ?? '',
+    );
+  }
+}
+
+class _LoadingContentCard extends StatelessWidget {
+  const _LoadingContentCard();
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(18),
+      margin: const EdgeInsets.all(22),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 22),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.black.withOpacity(0.06)),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.14),
+            color: Colors.black.withOpacity(0.10),
             blurRadius: 18,
             offset: const Offset(0, 8),
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: const Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [accent1, accent2],
-              ),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Text(
-              pageTitle,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w800,
-                fontSize: 12,
-                letterSpacing: 0.2,
-              ),
-            ),
-          ),
-          const SizedBox(height: 14),
-          child,
-        ],
-      ),
-    );
-  }
-}
-
-class _ImageBox extends StatelessWidget {
-  final String asset;
-  final Color c1;
-  final Color c2;
-
-  const _ImageBox({required this.asset, required this.c1, required this.c2});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 110,
-      height: 110,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [c1.withOpacity(0.12), c2.withOpacity(0.10)],
-        ),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.black.withOpacity(0.06)),
-      ),
-      padding: const EdgeInsets.all(10),
-      child: Image.asset(asset, fit: BoxFit.contain),
-    );
-  }
-}
-
-class _IconBox extends StatelessWidget {
-  final IconData icon;
-  final Color c1;
-  final Color c2;
-
-  const _IconBox({required this.icon, required this.c1, required this.c2});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 110,
-      height: 110,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [c1.withOpacity(0.14), c2.withOpacity(0.10)],
-        ),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.black.withOpacity(0.06)),
-      ),
-      child: Center(
-        child: Container(
-          width: 58,
-          height: 58,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [c1, c2],
-            ),
-            shape: BoxShape.circle,
-            boxShadow: [
-              BoxShadow(
-                color: c2.withOpacity(0.28),
-                blurRadius: 14,
-                offset: const Offset(0, 6),
-              ),
-            ],
-          ),
-          child: Icon(icon, color: Colors.white, size: 28),
-        ),
-      ),
-    );
-  }
-}
-
-class _SectionTitle extends StatelessWidget {
-  final String text;
-  const _SectionTitle(this.text);
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: const TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.w900,
-        color: Color(0xFF111827),
-      ),
-    );
-  }
-}
-
-class _Callout extends StatelessWidget {
-  final IconData icon;
-  final Color color;
-  final String title;
-  final List<String> lines;
-
-  const _Callout({
-    required this.icon,
-    required this.color,
-    required this.title,
-    required this.lines,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.08),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: color.withOpacity(0.22)),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, color: color, size: 22),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(fontWeight: FontWeight.w900, color: color),
-                ),
-                const SizedBox(height: 8),
-                ...lines.map(
-                  (l) => Padding(
-                    padding: const EdgeInsets.only(bottom: 6),
-                    child: Text(l, style: const TextStyle(height: 1.4)),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ChipLine extends StatelessWidget {
-  final IconData icon;
-  final Color color;
-  final String text;
-
-  const _ChipLine({
-    required this.icon,
-    required this.color,
-    required this.text,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.10),
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: color.withOpacity(0.20)),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: color, size: 18),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              text,
-              style: TextStyle(color: color, fontWeight: FontWeight.w800),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _MiniTile extends StatelessWidget {
-  final Color color;
-  final IconData icon;
-  final String title;
-  final String desc;
-
-  const _MiniTile({
-    required this.color,
-    required this.icon,
-    required this.title,
-    required this.desc,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.black.withOpacity(0.06)),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 34,
-            height: 34,
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.12),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(icon, color: color, size: 18),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w900,
-                    color: Color(0xFF111827),
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(desc, style: const TextStyle(height: 1.4)),
-              ],
+          CircularProgressIndicator(color: AppColors.brandRed),
+          SizedBox(height: 14),
+          Text(
+            'Loading learning materials...',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: AppColors.textPrimary,
+              fontWeight: FontWeight.w900,
+              fontSize: 15,
             ),
           ),
         ],
@@ -1125,25 +1084,16 @@ class _Bullets extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: items
-          .map(
-            (t) => Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "•  ",
-                    style: TextStyle(fontWeight: FontWeight.w900),
-                  ),
-                  Expanded(
-                    child: Text(t, style: const TextStyle(height: 1.45)),
-                  ),
-                ],
-              ),
-            ),
-          )
-          .toList(),
+      children: items.map((t) => Padding(
+        padding: const EdgeInsets.only(bottom: 8),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('•  ', style: TextStyle(fontWeight: FontWeight.w900)),
+            Expanded(child: Text(t, style: const TextStyle(fontSize: 13.5, height: 1.45, color: Color(0xFF4B5563)))),
+          ],
+        ),
+      )).toList(),
     );
   }
 }
@@ -1152,12 +1102,7 @@ class _ActionPill extends StatelessWidget {
   final IconData icon;
   final String label;
   final VoidCallback? onTap;
-
-  const _ActionPill({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-  });
+  const _ActionPill({required this.icon, required this.label, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -1167,25 +1112,1379 @@ class _ActionPill extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.04),
+          color: AppColors.brandRedSoft.withOpacity(0.82),
           borderRadius: BorderRadius.circular(999),
-          border: Border.all(color: Colors.black.withOpacity(0.06)),
+          border: Border.all(color: AppColors.brandRed.withOpacity(0.16)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 18, color: const Color(0xFFF59E0B)),
+            Icon(icon, size: 18, color: AppColors.brandRed),
             const SizedBox(width: 8),
-            Flexible(
-              child: Text(
-                label,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontWeight: FontWeight.w900),
-              ),
-            ),
+            Flexible(child: Text(label, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w900, color: AppColors.textPrimary))),
           ],
         ),
       ),
     );
   }
 }
+
+class _BottomNavBar extends StatelessWidget {
+  final int pageIndex;
+  final bool isLast;
+  final bool nextEnabled;
+  final String backLabel;
+  final String nextLabel;
+  final VoidCallback onBack;
+  final VoidCallback onNext;
+
+  const _BottomNavBar({
+    required this.pageIndex,
+    required this.isLast,
+    required this.nextEnabled,
+    required this.backLabel,
+    required this.nextLabel,
+    required this.onBack,
+    required this.onNext,
+  });
+
+  @override
+  Widget build(BuildContext ctx) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(18, 10, 18, 18),
+      decoration: BoxDecoration(
+        color: AppColors.background,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 12,
+            offset: const Offset(0, -4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Flexible(
+            flex: 4,
+            child: SizedBox(
+              height: 48,
+              child: OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: AppColors.brandRed),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(22),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                ),
+                onPressed: onBack,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.arrow_back_ios_rounded,
+                      size: 14,
+                      color: AppColors.brandRed,
+                    ),
+                    const SizedBox(width: 6),
+                    Flexible(
+                      child: Text(
+                        backLabel,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: AppColors.brandRed,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Flexible(
+            flex: 7,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 250),
+              height: 48,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: nextEnabled
+                      ? AppColors.brandRed
+                      : AppColors.brandRedSoft,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(22),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  elevation: nextEnabled ? 4 : 0,
+                  shadowColor: AppColors.brandRed.withOpacity(0.35),
+                ),
+                onPressed: onNext,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      isLast
+                          ? Icons.play_arrow_rounded
+                          : Icons.arrow_forward_ios_rounded,
+                      size: 16,
+                      color: nextEnabled
+                          ? Colors.white
+                          : AppColors.brandRed.withOpacity(0.4),
+                    ),
+                    const SizedBox(width: 7),
+                    Flexible(
+                      child: Text(
+                        nextLabel,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: nextEnabled
+                              ? Colors.white
+                              : AppColors.brandRed.withOpacity(0.4),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ReadingProgressBadge extends StatelessWidget {
+  final int readCount;
+  final int totalCount;
+  final String allSectionsReadLabel;
+  final String sectionsReadTemplate;
+  final String helperLabel;
+
+  const _ReadingProgressBadge({
+    required this.readCount,
+    required this.totalCount,
+    required this.allSectionsReadLabel,
+    required this.sectionsReadTemplate,
+    required this.helperLabel,
+  });
+
+  @override
+  Widget build(BuildContext ctx) {
+    final done = readCount >= totalCount;
+    final color = done ? AppColors.success : AppColors.brandRed;
+    final label = done ? allSectionsReadLabel : sectionsReadTemplate;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: color.withOpacity(0.2)),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            done ? Icons.check_circle_rounded : Icons.menu_book_rounded,
+            color: color,
+            size: 20,
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            flex: 3,
+            child: Text(
+              label,
+              style: TextStyle(
+                color: color,
+                fontWeight: FontWeight.w800,
+                fontSize: 13,
+              ),
+            ),
+          ),
+          if (!done)
+            Flexible(
+              flex: 1,
+              fit: FlexFit.loose,
+              child: Text(
+                helperLabel,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(color: color.withOpacity(0.6), fontSize: 11),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PageBanner extends StatelessWidget {
+  final IconData icon;
+  final Color accent1;
+  final Color accent2;
+  final String pageTag;
+  final String title;
+  final String subtitle;
+
+  const _PageBanner({
+    required this.icon,
+    required this.accent1,
+    required this.accent2,
+    required this.pageTag,
+    required this.title,
+    required this.subtitle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [accent1.withOpacity(0.08), accent2.withOpacity(0.04)],
+        ),
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: accent1.withOpacity(0.12)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 52,
+            height: 52,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [accent1, accent2],
+              ),
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: accent1.withOpacity(0.3),
+                  blurRadius: 12,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            child: Icon(icon, color: Colors.white, size: 26),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  pageTag,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w900,
+                    color: accent1,
+                    letterSpacing: 1.0,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xFF111827),
+                    height: 1.2,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  subtitle,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: const Color(0xFF6B7280),
+                    height: 1.3,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ExpandableLesson extends StatefulWidget {
+  final int sectionIndex;
+  final int pageIndex;
+  final List<Set<int>> readSections;
+  final ValueChanged<int> onRead;
+  final IconData icon;
+  final Color accentColor;
+  final String title;
+  final String readLabel;
+  final Widget child;
+
+  const _ExpandableLesson({
+    required this.sectionIndex,
+    required this.pageIndex,
+    required this.readSections,
+    required this.onRead,
+    required this.icon,
+    required this.accentColor,
+    required this.title,
+    required this.readLabel,
+    required this.child,
+  });
+
+  @override
+  State<_ExpandableLesson> createState() => _ExpandableLessonState();
+}
+
+class _ExpandableLessonState extends State<_ExpandableLesson>
+    with SingleTickerProviderStateMixin {
+  bool _expanded = false;
+  late AnimationController _animCtrl;
+  late Animation<double> _expandAnim;
+
+  bool get _isRead =>
+      widget.readSections[widget.pageIndex].contains(widget.sectionIndex);
+
+  @override
+  void initState() {
+    super.initState();
+    _animCtrl = AnimationController(
+      duration: const Duration(milliseconds: 250),
+      vsync: this,
+    );
+    _expandAnim = CurvedAnimation(
+      parent: _animCtrl,
+      curve: Curves.easeOutCubic,
+    );
+  }
+
+  @override
+  void dispose() {
+    _animCtrl.dispose();
+    super.dispose();
+  }
+
+  void _toggle() {
+    setState(() {
+      _expanded = !_expanded;
+      if (_expanded) {
+        _animCtrl.forward();
+        widget.onRead(widget.sectionIndex);
+      } else {
+        _animCtrl.reverse();
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final color = widget.accentColor;
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: _isRead
+              ? AppColors.success.withOpacity(0.3)
+              : color.withOpacity(0.10),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          InkWell(
+            onTap: _toggle,
+            borderRadius: BorderRadius.circular(20),
+            child: Padding(
+              padding: const EdgeInsets.all(14),
+              child: Row(
+                children: [
+                  Container(
+                    width: 38,
+                    height: 38,
+                    decoration: BoxDecoration(
+                      color: _isRead
+                          ? AppColors.success.withOpacity(0.1)
+                          : color.withOpacity(0.10),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(
+                      _isRead ? Icons.check_rounded : widget.icon,
+                      color: _isRead ? AppColors.success : color,
+                      size: 20,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      widget.title,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w900,
+                        fontSize: 14.5,
+                        color: _isRead
+                            ? AppColors.success
+                            : const Color(0xFF111827),
+                      ),
+                    ),
+                  ),
+                  if (_isRead)
+                    Flexible(
+                      fit: FlexFit.loose,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 3,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.success.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(99),
+                        ),
+                        child: Text(
+                          widget.readLabel,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 11,
+                            color: AppColors.success,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ),
+                    ),
+                  const SizedBox(width: 6),
+                  AnimatedRotation(
+                    turns: _expanded ? 0.5 : 0,
+                    duration: const Duration(milliseconds: 250),
+                    child: Icon(
+                      Icons.keyboard_arrow_down_rounded,
+                      color: color,
+                      size: 22,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          SizeTransition(
+            sizeFactor: _expandAnim,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
+              child: Column(
+                children: [
+                  const Divider(height: 1),
+                  const SizedBox(height: 12),
+                  widget.child,
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ReferenceSourceCard extends StatelessWidget {
+  final String label;
+  final String title;
+  final String organization;
+  final String sourceUrl;
+  final IconData icon;
+  final bool compact;
+
+  const _ReferenceSourceCard({
+    required this.label,
+    required this.title,
+    required this.organization,
+    required this.sourceUrl,
+    this.icon = Icons.verified_rounded,
+    this.compact = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final verticalPadding = compact ? 9.0 : 11.0;
+    final iconSize = compact ? 30.0 : 34.0;
+
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(horizontal: 12, vertical: verticalPadding),
+      decoration: BoxDecoration(
+        color: AppColors.brandRedSoft.withOpacity(0.62),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.brandRed.withOpacity(0.16)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: iconSize,
+            height: iconSize,
+            decoration: BoxDecoration(
+              color: AppColors.brandRed.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(icon, color: AppColors.brandRed, size: compact ? 17 : 19),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  maxLines: compact ? 1 : 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: AppColors.brandRed,
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w900,
+                    height: 1.2,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  "$title • $organization",
+                  maxLines: compact ? 2 : 3,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w700,
+                    height: 1.25,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  sourceUrl,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.w600,
+                    height: 1.2,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+class _KitchenFire3DCardHolder extends StatelessWidget {
+  final String assetPath;
+  final String title;
+  final String subtitle;
+  final String chipLabel;
+
+  const _KitchenFire3DCardHolder({
+    required this.assetPath,
+    required this.title,
+    required this.subtitle,
+    required this.chipLabel,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final availableWidth = constraints.maxWidth.isFinite
+            ? constraints.maxWidth
+            : MediaQuery.of(context).size.width - 68;
+        final compact = availableWidth < 340;
+        final visualWidth = compact
+            ? (availableWidth * 0.68).clamp(118.0, 166.0).toDouble()
+            : (availableWidth * 0.36).clamp(112.0, 148.0).toDouble();
+
+        return Container(
+          width: double.infinity,
+          padding: EdgeInsets.all(compact ? 14 : 16),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(26),
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Color(0xFFFFF7F7), Color(0xFFFFE8EA)],
+            ),
+            border: Border.all(
+              color: AppColors.brandRed.withOpacity(0.12),
+              width: 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.brandRed.withOpacity(0.10),
+                blurRadius: 18,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: compact
+              ? Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _KitchenInfoBlock(
+                      title: title,
+                      subtitle: subtitle,
+                      chipLabel: chipLabel,
+                      compact: true,
+                    ),
+                    const SizedBox(height: 14),
+                    Align(
+                      alignment: Alignment.center,
+                      child: SizedBox(
+                        width: visualWidth,
+                        child: _KitchenVisualStack(assetPath: assetPath),
+                      ),
+                    ),
+                  ],
+                )
+              : Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: _KitchenInfoBlock(
+                        title: title,
+                        subtitle: subtitle,
+                        chipLabel: chipLabel,
+                        compact: false,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    SizedBox(
+                      width: visualWidth,
+                      child: _KitchenVisualStack(assetPath: assetPath),
+                    ),
+                  ],
+                ),
+        );
+      },
+    );
+  }
+}
+
+class _KitchenInfoBlock extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final String chipLabel;
+  final bool compact;
+
+  const _KitchenInfoBlock({
+    required this.title,
+    required this.subtitle,
+    required this.chipLabel,
+    required this.compact,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: compact ? 44 : 48,
+          height: compact ? 44 : 48,
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [AppColors.brandRed, AppColors.brandRedDark],
+            ),
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.brandRed.withOpacity(0.28),
+                blurRadius: 12,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: const Icon(
+            Icons.view_in_ar_rounded,
+            color: Colors.white,
+            size: 25,
+          ),
+        ),
+        SizedBox(height: compact ? 10 : 12),
+        Text(
+          title,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontSize: compact ? 15.5 : 16.5,
+            height: 1.15,
+            fontWeight: FontWeight.w900,
+            fontFamily: 'Poppins',
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          subtitle,
+          maxLines: compact ? 4 : 3,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(
+            color: AppColors.textSecondary,
+            fontSize: 12.5,
+            height: 1.35,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: 10),
+        _KitchenInPageChip(label: chipLabel),
+      ],
+    );
+  }
+}
+
+class _KitchenInPageChip extends StatelessWidget {
+  final String label;
+  const _KitchenInPageChip({required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      constraints: const BoxConstraints(maxWidth: 148),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+      decoration: BoxDecoration(
+        color: AppColors.brandRed.withOpacity(0.10),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: AppColors.brandRed.withOpacity(0.12)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.visibility_rounded, color: AppColors.brandRed, size: 13),
+          const SizedBox(width: 5),
+          Flexible(
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: AppColors.brandRed,
+                fontSize: 10,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 0.45,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _KitchenVisualStack extends StatelessWidget {
+  final String assetPath;
+
+  const _KitchenVisualStack({required this.assetPath});
+
+  @override
+  Widget build(BuildContext context) {
+    return AspectRatio(
+      aspectRatio: 0.88,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Positioned.fill(
+            top: 2,
+            left: 14,
+            right: 0,
+            bottom: 14,
+            child: Transform.rotate(
+              angle: -0.08,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.72),
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(
+                    color: Colors.white.withOpacity(0.85),
+                    width: 1,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Positioned.fill(
+            top: 16,
+            left: 0,
+            right: 20,
+            bottom: 6,
+            child: Transform.rotate(
+              angle: 0.08,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: AppColors.brandRed.withOpacity(0.08),
+                  borderRadius: BorderRadius.circular(22),
+                  border: Border.all(
+                    color: AppColors.brandRed.withOpacity(0.12),
+                    width: 1,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Positioned.fill(
+            top: 20,
+            left: 16,
+            right: 8,
+            bottom: 0,
+            child: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(26),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.12),
+                    blurRadius: 18,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: _MaterialImage(
+                  assetPath: assetPath,
+                  fit: BoxFit.contain,
+                  fallbackIcon: Icons.local_fire_department_rounded,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ImageBox extends StatelessWidget {
+  final String asset;
+  final Color c1;
+  final Color c2;
+  final IconData fallbackIcon;
+
+  const _ImageBox({
+    required this.asset,
+    required this.c1,
+    required this.c2,
+    required this.fallbackIcon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 110,
+      height: 110,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [c1.withOpacity(0.12), c2.withOpacity(0.08)],
+        ),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.black.withOpacity(0.05)),
+        boxShadow: [
+          BoxShadow(
+            color: c1.withOpacity(0.08),
+            blurRadius: 16,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(12),
+      child: _MaterialImage(
+        assetPath: asset,
+        fit: BoxFit.contain,
+        fallbackIcon: fallbackIcon,
+        fallbackColor: c1,
+      ),
+    );
+  }
+}
+
+class _MaterialImage extends StatelessWidget {
+  final String assetPath;
+  final BoxFit fit;
+  final IconData fallbackIcon;
+  final Color? fallbackColor;
+
+  const _MaterialImage({
+    required this.assetPath,
+    required this.fit,
+    required this.fallbackIcon,
+    this.fallbackColor,
+  });
+
+  bool get _isNetworkPath =>
+      assetPath.startsWith('http://') || assetPath.startsWith('https://');
+
+  bool get _isLocalAsset => assetPath.startsWith('assets/');
+
+  String get _storagePath {
+    final trimmed = assetPath.trim();
+    if (trimmed.startsWith('/')) return trimmed.substring(1);
+    return trimmed;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (assetPath.trim().isEmpty) return _fallback();
+
+    if (_isNetworkPath) {
+      return Image.network(
+        assetPath,
+        fit: fit,
+        errorBuilder: (_, __, ___) => _fallback(),
+      );
+    }
+
+    if (_isLocalAsset) {
+      return Image.asset(
+        assetPath,
+        fit: fit,
+        errorBuilder: (_, __, ___) => _fallback(),
+      );
+    }
+
+    final storageUrl = Supabase.instance.client.storage
+        .from(_learningMaterialsBucket)
+        .getPublicUrl(_storagePath);
+
+    return Image.network(
+      storageUrl,
+      fit: fit,
+      errorBuilder: (_, __, ___) => _fallback(),
+    );
+  }
+
+  Widget _fallback() {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: AppColors.brandRedSoft.withOpacity(0.65),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: AppColors.brandRed.withOpacity(0.16),
+        ),
+      ),
+      child: Center(
+        child: Icon(
+          fallbackIcon,
+          color: fallbackColor ?? AppColors.brandRed,
+          size: 34,
+        ),
+      ),
+    );
+  }
+}
+
+class _MiniHeadline extends StatelessWidget {
+  final String text;
+  const _MiniHeadline(this.text);
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      text,
+      style: const TextStyle(
+        fontSize: 15,
+        fontWeight: FontWeight.w900,
+        color: Color(0xFF111827),
+      ),
+    );
+  }
+}
+
+class _BodyText extends StatelessWidget {
+  final String text;
+  const _BodyText(this.text);
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      text,
+      style: const TextStyle(
+        fontSize: 13.5,
+        height: 1.55,
+        color: Color(0xFF4B5563),
+      ),
+    );
+  }
+}
+
+class _StyledDialog extends StatelessWidget {
+  final IconData icon;
+  final Color iconColor;
+  final String title;
+  final String body;
+  final String buttonLabel;
+  final VoidCallback onPressed;
+
+  const _StyledDialog({
+    required this.icon,
+    required this.iconColor,
+    required this.title,
+    required this.body,
+    required this.buttonLabel,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 28),
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+            Align(
+              alignment: Alignment.topRight,
+              child: SizedBox(
+                width: 34,
+                height: 34,
+                child: Material(
+                  color: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: IconButton(
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    icon: const Icon(Icons.close_rounded, size: 18),
+                    color: Colors.black54,
+                    onPressed: () => Navigator.pop(context),
+                    tooltip: 'Close',
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Container(
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(
+                color: iconColor.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: iconColor, size: 32),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w900,
+                color: iconColor,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              body,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 14,
+                height: 1.55,
+                color: Color(0xFF374151),
+              ),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: iconColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  elevation: 3,
+                  shadowColor: iconColor.withOpacity(0.3),
+                ),
+                onPressed: onPressed,
+                child: Text(
+                  buttonLabel,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 15,
+                  ),
+                ),
+              ),
+            ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _LearningAssessmentHeader extends StatelessWidget {
+  final String sectionTitle;
+  final String moduleLabel;
+  final String moduleTitle;
+  final int currentPage;
+  final int totalPages;
+  final double progress;
+  final String pageLabel;
+  final VoidCallback onClose;
+
+  const _LearningAssessmentHeader({
+    required this.sectionTitle,
+    required this.moduleLabel,
+    required this.moduleTitle,
+    required this.currentPage,
+    required this.totalPages,
+    required this.progress,
+    required this.pageLabel,
+    required this.onClose,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final safeProgress = progress.clamp(0.0, 1.0).toDouble();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Row(
+          children: [
+            InkWell(
+              onTap: onClose,
+              borderRadius: BorderRadius.circular(999),
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: AppColors.textOnRed.withValues(alpha: 0.18),
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: AppColors.textOnRed.withValues(alpha: 0.24),
+                  ),
+                ),
+                child: const Icon(
+                  Icons.close_rounded,
+                  color: AppColors.textOnRed,
+                  size: 21,
+                ),
+              ),
+            ),
+            const Spacer(),
+          ],
+        ),
+        const SizedBox(height: 14),
+        SizedBox(
+          width: double.infinity,
+          child: Text(
+            sectionTitle,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: AppColors.textOnRed,
+              fontFamily: 'Poppins',
+              fontSize: 27,
+              height: 1.12,
+              fontWeight: FontWeight.w900,
+              letterSpacing: -0.3,
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Flexible(
+              fit: FlexFit.loose,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: AppColors.brandRedLight,
+                  borderRadius: BorderRadius.circular(999),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.brandRed.withValues(alpha: 0.24),
+                      blurRadius: 12,
+                      offset: const Offset(0, 6),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.menu_book_rounded,
+                      color: AppColors.textOnRed,
+                      size: 15,
+                    ),
+                    const SizedBox(width: 6),
+                    Flexible(
+                      child: Text(
+                        moduleLabel,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: AppColors.textOnRed,
+                          fontFamily: 'Poppins',
+                          fontSize: 12,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                moduleTitle,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: AppColors.textOnRed.withValues(alpha: 0.88),
+                  fontFamily: 'Poppins',
+                  fontSize: 12.5,
+                  height: 1.28,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 14),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(999),
+          child: LinearProgressIndicator(
+            value: safeProgress,
+            minHeight: 8,
+            backgroundColor: AppColors.textOnRed.withValues(alpha: 0.22),
+            valueColor: const AlwaysStoppedAnimation<Color>(
+              AppColors.textOnRed,
+            ),
+          ),
+        ),
+        const SizedBox(height: 10),
+        Row(
+          children: [
+            Text(
+              '$pageLabel $currentPage/$totalPages',
+              style: TextStyle(
+                color: AppColors.textOnRed.withValues(alpha: 0.76),
+                fontFamily: 'Poppins',
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const Spacer(),
+            Wrap(
+              spacing: 6,
+              children: List.generate(totalPages, (index) {
+                final active = index == currentPage - 1;
+                return AnimatedContainer(
+                  duration: const Duration(milliseconds: 180),
+                  width: active ? 28 : 10,
+                  height: 10,
+                  decoration: BoxDecoration(
+                    color: active
+                        ? AppColors.textOnRed
+                        : AppColors.textOnRed.withValues(alpha: 0.34),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                );
+              }),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _LMGradientBackdrop extends StatelessWidget {
+  const _LMGradientBackdrop();
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        Container(color: AppColors.background),
+        Container(
+          height: 280,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                AppColors.brandRedDeep,
+                AppColors.brandRedDark,
+                AppColors.brandRed,
+              ],
+            ),
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(34),
+              bottomRight: Radius.circular(34),
+            ),
+          ),
+        ),
+        const Positioned(
+          top: 50,
+          right: -36,
+          child: _LMDecorCircle(size: 138, opacity: 0.17),
+        ),
+        const Positioned(
+          top: 178,
+          left: -42,
+          child: _LMDecorCircle(size: 124, opacity: 0.13),
+        ),
+      ],
+    );
+  }
+}
+
+class _LMDecorCircle extends StatelessWidget {
+  const _LMDecorCircle({required this.size, required this.opacity});
+  final double size;
+  final double opacity;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: AppColors.textOnRed.withOpacity(opacity),
+        shape: BoxShape.circle,
+      ),
+    );
+  }
+}
+

@@ -1,29 +1,32 @@
 import 'package:flutter/material.dart';
 import '../localization/app_text.dart';
-import 'pre_assessment_building.dart';
+import 'post_assessment_house.dart';
 
+/// Helper to get localized text based on context language
 String _getLocalizedText(String en, String tl, BuildContext context) {
   return Localizations.localeOf(context).languageCode == 'tl' ? tl : en;
 }
 
+/// Returns the assessment display title with proper localization
 String getAssessmentDisplayTitle(BuildContext context) {
   return _getLocalizedText(
-    'Pre-Assessment',
-    'Paunang Pagsusulit',
+    'Post-Assessment',
+    'Panghuling Pagsusulit',
     context,
   );
 }
 
+/// Returns the concise instructions list with proper localization
 List<String> getConciseInstructions(BuildContext context) {
   return [
     _getLocalizedText(
-      'Answer based on what you currently know before studying the module.',
-      'Sagutan batay sa kasalukuyan mong alam bago aralin ang modyul.',
+      'Answer each question based on what you learned from the Learning Materials.',
+      'Sagutan ang bawat tanong batay sa natutunan mo sa Modyul sa Pag-aaral.',
       context,
     ),
     _getLocalizedText(
-      'You have 5 minutes to complete the pre-test.',
-      'Mayroon kang 5 minuto para matapos ang paunang pagsusulit.',
+      'You have 5 minutes to complete the post-test.',
+      'Mayroon kang 5 minuto para matapos ang panghuling pagsusulit.',
       context,
     ),
     _getLocalizedText(
@@ -32,15 +35,15 @@ List<String> getConciseInstructions(BuildContext context) {
       context,
     ),
     _getLocalizedText(
-      'This is not graded. It checks your starting knowledge for Module 5.',
-      'Hindi ito binibigyan ng grado. Sinusukat lamang nito ang panimulang kaalaman mo para sa Modyul 5.',
+      'Your score will show how well you understood Module 2.',
+      'Ipapakita ng iyong score kung gaano mo naunawaan ang Module 2.',
       context,
     ),
   ];
 }
 
-class PreAssessmentIntroPage extends StatelessWidget {
-  const PreAssessmentIntroPage({super.key});
+class PostAssessmentIntroPage extends StatelessWidget {
+  const PostAssessmentIntroPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -79,13 +82,13 @@ class PreAssessmentIntroPage extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             const Icon(
-                              Icons.apartment_rounded,
+                              Icons.fire_extinguisher_rounded,
                               color: AppColors.textOnRed,
                               size: 16,
                             ),
                             const SizedBox(width: 6),
                             Text(
-                              context.tr('module_5'),
+                              context.tr('module_1'),
                               style: const TextStyle(
                                 color: AppColors.textOnRed,
                                 fontFamily: 'Poppins',
@@ -122,7 +125,7 @@ class PreAssessmentIntroPage extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          context.tr('module_5_full_header'),
+                          context.tr('module_2_full_header'),
                           style: TextStyle(
                             color: AppColors.textOnRed.withOpacity(0.88),
                             fontFamily: 'Poppins',
@@ -138,11 +141,11 @@ class PreAssessmentIntroPage extends StatelessWidget {
                           decoration: BoxDecoration(
                             color: AppColors.surface,
                             borderRadius: BorderRadius.circular(28),
-                            boxShadow: const [
+                            boxShadow: [
                               BoxShadow(
                                 color: AppColors.shadow,
                                 blurRadius: 30,
-                                offset: Offset(0, 18),
+                                offset: const Offset(0, 18),
                               ),
                             ],
                           ),
@@ -174,7 +177,7 @@ class PreAssessmentIntroPage extends StatelessWidget {
                                       ],
                                     ),
                                     child: const Icon(
-                                      Icons.quiz_rounded,
+                                      Icons.fact_check_rounded,
                                       color: AppColors.textOnRed,
                                       size: 30,
                                     ),
@@ -182,13 +185,12 @@ class PreAssessmentIntroPage extends StatelessWidget {
                                   const SizedBox(width: 14),
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           isTl
-                                              ? 'Handa ka na bang magsimula?'
-                                              : 'Ready to begin?',
+                                              ? 'Handa ka na bang sukatin ang iyong natutunan?'
+                                              : 'Ready to check your learning?',
                                           style: const TextStyle(
                                             color: AppColors.textPrimary,
                                             fontFamily: 'Poppins',
@@ -200,10 +202,10 @@ class PreAssessmentIntroPage extends StatelessWidget {
                                         const SizedBox(height: 5),
                                         Text(
                                           isTl
-                                              ? 'Sagutan muna ang paunang pagsusulit bago aralin ang Modyul 5. Susukatin nito ang kasalukuyan mong kaalaman tungkol sa sunog sa tenement, karaniwang sanhi, alarma, ruta ng paglikas, at tamang pagtugon sa emerhensiya.'
-                                              : 'Take this pre-assessment before studying Module 5. This checks what you already know about tenement fire basics, common causes, alarms, evacuation routes, and proper emergency response.',
+                                              ? 'Sagutan ang panghuling pagsusulit matapos basahin ang Module 2 sa Pag-aaral. Susukatin nito kung ano ang natutunan mo tungkol sa batayan, uri, at tamang paggamit ng pamatay-sunog.'
+                                              : 'Take this post-assessment after reading the Module 2 Learning Materials. This will help identify what you learned about fire extinguisher basics, types, and proper use.',
                                           style: const TextStyle(
-                                            color: AppColors.brandRedDeep,
+                                            color: Color.fromARGB(255, 141, 27, 27),
                                             fontFamily: 'Poppins',
                                             fontSize: 13.5,
                                             height: 1.38,
@@ -217,7 +219,7 @@ class PreAssessmentIntroPage extends StatelessWidget {
                               ),
                               const SizedBox(height: 22),
                               Text(
-                                context.tr('module_5_full_title'),
+                                context.tr('module_2_full_title'),
                                 style: const TextStyle(
                                   color: AppColors.textPrimary,
                                   fontFamily: 'Poppins',
@@ -236,34 +238,26 @@ class PreAssessmentIntroPage extends StatelessWidget {
                                     children: [
                                       _IntroInfoTile(
                                         compact: compact,
-                                        width: compact
-                                            ? constraints.maxWidth
-                                            : 138,
+                                        width: compact ? constraints.maxWidth : 138,
                                         icon: Icons.dynamic_form_rounded,
                                         title: isTl ? 'Mga tanong' : 'Questions',
                                         value: isTl
-                                            ? 'Mula sa BFP Dasmariñas'
-                                            : 'From BFP Dasmariñas',
+                                            ? 'Mula sa Bureau of Fire Protection DASMARIÑAS'
+                                            : 'From Bureau of Fire Protection DASMARIÑAS',
                                       ),
                                       _IntroInfoTile(
                                         compact: compact,
-                                        width: compact
-                                            ? constraints.maxWidth
-                                            : 138,
+                                        width: compact ? constraints.maxWidth : 138,
                                         icon: Icons.schedule_rounded,
                                         title: isTl ? 'Oras' : 'Time',
                                         value: '5 mins',
                                       ),
                                       _IntroInfoTile(
                                         compact: compact,
-                                        width: compact
-                                            ? constraints.maxWidth
-                                            : 138,
+                                        width: compact ? constraints.maxWidth : 138,
                                         icon: Icons.school_rounded,
                                         title: isTl ? 'Uri' : 'Type',
-                                        value: isTl
-                                            ? 'Paunang Pagsusulit'
-                                            : 'Pre-Test',
+                                        value: isTl ? 'Panghuling Pagsusulit' : 'Post-Test',
                                       ),
                                     ],
                                   );
@@ -276,7 +270,9 @@ class PreAssessmentIntroPage extends StatelessWidget {
                                 decoration: BoxDecoration(
                                   color: AppColors.surfaceSoft,
                                   borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(color: AppColors.border),
+                                  border: Border.all(
+                                    color: AppColors.border,
+                                  ),
                                 ),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -287,8 +283,7 @@ class PreAssessmentIntroPage extends StatelessWidget {
                                           padding: const EdgeInsets.all(8),
                                           decoration: BoxDecoration(
                                             color: AppColors.brandRedSoft,
-                                            borderRadius:
-                                                BorderRadius.circular(12),
+                                            borderRadius: BorderRadius.circular(12),
                                           ),
                                           child: const Icon(
                                             Icons.lightbulb_outline_rounded,
@@ -309,8 +304,25 @@ class PreAssessmentIntroPage extends StatelessWidget {
                                       ],
                                     ),
                                     const SizedBox(height: 13),
-                                    ...getConciseInstructions(context).map(
-                                      (text) => _InstructionLine(text: text),
+                                    _InstructionLine(
+                                      text: isTl
+                                          ? 'Sagutan ang bawat tanong batay sa natutunan mo sa Modyul sa Pag-aaral.'
+                                          : 'Answer each question based on what you learned from the Learning Materials.',
+                                    ),
+                                    _InstructionLine(
+                                      text: isTl
+                                          ? 'Mayroon kang 5 minuto para matapos ang panghuling pagsusulit.'
+                                          : 'You have 5 minutes to complete the post-test.',
+                                    ),
+                                    _InstructionLine(
+                                      text: isTl
+                                          ? 'Ang hindi nasagutang tanong ay mamarkahang mali kapag naubos ang oras.'
+                                          : 'Unanswered questions will be marked incorrect when time runs out.',
+                                    ),
+                                    _InstructionLine(
+                                      text: isTl
+                                          ? 'Ipapakita ng iyong score kung gaano mo naunawaan ang Module 2.'
+                                          : 'Your score will show how well you understood Module 2.',
                                     ),
                                   ],
                                 ),
@@ -337,7 +349,7 @@ class PreAssessmentIntroPage extends StatelessWidget {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => const PreAssessmentBuildingPage(),
+                  builder: (_) => const PostAssessmentHousePage(),
                 ),
               );
             },
@@ -354,8 +366,8 @@ class PreAssessmentIntroPage extends StatelessWidget {
               children: [
                 Text(
                   isTl
-                      ? 'Simulan ang Paunang Pagsusulit'
-                      : 'Start Pre-Test',
+                      ? 'Simulan ang Panghuling Pagsusulit'
+                      : 'Start Post-Test',
                   style: const TextStyle(
                     color: AppColors.textOnRed,
                     fontFamily: 'Poppins',
@@ -376,10 +388,6 @@ class PreAssessmentIntroPage extends StatelessWidget {
       ),
     );
   }
-}
-
-class PreAssessmentIntroPage2 extends PreAssessmentIntroPage {
-  const PreAssessmentIntroPage2({super.key});
 }
 
 class _IntroGradientHeader extends StatelessWidget {

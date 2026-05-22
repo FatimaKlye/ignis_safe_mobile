@@ -26,7 +26,8 @@ public class SceneLoader : MonoBehaviour
 
     // Holds the scene name if it arrives before Awake/Start has run.
     private static string _pendingSceneName = null;
-    // Prevents double-loading if both the Android message and the Start() fallback fire.
+    // FIX: Prevents double-loading if both the Android message and the Start() fallback fire.
+    // WHY: Prevents the same scene being loaded twice, causing state corruption
     private static bool _sceneLoadTriggered = false;
 
     private void Awake()
@@ -44,8 +45,20 @@ public class SceneLoader : MonoBehaviour
 
     private void Start()
     {
-        // [FIX] Reset static state so each new Unity launch starts clean.
-        _sceneLoadTriggered = false;
+        // FIX: Reset static state so each new Unity launch starts clean.
+        // WHY: When Flutter launches Unity multiple times, previous state should not persist
+        ResetSceneLoadState();
+
+        // FIX: Reset ReturnToFlutter._isReturning at the start of every new Unity session.
+        // WHY: Primary fix is MainActivity killing the :unity process after onActivityResult,
+        //      which resets all statics automatically (new process = fresh memory).
+        //      This call is a secondary safety net for the edge case where the process kill
+        //      fails or is delayed: if _isReturning is still true from the previous scene,
+        //      ReturnToFlutter.Return() would silently skip finish() → the second simulation
+        //      never ends, onActivityResult never fires, Flutter awaits forever.
+        //      Calling ResetReturningState() here ensures Return() works on every fresh
+        //      SceneLoader.Start() regardless of process lifecycle.
+        ReturnToFlutter.ResetReturningState();
 
         // Fallback: if Android sent the scene name before C# was ready
         // (e.g., UnitySendMessage fired before the first frame), it was
@@ -102,13 +115,15 @@ public class SceneLoader : MonoBehaviour
             return;
         }
 
+        // FIX: Prevent double-loading of the same scene
+        // WHY: If both UnitySendMessage and Start() fallback fire, prevent duplicate loads
         if (_sceneLoadTriggered)
         {
             Debug.Log(TAG + " LoadScene — scene load already triggered for: " + sceneName + ". Ignoring duplicate.");
             return;
         }
 
-        // [FIX] Reset any scene-specific static state here before loading.
+        // FIX: Reset any scene-specific static state here before loading.
         // Add calls to your scene-specific managers if they have static Reset() methods:
         // e.g.:  ExtinguisherGameManager.ResetState();
         //        HouseFireGameManager.ResetState();
@@ -129,6 +144,15 @@ public class SceneLoader : MonoBehaviour
     {
         Debug.Log(TAG + " SetPendingScene (static) — caching scene for Start(): " + sceneName);
         _pendingSceneName = sceneName;
+        _sceneLoadTriggered = false;
+    }
+    
+    // FIX: Add method to reset static state between scene loads
+    // WHY: Ensures each scene load is independent and doesn't carry over state from previous loads
+    public static void ResetSceneLoadState()
+    {
+        Debug.Log(TAG + " ResetSceneLoadState — clearing pending scene and load trigger.");
+        _pendingSceneName = null;
         _sceneLoadTriggered = false;
     }
 }

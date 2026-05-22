@@ -563,6 +563,26 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
             height: MediaQuery.of(context).size.height,
             child: Image.asset('assets/bg.png', fit: BoxFit.cover),
           ),
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              height: MediaQuery.of(context).padding.top + 200,
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color(0xFFB11217),
+                    Color(0xFFB11217),
+                    Colors.transparent,
+                  ],
+                  stops: [0.0, 0.65, 1.0],
+                ),
+              ),
+            ),
+          ),
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 14),
