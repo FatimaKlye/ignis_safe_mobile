@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:model_viewer_plus/model_viewer_plus.dart';
+import 'package:video_player/video_player.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'post_assess_instruction.dart';
 
 const int _moduleNo = 4;
 const String _learningMaterialsBucket = 'Learning Materials';
+const String _module4KitchenModelAsset = 'assets/models/kitchen_-_assets.glb';
+const String _module4Page3VideoAsset = 'assets/kitchen_fire.mp4';
 
 class AppColors {
   static const Color brandRed = Color(0xFFF59E0B);
@@ -690,6 +694,10 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
         const SizedBox(height: 16),
         _referenceSource('p3_reference'),
         const SizedBox(height: 14),
+        _page3VideoSourceCard(),
+        const SizedBox(height: 12),
+        _page3VideoCard(),
+        const SizedBox(height: 14),
         _lesson(
           blockKey: 'p3_section_1',
           sectionIndex: 0,
@@ -740,15 +748,34 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
     );
   }
 
+  Widget _page3VideoCard() {
+    return _LearningMaterialVideoCard(
+      videoAssetPath: _module4Page3VideoAsset,
+      title: _isTl ? 'Video na Gabay' : 'Video Guide',
+      description: _isTl
+          ? 'Panoorin ang maikling video bilang karagdagang gabay bago tapusin ang bahaging ito.'
+          : 'Watch the short video as an additional guide before completing this section.',
+      helperText: _isTl
+          ? 'I-tap ang video para i-play o i-pause.'
+          : 'Tap the video to play or pause.',
+    );
+  }
+
+  Widget _page3VideoSourceCard() {
+    return const _KitchenVideoSourceCard(
+      platform: 'YouTube',
+      title: 'San José Fire Department – Fire Safety in the Kitchen',
+      purpose:
+          'Supports the kitchen fire safety lesson by showing basic fire prevention reminders and safe response actions during a kitchen fire.',
+    );
+  }
+
   Widget _heroCard(String blockKey) {
     final block = _block(blockKey);
     if (block == null) return const SizedBox.shrink();
 
-    final assetKey = block.metaString('asset_key');
-    final assetPath = _mediaPath(assetKey.isEmpty ? _data?.heroAsset : assetKey);
-
     return _KitchenFire3DCardHolder(
-      assetPath: assetPath,
+      assetPath: _module4KitchenModelAsset,
       title: block.value(_isTl),
       subtitle: block.metaText('subtitle', _isTl),
       chipLabel: _uiText('hero_chip_label'),
@@ -1692,6 +1719,92 @@ class _ReferenceSourceCard extends StatelessWidget {
 }
 
 
+class _KitchenVideoSourceCard extends StatelessWidget {
+  final String platform;
+  final String title;
+  final String purpose;
+
+  const _KitchenVideoSourceCard({
+    required this.platform,
+    required this.title,
+    required this.purpose,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
+      decoration: BoxDecoration(
+        color: AppColors.brandRedSoft.withOpacity(0.62),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.brandRed.withOpacity(0.16)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 30,
+            height: 30,
+            decoration: BoxDecoration(
+              color: AppColors.brandRed.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: const Icon(
+              Icons.smart_display_rounded,
+              color: AppColors.brandRed,
+              size: 17,
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Source: $platform',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: AppColors.brandRed,
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w900,
+                    height: 1.2,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  title,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w700,
+                    height: 1.25,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  purpose,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.w600,
+                    height: 1.35,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _KitchenFire3DCardHolder extends StatelessWidget {
   final String assetPath;
   final String title;
@@ -1707,275 +1820,846 @@ class _KitchenFire3DCardHolder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(18, 18, 18, 20),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFFFFFBF2), Color(0xFFFFF1D6)],
+        ),
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(color: AppColors.brandRed.withOpacity(0.12)),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.brandRed.withOpacity(0.08),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 58,
+            height: 58,
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [AppColors.brandRed, AppColors.brandRedDark],
+              ),
+              borderRadius: BorderRadius.circular(18),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.brandRed.withOpacity(0.22),
+                  blurRadius: 14,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            child: const Icon(
+              Icons.view_in_ar_rounded,
+              color: Colors.white,
+              size: 30,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w900,
+              color: AppColors.textPrimary,
+              height: 1.12,
+              fontFamily: 'Poppins',
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            subtitle,
+            style: const TextStyle(
+              fontSize: 15.5,
+              color: AppColors.textSecondary,
+              height: 1.35,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.72),
+              borderRadius: BorderRadius.circular(999),
+              border: Border.all(color: AppColors.brandRed.withOpacity(0.18)),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  Icons.visibility_rounded,
+                  size: 16,
+                  color: AppColors.brandRed,
+                ),
+                const SizedBox(width: 8),
+                Flexible(
+                  child: Text(
+                    chipLabel,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: AppColors.brandRed,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 0.25,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 22),
+          _PageOneKitchenFire3DPreview(assetPath: assetPath, chipLabel: chipLabel),
+        ],
+      ),
+    );
+  }
+}
+
+class _PageOneKitchenFire3DPreview extends StatelessWidget {
+  final String assetPath;
+  final String chipLabel;
+
+  const _PageOneKitchenFire3DPreview({
+    required this.assetPath,
+    required this.chipLabel,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final availableWidth = constraints.maxWidth.isFinite
-            ? constraints.maxWidth
-            : MediaQuery.of(context).size.width - 68;
-        final compact = availableWidth < 340;
-        final visualWidth = compact
-            ? (availableWidth * 0.68).clamp(118.0, 166.0).toDouble()
-            : (availableWidth * 0.36).clamp(112.0, 148.0).toDouble();
+        final previewHeight = (constraints.maxWidth * 1.82)
+            .clamp(580.0, 780.0)
+            .toDouble();
+        final modelPath = _resolveKitchenModelPath(assetPath);
+        final isTl = Localizations.localeOf(context).languageCode
+            .toLowerCase()
+            .startsWith('tl');
 
-        return Container(
-          width: double.infinity,
-          padding: EdgeInsets.all(compact ? 14 : 16),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(26),
-            gradient: const LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [Color(0xFFFFF7F7), Color(0xFFFFE8EA)],
-            ),
-            border: Border.all(
-              color: AppColors.brandRed.withOpacity(0.12),
-              width: 1,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.brandRed.withOpacity(0.10),
-                blurRadius: 18,
-                offset: const Offset(0, 8),
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              isTl ? '3D Model Preview' : '3D Model Preview',
+              style: const TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w900,
+                color: AppColors.textPrimary,
+                height: 1.2,
+                fontFamily: 'Poppins',
               ),
-            ],
-          ),
-          child: compact
-              ? Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              chipLabel,
+              style: const TextStyle(
+                fontSize: 12.5,
+                color: AppColors.textSecondary,
+                height: 1.4,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 14),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(30),
+              child: Container(
+                width: double.infinity,
+                height: previewHeight,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFF1D6),
+                  borderRadius: BorderRadius.circular(30),
+                  border: Border.all(color: AppColors.brandRed.withOpacity(0.10)),
+                ),
+                child: Stack(
                   children: [
-                    _KitchenInfoBlock(
-                      title: title,
-                      subtitle: subtitle,
-                      chipLabel: chipLabel,
-                      compact: true,
-                    ),
-                    const SizedBox(height: 14),
-                    Align(
-                      alignment: Alignment.center,
-                      child: SizedBox(
-                        width: visualWidth,
-                        child: _KitchenVisualStack(assetPath: assetPath),
+                    Positioned.fill(
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              Colors.white.withOpacity(0.54),
+                              AppColors.brandRedSoft.withOpacity(0.62),
+                              AppColors.brandRed.withOpacity(0.08),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
-                  ],
-                )
-              : Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: _KitchenInfoBlock(
-                        title: title,
-                        subtitle: subtitle,
-                        chipLabel: chipLabel,
-                        compact: false,
+                    Positioned(
+                      left: -42,
+                      top: -44,
+                      child: _KitchenFireSoftGlowBlob(
+                        size: 150,
+                        color: AppColors.brandRed.withOpacity(0.11),
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    SizedBox(
-                      width: visualWidth,
-                      child: _KitchenVisualStack(assetPath: assetPath),
+                    Positioned(
+                      right: -46,
+                      bottom: -52,
+                      child: _KitchenFireSoftGlowBlob(
+                        size: 170,
+                        color: AppColors.warning.withOpacity(0.15),
+                      ),
+                    ),
+                    Positioned.fill(
+                      child: CustomPaint(
+                        painter: _KitchenFireGridPainter(
+                          color: AppColors.brandRed.withOpacity(0.045),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: 14,
+                      left: 14,
+                      child: _KitchenFireViewerBadge(
+                        icon: Icons.view_in_ar_rounded,
+                        label: '3D Preview',
+                        color: AppColors.brandRed,
+                      ),
+                    ),
+                    Positioned.fill(
+                      top: 24,
+                      bottom: 8,
+                      child: _AnimatedKitchenFireModelViewer(modelPath: modelPath),
+                    ),
+                    Positioned.fill(
+                      child: IgnorePointer(
+                        child: Stack(
+                          children: [
+                            Positioned(
+                              top: previewHeight * 0.12,
+                              left: 16,
+                              child: const _KitchenFireModelLabel('Kitchen\nArea'),
+                            ),
+                            Positioned(
+                              top: previewHeight * 0.18,
+                              right: 16,
+                              child: const _KitchenFireModelLabel('Cooking\nZone'),
+                            ),
+                            Positioned(
+                              top: previewHeight * 0.42,
+                              left: 12,
+                              child: const _KitchenFireModelLabel('Heat\nSource'),
+                            ),
+                            Positioned(
+                              top: previewHeight * 0.50,
+                              right: 12,
+                              child: const _KitchenFireModelLabel('Fire\nRisk'),
+                            ),
+                            Positioned(
+                              bottom: previewHeight * 0.18,
+                              left: 14,
+                              child: const _KitchenFireModelLabel('Safe\nDistance'),
+                            ),
+                            Positioned(
+                              bottom: previewHeight * 0.10,
+                              right: 14,
+                              child: const _KitchenFireModelLabel('Kitchen\nAssets'),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ],
                 ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.78),
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(color: AppColors.brandRed.withOpacity(0.15)),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Icon(
+                    Icons.touch_app_rounded,
+                    color: AppColors.brandRed,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      isTl
+                          ? 'I-drag para i-rotate. I-pinch para i-zoom.'
+                          : 'Drag to rotate. Pinch to zoom.',
+                      style: const TextStyle(
+                        color: AppColors.brandRedDark,
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w800,
+                        height: 1.35,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  String _resolveKitchenModelPath(String rawPath) {
+    final path = rawPath.trim();
+    if (path.isNotEmpty && path.toLowerCase().endsWith('.glb')) {
+      return path;
+    }
+    return _module4KitchenModelAsset;
+  }
+}
+
+class _AnimatedKitchenFireModelViewer extends StatefulWidget {
+  final String modelPath;
+
+  const _AnimatedKitchenFireModelViewer({required this.modelPath});
+
+  @override
+  State<_AnimatedKitchenFireModelViewer> createState() =>
+      _AnimatedKitchenFireModelViewerState();
+}
+
+class _AnimatedKitchenFireModelViewerState
+    extends State<_AnimatedKitchenFireModelViewer>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2200),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, _) {
+        final floatOffset = -4.0 + (_controller.value * 8.0);
+
+        return Transform.translate(
+          offset: Offset(0, floatOffset),
+          child: ModelViewer(
+            key: ValueKey(widget.modelPath),
+            src: widget.modelPath,
+            alt: 'Kitchen fire 3D model preview',
+            backgroundColor: Colors.transparent,
+            cameraControls: true,
+            autoRotate: true,
+            autoRotateDelay: 0,
+            rotationPerSecond: '22deg',
+            disableZoom: false,
+            cameraOrbit: '35deg 68deg 4.8m',
+            fieldOfView: '28deg',
+            minCameraOrbit: 'auto auto 3.2m',
+            maxCameraOrbit: 'auto auto 7.2m',
+            shadowIntensity: 0.55,
+            exposure: 1.05,
+          ),
         );
       },
     );
   }
 }
 
-class _KitchenInfoBlock extends StatelessWidget {
-  final String title;
-  final String subtitle;
-  final String chipLabel;
-  final bool compact;
+class _KitchenFireModelLabel extends StatelessWidget {
+  final String label;
 
-  const _KitchenInfoBlock({
-    required this.title,
-    required this.subtitle,
-    required this.chipLabel,
-    required this.compact,
+  const _KitchenFireModelLabel(this.label);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.90),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: AppColors.brandRed.withOpacity(0.22)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Text(
+        label,
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+          fontSize: 10.5,
+          fontWeight: FontWeight.w900,
+          color: AppColors.brandRedDark,
+          height: 1.2,
+        ),
+      ),
+    );
+  }
+}
+
+class _KitchenFireViewerBadge extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+
+  const _KitchenFireViewerBadge({
+    required this.icon,
+    required this.label,
+    required this.color,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          width: compact ? 44 : 48,
-          height: compact ? 44 : 48,
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [AppColors.brandRed, AppColors.brandRedDark],
+    return IgnorePointer(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.84),
+          borderRadius: BorderRadius.circular(999),
+          border: Border.all(color: color.withOpacity(0.14)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.06),
+              blurRadius: 8,
+              offset: const Offset(0, 3),
             ),
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.brandRed.withOpacity(0.28),
-                blurRadius: 12,
-                offset: const Offset(0, 6),
+          ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 16, color: color),
+            const SizedBox(width: 7),
+            Text(
+              label,
+              style: TextStyle(
+                color: color,
+                fontSize: 11.5,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _KitchenFireSoftGlowBlob extends StatelessWidget {
+  final double size;
+  final Color color;
+
+  const _KitchenFireSoftGlowBlob({
+    required this.size,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: color,
+        shape: BoxShape.circle,
+      ),
+    );
+  }
+}
+
+class _KitchenFireGridPainter extends CustomPainter {
+  final Color color;
+
+  const _KitchenFireGridPainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = 1;
+
+    const spacing = 18.0;
+
+    for (double x = -size.height; x < size.width + size.height; x += spacing) {
+      canvas.drawLine(
+        Offset(x, size.height),
+        Offset(x + size.height, 0),
+        paint,
+      );
+    }
+
+    for (double x = 0; x < size.width + size.height; x += spacing) {
+      canvas.drawLine(
+        Offset(x, 0),
+        Offset(x - size.height, size.height),
+        paint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _KitchenFireGridPainter oldDelegate) {
+    return oldDelegate.color != color;
+  }
+}
+
+
+class _LearningMaterialVideoCard extends StatelessWidget {
+  final String videoAssetPath;
+  final String title;
+  final String description;
+  final String helperText;
+
+  const _LearningMaterialVideoCard({
+    required this.videoAssetPath,
+    required this.title,
+    required this.description,
+    required this.helperText,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.brandRed.withOpacity(0.14)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 14,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [AppColors.brandRed, AppColors.brandRedDark],
+                  ),
+                  borderRadius: BorderRadius.circular(14),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.brandRed.withOpacity(0.22),
+                      blurRadius: 10,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
+                ),
+                child: const Icon(
+                  Icons.play_circle_fill_rounded,
+                  color: Colors.white,
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: AppColors.textPrimary,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w900,
+                        height: 1.18,
+                        fontFamily: 'Poppins',
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      description,
+                      style: const TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: 12.5,
+                        height: 1.35,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
-          child: const Icon(
-            Icons.view_in_ar_rounded,
-            color: Colors.white,
-            size: 25,
+          const SizedBox(height: 14),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: AspectRatio(
+              aspectRatio: 16 / 9,
+              child: _InlineAssetVideoPlayer(source: videoAssetPath),
+            ),
+          ),
+          const SizedBox(height: 10),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            decoration: BoxDecoration(
+              color: AppColors.brandRedSoft.withOpacity(0.70),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: AppColors.brandRed.withOpacity(0.13)),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Icon(
+                  Icons.touch_app_rounded,
+                  color: AppColors.brandRed,
+                  size: 18,
+                ),
+                const SizedBox(width: 9),
+                Expanded(
+                  child: Text(
+                    helperText,
+                    style: const TextStyle(
+                      color: AppColors.brandRedDark,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                      height: 1.3,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _InlineAssetVideoPlayer extends StatefulWidget {
+  final String source;
+
+  const _InlineAssetVideoPlayer({required this.source});
+
+  @override
+  State<_InlineAssetVideoPlayer> createState() => _InlineAssetVideoPlayerState();
+}
+
+class _InlineAssetVideoPlayerState extends State<_InlineAssetVideoPlayer> {
+  VideoPlayerController? _controller;
+  bool _initializing = true;
+  bool _hasError = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initVideo();
+  }
+
+  Future<void> _initVideo() async {
+    try {
+      final source = widget.source.trim();
+      final isNetwork = source.startsWith('http://') || source.startsWith('https://');
+      final controller = isNetwork
+          ? VideoPlayerController.networkUrl(Uri.parse(source))
+          : VideoPlayerController.asset(source);
+
+      await controller.initialize();
+      await controller.setLooping(true);
+
+      if (!mounted) {
+        await controller.dispose();
+        return;
+      }
+
+      setState(() {
+        _controller = controller;
+        _initializing = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _hasError = true;
+        _initializing = false;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_initializing) {
+      return const _VideoPreviewFallback(isLoading: true);
+    }
+
+    final controller = _controller;
+    if (_hasError || controller == null || !controller.value.isInitialized) {
+      return const _VideoPreviewFallback(hasError: true);
+    }
+
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        Container(
+          color: AppColors.brandRedSoft.withOpacity(0.50),
+          child: FittedBox(
+            fit: BoxFit.cover,
+            child: SizedBox(
+              width: controller.value.size.width,
+              height: controller.value.size.height,
+              child: VideoPlayer(controller),
+            ),
           ),
         ),
-        SizedBox(height: compact ? 10 : 12),
-        Text(
-          title,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            color: AppColors.textPrimary,
-            fontSize: compact ? 15.5 : 16.5,
-            height: 1.15,
-            fontWeight: FontWeight.w900,
-            fontFamily: 'Poppins',
+        Positioned.fill(
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () {
+                setState(() {
+                  controller.value.isPlaying
+                      ? controller.pause()
+                      : controller.play();
+                });
+              },
+              child: Center(
+                child: AnimatedOpacity(
+                  opacity: controller.value.isPlaying ? 0.0 : 1.0,
+                  duration: const Duration(milliseconds: 180),
+                  child: Container(
+                    width: 58,
+                    height: 58,
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.44),
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.18),
+                          blurRadius: 14,
+                          offset: const Offset(0, 5),
+                        ),
+                      ],
+                    ),
+                    child: const Icon(
+                      Icons.play_arrow_rounded,
+                      color: Colors.white,
+                      size: 38,
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ),
         ),
-        const SizedBox(height: 6),
-        Text(
-          subtitle,
-          maxLines: compact ? 4 : 3,
-          overflow: TextOverflow.ellipsis,
-          style: const TextStyle(
-            color: AppColors.textSecondary,
-            fontSize: 12.5,
-            height: 1.35,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        const SizedBox(height: 10),
-        _KitchenInPageChip(label: chipLabel),
       ],
     );
   }
 }
 
-class _KitchenInPageChip extends StatelessWidget {
-  final String label;
-  const _KitchenInPageChip({required this.label});
+class _VideoPreviewFallback extends StatelessWidget {
+  final bool isLoading;
+  final bool hasError;
+
+  const _VideoPreviewFallback({
+    this.isLoading = false,
+    this.hasError = false,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final isTl = Localizations.localeOf(context).languageCode
+        .toLowerCase()
+        .startsWith('tl');
+
     return Container(
-      constraints: const BoxConstraints(maxWidth: 148),
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+      width: double.infinity,
       decoration: BoxDecoration(
-        color: AppColors.brandRed.withOpacity(0.10),
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: AppColors.brandRed.withOpacity(0.12)),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            AppColors.brandRed.withOpacity(0.12),
+            AppColors.warning.withOpacity(0.10),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.brandRed.withOpacity(0.14)),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.visibility_rounded, color: AppColors.brandRed, size: 13),
-          const SizedBox(width: 5),
-          Flexible(
-            child: Text(
-              label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (isLoading)
+              const SizedBox(
+                width: 28,
+                height: 28,
+                child: CircularProgressIndicator(strokeWidth: 2.4),
+              )
+            else
+              Icon(
+                hasError
+                    ? Icons.error_outline_rounded
+                    : Icons.smart_display_rounded,
                 color: AppColors.brandRed,
-                fontSize: 10,
-                fontWeight: FontWeight.w900,
-                letterSpacing: 0.45,
+                size: 38,
               ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _KitchenVisualStack extends StatelessWidget {
-  final String assetPath;
-
-  const _KitchenVisualStack({required this.assetPath});
-
-  @override
-  Widget build(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: 0.88,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Positioned.fill(
-            top: 2,
-            left: 14,
-            right: 0,
-            bottom: 14,
-            child: Transform.rotate(
-              angle: -0.08,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.72),
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(
-                    color: Colors.white.withOpacity(0.85),
-                    width: 1,
-                  ),
+            const SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 14),
+              child: Text(
+                hasError
+                    ? (isTl ? 'Hindi ma-load ang video.' : 'Video could not be loaded.')
+                    : (isTl ? 'Naglo-load ang video...' : 'Loading video...'),
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: AppColors.textSecondary,
+                  fontWeight: FontWeight.w800,
+                  fontSize: 12.5,
+                  height: 1.3,
                 ),
               ),
             ),
-          ),
-          Positioned.fill(
-            top: 16,
-            left: 0,
-            right: 20,
-            bottom: 6,
-            child: Transform.rotate(
-              angle: 0.08,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: AppColors.brandRed.withOpacity(0.08),
-                  borderRadius: BorderRadius.circular(22),
-                  border: Border.all(
-                    color: AppColors.brandRed.withOpacity(0.12),
-                    width: 1,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Positioned.fill(
-            top: 20,
-            left: 16,
-            right: 8,
-            bottom: 0,
-            child: Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(26),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.12),
-                    blurRadius: 18,
-                    offset: const Offset(0, 8),
-                  ),
-                ],
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: _MaterialImage(
-                  assetPath: assetPath,
-                  fit: BoxFit.contain,
-                  fallbackIcon: Icons.local_fire_department_rounded,
-                ),
-              ),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

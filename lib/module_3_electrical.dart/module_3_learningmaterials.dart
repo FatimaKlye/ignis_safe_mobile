@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:model_viewer_plus/model_viewer_plus.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:video_player/video_player.dart';
 import 'post_assess_instruction.dart';
 
 
@@ -982,10 +984,23 @@ class _LearningMaterialElectricalPageState
           subtitle: _lmText(context, 'm3_lm_086_learn_the_safe_order_of_actions_during_an'),
         ),
         const SizedBox(height: 16),
-        _ScenarioPreviewCard(
-          title: _lmText(context, 'm3_lm_087_scene_3_preview_holder'),
-          subtitle: _lmText(context, 'm3_lm_088_context_only_3d_video_area_for_the_learnin'),
-          onTap: _showScenePreviewPopup,
+        const _VideoSourceCard(
+          platform: 'YouTube',
+          title: 'Copperfield Electric – Electrical Fire Safety Tips: What to Do & How to Prevent Fires at Home',
+          purpose: 'Supports Module 3 by showing basic electrical fire safety reminders, including prevention and safe response actions.',
+        ),
+        const SizedBox(height: 12),
+        _ElectricalVideoCard(
+          title: Localizations.localeOf(context).languageCode == 'tl'
+              ? 'Video na Gabay'
+              : 'Guide Video',
+          subtitle: Localizations.localeOf(context).languageCode == 'tl'
+              ? 'Panoorin ang maikling video bilang karagdagang gabay bago tapusin ang bahaging ito.'
+              : 'Watch the short video as an additional guide before completing this section.',
+          helperText: Localizations.localeOf(context).languageCode == 'tl'
+              ? 'I-tap ang video para i-play o i-pause.'
+              : 'Tap the video to play or pause.',
+          videoAssetPath: 'assets/electrical_fire.mp4',
         ),
         const SizedBox(height: 16),
         _ReferenceSourceCard(
@@ -1720,81 +1735,74 @@ class _ElectricalPreviewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final availableWidth = constraints.maxWidth.isFinite
-            ? constraints.maxWidth
-            : MediaQuery.of(context).size.width - 68;
-        final compact = availableWidth < 340;
-        final visualWidth = compact
-            ? (availableWidth * 0.68).clamp(118.0, 166.0).toDouble()
-            : (availableWidth * 0.36).clamp(112.0, 148.0).toDouble();
-
-        return InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(26),
-          child: Container(
-            width: double.infinity,
-            padding: EdgeInsets.all(compact ? 14 : 16),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(26),
-              gradient: const LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [Color(0xFFFFF7F7), Color(0xFFFFE8EA)],
-              ),
-              border: Border.all(
-                color: AppColors.brandRed.withOpacity(0.12),
-                width: 1,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.brandRed.withOpacity(0.10),
-                  blurRadius: 18,
-                  offset: const Offset(0, 8),
-                ),
-              ],
-            ),
-            child: compact
-                ? Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _ElectricalInfoBlock(
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 18),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(26),
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFFFFF7F7), Color(0xFFFFE8EA)],
+        ),
+        border: Border.all(
+          color: AppColors.brandRed.withOpacity(0.12),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.brandRed.withOpacity(0.10),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: onTap,
+              borderRadius: BorderRadius.circular(20),
+              child: Padding(
+                padding: const EdgeInsets.all(2),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: _ElectricalInfoBlock(
                         title: title,
                         subtitle: subtitle,
-                        compact: true,
+                        compact: false,
                       ),
-                      const SizedBox(height: 14),
-                      Align(
-                        alignment: Alignment.center,
-                        child: SizedBox(
-                          width: visualWidth,
-                          child: _ElectricalVisualStack(assetPath: assetPath),
+                    ),
+                    const SizedBox(width: 12),
+                    Container(
+                      width: 42,
+                      height: 42,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.78),
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(
+                          color: AppColors.brandRed.withOpacity(0.16),
                         ),
                       ),
-                    ],
-                  )
-                : Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        child: _ElectricalInfoBlock(
-                          title: title,
-                          subtitle: subtitle,
-                          compact: false,
-                        ),
+                      child: const Icon(
+                        Icons.open_in_full_rounded,
+                        color: AppColors.brandRed,
+                        size: 20,
                       ),
-                      const SizedBox(width: 12),
-                      SizedBox(
-                        width: visualWidth,
-                        child: _ElectricalVisualStack(assetPath: assetPath),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
-        );
-      },
+          const SizedBox(height: 16),
+          _ElectricalVisualStack(assetPath: assetPath),
+        ],
+      ),
     );
   }
 }
@@ -1948,6 +1956,311 @@ class _ScenarioPreviewCard extends StatelessWidget {
   }
 }
 
+bool _isNetworkPath(String path) {
+  final lower = path.trim().toLowerCase();
+  return lower.startsWith('http://') || lower.startsWith('https://');
+}
+
+class _ElectricalVideoCard extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final String helperText;
+  final String videoAssetPath;
+
+  const _ElectricalVideoCard({
+    required this.title,
+    required this.subtitle,
+    required this.helperText,
+    required this.videoAssetPath,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
+        color: AppColors.brandRedSoft,
+        border: Border.all(color: AppColors.brandRed.withOpacity(0.14)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: AppColors.brandRed.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: const Icon(
+                  Icons.smart_display_rounded,
+                  color: AppColors.brandRed,
+                  size: 22,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w900,
+                        color: AppColors.textPrimary,
+                        fontSize: 15,
+                        height: 1.2,
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    Text(
+                      subtitle,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: AppColors.textSecondary,
+                        height: 1.45,
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          AspectRatio(
+            aspectRatio: 16 / 9,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(18),
+              child: _InlineAssetVideoPlayer(source: videoAssetPath),
+            ),
+          ),
+          const SizedBox(height: 10),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            decoration: BoxDecoration(
+              color: AppColors.brandRedSoft.withOpacity(0.70),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: AppColors.brandRed.withOpacity(0.13)),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Icon(
+                  Icons.touch_app_rounded,
+                  color: AppColors.brandRed,
+                  size: 18,
+                ),
+                const SizedBox(width: 9),
+                Expanded(
+                  child: Text(
+                    helperText,
+                    style: const TextStyle(
+                      color: AppColors.brandRedDark,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                      height: 1.3,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _InlineAssetVideoPlayer extends StatefulWidget {
+  final String source;
+
+  const _InlineAssetVideoPlayer({required this.source});
+
+  @override
+  State<_InlineAssetVideoPlayer> createState() =>
+      _InlineAssetVideoPlayerState();
+}
+
+class _InlineAssetVideoPlayerState extends State<_InlineAssetVideoPlayer> {
+  VideoPlayerController? _controller;
+  bool _initializing = true;
+  bool _hasError = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initVideo();
+  }
+
+  Future<void> _initVideo() async {
+    try {
+      final controller = _isNetworkPath(widget.source)
+          ? VideoPlayerController.networkUrl(Uri.parse(widget.source))
+          : VideoPlayerController.asset(widget.source);
+      await controller.initialize();
+      await controller.setLooping(true);
+      if (!mounted) {
+        await controller.dispose();
+        return;
+      }
+      setState(() {
+        _controller = controller;
+        _initializing = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _hasError = true;
+        _initializing = false;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_initializing) {
+      return const _M3VideoPlaceholder(isLoading: true);
+    }
+
+    if (_hasError || _controller == null) {
+      return const _M3VideoPlaceholder(hasError: true);
+    }
+
+    final controller = _controller!;
+
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(18),
+          child: FittedBox(
+            fit: BoxFit.cover,
+            child: SizedBox(
+              width: controller.value.size.width,
+              height: controller.value.size.height,
+              child: VideoPlayer(controller),
+            ),
+          ),
+        ),
+        Positioned.fill(
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(18),
+              onTap: () {
+                setState(() {
+                  controller.value.isPlaying
+                      ? controller.pause()
+                      : controller.play();
+                });
+              },
+              child: Center(
+                child: AnimatedOpacity(
+                  opacity: controller.value.isPlaying ? 0.0 : 1.0,
+                  duration: const Duration(milliseconds: 200),
+                  child: Container(
+                    width: 56,
+                    height: 56,
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.42),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.play_arrow_rounded,
+                      color: Colors.white,
+                      size: 36,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _M3VideoPlaceholder extends StatelessWidget {
+  final bool isLoading;
+  final bool hasError;
+
+  const _M3VideoPlaceholder({
+    this.isLoading = false,
+    this.hasError = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            AppColors.brandRedDeep,
+            AppColors.brandRedDark,
+            AppColors.brandRed,
+          ],
+        ),
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (isLoading)
+              const SizedBox(
+                width: 28,
+                height: 28,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2.4,
+                  color: Colors.white,
+                ),
+              )
+            else
+              Icon(
+                hasError
+                    ? Icons.error_outline_rounded
+                    : Icons.smart_display_rounded,
+                color: Colors.white,
+                size: 38,
+              ),
+            const SizedBox(height: 8),
+            Text(
+              hasError ? 'Video unavailable' : 'Loading video...',
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Colors.white70,
+                fontWeight: FontWeight.w800,
+                fontSize: 12.5,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _ElectricalInfoBlock extends StatelessWidget {
   final String title;
   final String subtitle;
@@ -2063,84 +2376,424 @@ class _ElectricalVisualStack extends StatelessWidget {
 
   const _ElectricalVisualStack({required this.assetPath});
 
+  static const String _module3ElectricalModelAsset =
+      'assets/models/fuseboxa.glb';
+
   @override
   Widget build(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: 0.88,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Positioned.fill(
-            top: 2,
-            left: 14,
-            right: 0,
-            bottom: 14,
-            child: Transform.rotate(
-              angle: -0.08,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final previewHeight = (constraints.maxWidth * 1.45)
+            .clamp(420.0, 580.0)
+            .toDouble();
+        final modelPath = _resolveElectricalModelPath(assetPath);
+        final isTagalog = Localizations.localeOf(context).languageCode
+            .toLowerCase()
+            .startsWith('tl');
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(28),
               child: Container(
+                width: double.infinity,
+                height: previewHeight,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.72),
-                  borderRadius: BorderRadius.circular(24),
+                  color: AppColors.brandRedSoft,
+                  borderRadius: BorderRadius.circular(28),
                   border: Border.all(
-                    color: Colors.white.withOpacity(0.85),
+                    color: AppColors.brandRed.withOpacity(0.14),
                     width: 1,
                   ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.brandRed.withOpacity(0.10),
+                      blurRadius: 18,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
+                ),
+                child: Stack(
+                  clipBehavior: Clip.hardEdge,
+                  children: [
+                    Positioned.fill(
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              Colors.white.withOpacity(0.82),
+                              AppColors.brandRedSoft.withOpacity(0.94),
+                              AppColors.brandRed.withOpacity(0.10),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      left: -46,
+                      top: -44,
+                      child: _ElectricalGlowBlob(
+                        size: 160,
+                        color: AppColors.brandRed.withOpacity(0.10),
+                      ),
+                    ),
+                    Positioned(
+                      right: -52,
+                      bottom: -58,
+                      child: _ElectricalGlowBlob(
+                        size: 190,
+                        color: AppColors.brandRedLight.withOpacity(0.16),
+                      ),
+                    ),
+                    Positioned.fill(
+                      child: CustomPaint(
+                        painter: _ElectricalGridPainter(
+                          color: AppColors.brandRed.withOpacity(0.045),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: 14,
+                      left: 14,
+                      child: _ElectricalViewerBadge(
+                        icon: Icons.view_in_ar_rounded,
+                        label: '3D Preview',
+                        color: AppColors.brandRed,
+                      ),
+                    ),
+                    Positioned.fill(
+                      top: 34,
+                      bottom: 22,
+                      child: _AnimatedElectricalModelViewer(
+                        modelPath: modelPath,
+                      ),
+                    ),
+                    Positioned.fill(
+                      child: IgnorePointer(
+                        child: Stack(
+                          children: [
+                            Positioned(
+                              top: previewHeight * 0.16,
+                              left: 14,
+                              child: _ElectricalModelLabel(
+                                isTagalog ? 'Fuse\nBox' : 'Fuse\nBox',
+                              ),
+                            ),
+                            Positioned(
+                              top: previewHeight * 0.20,
+                              right: 14,
+                              child: _ElectricalModelLabel(
+                                isTagalog ? 'Breaker' : 'Breaker',
+                              ),
+                            ),
+                            Positioned(
+                              top: previewHeight * 0.47,
+                              left: 12,
+                              child: _ElectricalModelLabel(
+                                isTagalog ? 'Mga\nKable' : 'Wiring',
+                              ),
+                            ),
+                            Positioned(
+                              top: previewHeight * 0.52,
+                              right: 12,
+                              child: _ElectricalModelLabel(
+                                isTagalog ? 'Panel' : 'Panel',
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      left: 14,
+                      right: 14,
+                      bottom: 14,
+                      child: _ElectricalInteractionHint(
+                        text: isTagalog
+                            ? 'I-drag para i-rotate. I-pinch para i-zoom.'
+                            : 'Drag to rotate. Pinch to zoom.',
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
-          ),
-          Positioned.fill(
-            top: 16,
-            left: 0,
-            right: 20,
-            bottom: 6,
-            child: Transform.rotate(
-              angle: 0.08,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: AppColors.brandRed.withOpacity(0.08),
-                  borderRadius: BorderRadius.circular(22),
-                  border: Border.all(
-                    color: AppColors.brandRed.withOpacity(0.12),
-                    width: 1,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Positioned.fill(
-            top: 20,
-            left: 16,
-            right: 8,
-            bottom: 0,
-            child: Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(26),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.12),
-                    blurRadius: 18,
-                    offset: const Offset(0, 8),
-                  ),
-                ],
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: _ResolvedLearningImage(
-                  imagePath: assetPath,
-                  fallbackLabel: _lmText(
-                    context,
-                    'm3_lm_image_fallback_electrical_preview_asset',
-                  ),
-                ),
-              ),
-            ),
+          ],
+        );
+      },
+    );
+  }
+
+  String _resolveElectricalModelPath(String rawPath) {
+    final path = rawPath.trim();
+    if (path.isNotEmpty && path.toLowerCase().endsWith('.glb')) {
+      return path;
+    }
+    return _module3ElectricalModelAsset;
+  }
+}
+
+class _AnimatedElectricalModelViewer extends StatefulWidget {
+  final String modelPath;
+
+  const _AnimatedElectricalModelViewer({required this.modelPath});
+
+  @override
+  State<_AnimatedElectricalModelViewer> createState() =>
+      _AnimatedElectricalModelViewerState();
+}
+
+class _AnimatedElectricalModelViewerState
+    extends State<_AnimatedElectricalModelViewer>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _floatController;
+
+  @override
+  void initState() {
+    super.initState();
+    _floatController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2200),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _floatController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _floatController,
+      builder: (context, child) {
+        final floatOffset = -4.0 + (_floatController.value * 8.0);
+
+        return Transform.translate(
+          offset: Offset(0, floatOffset),
+          child: child,
+        );
+      },
+      child: ModelViewer(
+        key: ValueKey(widget.modelPath),
+        src: widget.modelPath,
+        alt: '3D electrical fuse box model preview',
+        backgroundColor: Colors.transparent,
+        cameraControls: true,
+        autoRotate: true,
+        autoRotateDelay: 0,
+        rotationPerSecond: '22deg',
+        disableZoom: false,
+        interactionPrompt: InteractionPrompt.auto,
+        cameraOrbit: '35deg 68deg 4.2m',
+        fieldOfView: '30deg',
+        minCameraOrbit: 'auto auto 2.4m',
+        maxCameraOrbit: 'auto auto 7m',
+        shadowIntensity: 0.52,
+        exposure: 1.08,
+        loading: Loading.eager,
+        reveal: Reveal.auto,
+      ),
+    );
+  }
+}
+
+class _ElectricalModelLabel extends StatelessWidget {
+  final String label;
+
+  const _ElectricalModelLabel(this.label);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      constraints: const BoxConstraints(maxWidth: 92),
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.92),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: AppColors.brandRed.withOpacity(0.22)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 7,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
+      child: Text(
+        label,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+          fontSize: 10.5,
+          fontWeight: FontWeight.w900,
+          color: AppColors.brandRedDark,
+          height: 1.12,
+        ),
+      ),
     );
+  }
+}
+
+class _ElectricalViewerBadge extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+
+  const _ElectricalViewerBadge({
+    required this.icon,
+    required this.label,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.88),
+          borderRadius: BorderRadius.circular(999),
+          border: Border.all(color: color.withOpacity(0.15)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.06),
+              blurRadius: 8,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 16, color: color),
+            const SizedBox(width: 7),
+            Text(
+              label,
+              style: TextStyle(
+                color: color,
+                fontSize: 11.5,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ElectricalInteractionHint extends StatelessWidget {
+  final String text;
+
+  const _ElectricalInteractionHint({required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 11),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.86),
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: AppColors.brandRed.withOpacity(0.14)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 7,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            const Icon(
+              Icons.touch_app_rounded,
+              color: AppColors.brandRed,
+              size: 19,
+            ),
+            const SizedBox(width: 9),
+            Expanded(
+              child: Text(
+                text,
+                style: const TextStyle(
+                  color: AppColors.brandRedDark,
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w800,
+                  height: 1.32,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ElectricalGlowBlob extends StatelessWidget {
+  final double size;
+  final Color color;
+
+  const _ElectricalGlowBlob({
+    required this.size,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          color: color,
+          shape: BoxShape.circle,
+        ),
+      ),
+    );
+  }
+}
+
+class _ElectricalGridPainter extends CustomPainter {
+  final Color color;
+
+  const _ElectricalGridPainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = 1;
+
+    const spacing = 18.0;
+
+    for (double x = -size.height; x < size.width + size.height; x += spacing) {
+      canvas.drawLine(
+        Offset(x, size.height),
+        Offset(x + size.height, 0),
+        paint,
+      );
+    }
+
+    for (double x = 0; x < size.width + size.height; x += spacing) {
+      canvas.drawLine(
+        Offset(x, 0),
+        Offset(x - size.height, size.height),
+        paint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _ElectricalGridPainter oldDelegate) {
+    return oldDelegate.color != color;
   }
 }
 
@@ -2312,6 +2965,90 @@ class _ReferenceSourceCard extends StatelessWidget {
                     fontSize: 10.5,
                     fontWeight: FontWeight.w600,
                     height: 1.2,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _VideoSourceCard extends StatelessWidget {
+  final String platform;
+  final String title;
+  final String purpose;
+
+  const _VideoSourceCard({
+    required this.platform,
+    required this.title,
+    required this.purpose,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
+      decoration: BoxDecoration(
+        color: AppColors.brandRedSoft.withOpacity(0.72),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.brandRed.withOpacity(0.16)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 34,
+            height: 34,
+            decoration: BoxDecoration(
+              color: AppColors.brandRed.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: const Icon(
+              Icons.smart_display_rounded,
+              color: AppColors.brandRed,
+              size: 19,
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Source: $platform',
+                  style: const TextStyle(
+                    color: AppColors.brandRed,
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w900,
+                    height: 1.2,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  title,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w700,
+                    height: 1.25,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  purpose,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.w600,
+                    height: 1.35,
                   ),
                 ),
               ],

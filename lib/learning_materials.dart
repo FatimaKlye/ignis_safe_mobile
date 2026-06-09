@@ -186,7 +186,7 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
         page = const LearningMaterialExtinguisherPage();
         break;
       case 2:
-        page = const house_lm.LearningMaterialHousePage();
+        page = house_lm.LearningMaterialHousePage();
         break;
       case 3:
         page = const electrical_lm.LearningMaterialElectricalPage();

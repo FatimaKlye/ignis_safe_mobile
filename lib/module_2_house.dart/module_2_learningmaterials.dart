@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:model_viewer_plus/model_viewer_plus.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:video_player/video_player.dart';
 import 'post_assess_instruction.dart';
@@ -136,6 +137,19 @@ bool _isNetworkPath(String path) {
 
 const String _learningMaterialsBucket = 'Learning Materials';
 
+
+const Map<String, String> _module2LocalVideoFallbacks = <String, String>{
+  'module2_escape_step_1_video':
+      'assets/react_immediately.mp4',
+  'module2_escape_step_2_video':
+      'assets/check_doors.mp4',
+  'module2_escape_step_3_video':
+      'assets/crawl_low.mp4',
+  'module2_escape_step_4_video':
+      'assets/get_out_stay_out.mp4',
+};
+
+
 String _resolveLearningMaterialStoragePath(String path) {
   final trimmed = path.trim();
   if (trimmed.isEmpty || _isNetworkPath(trimmed)) return trimmed;
@@ -175,7 +189,6 @@ const List<String> _requiredLearningMaterialKeys = <String>[
   'progress_scroll_tap_sections',
   'video_preview_unavailable',
   'video_preview_holder',
-  'widget_video_3d_preview_title',
   'house_fire_3d_chip',
   'house_fire_3d_missing_asset',
   'page_1_tag',
@@ -272,7 +285,6 @@ const List<String> _requiredLearningMaterialKeys = <String>[
 const List<String> _requiredSourceKeys = <String>[
   'source_p1_shared',
   'source_escape_steps',
-  'source_video_holder',
   'source_p3_shared',
   'source_smoke_alarms',
 ];
@@ -350,7 +362,11 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
 
   String? _assetPath(String key) {
     final media = _media[key];
-    if (media == null || media.displayPath.isEmpty) return null;
+
+    if (media == null || media.displayPath.isEmpty) {
+      return _module2LocalVideoFallbacks[key];
+    }
+
     return media.displayPath;
   }
 
@@ -1191,11 +1207,6 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
             icon: Icons.family_restroom_rounded,
             videoAssetPath: _assetPath('module2_escape_step_4_video'),
           ),
-        ),
-        const SizedBox(height: 14),
-        _VideoSourceCard(
-          title: _txt('source_video_holder'),
-          url: _sourceUrl('source_video_holder'),
         ),
         const SizedBox(height: 14),
         _ExpandableLesson(
@@ -2434,8 +2445,11 @@ class _ReferenceSourceCard extends StatelessWidget {
 }
 
 // =============================================================================
-// 3D PHOTO CARD HOLDER
+// 3D MODEL PREVIEW CARD HOLDER
 // =============================================================================
+const String _module2HouseFireModelAsset =
+    'assets/models/old__house__wooden__enterable__rusty.glb';
+
 class _HouseFire3DPhotoCard extends StatelessWidget {
   final String? assetPath;
   final String title;
@@ -2449,344 +2463,513 @@ class _HouseFire3DPhotoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(18, 18, 18, 20),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFFFFFBF7), Color(0xFFFFF1E7)],
+        ),
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(color: AppColors.brandRed.withOpacity(0.12)),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.brandRed.withOpacity(0.08),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 58,
+            height: 58,
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [AppColors.brandRed, AppColors.brandRedDark],
+              ),
+              borderRadius: BorderRadius.circular(18),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.brandRed.withOpacity(0.22),
+                  blurRadius: 14,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            child: const Icon(
+              Icons.view_in_ar_rounded,
+              color: Colors.white,
+              size: 30,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w900,
+              color: AppColors.textPrimary,
+              height: 1.12,
+              fontFamily: 'Poppins',
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            subtitle,
+            style: const TextStyle(
+              fontSize: 15.5,
+              color: AppColors.textSecondary,
+              height: 1.35,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.72),
+              borderRadius: BorderRadius.circular(999),
+              border: Border.all(color: AppColors.brandRed.withOpacity(0.18)),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  Icons.visibility_rounded,
+                  size: 16,
+                  color: AppColors.brandRed,
+                ),
+                const SizedBox(width: 8),
+                Flexible(
+                  child: Text(
+                    _lm(context, 'house_fire_3d_chip'),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: AppColors.brandRed,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 0.25,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 22),
+          _PageOneHouseFire3DPreview(assetPath: assetPath),
+        ],
+      ),
+    );
+  }
+}
+
+class _PageOneHouseFire3DPreview extends StatelessWidget {
+  final String? assetPath;
+
+  const _PageOneHouseFire3DPreview({required this.assetPath});
+
+  @override
+  Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final availableWidth = constraints.maxWidth.isFinite
-            ? constraints.maxWidth
-            : MediaQuery.of(context).size.width - 68;
-        final compact = availableWidth < 340;
-        final visualWidth = compact
-            ? (availableWidth * 0.68).clamp(118.0, 166.0).toDouble()
-            : (availableWidth * 0.36).clamp(112.0, 148.0).toDouble();
+        final previewHeight = (constraints.maxWidth * 1.75)
+            .clamp(560.0, 720.0)
+            .toDouble();
+        final modelPath = _resolveHouseFireModelPath(assetPath);
 
-        return Container(
-          width: double.infinity,
-          padding: EdgeInsets.all(compact ? 14 : 16),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(26),
-            gradient: const LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [Color(0xFFFFF7F7), Color(0xFFFFE8EA)],
-            ),
-            border: Border.all(
-              color: AppColors.brandRed.withOpacity(0.12),
-              width: 1,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.brandRed.withOpacity(0.10),
-                blurRadius: 18,
-                offset: const Offset(0, 8),
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              _lm(context, 'widget_video_3d_preview_title'),
+              style: const TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w900,
+                color: AppColors.textPrimary,
+                height: 1.2,
+                fontFamily: 'Poppins',
               ),
-            ],
-          ),
-          child: compact
-              ? Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              _lm(context, 'house_fire_3d_chip'),
+              style: const TextStyle(
+                fontSize: 12.5,
+                color: AppColors.textSecondary,
+                height: 1.4,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 14),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(30),
+              child: Container(
+                width: double.infinity,
+                height: previewHeight,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFF1E7),
+                  borderRadius: BorderRadius.circular(30),
+                  border: Border.all(color: AppColors.brandRed.withOpacity(0.10)),
+                ),
+                child: Stack(
                   children: [
-                    _HouseFire3DInfoBlock(
-                      title: title,
-                      subtitle: subtitle,
-                      compact: true,
-                    ),
-                    const SizedBox(height: 14),
-                    Align(
-                      alignment: Alignment.center,
-                      child: SizedBox(
-                        width: visualWidth,
-                        child: _HouseFire3DVisualStack(assetPath: assetPath),
+                    Positioned.fill(
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              Colors.white.withOpacity(0.50),
+                              AppColors.brandRedSoft.withOpacity(0.58),
+                              AppColors.brandRed.withOpacity(0.08),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
-                  ],
-                )
-              : Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: _HouseFire3DInfoBlock(
-                        title: title,
-                        subtitle: subtitle,
-                        compact: false,
+                    Positioned(
+                      left: -42,
+                      top: -44,
+                      child: _HouseFireSoftGlowBlob(
+                        size: 150,
+                        color: AppColors.brandRed.withOpacity(0.11),
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    SizedBox(
-                      width: visualWidth,
-                      child: _HouseFire3DVisualStack(assetPath: assetPath),
+                    Positioned(
+                      right: -46,
+                      bottom: -52,
+                      child: _HouseFireSoftGlowBlob(
+                        size: 170,
+                        color: AppColors.warning.withOpacity(0.15),
+                      ),
+                    ),
+                    Positioned.fill(
+                      child: CustomPaint(
+                        painter: _HouseFireGridPainter(
+                          color: AppColors.brandRed.withOpacity(0.045),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: 14,
+                      left: 14,
+                      child: _HouseFireViewerBadge(
+                        icon: Icons.view_in_ar_rounded,
+                        label: '3D Preview',
+                        color: AppColors.brandRed,
+                      ),
+                    ),
+                    Positioned.fill(
+                      top: 24,
+                      bottom: 8,
+                      child: _AnimatedHouseFireModelViewer(modelPath: modelPath),
+                    ),
+                    Positioned.fill(
+                      child: IgnorePointer(
+                        child: Stack(
+                          children: [
+                            Positioned(
+                              top: previewHeight * 0.12,
+                              left: 16,
+                              child: const _HouseFireModelLabel('Smoke\nRisk'),
+                            ),
+                            Positioned(
+                              top: previewHeight * 0.17,
+                              right: 16,
+                              child: const _HouseFireModelLabel('Roof'),
+                            ),
+                            Positioned(
+                              top: previewHeight * 0.40,
+                              left: 12,
+                              child: const _HouseFireModelLabel('Window'),
+                            ),
+                            Positioned(
+                              top: previewHeight * 0.48,
+                              right: 12,
+                              child: const _HouseFireModelLabel('Door'),
+                            ),
+                            Positioned(
+                              bottom: previewHeight * 0.18,
+                              left: 14,
+                              child: const _HouseFireModelLabel('Exit\nArea'),
+                            ),
+                            Positioned(
+                              bottom: previewHeight * 0.10,
+                              right: 14,
+                              child: const _HouseFireModelLabel('Wooden\nStructure'),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ],
                 ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.78),
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(color: AppColors.brandRed.withOpacity(0.15)),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Icon(
+                    Icons.touch_app_rounded,
+                    color: AppColors.brandRed,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      Localizations.localeOf(context).languageCode
+                              .toLowerCase()
+                              .startsWith('tl')
+                          ? 'I-drag para i-rotate. I-pinch para i-zoom.'
+                          : 'Drag to rotate. Pinch to zoom.',
+                      style: const TextStyle(
+                        color: AppColors.brandRedDark,
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w800,
+                        height: 1.35,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  String _resolveHouseFireModelPath(String? rawPath) {
+    final path = rawPath?.trim();
+    if (path != null &&
+        path.isNotEmpty &&
+        path.toLowerCase().endsWith('.glb')) {
+      return path;
+    }
+    return _module2HouseFireModelAsset;
+  }
+}
+
+class _AnimatedHouseFireModelViewer extends StatefulWidget {
+  final String modelPath;
+
+  const _AnimatedHouseFireModelViewer({required this.modelPath});
+
+  @override
+  State<_AnimatedHouseFireModelViewer> createState() =>
+      _AnimatedHouseFireModelViewerState();
+}
+
+class _AnimatedHouseFireModelViewerState extends State<_AnimatedHouseFireModelViewer>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2200),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, _) {
+        final floatOffset = -4.0 + (_controller.value * 8.0);
+
+        return Transform.translate(
+          offset: Offset(0, floatOffset),
+          child: ModelViewer(
+            key: ValueKey(widget.modelPath),
+            src: widget.modelPath,
+            alt: '3D house fire model preview',
+            backgroundColor: Colors.transparent,
+            cameraControls: true,
+            autoRotate: true,
+            autoRotateDelay: 0,
+            rotationPerSecond: '24deg',
+            disableZoom: false,
+            interactionPrompt: InteractionPrompt.auto,
+            cameraOrbit: '35deg 68deg 4.6m',
+            fieldOfView: '28deg',
+            minCameraOrbit: 'auto auto 3.2m',
+            maxCameraOrbit: 'auto auto 7m',
+            shadowIntensity: 0.55,
+            exposure: 1.05,
+            loading: Loading.eager,
+            reveal: Reveal.auto,
+          ),
         );
       },
     );
   }
 }
 
-class _HouseFire3DInfoBlock extends StatelessWidget {
-  final String title;
-  final String subtitle;
-  final bool compact;
+class _HouseFireModelLabel extends StatelessWidget {
+  final String label;
 
-  const _HouseFire3DInfoBlock({
-    required this.title,
-    required this.subtitle,
-    required this.compact,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          width: compact ? 44 : 48,
-          height: compact ? 44 : 48,
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [AppColors.brandRed, AppColors.brandRedDark],
-            ),
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.brandRed.withOpacity(0.28),
-                blurRadius: 12,
-                offset: const Offset(0, 6),
-              ),
-            ],
-          ),
-          child: const Icon(
-            Icons.view_in_ar_rounded,
-            color: Colors.white,
-            size: 25,
-          ),
-        ),
-        SizedBox(height: compact ? 10 : 12),
-        Text(
-          title,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            color: AppColors.textPrimary,
-            fontSize: compact ? 15.5 : 16.5,
-            height: 1.15,
-            fontWeight: FontWeight.w900,
-            fontFamily: 'Poppins',
-          ),
-        ),
-        const SizedBox(height: 6),
-        Text(
-          subtitle,
-          maxLines: compact ? 4 : 3,
-          overflow: TextOverflow.ellipsis,
-          style: const TextStyle(
-            color: AppColors.textSecondary,
-            fontSize: 12.5,
-            height: 1.35,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        const SizedBox(height: 10),
-        const _HouseFireInPageChip(),
-      ],
-    );
-  }
-}
-
-class _HouseFireInPageChip extends StatelessWidget {
-  const _HouseFireInPageChip();
+  const _HouseFireModelLabel(this.label);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      constraints: const BoxConstraints(maxWidth: 148),
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
       decoration: BoxDecoration(
-        color: AppColors.brandRed.withOpacity(0.10),
+        color: Colors.white.withOpacity(0.90),
         borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: AppColors.brandRed.withOpacity(0.12)),
+        border: Border.all(color: AppColors.brandRed.withOpacity(0.22)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.visibility_rounded, color: AppColors.brandRed, size: 13),
-          const SizedBox(width: 5),
-          Flexible(
-            child: Text(
-              _lm(context, 'house_fire_3d_chip'),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                color: AppColors.brandRed,
-                fontSize: 10,
+      child: Text(
+        label,
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+          fontSize: 10.5,
+          fontWeight: FontWeight.w900,
+          color: AppColors.brandRedDark,
+          height: 1.2,
+        ),
+      ),
+    );
+  }
+}
+
+class _HouseFireViewerBadge extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+
+  const _HouseFireViewerBadge({
+    required this.icon,
+    required this.label,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.84),
+          borderRadius: BorderRadius.circular(999),
+          border: Border.all(color: color.withOpacity(0.14)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.06),
+              blurRadius: 8,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 16, color: color),
+            const SizedBox(width: 7),
+            Text(
+              label,
+              style: TextStyle(
+                color: color,
+                fontSize: 11.5,
                 fontWeight: FontWeight.w900,
-                letterSpacing: 0.45,
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
 
-class _HouseFire3DVisualStack extends StatelessWidget {
-  final String? assetPath;
+class _HouseFireSoftGlowBlob extends StatelessWidget {
+  final double size;
+  final Color color;
 
-  const _HouseFire3DVisualStack({required this.assetPath});
+  const _HouseFireSoftGlowBlob({
+    required this.size,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: 0.88,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Positioned.fill(
-            top: 2,
-            left: 14,
-            right: 0,
-            bottom: 14,
-            child: Transform.rotate(
-              angle: -0.08,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.72),
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(
-                    color: Colors.white.withOpacity(0.85),
-                    width: 1,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Positioned.fill(
-            top: 16,
-            left: 0,
-            right: 20,
-            bottom: 6,
-            child: Transform.rotate(
-              angle: 0.08,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: AppColors.brandRed.withOpacity(0.08),
-                  borderRadius: BorderRadius.circular(22),
-                  border: Border.all(
-                    color: AppColors.brandRed.withOpacity(0.12),
-                    width: 1,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Positioned.fill(
-            top: 20,
-            left: 16,
-            right: 8,
-            bottom: 0,
-            child: Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(26),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.12),
-                    blurRadius: 18,
-                    offset: const Offset(0, 8),
-                  ),
-                ],
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: (assetPath != null && assetPath!.isNotEmpty)
-                    ? _HouseFirePreviewImage(path: assetPath!)
-                    : const _HouseFirePreviewPlaceholder(),              ),
-            ),
-          ),
-        ],
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: color,
+        shape: BoxShape.circle,
       ),
     );
   }
 }
 
+class _HouseFireGridPainter extends CustomPainter {
+  final Color color;
 
-
-class _HouseFirePreviewImage extends StatelessWidget {
-  final String path;
-
-  const _HouseFirePreviewImage({required this.path});
+  const _HouseFireGridPainter({required this.color});
 
   @override
-  Widget build(BuildContext context) {
-    if (_isNetworkPath(path)) {
-      return Image.network(
-        path,
-        fit: BoxFit.contain,
-        errorBuilder: (_, __, ___) => const _HouseFirePreviewPlaceholder(),
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = 1;
+
+    const spacing = 18.0;
+
+    for (double x = -size.height; x < size.width + size.height; x += spacing) {
+      canvas.drawLine(
+        Offset(x, size.height),
+        Offset(x + size.height, 0),
+        paint,
       );
     }
 
-    return Image.asset(
-      path,
-      fit: BoxFit.contain,
-      errorBuilder: (_, __, ___) => const _HouseFirePreviewPlaceholder(),
-    );
+    for (double x = 0; x < size.width + size.height; x += spacing) {
+      canvas.drawLine(
+        Offset(x, 0),
+        Offset(x - size.height, size.height),
+        paint,
+      );
+    }
   }
-}
-
-class _HouseFirePreviewPlaceholder extends StatelessWidget {
-  const _HouseFirePreviewPlaceholder();
 
   @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final small = constraints.maxHeight < 106;
-        return Container(
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: AppColors.brandRedSoft.withOpacity(0.65),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: AppColors.brandRed.withOpacity(0.16),
-            ),
-          ),
-          child: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.home_work_rounded,
-                  color: AppColors.brandRed,
-                  size: small ? 26 : 34,
-                ),
-                if (!small) ...[
-                  const SizedBox(height: 8),
-                  Text(
-                    _lm(context, 'house_fire_3d_missing_asset'),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: AppColors.brandRed,
-                      fontSize: 10.5,
-                      height: 1.25,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ),
-        );
-      },
-    );
+  bool shouldRepaint(covariant _HouseFireGridPainter oldDelegate) {
+    return oldDelegate.color != color;
   }
 }
 

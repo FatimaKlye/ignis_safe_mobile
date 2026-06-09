@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'post_assess_instruction.dart';
+import 'package:model_viewer_plus/model_viewer_plus.dart';
 
 class AppColors {
   static const Color brandRed = Color(0xFFB11217);
@@ -591,7 +592,7 @@ class _LearningMaterialExtinguisherPageState extends State<LearningMaterialExtin
       case 'page_banner':
         return _PageBanner(tag: block.metaText(context, data, 'page_tag'), title: block.text(context, data), subtitle: block.metaText(context, data, 'subtitle'), pageNo: page.pageNo);
       case 'media_card':
-        return _MediaCard(imageUrl: data.mediaUrl(block.metaString('asset_key')), title: block.text(context, data), subtitle: block.metaText(context, data, 'subtitle'));
+        return _MediaCard(imageUrl: data.mediaUrl(block.metaString('asset_key')), title: block.text(context, data), subtitle: block.metaText(context, data, 'subtitle'), use3DPreview: page.pageNo == 1);
       case 'did_you_know':
         return Column(children: [_InfoTip(text: block.metaText(context, data, 'teaser'), onTap: () => _showInfo(block.metaText(context, data, 'popup_title'), block.text(context, data), Icons.tips_and_updates_rounded, AppColors.brandRed)), if (block.source(context, data) != null) ...[const SizedBox(height: 8), _SourceCard(source: block.source(context, data)!)]]) ;
       case 'expandable_lesson':
@@ -749,7 +750,8 @@ class _MediaCard extends StatelessWidget {
   final String imageUrl;
   final String title;
   final String subtitle;
-  const _MediaCard({required this.imageUrl, required this.title, required this.subtitle});
+  final bool use3DPreview;
+  const _MediaCard({required this.imageUrl, required this.title, required this.subtitle, this.use3DPreview = false});
 
   @override
   Widget build(BuildContext context) {
@@ -841,72 +843,563 @@ class _MediaCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 22),
-          Center(
-            child: SizedBox(
-              width: 176,
-              height: 188,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Positioned(
-                    top: 26,
-                    left: 2,
-                    child: _PreviewBackPlate(
-                      width: 128,
-                      height: 138,
-                      opacity: 0.20,
-                      rotationTurns: -0.055,
-                    ),
+          if (use3DPreview)
+            _PageOne3DPreview(imageUrl: imageUrl)
+          else
+            _StaticPreviewImage(imageUrl: imageUrl),
+        ],
+      ),
+    );
+  }
+}
+
+class _StaticPreviewImage extends StatelessWidget {
+  final String imageUrl;
+  const _StaticPreviewImage({required this.imageUrl});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: SizedBox(
+        width: 176,
+        height: 188,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            const Positioned(
+              top: 26,
+              left: 2,
+              child: _PreviewBackPlate(
+                width: 128,
+                height: 138,
+                opacity: 0.20,
+                rotationTurns: -0.055,
+              ),
+            ),
+            const Positioned(
+              top: 10,
+              right: 2,
+              child: _PreviewBackPlate(
+                width: 136,
+                height: 146,
+                opacity: 0.24,
+                rotationTurns: 0.055,
+              ),
+            ),
+            Container(
+              width: 146,
+              height: 160,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.78),
+                borderRadius: BorderRadius.circular(28),
+                border: Border.all(color: AppColors.brandRed.withOpacity(0.12)),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.brandRed.withOpacity(0.08),
+                    blurRadius: 16,
+                    offset: const Offset(0, 8),
                   ),
-                  Positioned(
-                    top: 10,
-                    right: 2,
-                    child: _PreviewBackPlate(
-                      width: 136,
-                      height: 146,
-                      opacity: 0.24,
-                      rotationTurns: 0.055,
+                ],
+              ),
+              child: Image.network(
+                imageUrl,
+                fit: BoxFit.contain,
+                errorBuilder: (_, __, ___) => Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.fire_extinguisher_rounded, color: AppColors.brandRed, size: 46),
+                    const SizedBox(height: 10),
+                    Text(
+                      _uiText(context, '3D image unavailable', 'Hindi ma-load ang 3D image'),
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: AppColors.brandRed,
+                        fontSize: 11.5,
+                        fontWeight: FontWeight.w900,
+                        height: 1.2,
+                      ),
                     ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _PageOne3DPreview extends StatelessWidget {
+  final String imageUrl;
+  const _PageOne3DPreview({required this.imageUrl});
+
+  static const String _modelPath = 'assets/models/fireex3dFinal.glb';
+
+  // [letter, titleEn, descEn, titleTl, descTl]
+  static const List<List<String>> _passSteps = [
+    ['P', 'Pull the Pin', 'Pull the safety pin to unlock the fire extinguisher and break the tamper seal before use.', 'Bunutin ang Pin', 'Bunutin ang safety pin upang ma-unlock ang fire extinguisher at masira ang tamper seal bago gamitin.'],
+    ['A', 'Aim the Nozzle', 'Aim the nozzle at the base of the fire, not at the flames.', 'Itutok ang Nozzle', 'Itutok ang nozzle sa base ng apoy, hindi sa mga apoy mismo.'],
+    ['S', 'Squeeze the Handle', 'Squeeze the handle slowly and firmly to release the extinguishing agent.', 'Pisilin ang Handle', 'Pisilin nang dahan-dahan at mahigpit ang handle upang mailabas ang extinguishing agent.'],
+    ['S', 'Sweep Side to Side', 'Sweep the nozzle from side to side across the base of the fire until it is fully out.', 'I-Sweep ng Pakaliwa-Pakanan', 'I-sweep ang nozzle mula kaliwa hanggang kanan sa base ng apoy hanggang ganap itong mapatay.'],
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final previewHeight = (constraints.maxWidth * 1.75)
+            .clamp(560.0, 720.0)
+            .toDouble();
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Title
+            Text(
+              _uiText(context, 'PASS Method Fire Extinguisher', 'PASS Method sa Paggamit ng Fire Extinguisher'),
+              style: const TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w900,
+                color: Color(0xFF111827),
+                height: 1.2,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              _uiText(
+                context,
+                'Learn the basic parts and how to properly use the extinguisher.',
+                'Alamin ang mga bahagi at tamang paggamit ng fire extinguisher.',
+              ),
+              style: const TextStyle(
+                fontSize: 12.5,
+                color: AppColors.textSecondary,
+                height: 1.4,
+              ),
+            ),
+            const SizedBox(height: 14),
+
+            // 3D model card
+            ClipRRect(
+              borderRadius: BorderRadius.circular(30),
+              child: Container(
+                width: double.infinity,
+                height: previewHeight,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFF0F1),
+                  borderRadius: BorderRadius.circular(30),
+                  border: Border.all(
+                    color: AppColors.brandRed.withOpacity(0.10),
                   ),
-                  Container(
-                    width: 146,
-                    height: 160,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.78),
-                      borderRadius: BorderRadius.circular(28),
-                      border: Border.all(color: AppColors.brandRed.withOpacity(0.12)),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.brandRed.withOpacity(0.08),
-                          blurRadius: 16,
-                          offset: const Offset(0, 8),
-                        ),
-                      ],
-                    ),
-                    child: Image.network(
-                      imageUrl,
-                      fit: BoxFit.contain,
-                      errorBuilder: (_, __, ___) => Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.fire_extinguisher_rounded, color: AppColors.brandRed, size: 46),
-                          const SizedBox(height: 10),
-                          Text(
-                            _uiText(context, '3D image unavailable', 'Hindi ma-load ang 3D image'),
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              color: AppColors.brandRed,
-                              fontSize: 11.5,
-                              fontWeight: FontWeight.w900,
-                              height: 1.2,
-                            ),
+                ),
+                child: Stack(
+                  children: [
+                    Positioned.fill(
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              Colors.white.withOpacity(0.50),
+                              AppColors.brandRedSoft.withOpacity(0.55),
+                              AppColors.brandRed.withOpacity(0.08),
+                            ],
                           ),
-                        ],
+                        ),
+                      ),
+                    ),
+
+                    Positioned(
+                      top: 14,
+                      left: 14,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.84),
+                          borderRadius: BorderRadius.circular(999),
+                          border: Border.all(
+                            color: AppColors.brandRed.withOpacity(0.14),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.view_in_ar_rounded,
+                              size: 16,
+                              color: AppColors.brandRed,
+                            ),
+                            const SizedBox(width: 7),
+                            Text(
+                              _uiText(context, '3D Preview', '3D Preview'),
+                              style: const TextStyle(
+                                color: AppColors.brandRed,
+                                fontSize: 11.5,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    Positioned.fill(
+                      top: 24,
+                      bottom: 8,
+                      child: ModelViewer(
+                        src: _modelPath,
+                        alt: 'Fire extinguisher 3D model',
+                        autoRotate: true,
+                        cameraControls: true,
+                        disableZoom: false,
+                        backgroundColor: Colors.transparent,
+                        cameraOrbit: '0deg 72deg 1.85m',
+                        fieldOfView: '25deg',
+                        shadowIntensity: 0.55,
+                        exposure: 1.05,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 12),
+            // Interaction hint
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.78),
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(
+                  color: AppColors.brandRed.withOpacity(0.15),
+                ),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Icon(
+                    Icons.touch_app_rounded,
+                    color: AppColors.brandRed,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      _uiText(
+                        context,
+                        'Drag to rotate. Pinch to zoom.',
+                        'I-drag para i-rotate. I-pinch para i-zoom.',
+                      ),
+                      style: const TextStyle(
+                        color: Color(0xFF7A1014),
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w800,
+                        height: 1.35,
                       ),
                     ),
                   ),
                 ],
+              ),
+            ),
+
+            // PASS method steps section
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Container(
+                  width: 4,
+                  height: 18,
+                  decoration: BoxDecoration(
+                    color: AppColors.brandRed,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    _uiText(context, 'PASS Method Steps', 'Mga Hakbang sa PASS Method'),
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w900,
+                      color: Color(0xFF111827),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            for (int i = 0; i < _passSteps.length; i++) ...[
+              if (i > 0) const SizedBox(height: 8),
+              _PassMethodCard(
+                letter: _passSteps[i][0],
+                title: _uiText(context, _passSteps[i][1], _passSteps[i][3]),
+                desc: _uiText(context, _passSteps[i][2], _passSteps[i][4]),
+              ),
+            ],
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _ModelLabel extends StatelessWidget {
+  final String label;
+  const _ModelLabel(this.label);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.90),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: AppColors.brandRed.withOpacity(0.22)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Text(
+        label,
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+          fontSize: 10.5,
+          fontWeight: FontWeight.w900,
+          color: AppColors.brandRedDark,
+          height: 1.2,
+        ),
+      ),
+    );
+  }
+}
+
+class _PassMethodCard extends StatelessWidget {
+  final String letter;
+  final String title;
+  final String desc;
+  const _PassMethodCard({required this.letter, required this.title, required this.desc});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFF7F7),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppColors.brandRed.withOpacity(0.12)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [AppColors.brandRed, AppColors.brandRedDark],
+              ),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Center(
+              child: Text(
+                letter,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xFF111827),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  desc,
+                  style: const TextStyle(
+                    fontSize: 12.5,
+                    height: 1.45,
+                    color: Color(0xFF4B5563),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PreviewDepthLine extends StatelessWidget {
+  final double width;
+  const _PreviewDepthLine({required this.width});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width,
+      height: 8,
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.46),
+        borderRadius: BorderRadius.circular(999),
+      ),
+    );
+  }
+}
+
+class _FallbackExtinguisherModel extends StatelessWidget {
+  const _FallbackExtinguisherModel();
+
+  @override
+  Widget build(BuildContext context) {
+    return AspectRatio(
+      aspectRatio: 0.58,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Positioned(
+            top: 4,
+            child: Container(
+              width: 58,
+              height: 22,
+              decoration: BoxDecoration(
+                color: AppColors.brandRedDark,
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.brandRedDeep.withOpacity(0.22),
+                    blurRadius: 14,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Positioned(
+            top: 0,
+            right: 34,
+            child: Container(
+              width: 34,
+              height: 12,
+              decoration: BoxDecoration(
+                border: Border.all(color: const Color(0xFF8A8A8A), width: 3),
+                borderRadius: BorderRadius.circular(999),
+              ),
+            ),
+          ),
+          Positioned(
+            top: 23,
+            child: Container(
+              width: 42,
+              height: 34,
+              decoration: BoxDecoration(
+                color: AppColors.brandRed,
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          ),
+          Positioned(
+            top: 48,
+            child: Container(
+              width: 78,
+              height: 170,
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Color(0xFFE64A4F), AppColors.brandRed, AppColors.brandRedDark],
+                ),
+                borderRadius: BorderRadius.circular(34),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.brandRedDark.withOpacity(0.25),
+                    blurRadius: 22,
+                    offset: const Offset(0, 14),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Positioned(
+            top: 76,
+            right: 38,
+            child: Container(
+              width: 16,
+              height: 110,
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.22),
+                borderRadius: BorderRadius.circular(999),
+              ),
+            ),
+          ),
+          Positioned(
+            top: 104,
+            child: Container(
+              width: 54,
+              height: 46,
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.88),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppColors.brandRedDark.withOpacity(0.12)),
+              ),
+              child: const Center(
+                child: Icon(Icons.local_fire_department_rounded, color: AppColors.brandRed, size: 25),
+              ),
+            ),
+          ),
+          Positioned(
+            top: 214,
+            child: Container(
+              width: 54,
+              height: 14,
+              decoration: BoxDecoration(
+                color: AppColors.brandRedDark,
+                borderRadius: BorderRadius.circular(999),
+              ),
+            ),
+          ),
+          Positioned(
+            top: 30,
+            right: 12,
+            child: Container(
+              width: 72,
+              height: 38,
+              decoration: const BoxDecoration(
+                border: Border(
+                  top: BorderSide(color: Color(0xFF303030), width: 4),
+                  right: BorderSide(color: Color(0xFF303030), width: 4),
+                ),
               ),
             ),
           ),

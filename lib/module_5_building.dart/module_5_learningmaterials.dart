@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:model_viewer_plus/model_viewer_plus.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'post_assess_instruction.dart';
 
@@ -58,6 +59,7 @@ class AppColors {
 // ============================================================================
 const int _moduleNo = 5;
 const String _learningMaterialsBucketName = 'Learning Materials';
+const String _module5BuildingModelAsset = 'assets/models/procedural_hong_kong_building.glb';
 
 class _SourceReference {
   const _SourceReference({
@@ -1998,7 +2000,7 @@ class _ReferenceSourceCard extends StatelessWidget {
 }
 
 // ============================================================================
-// TENEMENT 3D PHOTO CARD  (mirrors Module 1 _Extinguisher3DPhotoCard, purple palette)
+// TENEMENT 3D MODEL PREVIEW CARD — Page 1 only
 // ============================================================================
 class _Tenement3DPhotoCard extends StatelessWidget {
   final String assetPath;
@@ -2013,139 +2015,82 @@ class _Tenement3DPhotoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final availableWidth = constraints.maxWidth.isFinite
-            ? constraints.maxWidth
-            : MediaQuery.of(context).size.width - 68;
-        final compact = availableWidth < 340;
-        final visualWidth = compact
-            ? (availableWidth * 0.68).clamp(118.0, 166.0).toDouble()
-            : (availableWidth * 0.36).clamp(112.0, 148.0).toDouble();
-
-        return Container(
-          width: double.infinity,
-          padding: EdgeInsets.all(compact ? 14 : 16),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(26),
-            gradient: const LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [AppColors.purple50, AppColors.purple100],
-            ),
-            border: Border.all(
-              color: AppColors.brandRed.withOpacity(0.12),
-              width: 1,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.brandRed.withOpacity(0.10),
-                blurRadius: 18,
-                offset: const Offset(0, 8),
-              ),
-            ],
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(18, 18, 18, 20),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [AppColors.purple50, AppColors.purple100],
+        ),
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(color: AppColors.brandRed.withOpacity(0.12)),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.brandRed.withOpacity(0.08),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
           ),
-          child: compact
-              ? Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _Tenement3DInfoBlock(
-                        title: title, subtitle: subtitle, compact: true),
-                    const SizedBox(height: 14),
-                    Align(
-                      alignment: Alignment.center,
-                      child: SizedBox(
-                        width: visualWidth,
-                        child: _Tenement3DVisualStack(assetPath: assetPath),
-                      ),
-                    ),
-                  ],
-                )
-              : Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: _Tenement3DInfoBlock(
-                          title: title, subtitle: subtitle, compact: false),
-                    ),
-                    const SizedBox(width: 12),
-                    SizedBox(
-                      width: visualWidth,
-                      child: _Tenement3DVisualStack(assetPath: assetPath),
-                    ),
-                  ],
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 58,
+            height: 58,
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [AppColors.brandRed, AppColors.brandRedDark],
+              ),
+              borderRadius: BorderRadius.circular(18),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.brandRed.withOpacity(0.22),
+                  blurRadius: 14,
+                  offset: const Offset(0, 6),
                 ),
-        );
-      },
-    );
-  }
-}
-
-class _Tenement3DInfoBlock extends StatelessWidget {
-  final String title;
-  final String subtitle;
-  final bool compact;
-
-  const _Tenement3DInfoBlock({
-    required this.title,
-    required this.subtitle,
-    required this.compact,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          width: compact ? 44 : 48,
-          height: compact ? 44 : 48,
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [AppColors.brandRed, AppColors.brandRedDark],
+              ],
             ),
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.brandRed.withOpacity(0.28),
-                blurRadius: 12,
-                offset: const Offset(0, 6),
-              ),
-            ],
+            child: const Icon(
+              Icons.view_in_ar_rounded,
+              color: Colors.white,
+              size: 30,
+            ),
           ),
-          child: const Icon(Icons.view_in_ar_rounded, color: Colors.white, size: 25),
-        ),
-        SizedBox(height: compact ? 10 : 12),
-        Text(
-          title,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            color: AppColors.textPrimary,
-            fontSize: compact ? 15.5 : 16.5,
-            height: 1.15,
-            fontWeight: FontWeight.w900,
+          const SizedBox(height: 16),
+          Text(
+            title,
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w900,
+              color: AppColors.textPrimary,
+              height: 1.12,
+            ),
           ),
-        ),
-        const SizedBox(height: 6),
-        Text(
-          subtitle,
-          maxLines: compact ? 4 : 3,
-          overflow: TextOverflow.ellipsis,
-          style: const TextStyle(
-            color: AppColors.textSecondary,
-            fontSize: 12.5,
-            height: 1.35,
-            fontWeight: FontWeight.w600,
+          const SizedBox(height: 10),
+          Text(
+            subtitle,
+            maxLines: 4,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              fontSize: 15.5,
+              color: AppColors.textSecondary,
+              height: 1.35,
+              fontWeight: FontWeight.w600,
+            ),
           ),
-        ),
-        const SizedBox(height: 10),
-        const _TenementInPageVisualChip(),
-      ],
+          const SizedBox(height: 16),
+          const _TenementInPageVisualChip(),
+          const SizedBox(height: 22),
+          _PageOneBuilding3DPreview(assetPath: assetPath),
+        ],
+      ),
     );
   }
 }
@@ -2156,8 +2101,8 @@ class _TenementInPageVisualChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      constraints: const BoxConstraints(maxWidth: 148),
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+      constraints: const BoxConstraints(maxWidth: 170),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
         color: AppColors.brandRed.withOpacity(0.10),
         borderRadius: BorderRadius.circular(999),
@@ -2166,9 +2111,12 @@ class _TenementInPageVisualChip extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.visibility_rounded,
-              color: AppColors.brandRed, size: 13),
-          const SizedBox(width: 5),
+          const Icon(
+            Icons.visibility_rounded,
+            color: AppColors.brandRed,
+            size: 14,
+          ),
+          const SizedBox(width: 6),
           Flexible(
             child: Text(
               _dbText(context, 'preview.visual_chip'),
@@ -2176,9 +2124,9 @@ class _TenementInPageVisualChip extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                 color: AppColors.brandRed,
-                fontSize: 10,
+                fontSize: 10.5,
                 fontWeight: FontWeight.w900,
-                letterSpacing: 0.45,
+                letterSpacing: 0.35,
               ),
             ),
           ),
@@ -2188,103 +2136,257 @@ class _TenementInPageVisualChip extends StatelessWidget {
   }
 }
 
-class _PreviewImage extends StatelessWidget {
-  const _PreviewImage({
-    required this.assetPath,
-    required this.fallbackText,
-  });
-
+class _PageOneBuilding3DPreview extends StatelessWidget {
   final String assetPath;
-  final String fallbackText;
 
-  String _cleanPath(String value) {
-    final path = value.trim();
-    if (path.startsWith('/')) return path.substring(1);
-    return path;
-  }
-
-  String _resolveImageUrl(String value) {
-    final path = _cleanPath(value);
-    if (path.isEmpty ||
-        path.startsWith('http://') ||
-        path.startsWith('https://') ||
-        path.startsWith('assets/')) {
-      return path;
-    }
-
-    return Supabase.instance.client.storage
-        .from(_learningMaterialsBucketName)
-        .getPublicUrl(path);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final imagePath = _resolveImageUrl(assetPath);
-
-    if (imagePath.isEmpty) {
-      return _PreviewImageFallback(text: fallbackText);
-    }
-
-    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
-      return Image.network(
-        imagePath,
-        fit: BoxFit.contain,
-        errorBuilder: (_, __, ___) =>
-            _PreviewImageFallback(text: fallbackText),
-      );
-    }
-
-    return Image.asset(
-      imagePath,
-      fit: BoxFit.contain,
-      errorBuilder: (_, __, ___) => _PreviewImageFallback(text: fallbackText),
-    );
-  }
-}
-
-class _PreviewImageFallback extends StatelessWidget {
-  const _PreviewImageFallback({required this.text});
-
-  final String text;
+  const _PageOneBuilding3DPreview({required this.assetPath});
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final small = constraints.maxHeight < 106;
-        return Container(
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: AppColors.brandRedSoft.withOpacity(0.65),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: AppColors.brandRed.withOpacity(0.16)),
-          ),
-          child: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.view_in_ar_rounded,
-                  color: AppColors.brandRed,
-                  size: small ? 26 : 34,
+        final previewHeight = (constraints.maxWidth * 1.76)
+            .clamp(560.0, 760.0)
+            .toDouble();
+        final modelPath = _resolveBuildingModelPath(assetPath);
+        final isTl = Localizations.localeOf(context).languageCode
+            .toLowerCase()
+            .startsWith('tl');
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              isTl ? '3D Model Preview' : '3D Model Preview',
+              style: const TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w900,
+                color: AppColors.textPrimary,
+                height: 1.2,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              _dbText(context, 'preview.visual_chip'),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 12.5,
+                color: AppColors.textSecondary,
+                height: 1.4,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 14),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(30),
+              child: Container(
+                width: double.infinity,
+                height: previewHeight,
+                decoration: BoxDecoration(
+                  color: AppColors.purple50,
+                  borderRadius: BorderRadius.circular(30),
+                  border: Border.all(color: AppColors.brandRed.withOpacity(0.10)),
                 ),
-                if (!small) ...[
-                  const SizedBox(height: 8),
-                  Text(
-                    text,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: AppColors.brandRed,
-                      fontSize: 10.5,
-                      height: 1.25,
-                      fontWeight: FontWeight.w900,
+                child: Stack(
+                  children: [
+                    Positioned.fill(
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              Colors.white.withOpacity(0.64),
+                              AppColors.purple100.withOpacity(0.80),
+                              AppColors.brandRed.withOpacity(0.10),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      left: -42,
+                      top: -44,
+                      child: _BuildingSoftGlowBlob(
+                        size: 150,
+                        color: AppColors.brandRed.withOpacity(0.10),
+                      ),
+                    ),
+                    Positioned(
+                      right: -48,
+                      bottom: -54,
+                      child: _BuildingSoftGlowBlob(
+                        size: 174,
+                        color: AppColors.purple300.withOpacity(0.24),
+                      ),
+                    ),
+                    Positioned.fill(
+                      child: CustomPaint(
+                        painter: _BuildingPreviewGridPainter(
+                          color: AppColors.brandRed.withOpacity(0.045),
+                        ),
+                      ),
+                    ),
+                    const Positioned(
+                      top: 14,
+                      left: 14,
+                      child: _BuildingViewerBadge(
+                        icon: Icons.view_in_ar_rounded,
+                        label: '3D Preview',
+                      ),
+                    ),
+                    Positioned.fill(
+                      top: 24,
+                      bottom: 8,
+                      child: _AnimatedBuildingModelViewer(modelPath: modelPath),
+                    ),
+                    Positioned.fill(
+                      child: IgnorePointer(
+                        child: Stack(
+                          children: [
+                            Positioned(
+                              top: previewHeight * 0.12,
+                              left: 16,
+                              child: const _BuildingModelLabel('Building\nLayout'),
+                            ),
+                            Positioned(
+                              top: previewHeight * 0.18,
+                              right: 16,
+                              child: const _BuildingModelLabel('Upper\nFloors'),
+                            ),
+                            Positioned(
+                              top: previewHeight * 0.42,
+                              left: 12,
+                              child: const _BuildingModelLabel('Exit\nRoute'),
+                            ),
+                            Positioned(
+                              top: previewHeight * 0.50,
+                              right: 12,
+                              child: const _BuildingModelLabel('Fire\nRisk'),
+                            ),
+                            Positioned(
+                              bottom: previewHeight * 0.18,
+                              left: 14,
+                              child: const _BuildingModelLabel('Safe\nPath'),
+                            ),
+                            Positioned(
+                              bottom: previewHeight * 0.10,
+                              right: 14,
+                              child: const _BuildingModelLabel('Assembly\nArea'),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.78),
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(color: AppColors.brandRed.withOpacity(0.15)),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Icon(
+                    Icons.touch_app_rounded,
+                    color: AppColors.brandRed,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      isTl
+                          ? 'I-drag para i-rotate. I-pinch para i-zoom.'
+                          : 'Drag to rotate. Pinch to zoom.',
+                      style: const TextStyle(
+                        color: AppColors.brandRedDark,
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w800,
+                        height: 1.35,
+                      ),
                     ),
                   ),
                 ],
-              ],
+              ),
             ),
+          ],
+        );
+      },
+    );
+  }
+
+  String _resolveBuildingModelPath(String rawPath) {
+    final path = rawPath.trim();
+    if (path.toLowerCase().endsWith('.glb') ||
+        path.toLowerCase().endsWith('.gltf')) {
+      return path;
+    }
+    return _module5BuildingModelAsset;
+  }
+}
+
+class _AnimatedBuildingModelViewer extends StatefulWidget {
+  final String modelPath;
+
+  const _AnimatedBuildingModelViewer({required this.modelPath});
+
+  @override
+  State<_AnimatedBuildingModelViewer> createState() =>
+      _AnimatedBuildingModelViewerState();
+}
+
+class _AnimatedBuildingModelViewerState extends State<_AnimatedBuildingModelViewer>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2200),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, _) {
+        final floatOffset = -4.0 + (_controller.value * 8.0);
+
+        return Transform.translate(
+          offset: Offset(0, floatOffset),
+          child: ModelViewer(
+            key: ValueKey(widget.modelPath),
+            src: widget.modelPath,
+            alt: 'Building fire 3D model preview',
+            backgroundColor: Colors.transparent,
+            cameraControls: true,
+            autoRotate: true,
+            autoRotateDelay: 0,
+            rotationPerSecond: '22deg',
+            disableZoom: false,
+            cameraOrbit: '35deg 68deg 5.2m',
+            fieldOfView: '28deg',
+            minCameraOrbit: 'auto auto 3.4m',
+            maxCameraOrbit: 'auto auto 8.0m',
+            shadowIntensity: 0.55,
+            exposure: 1.05,
           ),
         );
       },
@@ -2292,73 +2394,145 @@ class _PreviewImageFallback extends StatelessWidget {
   }
 }
 
-class _Tenement3DVisualStack extends StatelessWidget {
-  final String assetPath;
+class _BuildingModelLabel extends StatelessWidget {
+  final String label;
 
-  const _Tenement3DVisualStack({required this.assetPath});
+  const _BuildingModelLabel(this.label);
 
   @override
   Widget build(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: 0.88,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Positioned.fill(
-            top: 2, left: 14, right: 0, bottom: 14,
-            child: Transform.rotate(
-              angle: -0.08,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.72),
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(
-                      color: Colors.white.withOpacity(0.85), width: 1),
-                ),
-              ),
-            ),
-          ),
-          Positioned.fill(
-            top: 16, left: 0, right: 20, bottom: 6,
-            child: Transform.rotate(
-              angle: 0.08,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: AppColors.brandRed.withOpacity(0.08),
-                  borderRadius: BorderRadius.circular(22),
-                  border: Border.all(
-                      color: AppColors.brandRed.withOpacity(0.12), width: 1),
-                ),
-              ),
-            ),
-          ),
-          Positioned.fill(
-            top: 20, left: 16, right: 8, bottom: 0,
-            child: Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(26),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.12),
-                    blurRadius: 18,
-                    offset: const Offset(0, 8),
-                  ),
-                ],
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: _PreviewImage(
-                  assetPath: assetPath,
-                  fallbackText: _dbText(context, 'preview.image_missing'),
-                ),
-              ),
-            ),
+    return Container(
+      constraints: const BoxConstraints(maxWidth: 92),
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.90),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: AppColors.brandRed.withOpacity(0.22)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
+      child: Text(
+        label,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+          fontSize: 10.5,
+          fontWeight: FontWeight.w900,
+          color: AppColors.brandRedDark,
+          height: 1.2,
+        ),
+      ),
     );
+  }
+}
+
+class _BuildingViewerBadge extends StatelessWidget {
+  final IconData icon;
+  final String label;
+
+  const _BuildingViewerBadge({
+    required this.icon,
+    required this.label,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.84),
+          borderRadius: BorderRadius.circular(999),
+          border: Border.all(color: AppColors.brandRed.withOpacity(0.14)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.06),
+              blurRadius: 8,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 16, color: AppColors.brandRed),
+            const SizedBox(width: 7),
+            Text(
+              label,
+              style: const TextStyle(
+                color: AppColors.brandRed,
+                fontSize: 11.5,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _BuildingSoftGlowBlob extends StatelessWidget {
+  final double size;
+  final Color color;
+
+  const _BuildingSoftGlowBlob({
+    required this.size,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: color,
+        shape: BoxShape.circle,
+      ),
+    );
+  }
+}
+
+class _BuildingPreviewGridPainter extends CustomPainter {
+  final Color color;
+
+  const _BuildingPreviewGridPainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = 1;
+
+    const spacing = 18.0;
+
+    for (double x = -size.height; x < size.width + size.height; x += spacing) {
+      canvas.drawLine(
+        Offset(x, size.height),
+        Offset(x + size.height, 0),
+        paint,
+      );
+    }
+
+    for (double x = 0; x < size.width + size.height; x += spacing) {
+      canvas.drawLine(
+        Offset(x, 0),
+        Offset(x - size.height, size.height),
+        paint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _BuildingPreviewGridPainter oldDelegate) {
+    return oldDelegate.color != color;
   }
 }
 

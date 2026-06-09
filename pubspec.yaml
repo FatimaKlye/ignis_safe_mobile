@@ -19,6 +19,7 @@ dependencies:
   image_picker: ^1.2.1
   provider: ^6.1.1
   video_player: ^2.9.2
+  model_viewer_plus: ^1.9.3
 
 dev_dependencies:
   flutter_test:
@@ -63,6 +64,20 @@ flutter:
     - assets/pass_aim_nozzle.mp4
     - assets/pass_squeeze_handle.mp4
     - assets/pass_sweep_side_to_side.mp4
+    - assets/models/fire_extinguisher.glb
+    - assets/models/old__house__wooden__enterable__rusty.glb
+    - assets/models/FireExtinguisher3D.glb
+    - assets/models/fuseboxa.glb
+    - assets/models/kitchen_-_assets.glb
+    - assets/models/procedural_hong_kong_building.glb
+    - assets/models/fireex3dFinal.glb
+    - assets/react_immediately.mp4
+    - assets/check_doors.mp4
+    - assets/crawl_low.mp4
+    - assets/get_out_stay_out.mp4
+    - assets/electrical_fire.mp4
+    - assets/kitchen_fire.mp4
+    
 
   fonts:
     - family: Poppins
