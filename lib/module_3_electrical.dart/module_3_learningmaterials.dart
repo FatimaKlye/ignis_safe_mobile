@@ -2377,7 +2377,7 @@ class _ElectricalVisualStack extends StatelessWidget {
   const _ElectricalVisualStack({required this.assetPath});
 
   static const String _module3ElectricalModelAsset =
-      'assets/models/fuseboxa.glb';
+      'assets/models/Electricalfinal1.glb';
 
   @override
   Widget build(BuildContext context) {

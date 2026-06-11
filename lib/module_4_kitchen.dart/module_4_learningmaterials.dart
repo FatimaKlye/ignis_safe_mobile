@@ -7,7 +7,7 @@ import 'post_assess_instruction.dart';
 
 const int _moduleNo = 4;
 const String _learningMaterialsBucket = 'Learning Materials';
-const String _module4KitchenModelAsset = 'assets/models/kitchen_-_assets.glb';
+const String _module4KitchenModelAsset = 'assets/models/kitchennglb.glb';
 const String _module4Page3VideoAsset = 'assets/kitchen_fire.mp4';
 
 class AppColors {

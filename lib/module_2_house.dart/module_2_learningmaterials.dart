@@ -2448,7 +2448,7 @@ class _ReferenceSourceCard extends StatelessWidget {
 // 3D MODEL PREVIEW CARD HOLDER
 // =============================================================================
 const String _module2HouseFireModelAsset =
-    'assets/models/old__house__wooden__enterable__rusty.glb';
+    'assets/models/houseescape3d.glb';
 
 class _HouseFire3DPhotoCard extends StatelessWidget {
   final String? assetPath;
@@ -2680,32 +2680,32 @@ class _PageOneHouseFire3DPreview extends StatelessWidget {
                             Positioned(
                               top: previewHeight * 0.12,
                               left: 16,
-                              child: const _HouseFireModelLabel('Smoke\nRisk'),
+                              child: const _HouseFireModelLabel(''),
                             ),
                             Positioned(
                               top: previewHeight * 0.17,
                               right: 16,
-                              child: const _HouseFireModelLabel('Roof'),
+                              child: const _HouseFireModelLabel(''),
                             ),
                             Positioned(
                               top: previewHeight * 0.40,
                               left: 12,
-                              child: const _HouseFireModelLabel('Window'),
+                              child: const _HouseFireModelLabel(''),
                             ),
                             Positioned(
                               top: previewHeight * 0.48,
                               right: 12,
-                              child: const _HouseFireModelLabel('Door'),
+                              child: const _HouseFireModelLabel(''),
                             ),
                             Positioned(
                               bottom: previewHeight * 0.18,
                               left: 14,
-                              child: const _HouseFireModelLabel('Exit\nArea'),
+                              child: const _HouseFireModelLabel(''),
                             ),
                             Positioned(
                               bottom: previewHeight * 0.10,
                               right: 14,
-                              child: const _HouseFireModelLabel('Wooden\nStructure'),
+                              child: const _HouseFireModelLabel(''),
                             ),
                           ],
                         ),

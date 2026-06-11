@@ -66,6 +66,9 @@ flutter:
     - assets/pass_sweep_side_to_side.mp4
     - assets/models/fire_extinguisher.glb
     - assets/models/old__house__wooden__enterable__rusty.glb
+    - assets/models/houseescape3d.glb
+    - assets/models/kitchennglb.glb
+    - assets/models/Electricalfinal1.glb
     - assets/models/FireExtinguisher3D.glb
     - assets/models/fuseboxa.glb
     - assets/models/kitchen_-_assets.glb
