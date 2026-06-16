@@ -26,11 +26,29 @@ import 'module_4_kitchen.dart/post_assessment_kitchen.dart' as kitchen_post;
 import 'module_5_building.dart/pre_assess_instruction.dart' as pre5;
 import 'module_5_building.dart/post_assessment_building.dart' as building_post;
 import 'module_1_extinguisher.dart/post_assess_instruction.dart' as post1;
+import 'module_1_extinguisher.dart/module_progression_service.dart';
 import 'module_3_electrical.dart/post_assess_instruction.dart' as post3;
 import 'module_4_kitchen.dart/post_assess_instruction.dart' as post4;
 import 'module_5_building.dart/post_assess_instruction.dart' as post5;
 
 
+class _NoOverscrollScrollBehavior extends ScrollBehavior {
+  const _NoOverscrollScrollBehavior();
+
+  @override
+  ScrollPhysics getScrollPhysics(BuildContext context) {
+    return const ClampingScrollPhysics();
+  }
+
+  @override
+  Widget buildOverscrollIndicator(
+    BuildContext context,
+    Widget child,
+    ScrollableDetails details,
+  ) {
+    return child;
+  }
+}
 
 class LearningMaterialsTab extends StatefulWidget {
   const LearningMaterialsTab({super.key, this.onRequestTabChange});
@@ -60,6 +78,15 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
   bool _openingModuleThreeSimulation = false;
   bool _openingModuleFourSimulation = false;
 
+  bool _moduleOneProgressLoading = true;
+  bool _moduleOneProgressLoaded = false;
+  bool _moduleOnePreTestCompleted = false;
+  bool _moduleOneCanOpenLearning = false;
+  bool _moduleOneLearningCompleted = false;
+  bool _moduleOneCanOpenPostTest = false;
+  bool _moduleOnePostTestCompleted = false;
+  String? _moduleOneProgressError;
+
   bool get _isTl => Localizations.localeOf(context).languageCode == 'tl';
 
   @override
@@ -67,6 +94,7 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
     super.initState();
     _loadProfile();
     _loadModules();
+    _loadModuleOneProgress();
     _listenRealtime();
   }
 
@@ -131,6 +159,13 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
     }
   }
 
+  Future<void> _refreshModulesAndProgress() async {
+    await Future.wait([
+      _loadModules(),
+      _loadModuleOneProgress(),
+    ]);
+  }
+
   void _listenRealtime() {
     _channel = _client
         .channel('learning_materials_mobile_list')
@@ -158,6 +193,14 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
           table: 'learning_material_media_assets',
           callback: (_) => _loadModules(),
         )
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'module_progress',
+          callback: (_) {
+            _loadModuleOneProgress();
+          },
+        )
         .subscribe();
   }
 
@@ -178,7 +221,16 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
     );
   }
 
-  void _openModule(int moduleNo) {
+  Future<void> _openModule(int moduleNo) async {
+    if (moduleNo == 1) {
+      await _loadModuleOneProgress();
+      if (!mounted) return;
+      if (!_moduleOneCanOpenLearning) {
+        _showLockedNotice('learning_materials');
+        return;
+      }
+    }
+
     Widget page;
 
     switch (moduleNo) {
@@ -197,19 +249,313 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
       case 5:
         page = const building_lm.LearningMaterialTenementPage();
         break;
-      
+
       default:
         page = DatabaseLearningMaterialPage(moduleNo: moduleNo);
     }
 
-    Navigator.push(
+    await Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => page),
     );
+
+    if (mounted && moduleNo == 1) {
+      await _loadModuleOneProgress();
+    }
   }
 
   String _t(String en, String tl) =>
       _isTl && tl.trim().isNotEmpty ? tl : en;
+
+  Future<void> _loadModuleOneProgress() async {
+    final user = _client.auth.currentUser;
+    if (user == null) {
+      if (!mounted) return;
+      setState(() {
+        _moduleOneProgressLoaded = true;
+        _moduleOneProgressLoading = false;
+        _moduleOnePreTestCompleted = false;
+        _moduleOneCanOpenLearning = false;
+        _moduleOneLearningCompleted = false;
+        _moduleOneCanOpenPostTest = false;
+        _moduleOnePostTestCompleted = false;
+        _moduleOneProgressError = 'Please log in again to continue.';
+      });
+      return;
+    }
+
+    if (mounted) {
+      setState(() {
+        _moduleOneProgressLoading = true;
+        _moduleOneProgressError = null;
+      });
+    }
+
+    try {
+      final state = await ModuleProgressionService(client: _client).getState(moduleNo: 1);
+
+      final preTestCompleted = state.hasValidPreTest ||
+          state.hasSubmittedPreTest ||
+          state.hasProgressPreTestCompletion;
+      final canOpenLearning = state.hasValidPreTest;
+      final learningCompleted = state.hasLearningModuleCompletion;
+      final postTestCompleted = state.hasValidPostTest ||
+          state.hasSubmittedPostTest ||
+          state.hasProgressPostTestCompletion;
+      final canOpenPostTest = state.hasValidPreTest &&
+          state.hasLearningModuleCompletion &&
+          !postTestCompleted;
+
+      if (!mounted) return;
+      setState(() {
+        _moduleOnePreTestCompleted = preTestCompleted;
+        _moduleOneCanOpenLearning = canOpenLearning;
+        _moduleOneLearningCompleted = learningCompleted;
+        _moduleOneCanOpenPostTest = canOpenPostTest;
+        _moduleOnePostTestCompleted = postTestCompleted;
+        _moduleOneProgressLoaded = true;
+        _moduleOneProgressLoading = false;
+        _moduleOneProgressError = null;
+      });
+    } catch (e) {
+      debugPrint('LOAD MODULE 1 PROGRESS ERROR: $e');
+      if (!mounted) return;
+      setState(() {
+        _moduleOnePreTestCompleted = false;
+        _moduleOneCanOpenLearning = false;
+        _moduleOneLearningCompleted = false;
+        _moduleOneCanOpenPostTest = false;
+        _moduleOnePostTestCompleted = false;
+        _moduleOneProgressLoaded = true;
+        _moduleOneProgressLoading = false;
+        _moduleOneProgressError = e.toString().replaceFirst('Exception: ', '');
+      });
+    }
+  }
+
+  bool _isModuleActionLocked(int moduleNo, String actionKey) {
+    if (moduleNo != 1) return false;
+    if (actionKey == 'simulation') return false;
+    if (actionKey != 'pre_test' &&
+        actionKey != 'learning_materials' &&
+        actionKey != 'post_test') {
+      return false;
+    }
+
+    if (_moduleOneProgressLoading || !_moduleOneProgressLoaded) return true;
+    if (_moduleOneProgressError != null) return true;
+
+    if (actionKey == 'pre_test') {
+      return _moduleOnePreTestCompleted;
+    }
+    if (actionKey == 'learning_materials') {
+      return !_moduleOneCanOpenLearning;
+    }
+    if (actionKey == 'post_test') {
+      return !_moduleOneCanOpenPostTest;
+    }
+    return false;
+  }
+
+  String _lockedMessageFor(String actionKey) {
+    if (_moduleOneProgressLoading || !_moduleOneProgressLoaded) {
+      return _t(
+        'Checking your saved progress. Please try again in a moment.',
+        'Sinusuri pa ang naka-save mong progress. Subukan muli pagkaraan ng ilang sandali.',
+      );
+    }
+
+    if (_moduleOneProgressError != null) {
+      return _moduleOneProgressError!;
+    }
+
+    if (actionKey == 'pre_test') {
+      return _t(
+        ModuleProgressionService.preTestAlreadyTakenMessage,
+        'Isang beses lang pwedeng sagutan ang Paunang Pagsusulit. Subukan ang susunod na modyul.',
+      );
+    }
+    if (actionKey == 'learning_materials') {
+      return _t(
+        'Finish the Paunang Pagsusulit / Pre-Assessment first before opening the Learning Module.',
+        'Tapusin muna ang Paunang Pagsusulit bago mabuksan ang Modyul sa Pag-aaral.',
+      );
+    }
+    if (actionKey == 'post_test') {
+      if (_moduleOnePostTestCompleted) {
+        return _t(
+          ModuleProgressionService.postTestAlreadyTakenMessage,
+          'Isang beses lang pwedeng sagutan ang Panghuling Pagsusulit. Subukan ang susunod na modyul.',
+        );
+      }
+      return _t(
+        'Finish reading the Learning Module first before opening the Panghuling Pagsusulit / Post-Assessment.',
+        'Tapusin muna basahin ang Modyul sa Pag-aaral bago mabuksan ang Panghuling Pagsusulit.',
+      );
+    }
+    return _t(
+      'This section is locked.',
+      'Naka-lock pa ang bahaging ito.',
+    );
+  }
+
+  String? _lockedSubtitleFor(int moduleNo, String actionKey) {
+    if (!_isModuleActionLocked(moduleNo, actionKey)) return null;
+
+    if (moduleNo == 1 &&
+        (_moduleOneProgressLoading || !_moduleOneProgressLoaded)) {
+      return _t('Checking saved progress...', 'Sinusuri ang naka-save na progress...');
+    }
+
+    if (moduleNo == 1 && actionKey == 'pre_test') {
+      return _t(
+        'You can only take the pre-test once.',
+        'Isang beses lang pwedeng sagutan ang Paunang Pagsusulit.',
+      );
+    }
+
+    if (moduleNo == 1 && actionKey == 'learning_materials') {
+      return _t(
+        'Locked until the Pre-Assessment is completed.',
+        'Naka-lock hanggang matapos ang Paunang Pagsusulit.',
+      );
+    }
+
+    if (moduleNo == 1 && actionKey == 'post_test') {
+      if (_moduleOnePostTestCompleted) {
+        return _t(
+          'You can only take the post-test once.',
+          'Isang beses lang pwedeng sagutan ang Panghuling Pagsusulit.',
+        );
+      }
+      return _t(
+        'Locked until the Learning Module is completed.',
+        'Naka-lock hanggang matapos ang Modyul sa Pag-aaral.',
+      );
+    }
+
+    return _t('Locked', 'Naka-lock');
+  }
+
+  String _lockedTitleFor(String actionKey) {
+    if (actionKey == 'pre_test') {
+      return _t('Pre-Test Locked', 'Naka-lock ang Paunang Pagsusulit');
+    }
+    if (actionKey == 'learning_materials') {
+      return _t('Learning Module Locked', 'Naka-lock ang Modyul sa Pag-aaral');
+    }
+    if (actionKey == 'post_test') {
+      return _t('Post-Test Locked', 'Naka-lock ang Panghuling Pagsusulit');
+    }
+    return _t('Locked', 'Naka-lock');
+  }
+
+  Future<void> _showLockedNotice(String actionKey) async {
+    if (!mounted) return;
+
+    final title = _lockedTitleFor(actionKey);
+    final message = _lockedMessageFor(actionKey);
+    final accent = _moduleAccent(1);
+
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      builder: (dialogContext) {
+        final compact = MediaQuery.of(dialogContext).size.width < 360;
+
+        return Dialog(
+          insetPadding: const EdgeInsets.symmetric(horizontal: 22, vertical: 24),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+          child: Stack(
+            children: [
+              Padding(
+                padding: EdgeInsets.fromLTRB(
+                  compact ? 18 : 22,
+                  compact ? 22 : 26,
+                  compact ? 18 : 22,
+                  compact ? 18 : 22,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: compact ? 52 : 58,
+                      height: compact ? 52 : 58,
+                      decoration: BoxDecoration(
+                        color: accent.withOpacity(0.12),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.lock_rounded,
+                        color: accent,
+                        size: compact ? 28 : 32,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    Text(
+                      title,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: const Color(0xFF111827),
+                        fontSize: compact ? 17 : 19,
+                        fontWeight: FontWeight.w900,
+                        height: 1.2,
+                        fontFamily: 'Poppins',
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      message,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Color(0xFF4B5563),
+                        fontSize: 13,
+                        height: 1.45,
+                        fontFamily: 'Poppins',
+                      ),
+                    ),
+                    const SizedBox(height: 18),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: accent,
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                        onPressed: () => Navigator.pop(dialogContext),
+                        child: Text(
+                          _t('OK', 'OK'),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w900,
+                            fontFamily: 'Poppins',
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Positioned(
+                top: 6,
+                right: 6,
+                child: IconButton(
+                  icon: const Icon(Icons.close_rounded),
+                  color: const Color(0xFF6B7280),
+                  tooltip: _t('Close', 'Isara'),
+                  onPressed: () => Navigator.pop(dialogContext),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
   void _toggleModule(int moduleNo) {
     setState(() {
@@ -217,21 +563,36 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
     });
   }
 
-  void _handleModuleAction(int moduleNo, String actionKey) {
+  Future<void> _handleModuleAction(int moduleNo, String actionKey) async {
     setState(() {
       _expandedModuleNo = moduleNo;
+    });
+
+    if (moduleNo == 1) {
+      await _loadModuleOneProgress();
+      if (!mounted) return;
+
+      if (_isModuleActionLocked(moduleNo, actionKey)) {
+        setState(() => _selectedModuleActionKey = null);
+        _showLockedNotice(actionKey);
+        return;
+      }
+    }
+
+    if (!mounted) return;
+    setState(() {
       _selectedModuleActionKey = '$moduleNo:$actionKey';
     });
 
     switch (actionKey) {
       case 'pre_test':
-        _openPreAssessment(moduleNo);
+        await _openPreAssessment(moduleNo);
         return;
       case 'learning_materials':
-        _openModule(moduleNo);
+        await _openModule(moduleNo);
         return;
       case 'post_test':
-        _openPostAssessment(moduleNo);
+        await _openPostAssessment(moduleNo);
         return;
       case 'simulation':
         _showModuleSimulationDialog(moduleNo);
@@ -449,7 +810,16 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
   }
 
 
-  void _openPreAssessment(int moduleNo) {
+  Future<void> _openPreAssessment(int moduleNo) async {
+    if (moduleNo == 1) {
+      await _loadModuleOneProgress();
+      if (!mounted) return;
+      if (_isModuleActionLocked(moduleNo, 'pre_test')) {
+        _showLockedNotice('pre_test');
+        return;
+      }
+    }
+
     Widget page;
 
     switch (moduleNo) {
@@ -473,10 +843,23 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
         return;
     }
 
-    Navigator.push(context, MaterialPageRoute(builder: (_) => page));
+    await Navigator.push(context, MaterialPageRoute(builder: (_) => page));
+
+    if (mounted && moduleNo == 1) {
+      await _loadModuleOneProgress();
+    }
   }
 
-  void _openPostAssessment(int moduleNo) {
+  Future<void> _openPostAssessment(int moduleNo) async {
+    if (moduleNo == 1) {
+      await _loadModuleOneProgress();
+      if (!mounted) return;
+      if (_isModuleActionLocked(moduleNo, 'post_test')) {
+        _showLockedNotice('post_test');
+        return;
+      }
+    }
+
     Widget page;
 
     switch (moduleNo) {
@@ -502,7 +885,11 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
         return;
     }
 
-    Navigator.push(context, MaterialPageRoute(builder: (_) => page));
+    await Navigator.push(context, MaterialPageRoute(builder: (_) => page));
+
+    if (mounted && moduleNo == 1) {
+      await _loadModuleOneProgress();
+    }
   }
 
   void _showActionNotice(String sectionName) {
@@ -777,6 +1164,8 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
                         ),
                       ),
                       SizedBox(height: listGap),
+                      _buildScrollableSearchBar(),
+                      const SizedBox(height: 20),
                       Expanded(child: _buildList(filtered)),
                     ],
                   ),
@@ -812,53 +1201,54 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
     final hasItems = items.isNotEmpty;
 
     return RefreshIndicator(
-      onRefresh: _loadModules,
+      onRefresh: _refreshModulesAndProgress,
       color: const Color(0xFFB11217),
-      child: ListView.separated(
-        physics: const AlwaysScrollableScrollPhysics(),
-        padding: EdgeInsets.only(
-          bottom: (MediaQuery.of(context).padding.bottom + 24)
-              .clamp(24.0, 999.0)
-              .toDouble(),
-        ),
-        itemCount: hasItems ? items.length + 1 : 2,
-        separatorBuilder: (_, index) => SizedBox(height: index == 0 ? 20 : 12),
-        itemBuilder: (_, index) {
-          if (index == 0) {
-            return _buildScrollableSearchBar();
-          }
+      child: ScrollConfiguration(
+        behavior: const _NoOverscrollScrollBehavior(),
+        child: ListView.separated(
+          physics: const ClampingScrollPhysics(),
+          padding: const EdgeInsets.only(bottom: 12),
+          clipBehavior: Clip.hardEdge,
+          itemCount: hasItems ? items.length : 1,
+          separatorBuilder: (_, __) => const SizedBox(height: 12),
+          itemBuilder: (_, index) {
+            if (!hasItems) {
+              return _MessageCard(
+                icon: Icons.search_off_rounded,
+                title: _isTl ? 'Walang resulta' : 'No results found',
+                message: _isTl
+                    ? 'Walang tumugma sa hinanap mo.'
+                    : 'No module matched your search.',
+                buttonText: _isTl ? 'I-clear' : 'Clear',
+                color: const Color(0xFFB11217),
+                onPressed: () {
+                  _searchController.clear();
+                  setState(() => searchQuery = '');
+                },
+              );
+            }
 
-          if (!hasItems) {
-            return _MessageCard(
-              icon: Icons.search_off_rounded,
-              title: _isTl ? 'Walang resulta' : 'No results found',
-              message: _isTl
-                  ? 'Walang tumugma sa hinanap mo.'
-                  : 'No module matched your search.',
-              buttonText: _isTl ? 'I-clear' : 'Clear',
-              color: const Color(0xFFB11217),
-              onPressed: () {
-                _searchController.clear();
-                setState(() => searchQuery = '');
+            final m = items[index];
+            return _ModuleCard(
+              moduleNo: m.moduleNo,
+              moduleLabel: m.moduleLabel(_isTl),
+              title: m.title(_isTl),
+              description: m.subtitle(_isTl),
+              image: m.heroImage,
+              isTl: _isTl,
+              isExpanded: _expandedModuleNo == m.moduleNo,
+              selectedActionKey: _selectedModuleActionKey,
+              isActionLocked: (actionKey) =>
+                  _isModuleActionLocked(m.moduleNo, actionKey),
+              lockedSubtitle: (actionKey) =>
+                  _lockedSubtitleFor(m.moduleNo, actionKey),
+              onHeaderTap: () => _toggleModule(m.moduleNo),
+              onChildTap: (actionKey) {
+                _handleModuleAction(m.moduleNo, actionKey);
               },
             );
-          }
-
-          final m = items[index - 1];
-          return _ModuleCard(
-            moduleNo: m.moduleNo,
-            moduleLabel: m.moduleLabel(_isTl),
-            title: m.title(_isTl),
-            description: m.subtitle(_isTl),
-            image: m.heroImage,
-            isTl: _isTl,
-            isExpanded: _expandedModuleNo == m.moduleNo,
-            selectedActionKey: _selectedModuleActionKey,
-            onHeaderTap: () => _toggleModule(m.moduleNo),
-            onChildTap: (actionKey) =>
-                _handleModuleAction(m.moduleNo, actionKey),
-          );
-        },
+          },
+        ),
       ),
     );
   }
@@ -1332,9 +1722,7 @@ class _DatabaseLearningMaterialPageState
             Expanded(
               child: SingleChildScrollView(
                 controller: _scroll,
-                physics: const BouncingScrollPhysics(
-                  parent: AlwaysScrollableScrollPhysics(),
-                ),
+                physics: const ClampingScrollPhysics(),
                 padding: EdgeInsets.fromLTRB(
                   horizontalPadding,
                   0,
@@ -1967,6 +2355,8 @@ class _ModuleCard extends StatelessWidget {
   final bool isTl;
   final bool isExpanded;
   final String? selectedActionKey;
+  final bool Function(String actionKey)? isActionLocked;
+  final String? Function(String actionKey)? lockedSubtitle;
   final VoidCallback onHeaderTap;
   final ValueChanged<String> onChildTap;
 
@@ -1979,6 +2369,8 @@ class _ModuleCard extends StatelessWidget {
     required this.isTl,
     required this.isExpanded,
     required this.selectedActionKey,
+    this.isActionLocked,
+    this.lockedSubtitle,
     required this.onHeaderTap,
     required this.onChildTap,
   });
@@ -2152,6 +2544,8 @@ class _ModuleCard extends StatelessWidget {
                               action: action,
                               accent: accent,
                               isActive: selectedActionKey == '$moduleNo:${action.key}',
+                              isLocked: isActionLocked?.call(action.key) ?? false,
+                              lockedSubtitle: lockedSubtitle?.call(action.key),
                               onTap: () => onChildTap(action.key),
                             ),
                           ),
@@ -2223,12 +2617,16 @@ class _ModuleActionTile extends StatelessWidget {
   final _ModuleAction action;
   final Color accent;
   final bool isActive;
+  final bool isLocked;
+  final String? lockedSubtitle;
   final VoidCallback onTap;
 
   const _ModuleActionTile({
     required this.action,
     required this.accent,
     required this.isActive,
+    required this.isLocked,
+    this.lockedSubtitle,
     required this.onTap,
   });
 
@@ -2244,10 +2642,18 @@ class _ModuleActionTile extends StatelessWidget {
           curve: Curves.easeOutCubic,
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
           decoration: BoxDecoration(
-            color: isActive ? accent.withOpacity(0.10) : const Color(0xFFF9FAFB),
+            color: isLocked
+                ? const Color(0xFFF3F4F6)
+                : isActive
+                    ? accent.withOpacity(0.10)
+                    : const Color(0xFFF9FAFB),
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
-              color: isActive ? accent.withOpacity(0.38) : Colors.black.withOpacity(0.05),
+              color: isLocked
+                  ? Colors.black.withOpacity(0.06)
+                  : isActive
+                      ? accent.withOpacity(0.38)
+                      : Colors.black.withOpacity(0.05),
             ),
           ),
           child: Row(
@@ -2256,12 +2662,20 @@ class _ModuleActionTile extends StatelessWidget {
                 width: 38,
                 height: 38,
                 decoration: BoxDecoration(
-                  color: isActive ? accent : accent.withOpacity(0.10),
+                  color: isLocked
+                      ? const Color(0xFFE5E7EB)
+                      : isActive
+                          ? accent
+                          : accent.withOpacity(0.10),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
-                  action.icon,
-                  color: isActive ? Colors.white : accent,
+                  isLocked ? Icons.lock_rounded : action.icon,
+                  color: isLocked
+                      ? const Color(0xFF6B7280)
+                      : isActive
+                          ? Colors.white
+                          : accent,
                   size: 20,
                 ),
               ),
@@ -2275,7 +2689,11 @@ class _ModuleActionTile extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        color: isActive ? accent : const Color(0xFF111827),
+                        color: isLocked
+                            ? const Color(0xFF6B7280)
+                            : isActive
+                                ? accent
+                                : const Color(0xFF111827),
                         fontSize: 13.5,
                         fontWeight: FontWeight.w800,
                         height: 1.25,
@@ -2284,7 +2702,9 @@ class _ModuleActionTile extends StatelessWidget {
                     ),
                     const SizedBox(height: 3),
                     Text(
-                      action.subtitle,
+                      isLocked && lockedSubtitle != null
+                          ? lockedSubtitle!
+                          : action.subtitle,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
@@ -2300,8 +2720,12 @@ class _ModuleActionTile extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Icon(
-                Icons.arrow_forward_ios_rounded,
-                color: isActive ? accent : const Color(0xFF9CA3AF),
+                isLocked ? Icons.lock_outline_rounded : Icons.arrow_forward_ios_rounded,
+                color: isLocked
+                    ? const Color(0xFF9CA3AF)
+                    : isActive
+                        ? accent
+                        : const Color(0xFF9CA3AF),
                 size: 14,
               ),
             ],
@@ -2704,7 +3128,7 @@ class _ElectricalFireSimulationDialog extends StatelessWidget {
                   ],
                 ),
                 child: SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
+                  physics: const ClampingScrollPhysics(),
                   child: Padding(
                     padding: EdgeInsets.fromLTRB(
                       compact ? 18 : 22,
@@ -2982,7 +3406,7 @@ class _HouseFireEscapeSimulationDialog extends StatelessWidget {
                   ],
                 ),
                 child: SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
+                  physics: const ClampingScrollPhysics(),
                   child: Padding(
                     padding: EdgeInsets.fromLTRB(
                       compact ? 18 : 22,
@@ -3264,7 +3688,7 @@ class _PassMethodSimulationDialog extends StatelessWidget {
                   ],
                 ),
                 child: SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
+                  physics: const ClampingScrollPhysics(),
                   child: Padding(
                     padding: EdgeInsets.fromLTRB(
                       compact ? 18 : 22,
@@ -3542,7 +3966,7 @@ class _KitchenFireSimulationDialog extends StatelessWidget {
                   ],
                 ),
                 child: SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
+                  physics: const ClampingScrollPhysics(),
                   child: Padding(
                     padding: EdgeInsets.fromLTRB(
                       compact ? 18 : 22,

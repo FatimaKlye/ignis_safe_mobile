@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../localization/language_controller.dart';
-import 'module_1_learningmaterials.dart';
 
 class AppColors {
   // Main Brand Colors
@@ -40,6 +39,7 @@ class AppColors {
   // Shadows
   static const Color shadow = Color(0x1A000000);
 }
+
 
 class PreAssessmentCompletionPage extends StatelessWidget {
   const PreAssessmentCompletionPage({
@@ -106,7 +106,7 @@ class PreAssessmentCompletionPage extends StatelessWidget {
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: AppColors.brandRed.withOpacity(0.28),
+                                  color: AppColors.brandRed.withValues(alpha: 0.28),
                                   blurRadius: 18,
                                   offset: const Offset(0, 10),
                                 ),
@@ -140,7 +140,7 @@ class PreAssessmentCompletionPage extends StatelessWidget {
                             t(
                               context,
                               '$assessmentTitle completed',
-                              '$assessmentTitle',
+                              assessmentTitle,
                             ),
                             textAlign: TextAlign.center,
                             style: const TextStyle(
@@ -174,8 +174,8 @@ class PreAssessmentCompletionPage extends StatelessWidget {
                                 Text(
                                   t(
                                     context,
-                                    'Congratulations! You can now proceed to Learning Materials.',
-                                    'Binabati ka namin! Maaari ka nang magpatuloy sa Modyul sa Pag-aaral.',
+                                    'Congratulations! Return to the module list to access the now-unlocked Learning Materials.',
+                                    'Binabati ka namin! Bumalik sa listahan ng modyul para ma-access ang Modyul sa Pag-aaral.',
                                   ),
                                   textAlign: TextAlign.center,
                                   style: const TextStyle(
@@ -278,8 +278,8 @@ class PreAssessmentCompletionPage extends StatelessWidget {
                                   child: Text(
                                     t(
                                       context,
-                                      'Your pre-assessment result has been recorded. Continue to the learning materials to review the module content before moving to the next activity.',
-                                      'Naitala na ang iyong resulta sa paunang pagsusulit. Magpatuloy sa modyul sa pag-aaral upang marepaso ang nilalaman bago pumunta sa susunod na gawain.',
+                                      'Your pre-assessment result has been recorded. Return to the module list to proceed to the Learning Materials and review the module content.',
+                                      'Naitala na ang iyong resulta sa paunang pagsusulit. Bumalik sa listahan ng modyul para magpatuloy sa Modyul sa Pag-aaral.',
                                     ),
                                     style: const TextStyle(
                                       fontFamily: 'Poppins',
@@ -323,7 +323,7 @@ class PreAssessmentCompletionPage extends StatelessWidget {
                                 elevation:
                                     const WidgetStatePropertyAll<double>(8),
                                 shadowColor: WidgetStatePropertyAll<Color>(
-                                  AppColors.brandRed.withOpacity(0.30),
+                                  AppColors.brandRed.withValues(alpha: 0.30),
                                 ),
                                 shape: WidgetStatePropertyAll<OutlinedBorder>(
                                   RoundedRectangleBorder(
@@ -331,24 +331,23 @@ class PreAssessmentCompletionPage extends StatelessWidget {
                                   ),
                                 ),
                               ),
-                              onPressed: () {
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => LearningMaterialExtinguisherPage(),
-                                  ),
-                                );
-                              },
+                              onPressed: () => Navigator.pop(context),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
+                                  const Icon(
+                                    Icons.arrow_back_rounded,
+                                    color: AppColors.textOnRed,
+                                    size: 21,
+                                  ),
+                                  const SizedBox(width: 8),
                                   Flexible(
                                     child: Text(
                                       t(
                                         context,
-                                        'Proceed to Learning Materials',
-                                        'Magpatuloy sa Modyul sa Pag-aaral',
+                                        'Back to Learning Activities',
+                                        'Bumalik sa Mga Gawain sa Pag-aaral',
                                       ),
                                       textAlign: TextAlign.center,
                                       maxLines: 2,
@@ -360,12 +359,6 @@ class PreAssessmentCompletionPage extends StatelessWidget {
                                         fontSize: 15.5,
                                       ),
                                     ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  const Icon(
-                                    Icons.arrow_forward_rounded,
-                                    color: AppColors.textOnRed,
-                                    size: 21,
                                   ),
                                 ],
                               ),
@@ -437,7 +430,7 @@ class _HeaderGlow extends StatelessWidget {
       width: size,
       height: size,
       decoration: BoxDecoration(
-        color: AppColors.textOnRed.withOpacity(opacity),
+        color: AppColors.textOnRed.withValues(alpha: opacity),
         shape: BoxShape.circle,
       ),
     );

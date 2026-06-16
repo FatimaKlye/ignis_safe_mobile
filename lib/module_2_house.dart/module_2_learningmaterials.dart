@@ -137,22 +137,10 @@ bool _isNetworkPath(String path) {
 
 const String _learningMaterialsBucket = 'Learning Materials';
 
-
-const Map<String, String> _module2LocalVideoFallbacks = <String, String>{
-  'module2_escape_step_1_video':
-      'assets/react_immediately.mp4',
-  'module2_escape_step_2_video':
-      'assets/check_doors.mp4',
-  'module2_escape_step_3_video':
-      'assets/crawl_low.mp4',
-  'module2_escape_step_4_video':
-      'assets/get_out_stay_out.mp4',
-};
-
-
 String _resolveLearningMaterialStoragePath(String path) {
   final trimmed = path.trim();
   if (trimmed.isEmpty || _isNetworkPath(trimmed)) return trimmed;
+  if (trimmed.startsWith('assets/')) return trimmed;
   return Supabase.instance.client.storage
       .from(_learningMaterialsBucket)
       .getPublicUrl(trimmed);
@@ -162,6 +150,10 @@ const List<String> _requiredLearningMaterialKeys = <String>[
   'header_section_title',
   'module_label',
   'header_page_label',
+  'loading_learning_materials',
+  'error_learning_materials_title',
+  'error_retry_button',
+  'dialog_close_tooltip',
   'dialog_keep_reading_title',
   'dialog_keep_reading_body',
   'dialog_keep_reading_button',
@@ -191,6 +183,10 @@ const List<String> _requiredLearningMaterialKeys = <String>[
   'video_preview_holder',
   'house_fire_3d_chip',
   'house_fire_3d_missing_asset',
+  'house_fire_3d_viewer_badge',
+  'house_fire_3d_rotate_instruction',
+  'house_fire_3d_alt_text',
+  'widget_video_3d_preview_title',
   'page_1_tag',
   'page_1_subtitle',
   'page_1_intro_title',
@@ -225,18 +221,22 @@ const List<String> _requiredLearningMaterialKeys = <String>[
   'page_2_section_title',
   'page_2_section_subtitle',
   'source_escape_steps',
+  'p2_step1_number',
   'p2_step1_title',
   'p2_step1_subtitle',
   'p2_step1_preview_title',
   'p2_step1_preview_description',
+  'p2_step2_number',
   'p2_step2_title',
   'p2_step2_subtitle',
   'p2_step2_preview_title',
   'p2_step2_preview_description',
+  'p2_step3_number',
   'p2_step3_title',
   'p2_step3_subtitle',
   'p2_step3_preview_title',
   'p2_step3_preview_description',
+  'p2_step4_number',
   'p2_step4_title',
   'p2_step4_subtitle',
   'p2_step4_preview_title',
@@ -287,6 +287,14 @@ const List<String> _requiredSourceKeys = <String>[
   'source_escape_steps',
   'source_p3_shared',
   'source_smoke_alarms',
+];
+
+const List<String> _requiredMediaAssetKeys = <String>[
+  'module2_house_fire_model_glb',
+  'module2_escape_step_1_video',
+  'module2_escape_step_2_video',
+  'module2_escape_step_3_video',
+  'module2_escape_step_4_video',
 ];
 
 // =============================================================================
@@ -362,11 +370,7 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
 
   String? _assetPath(String key) {
     final media = _media[key];
-
-    if (media == null || media.displayPath.isEmpty) {
-      return _module2LocalVideoFallbacks[key];
-    }
-
+    if (media == null || media.displayPath.isEmpty) return null;
     return media.displayPath;
   }
 
@@ -495,7 +499,7 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
         );
       }
 
-      _assertRequiredContent(loadedCopy, loadedSources, loadedPages);
+      _assertRequiredContent(loadedCopy, loadedSources, loadedPages, loadedMedia);
 
       if (!mounted) return;
       setState(() {
@@ -544,6 +548,7 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
     Map<String, _LmTextRow> copy,
     Map<String, _LmSourceRow> sources,
     Map<int, _LmPageRow> pages,
+    Map<String, _LmMediaRow> media,
   ) {
     final missing = <String>[];
     for (final key in _requiredLearningMaterialKeys) {
@@ -562,6 +567,12 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
           (source.sourceTitle ?? '').trim().isEmpty ||
           (source.sourceUrl ?? '').trim().isEmpty) {
         missing.add('$key.source');
+      }
+    }
+    for (final key in _requiredMediaAssetKeys) {
+      final asset = media[key];
+      if (asset == null || asset.displayPath.trim().isEmpty) {
+        missing.add('learning_material_media_assets.$key');
       }
     }
     if (missing.isNotEmpty) {
@@ -851,9 +862,9 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Scaffold(
+      return Scaffold(
         backgroundColor: AppColors.background,
-        body: Stack(
+        body: const Stack(
           children: [
             _LMGradientBackdrop(),
             SafeArea(child: Center(child: _LoadingCard())),
@@ -871,7 +882,9 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
             SafeArea(
               child: Center(
                 child: _ErrorCard(
+                  title: _txt('error_learning_materials_title'),
                   message: _loadError!,
+                  retryLabel: _txt('error_retry_button'),
                   onRetry: () {
                     setState(() {
                       _isLoading = true;
@@ -907,6 +920,7 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
                     child: _LearningAssessmentHeader(
                       sectionTitle: _txt('header_section_title'),
                       moduleLabel: _txt('module_label'),
+                      pageLabel: _txt('header_page_label'),
                       moduleTitle: _moduleTitle,
                       currentPage: _pageIndex + 1,
                       totalPages: 3,
@@ -1007,7 +1021,7 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
         ),
         const SizedBox(height: 16),
         _HouseFire3DPhotoCard(
-          assetPath: _previewAssetPath,
+          modelAssetPath: _assetPath('module2_house_fire_model_glb'),
           title: _txt('page_1_preview_title'),
           subtitle: _txt('page_1_preview_subtitle'),
         ),
@@ -1150,7 +1164,7 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
         ),
         const SizedBox(height: 12),
         _EscapeStepExpandable(
-          number: '1',
+          number: _txt('p2_step1_number'),
           icon: Icons.notifications_active_rounded,
           title: _txt('p2_step1_title'),
           subtitle: _txt('p2_step1_subtitle'),
@@ -1165,7 +1179,7 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
         ),
         const SizedBox(height: 12),
         _EscapeStepExpandable(
-          number: '2',
+          number: _txt('p2_step2_number'),
           icon: Icons.door_front_door_rounded,
           title: _txt('p2_step2_title'),
           subtitle: _txt('p2_step2_subtitle'),
@@ -1180,7 +1194,7 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
         ),
         const SizedBox(height: 12),
         _EscapeStepExpandable(
-          number: '3',
+          number: _txt('p2_step3_number'),
           icon: Icons.air_rounded,
           title: _txt('p2_step3_title'),
           subtitle: _txt('p2_step3_subtitle'),
@@ -1195,7 +1209,7 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
         ),
         const SizedBox(height: 12),
         _EscapeStepExpandable(
-          number: '4',
+          number: _txt('p2_step4_number'),
           icon: Icons.logout_rounded,
           title: _txt('p2_step4_title'),
           subtitle: _txt('p2_step4_subtitle'),
@@ -1395,35 +1409,27 @@ class _LoadingCard extends StatelessWidget {
           ),
         ],
       ),
-      child: const Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SizedBox(
-            width: 22,
-            height: 22,
-            child: CircularProgressIndicator(strokeWidth: 2.4),
-          ),
-          SizedBox(width: 12),
-          Flexible(
-            child: Text(
-              'Loading learning materials...',
-              style: TextStyle(
-                color: AppColors.textPrimary,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-          ),
-        ],
+      child: const SizedBox(
+        width: 22,
+        height: 22,
+        child: CircularProgressIndicator(strokeWidth: 2.4),
       ),
     );
   }
 }
 
 class _ErrorCard extends StatelessWidget {
+  final String title;
   final String message;
+  final String retryLabel;
   final VoidCallback onRetry;
 
-  const _ErrorCard({required this.message, required this.onRetry});
+  const _ErrorCard({
+    required this.title,
+    required this.message,
+    required this.retryLabel,
+    required this.onRetry,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -1445,14 +1451,14 @@ class _ErrorCard extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
-              Icon(Icons.error_outline_rounded, color: AppColors.error),
-              SizedBox(width: 8),
+              const Icon(Icons.error_outline_rounded, color: AppColors.error),
+              const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'Learning materials could not be loaded',
-                  style: TextStyle(
+                  title,
+                  style: const TextStyle(
                     color: AppColors.textPrimary,
                     fontWeight: FontWeight.w900,
                   ),
@@ -1478,7 +1484,7 @@ class _ErrorCard extends StatelessWidget {
                 backgroundColor: AppColors.brandRed,
                 foregroundColor: Colors.white,
               ),
-              child: const Text('Retry'),
+              child: Text(retryLabel),
             ),
           ),
         ],
@@ -2447,16 +2453,13 @@ class _ReferenceSourceCard extends StatelessWidget {
 // =============================================================================
 // 3D MODEL PREVIEW CARD HOLDER
 // =============================================================================
-const String _module2HouseFireModelAsset =
-    'assets/models/houseescape3d.glb';
-
 class _HouseFire3DPhotoCard extends StatelessWidget {
-  final String? assetPath;
+  final String? modelAssetPath;
   final String title;
   final String subtitle;
 
   const _HouseFire3DPhotoCard({
-    required this.assetPath,
+    required this.modelAssetPath,
     required this.title,
     required this.subtitle,
   });
@@ -2564,7 +2567,7 @@ class _HouseFire3DPhotoCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 22),
-          _PageOneHouseFire3DPreview(assetPath: assetPath),
+          _PageOneHouseFire3DPreview(modelAssetPath: modelAssetPath),
         ],
       ),
     );
@@ -2572,9 +2575,9 @@ class _HouseFire3DPhotoCard extends StatelessWidget {
 }
 
 class _PageOneHouseFire3DPreview extends StatelessWidget {
-  final String? assetPath;
+  final String? modelAssetPath;
 
-  const _PageOneHouseFire3DPreview({required this.assetPath});
+  const _PageOneHouseFire3DPreview({required this.modelAssetPath});
 
   @override
   Widget build(BuildContext context) {
@@ -2583,7 +2586,7 @@ class _PageOneHouseFire3DPreview extends StatelessWidget {
         final previewHeight = (constraints.maxWidth * 1.75)
             .clamp(560.0, 720.0)
             .toDouble();
-        final modelPath = _resolveHouseFireModelPath(assetPath);
+        final modelPath = _resolveHouseFireModelPath(modelAssetPath);
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -2664,14 +2667,16 @@ class _PageOneHouseFire3DPreview extends StatelessWidget {
                       left: 14,
                       child: _HouseFireViewerBadge(
                         icon: Icons.view_in_ar_rounded,
-                        label: '3D Preview',
+                        label: _lm(context, 'house_fire_3d_viewer_badge'),
                         color: AppColors.brandRed,
                       ),
                     ),
                     Positioned.fill(
                       top: 24,
                       bottom: 8,
-                      child: _AnimatedHouseFireModelViewer(modelPath: modelPath),
+                      child: modelPath == null
+                          ? _MissingHouseFireModelCard()
+                          : _AnimatedHouseFireModelViewer(modelPath: modelPath),
                     ),
                     Positioned.fill(
                       child: IgnorePointer(
@@ -2735,11 +2740,7 @@ class _PageOneHouseFire3DPreview extends StatelessWidget {
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      Localizations.localeOf(context).languageCode
-                              .toLowerCase()
-                              .startsWith('tl')
-                          ? 'I-drag para i-rotate. I-pinch para i-zoom.'
-                          : 'Drag to rotate. Pinch to zoom.',
+                      _lm(context, 'house_fire_3d_rotate_instruction'),
                       style: const TextStyle(
                         color: AppColors.brandRedDark,
                         fontSize: 12.5,
@@ -2757,14 +2758,34 @@ class _PageOneHouseFire3DPreview extends StatelessWidget {
     );
   }
 
-  String _resolveHouseFireModelPath(String? rawPath) {
+  String? _resolveHouseFireModelPath(String? rawPath) {
     final path = rawPath?.trim();
     if (path != null &&
         path.isNotEmpty &&
         path.toLowerCase().endsWith('.glb')) {
       return path;
     }
-    return _module2HouseFireModelAsset;
+    return null;
+  }
+}
+
+class _MissingHouseFireModelCard extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Text(
+          _lm(context, 'house_fire_3d_missing_asset'),
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            color: AppColors.textSecondary,
+            fontWeight: FontWeight.w800,
+            height: 1.4,
+          ),
+        ),
+      ),
+    );
   }
 }
 
@@ -2809,7 +2830,7 @@ class _AnimatedHouseFireModelViewerState extends State<_AnimatedHouseFireModelVi
           child: ModelViewer(
             key: ValueKey(widget.modelPath),
             src: widget.modelPath,
-            alt: '3D house fire model preview',
+            alt: _lm(context, 'house_fire_3d_alt_text'),
             backgroundColor: Colors.transparent,
             cameraControls: true,
             autoRotate: true,
@@ -3178,7 +3199,7 @@ class _StyledDialog extends StatelessWidget {
                     icon: const Icon(Icons.close_rounded, size: 18),
                     color: Colors.black54,
                     onPressed: () => Navigator.pop(context),
-                    tooltip: 'Close',
+                    tooltip: _lm(context, 'dialog_close_tooltip'),
                   ),
                 ),
               ),
@@ -3632,6 +3653,7 @@ class _Bullets extends StatelessWidget {
 class _LearningAssessmentHeader extends StatelessWidget {
   final String sectionTitle;
   final String moduleLabel;
+  final String pageLabel;
   final String moduleTitle;
   final int currentPage;
   final int totalPages;
@@ -3641,6 +3663,7 @@ class _LearningAssessmentHeader extends StatelessWidget {
   const _LearningAssessmentHeader({
     required this.sectionTitle,
     required this.moduleLabel,
+    required this.pageLabel,
     required this.moduleTitle,
     required this.currentPage,
     required this.totalPages,
@@ -3651,9 +3674,6 @@ class _LearningAssessmentHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final safeProgress = progress.clamp(0.0, 1.0).toDouble();
-    final pageLabel = Localizations.localeOf(context).languageCode == 'tl'
-        ? 'Pahina'
-        : 'Page';
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,

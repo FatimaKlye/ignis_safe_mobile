@@ -88,7 +88,7 @@ class PostAssessmentIntroPage extends StatelessWidget {
                             ),
                             const SizedBox(width: 6),
                             Text(
-                              context.tr('module_1'),
+                              context.tr('module_2'),
                               style: const TextStyle(
                                 color: AppColors.textOnRed,
                                 fontFamily: 'Poppins',

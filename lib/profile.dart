@@ -201,17 +201,31 @@ class _ProfilePageState extends State<ProfilePage> {
   void _showFAQ() {
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(
-          _t(context, "FAQ", "Mga Madalas Itanong"),
-          style: const TextStyle(fontWeight: FontWeight.w900),
-        ),
-        content: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
+      builder: (dialogContext) {
+        final size = MediaQuery.of(dialogContext).size;
+
+        return AlertDialog(
+          insetPadding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 24,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Text(
+            _t(context, "FAQ", "Mga Madalas Itanong"),
+            style: const TextStyle(fontWeight: FontWeight.w900),
+          ),
+          content: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: size.width - 40,
+              maxHeight: size.height * 0.68,
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
               Text(
                 _t(
                   context,
@@ -283,60 +297,86 @@ class _ProfilePageState extends State<ProfilePage> {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-            ],
-          ),
-        ),
-        actions: [
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: brandRed,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            onPressed: () => Navigator.pop(context),
-            child: const Text(
-              "OK",
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w900,
+                ],
               ),
             ),
           ),
-        ],
-      ),
+          actions: [
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: brandRed,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              onPressed: () => Navigator.pop(context),
+              child: const Text(
+                "OK",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
   void _showDialogBox({required String title, required String message}) {
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w900)),
-        content: Text(
-          message,
-          style: const TextStyle(fontWeight: FontWeight.w600, height: 1.4),
-        ),
-        actions: [
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: brandRed,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
+      builder: (dialogContext) {
+        final size = MediaQuery.of(dialogContext).size;
+
+        return AlertDialog(
+          insetPadding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 24,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Text(
+            title,
+            style: const TextStyle(fontWeight: FontWeight.w900),
+          ),
+          content: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: size.width - 40,
+              maxHeight: size.height * 0.55,
             ),
-            onPressed: () => Navigator.pop(context),
-            child: const Text(
-              "OK",
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w900,
+            child: SingleChildScrollView(
+              child: Text(
+                message,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  height: 1.4,
+                ),
               ),
             ),
           ),
-        ],
-      ),
+          actions: [
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: brandRed,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              onPressed: () => Navigator.pop(context),
+              child: const Text(
+                "OK",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -354,193 +394,347 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     final avatarImage = _getAvatarImage();
+    final topPadding = MediaQuery.of(context).padding.top;
 
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Stack(
         children: [
+          Positioned.fill(
+            child: Image.asset('assets/bg.png', fit: BoxFit.cover),
+          ),
           Positioned(
             top: 0,
             left: 0,
             right: 0,
-            height: 900,
-            child: Image.asset('assets/bg.png', fit: BoxFit.cover),
+            child: Container(
+              height: topPadding + 200,
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color(0xFFB11217),
+                    Color(0xFFB11217),
+                    Colors.transparent,
+                  ],
+                  stops: [0.0, 0.65, 1.0],
+                ),
+              ),
+            ),
           ),
           SafeArea(
-            child: Column(
-              children: [
-                const SizedBox(height: 20),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 20,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final width = constraints.maxWidth;
+                final height = constraints.maxHeight;
+                final compactWidth = width < 370;
+                final compactHeight = height < 660;
+                final horizontalPadding = compactWidth ? 16.0 : 25.0;
+                final verticalPadding = compactHeight ? 8.0 : 14.0;
+                final topGap = compactHeight ? 8.0 : 20.0;
+                final titleGap = compactHeight ? 18.0 : 30.0;
+                final listGap = compactHeight ? 16.0 : 24.0;
+                final avatarRadius = compactWidth ? 20.0 : 22.0;
+                final titleSize = (width * 0.075).clamp(20.0, 30.0).toDouble();
+                final avatarSize = (width * 0.48).clamp(140.0, 180.0).toDouble();
+
+                return Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: horizontalPadding,
+                    vertical: verticalPadding,
                   ),
-                  child: Row(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(width: 48),
-                      const Spacer(),
-                      Text(
-                        _t(context, "Profile", "Profile"),
-                        style: const TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w900,
-                          color: Colors.black,
-                        ),
-                      ),
-                      const Spacer(),
-                      const SizedBox(width: 48),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 25),
-                    child: Column(
-                      children: [
-                        const SizedBox(height: 10),
-                        Container(
-                          width: 180,
-                          height: 180,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.grey.shade200,
-                            image: avatarImage != null
-                                ? DecorationImage(
-                                    image: avatarImage,
-                                    fit: BoxFit.cover,
-                                  )
-                                : null,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.15),
-                                blurRadius: 18,
-                                offset: const Offset(0, 10),
+                      SizedBox(height: topGap),
+                      Row(
+                        children: [
+                          PopupMenuButton<String>(
+                            tooltip: '',
+                            offset: const Offset(0, 55),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            onSelected: (value) async {
+                              if (value == 'profile') {
+                                return;
+                              }
+                              if (value == 'logout') {
+                                await _logout();
+                                return;
+                              }
+                            },
+                            itemBuilder: (context) => [
+                              PopupMenuItem(
+                                value: 'profile',
+                                child: Row(
+                                  children: [
+                                    const Icon(Icons.person_outline_rounded),
+                                    const SizedBox(width: 8),
+                                    Flexible(
+                                      child: Text(
+                                        _t(context, 'Profile', 'Profile'),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              PopupMenuItem(
+                                value: 'logout',
+                                child: Row(
+                                  children: [
+                                    const Icon(Icons.logout_rounded),
+                                    const SizedBox(width: 8),
+                                    Flexible(
+                                      child: Text(
+                                        _t(context, 'Log Out', 'Mag-logout'),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ],
+                            child: CircleAvatar(
+                              radius: avatarRadius,
+                              backgroundColor: Colors.grey.shade400,
+                              backgroundImage: avatarImage,
+                              child: avatarImage == null
+                                  ? const Icon(
+                                      Icons.person,
+                                      size: 22,
+                                      color: Colors.white,
+                                    )
+                                  : null,
+                            ),
                           ),
-                          child: avatarImage == null
-                              ? Icon(
-                                  Icons.person,
-                                  size: 70,
-                                  color: Colors.grey.shade500,
-                                )
-                              : null,
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  _displayName.trim().isEmpty
+                                      ? _t(context, 'Hi!', 'Kumusta!')
+                                      : _t(
+                                          context,
+                                          'Hi, ${_displayName.trim()}',
+                                          'Kumusta, ${_displayName.trim()}',
+                                        ),
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  _t(
+                                    context,
+                                    'Welcome to Ignis Safe',
+                                    'Mabuhay, Ignis Safe',
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: titleGap),
+                      Center(
+                        child: Text(
+                          _t(context, 'Profile', 'Profile'),
+                          textAlign: TextAlign.center,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: titleSize,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.white,
+                            height: 1.12,
+                          ),
                         ),
-                        const SizedBox(height: 18),
-                        _isLoadingProfile
-                            ? const CircularProgressIndicator()
-                            : Column(
+                      ),
+                      SizedBox(height: listGap),
+                      Expanded(
+                        child: SingleChildScrollView(
+                          padding: EdgeInsets.zero,
+                          child: Center(
+                            child: ConstrainedBox(
+                              constraints: const BoxConstraints(maxWidth: 520),
+                              child: Column(
                                 children: [
-                                  Text(
-                                    _displayName.isEmpty ? '—' : _displayName,
-                                    textAlign: TextAlign.center,
-                                    style: const TextStyle(
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.w900,
-                                      color: darkText,
+                                  const SizedBox(height: 10),
+                                  Container(
+                                    width: avatarSize,
+                                    height: avatarSize,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Colors.grey.shade200,
+                                      image: avatarImage != null
+                                          ? DecorationImage(
+                                              image: avatarImage,
+                                              fit: BoxFit.cover,
+                                            )
+                                          : null,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.15),
+                                          blurRadius: 18,
+                                          offset: const Offset(0, 10),
+                                        ),
+                                      ],
                                     ),
+                                    child: avatarImage == null
+                                        ? Icon(
+                                            Icons.person,
+                                            size: avatarSize * 0.39,
+                                            color: Colors.grey.shade500,
+                                          )
+                                        : null,
                                   ),
-                                  const SizedBox(height: 6),
-                                  Text(
-                                    _email.isEmpty ? '—' : _email,
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.grey.shade600,
+                                  const SizedBox(height: 18),
+                                  _isLoadingProfile
+                                      ? const CircularProgressIndicator()
+                                      : Column(
+                                          children: [
+                                            Text(
+                                              _displayName.isEmpty
+                                                  ? '—'
+                                                  : _displayName,
+                                              textAlign: TextAlign.center,
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: const TextStyle(
+                                                fontSize: 24,
+                                                fontWeight: FontWeight.w900,
+                                                color: darkText,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 6),
+                                            Text(
+                                              _email.isEmpty ? '—' : _email,
+                                              textAlign: TextAlign.center,
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                fontSize: 13,
+                                                fontWeight: FontWeight.w600,
+                                                color: Colors.grey.shade600,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                  const SizedBox(height: 22),
+                                  _InfoTile(
+                                    icon: Icons.check_box_outlined,
+                                    text:
+                                        "${_t(context, "Completed Modules", "Natapos na Module")}: $_completedSimulations",
+                                  ),
+                                  const SizedBox(height: 12),
+                                  _InfoTile(
+                                    icon: Icons.local_fire_department_outlined,
+                                    text:
+                                        "${_t(context, "Last Simulation", "Huling Simulation")}: $_lastSimulation",
+                                  ),
+                                  const SizedBox(height: 26),
+                                  _BigButton(
+                                    icon: Icons.edit,
+                                    label: _t(
+                                      context,
+                                      "Edit Profile",
+                                      "I-edit ang Profile",
                                     ),
+                                    onTap: () async {
+                                      await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => const EditProfilePage(),
+                                        ),
+                                      );
+
+                                      if (mounted) {
+                                        setState(() {
+                                          _isLoadingProfile = true;
+                                        });
+                                        await _loadProfile();
+                                      }
+                                    },
                                   ),
+                                  const SizedBox(height: 14),
+                                  _BigButton(
+                                    icon: Icons.history,
+                                    label: _t(
+                                      context,
+                                      "Module History",
+                                      "Kasaysayan ng Modyul",
+                                    ),
+                                    onTap: () async {
+                                      await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => const ModuleHistoryPage(),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                  const SizedBox(height: 14),
+                                  // _LanguageSelector(
+                                  //   selected: _language,
+                                  //   onChanged: _changeLanguage,
+                                  // ),
+                                  // const SizedBox(height: 14),
+                                  _BigButton(
+                                    icon: Icons.help_outline,
+                                    label: _t(
+                                      context,
+                                      "FAQ",
+                                      "Mga Madalas Itanong",
+                                    ),
+                                    onTap: _showFAQ,
+                                  ),
+                                  const SizedBox(height: 14),
+                                  _BigButton(
+                                    icon: Icons.logout_rounded,
+                                    label: _isLoggingOut
+                                        ? _t(
+                                            context,
+                                            "Logging Out...",
+                                            "Nagla-log out...",
+                                          )
+                                        : _t(context, "Log Out", "Mag Log Out"),
+                                    onTap: _isLoggingOut ? null : _logout,
+                                    color: brandRed,
+                                  ),
+                                  const SizedBox(height: 12),
                                 ],
                               ),
-                        const SizedBox(height: 22),
-                        _InfoTile(
-                          icon: Icons.check_box_outlined,
-                          text:
-                              "${_t(context, "Completed Modules", "Natapos na Module")}: $_completedSimulations",
-                        ),
-                        const SizedBox(height: 12),
-                        _InfoTile(
-                          icon: Icons.local_fire_department_outlined,
-                          text:
-                              "${_t(context, "Last Simulation", "Huling Simulation")}: $_lastSimulation",
-                        ),
-                        const SizedBox(height: 26),
-                        _BigButton(
-                          icon: Icons.edit,
-                          label: _t(
-                            context,
-                            "Edit Profile",
-                            "I-edit ang Profile",
+                            ),
                           ),
-                          onTap: () async {
-                            await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const EditProfilePage(),
-                              ),
-                            );
-
-                            if (mounted) {
-                              setState(() {
-                                _isLoadingProfile = true;
-                              });
-                              await _loadProfile();
-                            }
-                          },
                         ),
-                        const SizedBox(height: 14),
-                        _BigButton(
-                          icon: Icons.history,
-                          label: _t(
-                            context,
-                            "Module History",
-                            "Kasaysayan ng Modyul",
-                          ),
-                          onTap: () async {
-                            await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const ModuleHistoryPage(),
-                              ),
-                            );
-                          },
-                        ),
-                        const SizedBox(height: 14),
-                        // _LanguageSelector(
-                        //   selected: _language,
-                        //   onChanged: _changeLanguage,
-                        // ),
-                        // const SizedBox(height: 14),
-                        _BigButton(
-                          icon: Icons.help_outline,
-                          label: _t(context, "FAQ", "Mga Madalas Itanong"),
-                          onTap: _showFAQ,
-                        ),
-                        const SizedBox(height: 14),
-                        _BigButton(
-                          icon: Icons.logout_rounded,
-                          label: _isLoggingOut
-                              ? _t(
-                                  context,
-                                  "Logging Out...",
-                                  "Nagla-log out...",
-                                )
-                              : _t(context, "Log Out", "Mag Log Out"),
-                          onTap: _isLoggingOut ? null : _logout,
-                          color: brandRed,
-                        ),
-                        const SizedBox(height: 30),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
+                );
+              },
             ),
           ),
         ],
       ),
     );
   }
+
 }
 
 class _InfoTile extends StatelessWidget {
@@ -564,6 +758,7 @@ class _InfoTile extends StatelessWidget {
           Expanded(
             child: Text(
               text,
+              softWrap: true,
               style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
             ),
           ),
@@ -612,12 +807,19 @@ class _BigButton extends StatelessWidget {
             children: [
               Icon(icon, color: btnColor),
               const SizedBox(width: 12),
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w900,
-                  color: btnColor,
+              Expanded(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    label,
+                    maxLines: 1,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w900,
+                      color: btnColor,
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -655,23 +857,32 @@ class _LanguageSelector extends StatelessWidget {
         children: [
           const Icon(Icons.language),
           const SizedBox(width: 12),
-          const Text(
-            "Language",
-            style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
+          const Expanded(
+            child: Text(
+              "Language",
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
+            ),
           ),
-          const Spacer(),
-          DropdownButton<String>(
-            value: selected,
-            underline: const SizedBox(),
-            items: const [
-              DropdownMenuItem(value: "English", child: Text("English")),
-              DropdownMenuItem(value: "Tagalog", child: Text("Tagalog")),
-            ],
-            onChanged: (value) {
-              if (value != null) {
-                onChanged(value);
-              }
-            },
+          Flexible(
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: DropdownButton<String>(
+                value: selected,
+                underline: const SizedBox(),
+                isExpanded: false,
+                items: const [
+                  DropdownMenuItem(value: "English", child: Text("English")),
+                  DropdownMenuItem(value: "Tagalog", child: Text("Tagalog")),
+                ],
+                onChanged: (value) {
+                  if (value != null) {
+                    onChanged(value);
+                  }
+                },
+              ),
+            ),
           ),
         ],
       ),

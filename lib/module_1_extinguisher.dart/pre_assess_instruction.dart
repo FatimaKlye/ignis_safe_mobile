@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../localization/app_text.dart';
 import 'pre_assessment_extinguisher.dart';
+import 'module_progression_service.dart';
 
 /// Helper to get localized text based on context language
 String _getLocalizedText(String en, String tl, BuildContext context) {
@@ -40,6 +41,47 @@ List<String> getConciseInstructions(BuildContext context) {
       context,
     ),
   ];
+}
+
+
+Future<void> _showPreAssessmentAccessDialog(
+  BuildContext context,
+  String message,
+) async {
+  if (!context.mounted) return;
+  await showDialog<void>(
+    context: context,
+    builder: (_) => AlertDialog(
+      title: Text(_getLocalizedText('Pre-Assessment Locked', 'Naka-lock ang Paunang Pagsusulit', context)),
+      content: Text(message),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(_getLocalizedText('OK', 'Sige', context)),
+        ),
+      ],
+    ),
+  );
+}
+
+Future<void> _openPreAssessmentIfAllowed(BuildContext context) async {
+  try {
+    await ModuleProgressionService().ensureCanStartPreTest(moduleNo: 1);
+    if (!context.mounted) return;
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const PreAssessmentExtinguisherPage(),
+      ),
+    );
+  } on ProgressionAccessDenied catch (e) {
+    await _showPreAssessmentAccessDialog(context, e.message);
+  } catch (e) {
+    await _showPreAssessmentAccessDialog(
+      context,
+      e.toString().replaceFirst('Exception: ', ''),
+    );
+  }
 }
 
 class PreAssessmentIntroPage extends StatelessWidget {
@@ -137,7 +179,7 @@ class PreAssessmentIntroPage extends StatelessWidget {
                         const SizedBox(height: 26),
                         Container(
                           width: double.infinity,
-                          padding: const EdgeInsets.all(22),
+                          padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
                             color: AppColors.surface,
                             borderRadius: BorderRadius.circular(28),
@@ -226,40 +268,36 @@ class PreAssessmentIntroPage extends StatelessWidget {
                                   fontWeight: FontWeight.w800,
                                 ),
                               ),
-                              const SizedBox(height: 18),
-                              LayoutBuilder(
-                                builder: (context, constraints) {
-                                  final compact = constraints.maxWidth < 330;
-                                  return Wrap(
-                                    spacing: 10,
-                                    runSpacing: 10,
-                                    children: [
-                                      _IntroInfoTile(
-                                        compact: compact,
-                                        width: compact ? constraints.maxWidth : 138,
-                                        icon: Icons.dynamic_form_rounded,
-                                        title: isTl ? 'Mga tanong' : 'Questions',
-                                        value: isTl
-                                            ? 'Mula sa Bureau of Fire Protection DASMARIÑAS'
-                                            : 'From Bureau of Fire Protection DASMARIÑAS',
-                                      ),
-                                      _IntroInfoTile(
-                                        compact: compact,
-                                        width: compact ? constraints.maxWidth : 138,
-                                        icon: Icons.schedule_rounded,
-                                        title: isTl ? 'Oras' : 'Time',
-                                        value: '5 mins',
-                                      ),
-                                      _IntroInfoTile(
-                                        compact: compact,
-                                        width: compact ? constraints.maxWidth : 138,
-                                        icon: Icons.school_rounded,
-                                        title: isTl ? 'Uri' : 'Type',
-                                        value: isTl ? 'Practice' : 'Practice',
-                                      ),
-                                    ],
-                                  );
-                                },
+                              const SizedBox(height: 14),
+                              // Questions tile spans full width (long value text needs room)
+                              _IntroInfoTile(
+                                icon: Icons.dynamic_form_rounded,
+                                title: isTl ? 'Mga tanong' : 'Questions',
+                                value: isTl
+                                    ? 'Mula sa Bureau of Fire Protection DASMARIÑAS'
+                                    : 'From Bureau of Fire Protection DASMARIÑAS',
+                              ),
+                              const SizedBox(height: 10),
+                              // Time + Type share a row
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: _IntroInfoTile(
+                                      icon: Icons.schedule_rounded,
+                                      title: isTl ? 'Oras' : 'Time',
+                                      value: '5 mins',
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: _IntroInfoTile(
+                                      icon: Icons.school_rounded,
+                                      title: isTl ? 'Uri' : 'Type',
+                                      value: 'Practice',
+                                    ),
+                                  ),
+                                ],
                               ),
                               const SizedBox(height: 22),
                               Container(
@@ -335,35 +373,33 @@ class PreAssessmentIntroPage extends StatelessWidget {
       bottomNavigationBar: SafeArea(
         minimum: const EdgeInsets.fromLTRB(20, 10, 20, 18),
         child: SizedBox(
-          height: 56,
           width: double.infinity,
           child: ElevatedButton(
-            onPressed: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const PreAssessmentExtinguisherPage(),
-                ),
-              );
-            },
+            onPressed: () => _openPreAssessmentIfAllowed(context),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primaryButton,
               elevation: 8,
               shadowColor: AppColors.primaryButton.withOpacity(0.35),
+              minimumSize: const Size.fromHeight(56),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(18),
               ),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  isTl ? 'Simulan ang Pagsusulit' : 'Start Test',
-                  style: const TextStyle(
-                    color: AppColors.textOnRed,
-                    fontFamily: 'Poppins',
-                    fontSize: 16,
-                    fontWeight: FontWeight.w900,
+                Flexible(
+                  child: Text(
+                    isTl ? 'Simulan ang Pagsusulit' : 'Start Test',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: AppColors.textOnRed,
+                      fontFamily: 'Poppins',
+                      fontSize: 16,
+                      fontWeight: FontWeight.w900,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -469,15 +505,11 @@ class _CircleIconButton extends StatelessWidget {
 
 class _IntroInfoTile extends StatelessWidget {
   const _IntroInfoTile({
-    required this.compact,
-    required this.width,
     required this.icon,
     required this.title,
     required this.value,
   });
 
-  final bool compact;
-  final double width;
   final IconData icon;
   final String title;
   final String value;
@@ -485,22 +517,22 @@ class _IntroInfoTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: width,
-      padding: const EdgeInsets.all(13),
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
       decoration: BoxDecoration(
         color: AppColors.surfaceSoft,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppColors.border),
       ),
       child: Row(
-        mainAxisSize: compact ? MainAxisSize.max : MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
             width: 34,
             height: 34,
             decoration: BoxDecoration(
               color: AppColors.brandRedSoft,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(icon, color: AppColors.brandRed, size: 18),
           ),
@@ -508,6 +540,7 @@ class _IntroInfoTile extends StatelessWidget {
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   title,
@@ -516,19 +549,20 @@ class _IntroInfoTile extends StatelessWidget {
                   style: const TextStyle(
                     color: AppColors.textMuted,
                     fontFamily: 'Poppins',
-                    fontSize: 11.5,
+                    fontSize: 11,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   value,
-                  maxLines: 1,
+                  maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: AppColors.textPrimary,
                     fontFamily: 'Poppins',
-                    fontSize: 12.5,
+                    fontSize: 12,
+                    height: 1.35,
                     fontWeight: FontWeight.w900,
                   ),
                 ),

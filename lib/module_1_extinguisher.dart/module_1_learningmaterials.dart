@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'post_assess_instruction.dart';
+import 'module_progression_service.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
 
 class AppColors {
@@ -20,9 +21,6 @@ class AppColors {
   static const Color info = Color(0xFF2563EB);
 }
 
-String _uiText(BuildContext context, String en, String tl) {
-  return Localizations.localeOf(context).languageCode == 'tl' ? tl : en;
-}
 
 int _asInt(dynamic value, int fallback) {
   if (value is int) return value;
@@ -80,7 +78,7 @@ IconData _roleIcon(String? role) {
     case 'label':
       return Icons.label_important_rounded;
     case 'fire':
-      return Icons.local_fire_department_rounded;
+      return Icons.fire_extinguisher_rounded;
     case 'extinguisher':
       return Icons.fire_extinguisher_rounded;
     case 'category':
@@ -138,6 +136,12 @@ class _MediaAsset {
   String get effectivePath => (publicUrl ?? '').trim().isNotEmpty ? publicUrl! : path;
 }
 
+class _LocalizedText {
+  final String en;
+  final String? tl;
+  const _LocalizedText({required this.en, required this.tl});
+}
+
 class _FireGuide {
   final int order;
   final String key;
@@ -182,7 +186,7 @@ class _BlockData {
   _SourceData? source(BuildContext context, _MaterialData material) {
     if ((sourceTitle ?? '').isEmpty || (sourceOrganization ?? '').isEmpty || (sourceUrl ?? '').isEmpty) return null;
     final label = metaText(context, material, 'source_label').trim();
-    return _SourceData(label: label.isEmpty ? _uiText(context, 'Reference', 'Sanggunian') : label, title: sourceTitle!, organization: sourceOrganization!, url: sourceUrl!);
+    return _SourceData(label: label.isEmpty ? material.copy(context, 'source_reference_label') : label, title: sourceTitle!, organization: sourceOrganization!, url: sourceUrl!);
   }
 }
 
@@ -198,6 +202,7 @@ class _PageData {
 
 class _MaterialData {
   final String id;
+  final String moduleId;
   final int moduleNo;
   final String titleEn;
   final String titleTl;
@@ -208,7 +213,8 @@ class _MaterialData {
   final List<_PageData> pages;
   final Map<String, _MediaAsset> media;
   final Map<String, _FireGuide> guides;
-  const _MaterialData({required this.id, required this.moduleNo, required this.titleEn, required this.titleTl, required this.subtitleEn, required this.subtitleTl, required this.heroAsset, required this.content, required this.pages, required this.media, required this.guides});
+  final Map<String, _LocalizedText> texts;
+  const _MaterialData({required this.id, required this.moduleId, required this.moduleNo, required this.titleEn, required this.titleTl, required this.subtitleEn, required this.subtitleTl, required this.heroAsset, required this.content, required this.pages, required this.media, required this.guides, required this.texts});
 
   _PageData page(int pageNo) => pages.firstWhere((p) => p.pageNo == pageNo);
 
@@ -230,30 +236,65 @@ class _MaterialData {
     return _stringList(raw is List ? raw : fallback);
   }
 
+  String copy(BuildContext context, String key, {String fallback = ''}) {
+    final item = texts[key];
+    if (item == null) return fallback;
+    final value = localize(context, item.en, item.tl).trim();
+    return value.isEmpty ? fallback : value;
+  }
+
+  String copyFormat(BuildContext context, String key, Map<String, String> values, {String fallback = ''}) {
+    var value = copy(context, key, fallback: fallback);
+    values.forEach((token, replacement) => value = value.replaceAll('{$token}', replacement));
+    return value;
+  }
+
   Map<String, dynamic> get dialogs => _map(content['dialogs']);
   Map<String, dynamic> get classPage => _map(content['class_guide_page']);
 
-  String mediaUrl(String? assetKeyOrPath) {
+  String mediaSource(String? assetKeyOrPath) {
     if (assetKeyOrPath == null || assetKeyOrPath.trim().isEmpty) return '';
-    final raw = media[assetKeyOrPath]?.effectivePath ?? assetKeyOrPath;
+    final raw = (media[assetKeyOrPath]?.effectivePath ?? assetKeyOrPath).trim();
     final uri = Uri.tryParse(raw);
-    if (uri != null && uri.hasScheme) return raw;
+    if (raw.startsWith('assets/') || (uri != null && uri.hasScheme)) return raw;
     return Supabase.instance.client.storage
         .from(_Repository.storageBucket)
         .getPublicUrl(raw)
         .replaceAll(' ', '%20');
   }
+
+  String mediaUrl(String? assetKeyOrPath) => mediaSource(assetKeyOrPath);
 }
 
 class _Repository {
   static const int moduleNo = 1;
   static const String storageBucket = 'Learning Materials';
 
+  static Future<Map<String, _LocalizedText>> loadUiTexts() async {
+    final rows = await Supabase.instance.client
+        .from('learning_material_texts')
+        .select('text_key, text_en, text_tl, text_order, usage_context')
+        .eq('module_no', moduleNo)
+        .eq('usage_context', 'mobile_learning_material_ui')
+        .eq('is_active', true)
+        .order('text_order', ascending: true);
+
+    final texts = <String, _LocalizedText>{};
+    for (final item in rows as List<dynamic>) {
+      final row = Map<String, dynamic>.from(item as Map);
+      final key = row['text_key']?.toString() ?? '';
+      final en = row['text_en']?.toString() ?? '';
+      if (key.isEmpty || en.isEmpty) continue;
+      texts[key] = _LocalizedText(en: en, tl: row['text_tl']?.toString());
+    }
+    return texts;
+  }
+
   static Future<_MaterialData> load() async {
     final client = Supabase.instance.client;
     final materialRaw = await client
         .from('learning_materials')
-        .select('id, module_no, title, title_tl, subtitle, subtitle_tl, hero_asset, content')
+        .select('id, module_id, module_no, title, title_tl, subtitle, subtitle_tl, hero_asset, content')
         .eq('module_no', moduleNo)
         .eq('is_active', true)
         .maybeSingle();
@@ -269,13 +310,20 @@ class _Repository {
         .eq('module_no', moduleNo)
         .eq('is_active', true)
         .order('page_no', ascending: true);
-    final blockRows = await client
-        .from('learning_material_blocks')
-        .select('id, page_id, page_no, block_no, block_key, block_type, text_en, text_tl, source_title, source_organization, source_url, metadata')
-        .eq('module_no', moduleNo)
-        .eq('is_active', true)
-        .order('page_no', ascending: true)
-        .order('block_no', ascending: true);
+    final pageIds = (pageRows as List<dynamic>)
+        .map((item) => Map<String, dynamic>.from(item as Map)['id']?.toString() ?? '')
+        .where((id) => id.isNotEmpty)
+        .toList();
+    final blockRows = pageIds.isEmpty
+        ? <dynamic>[]
+        : await client
+            .from('learning_material_blocks')
+            .select('id, page_id, page_no, block_no, block_key, block_type, text_en, text_tl, source_title, source_organization, source_url, metadata')
+            .eq('module_no', moduleNo)
+            .inFilter('page_id', pageIds)
+            .eq('is_active', true)
+            .order('page_no', ascending: true)
+            .order('block_no', ascending: true);
     final mediaRows = await client
         .from('learning_material_media_assets')
         .select('asset_key, asset_path, public_url, asset_type')
@@ -283,6 +331,13 @@ class _Repository {
         .eq('module_no', moduleNo)
         .eq('is_active', true)
         .order('display_order', ascending: true);
+    final textRows = await client
+        .from('learning_material_texts')
+        .select('text_key, text_en, text_tl, text_order, usage_context')
+        .eq('learning_material_id', materialId)
+        .eq('module_no', moduleNo)
+        .eq('is_active', true)
+        .order('text_order', ascending: true);
     final guideRows = await client
         .from('learning_material_fire_class_guides')
         .select('display_order, class_key, class_name_en, class_name_tl, image_asset, examples_en, examples_tl, agents_en, agents_tl')
@@ -317,7 +372,7 @@ class _Repository {
       final id = row['id']?.toString() ?? '';
       pages.add(_PageData(id: id, pageNo: _asInt(row['page_no'], 0), key: row['page_key']?.toString() ?? '', titleEn: row['title_en']?.toString() ?? '', titleTl: row['title_tl']?.toString() ?? '', blocks: blocksByPageId[id] ?? const <_BlockData>[]));
     }
-    if (pages.length != 3) throw StateError('Module 1 must have exactly 3 active learning-material pages.');
+    if (pages.isEmpty) throw StateError('Module 1 has no active learning-material pages.');
 
     final media = <String, _MediaAsset>{};
     for (final item in mediaRows as List<dynamic>) {
@@ -336,7 +391,19 @@ class _Repository {
       guides[key] = _FireGuide(order: _asInt(row['display_order'], 0), key: key, nameEn: row['class_name_en']?.toString() ?? '', nameTl: row['class_name_tl']?.toString(), imageAsset: row['image_asset']?.toString(), examplesEn: _stringList(row['examples_en']), examplesTl: _stringList(row['examples_tl']), agentsEn: _stringList(row['agents_en']), agentsTl: _stringList(row['agents_tl']));
     }
 
-    return _MaterialData(id: materialId, moduleNo: _asInt(material['module_no'], moduleNo), titleEn: material['title']?.toString() ?? '', titleTl: material['title_tl']?.toString() ?? '', subtitleEn: material['subtitle']?.toString(), subtitleTl: material['subtitle_tl']?.toString(), heroAsset: material['hero_asset']?.toString(), content: _map(material['content']), pages: pages, media: media, guides: guides);
+    final texts = <String, _LocalizedText>{};
+    for (final item in textRows as List<dynamic>) {
+      final row = Map<String, dynamic>.from(item as Map);
+      final key = row['text_key']?.toString() ?? '';
+      final en = row['text_en']?.toString() ?? '';
+      if (key.isEmpty || en.isEmpty) continue;
+      texts[key] = _LocalizedText(en: en, tl: row['text_tl']?.toString());
+    }
+
+    final moduleId = material['module_id']?.toString() ?? '';
+    if (moduleId.isEmpty) throw StateError('Module 1 learning material has no module_id.');
+
+    return _MaterialData(id: materialId, moduleId: moduleId, moduleNo: _asInt(material['module_no'], moduleNo), titleEn: material['title']?.toString() ?? '', titleTl: material['title_tl']?.toString() ?? '', subtitleEn: material['subtitle']?.toString(), subtitleTl: material['subtitle_tl']?.toString(), heroAsset: material['hero_asset']?.toString(), content: _map(material['content']), pages: pages, media: media, guides: guides, texts: texts);
   }
 }
 
@@ -350,14 +417,16 @@ class LearningMaterialExtinguisherPage extends StatefulWidget {
 class _LearningMaterialExtinguisherPageState extends State<LearningMaterialExtinguisherPage> {
   final PageController _pageCtrl = PageController();
   final ScrollController _scrollCtrl = ScrollController();
-  final List<Set<int>> _readSections = [<int>{}, <int>{}, <int>{}];
+  List<Set<int>> _readSections = <Set<int>>[];
 
   _MaterialData? _data;
+  Map<String, _LocalizedText> _bootstrapTexts = <String, _LocalizedText>{};
   bool _loading = true;
   String? _error;
   int _pageIndex = 0;
   double _scrollProgress = 0.0;
   bool _introShown = false;
+  bool _savingCompletion = false;
 
   @override
   void initState() {
@@ -378,11 +447,37 @@ class _LearningMaterialExtinguisherPageState extends State<LearningMaterialExtin
       _loading = true;
       _error = null;
     });
+
+    try {
+      _bootstrapTexts = await _Repository.loadUiTexts();
+    } catch (_) {
+      _bootstrapTexts = <String, _LocalizedText>{};
+    }
+
     try {
       final data = await _Repository.load();
+      final allowed = await _hasConfirmedPreTest(data.moduleId);
       if (!mounted) return;
+
+      if (!allowed) {
+        setState(() {
+          _data = data;
+          _bootstrapTexts = data.texts;
+          _readSections = List.generate(data.pages.length, (_) => <int>{});
+          _loading = false;
+          _error = _bootstrapCopy(
+            'learning_locked_error',
+            fallback: 'Learning Module is locked until the Pre-Assessment is completed and saved.',
+          );
+        });
+        WidgetsBinding.instance.addPostFrameCallback((_) => _showLockedAccessAndClose());
+        return;
+      }
+
       setState(() {
         _data = data;
+        _bootstrapTexts = data.texts;
+        _readSections = List.generate(data.pages.length, (_) => <int>{});
         _loading = false;
       });
       if (!_introShown) {
@@ -398,6 +493,42 @@ class _LearningMaterialExtinguisherPageState extends State<LearningMaterialExtin
     }
   }
 
+  Future<bool> _hasConfirmedPreTest(String moduleId) async {
+    try {
+      await ModuleProgressionService().ensureCanOpenLearningModule(moduleNo: 1);
+      return true;
+    } on ProgressionAccessDenied {
+      return false;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<void> _showLockedAccessAndClose() async {
+    if (!mounted) return;
+
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => _ContentDialog(
+        icon: Icons.lock_outline_rounded,
+        color: AppColors.brandRed,
+        title: _bootstrapCopy(
+          'learning_locked_title',
+          fallback: 'Learning Module Locked',
+        ),
+        body: _bootstrapCopy(
+          'learning_locked_body',
+          fallback: 'Complete the Paunang Pagsusulit first. The Learning Module opens only after Supabase confirms your completed pre-test and saved score.',
+        ),
+        button: _bootstrapCopy('dialog_button_got_it', fallback: 'Got it'),
+        onPressed: () => Navigator.pop(context),
+      ),
+    );
+
+    if (mounted) Navigator.pop(context);
+  }
+
   void _onScroll() {
     if (!_scrollCtrl.hasClients) return;
     final max = _scrollCtrl.position.maxScrollExtent;
@@ -406,6 +537,14 @@ class _LearningMaterialExtinguisherPageState extends State<LearningMaterialExtin
   }
 
   _MaterialData get data => _data!;
+
+  String _bootstrapCopy(String key, {String fallback = ''}) {
+    final item = _bootstrapTexts[key];
+    if (item == null) return fallback;
+    final isTl = Localizations.localeOf(context).languageCode == 'tl';
+    final value = isTl && (item.tl ?? '').trim().isNotEmpty ? item.tl!.trim() : item.en.trim();
+    return value.isEmpty ? fallback : value;
+  }
 
   String _dialogText(String key, String field) {
     final dialog = _map(data.dialogs[key]);
@@ -435,7 +574,7 @@ class _LearningMaterialExtinguisherPageState extends State<LearningMaterialExtin
         color: color,
         title: title,
         body: body,
-        button: _uiText(context, 'Got it', 'Naiintindihan'),
+        button: data.copy(context, 'dialog_button_got_it'),
         onPressed: () => Navigator.pop(context),
       ),
     );
@@ -448,7 +587,64 @@ class _LearningMaterialExtinguisherPageState extends State<LearningMaterialExtin
     return 0;
   }
 
-  bool _pageRead(int pageIndex) => _readSections[pageIndex].length >= _requiredSections(pageIndex);
+  bool _pageRead(int pageIndex) => pageIndex >= 0 && pageIndex < _readSections.length && _readSections[pageIndex].length >= _requiredSections(pageIndex);
+
+  Future<bool> _markLearningMaterialCompleted() async {
+    try {
+      await ModuleProgressionService().markLearningMaterialCompleted(moduleNo: 1);
+      return true;
+    } on ProgressionAccessDenied catch (e) {
+      _showInfo(
+        data.copy(context, 'learning_locked_title', fallback: 'Learning Module Locked'),
+        e.message,
+        Icons.lock_outline_rounded,
+        AppColors.brandRed,
+      );
+      return false;
+    } catch (e) {
+      _showInfo(
+        data.copy(context, 'completion_save_failed_title', fallback: 'Completion not saved'),
+        e.toString().replaceFirst('Exception: ', ''),
+        Icons.error_outline_rounded,
+        AppColors.brandRed,
+      );
+      return false;
+    }
+  }
+
+  Future<void> _completeLearningMaterialAndOpenPostAssessment() async {
+    if (_savingCompletion) return;
+
+    setState(() => _savingCompletion = true);
+
+    try {
+      final saved = await _markLearningMaterialCompleted();
+      if (!mounted || !saved) return;
+
+      Navigator.pop(context);
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const PostAssessmentIntroPage()),
+      );
+    } catch (e) {
+      debugPrint('SAVE LEARNING MATERIAL COMPLETION ERROR: $e');
+      if (!mounted) return;
+      _showInfo(
+        data.copy(context, 'completion_save_failed_title', fallback: 'Completion not saved'),
+        data.copy(
+          context,
+          'completion_save_failed_body',
+          fallback: 'The learning module completion could not be saved. Please try again.',
+        ),
+        Icons.error_outline_rounded,
+        AppColors.brandRed,
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _savingCompletion = false);
+      }
+    }
+  }
 
   void _goNext() {
     if (!_pageRead(_pageIndex)) {
@@ -483,8 +679,7 @@ class _LearningMaterialExtinguisherPageState extends State<LearningMaterialExtin
           body: _dialogText('final_complete', 'body'),
           button: _dialogText('final_complete', 'button'),
           onPressed: () {
-            Navigator.pop(context);
-            Navigator.push(context, MaterialPageRoute(builder: (_) => const PostAssessmentIntroPage()));
+            _completeLearningMaterialAndOpenPostAssessment();
           },
         ),
       );
@@ -505,7 +700,14 @@ class _LearningMaterialExtinguisherPageState extends State<LearningMaterialExtin
     if (_error != null || _data == null) {
       return _ScreenShell(
         child: Center(
-          child: _ErrorCard(message: _error ?? 'No learning material data.', onRetry: _load, onClose: () => Navigator.pop(context)),
+          child: _ErrorCard(
+            title: _bootstrapCopy('error_load_title', fallback: 'Learning materials could not load'),
+            message: _error ?? _bootstrapCopy('error_no_data', fallback: 'No learning material data.'),
+            closeLabel: _bootstrapCopy('error_close', fallback: 'Close'),
+            retryLabel: _bootstrapCopy('error_retry', fallback: 'Retry'),
+            onRetry: _load,
+            onClose: () => Navigator.pop(context),
+          ),
         ),
       );
     }
@@ -528,6 +730,7 @@ class _LearningMaterialExtinguisherPageState extends State<LearningMaterialExtin
                     currentPage: _pageIndex + 1,
                     totalPages: data.pages.length,
                     progress: _scrollProgress,
+                    pageLabel: data.copy(context, 'page_label'),
                     onClose: () => Navigator.pop(context),
                   ),
                 ),
@@ -548,7 +751,15 @@ class _LearningMaterialExtinguisherPageState extends State<LearningMaterialExtin
                     children: data.pages.map((page) => _pageWrap(_buildPage(page))).toList(),
                   ),
                 ),
-                _BottomNav(isLast: _pageIndex == data.pages.length - 1, enabled: _pageRead(_pageIndex), onBack: _goBack, onNext: _goNext),
+                _BottomNav(
+                  isLast: _pageIndex == data.pages.length - 1,
+                  enabled: _pageRead(_pageIndex),
+                  backLabel: data.copy(context, 'nav_back'),
+                  nextLabel: data.copy(context, 'nav_next'),
+                  startPostTestLabel: data.copy(context, 'nav_start_post_test'),
+                  onBack: _goBack,
+                  onNext: _goNext,
+                ),
               ],
             ),
           ),
@@ -592,7 +803,7 @@ class _LearningMaterialExtinguisherPageState extends State<LearningMaterialExtin
       case 'page_banner':
         return _PageBanner(tag: block.metaText(context, data, 'page_tag'), title: block.text(context, data), subtitle: block.metaText(context, data, 'subtitle'), pageNo: page.pageNo);
       case 'media_card':
-        return _MediaCard(imageUrl: data.mediaUrl(block.metaString('asset_key')), title: block.text(context, data), subtitle: block.metaText(context, data, 'subtitle'), use3DPreview: page.pageNo == 1);
+        return _MediaCard(material: data, block: block, imageUrl: data.mediaUrl(block.metaString('asset_key')), title: block.text(context, data), subtitle: block.metaText(context, data, 'subtitle'), use3DPreview: page.pageNo == 1);
       case 'did_you_know':
         return Column(children: [_InfoTip(text: block.metaText(context, data, 'teaser'), onTap: () => _showInfo(block.metaText(context, data, 'popup_title'), block.text(context, data), Icons.tips_and_updates_rounded, AppColors.brandRed)), if (block.source(context, data) != null) ...[const SizedBox(height: 8), _SourceCard(source: block.source(context, data)!)]]) ;
       case 'expandable_lesson':
@@ -612,7 +823,7 @@ class _LearningMaterialExtinguisherPageState extends State<LearningMaterialExtin
       case 'callout':
         return _Callout(title: block.text(context, data), lines: block.metaList(context, data, 'lines'), icon: _roleIcon(block.metaString('icon_role')), color: _roleColor(block.metaString('accent_role')));
       case 'reading_progress':
-        return _ReadBadge(read: _readSections[page.pageNo - 1].length, total: block.metaInt('required_sections', 0));
+        return _ReadBadge(material: data, read: _readSections[page.pageNo - 1].length, total: block.metaInt('required_sections', 0));
       default:
         return const SizedBox.shrink();
     }
@@ -671,12 +882,89 @@ class _ScreenShell extends StatelessWidget {
 }
 
 class _ErrorCard extends StatelessWidget {
+  final String title;
   final String message;
+  final String closeLabel;
+  final String retryLabel;
   final VoidCallback onRetry;
   final VoidCallback onClose;
-  const _ErrorCard({required this.message, required this.onRetry, required this.onClose});
+
+  const _ErrorCard({
+    required this.title,
+    required this.message,
+    required this.closeLabel,
+    required this.retryLabel,
+    required this.onRetry,
+    required this.onClose,
+  });
+
   @override
-  Widget build(BuildContext context) => Container(margin: const EdgeInsets.all(24), padding: const EdgeInsets.all(20), decoration: _cardDecoration(), child: Column(mainAxisSize: MainAxisSize.min, children: [const Icon(Icons.error_outline_rounded, color: AppColors.brandRed, size: 42), const SizedBox(height: 12), Text(_uiText(context, 'Learning materials could not load', 'Hindi ma-load ang modyul sa pag-aaral'), textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16)), const SizedBox(height: 8), Text(message, textAlign: TextAlign.center, style: const TextStyle(color: AppColors.textSecondary, height: 1.45)), const SizedBox(height: 16), Row(children: [Expanded(child: OutlinedButton(onPressed: onClose, child: Text(_uiText(context, 'Close', 'Isara')))), const SizedBox(width: 10), Expanded(child: ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: AppColors.brandRed), onPressed: onRetry, child: Text(_uiText(context, 'Retry', 'Subukan muli'), style: const TextStyle(color: Colors.white))))])])) ;
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(20),
+      decoration: _cardDecoration(),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.error_outline_rounded, color: AppColors.brandRed, size: 42),
+          const SizedBox(height: 12),
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            softWrap: true,
+            style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            message,
+            textAlign: TextAlign.center,
+            softWrap: true,
+            style: const TextStyle(color: AppColors.textSecondary, height: 1.45),
+          ),
+          const SizedBox(height: 16),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final stackButtons = constraints.maxWidth < 260;
+              final closeButton = OutlinedButton(
+                onPressed: onClose,
+                child: Text(closeLabel, textAlign: TextAlign.center, softWrap: true),
+              );
+              final retryButton = ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: AppColors.brandRed),
+                onPressed: onRetry,
+                child: Text(
+                  retryLabel,
+                  textAlign: TextAlign.center,
+                  softWrap: true,
+                  style: const TextStyle(color: Colors.white),
+                ),
+              );
+
+              if (stackButtons) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    closeButton,
+                    const SizedBox(height: 10),
+                    retryButton,
+                  ],
+                );
+              }
+
+              return Row(
+                children: [
+                  Expanded(child: closeButton),
+                  const SizedBox(width: 10),
+                  Expanded(child: retryButton),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 BoxDecoration _cardDecoration() => BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(24), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.12), blurRadius: 18, offset: const Offset(0, 8))]);
@@ -702,23 +990,230 @@ class _TopHeader extends StatelessWidget {
   final int currentPage;
   final int totalPages;
   final double progress;
+  final String pageLabel;
   final VoidCallback onClose;
-  const _TopHeader({required this.sectionTitle, required this.moduleLabel, required this.moduleTitle, required this.currentPage, required this.totalPages, required this.progress, required this.onClose});
+
+  const _TopHeader({
+    required this.sectionTitle,
+    required this.moduleLabel,
+    required this.moduleTitle,
+    required this.currentPage,
+    required this.totalPages,
+    required this.progress,
+    required this.pageLabel,
+    required this.onClose,
+  });
+
   @override
   Widget build(BuildContext context) {
-    final pageLabel = _uiText(context, 'Page', 'Pahina');
-    return Column(crossAxisAlignment: CrossAxisAlignment.center, children: [Row(children: [InkWell(onTap: onClose, borderRadius: BorderRadius.circular(999), child: Container(width: 40, height: 40, decoration: BoxDecoration(color: Colors.white.withOpacity(0.18), shape: BoxShape.circle), child: const Icon(Icons.close_rounded, color: Colors.white))), const Spacer()]), const SizedBox(height: 14), Text(sectionTitle, maxLines: 2, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 27, height: 1.12, fontWeight: FontWeight.w900)), const SizedBox(height: 12), Row(children: [Container(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8), decoration: BoxDecoration(color: AppColors.brandRedLight, borderRadius: BorderRadius.circular(999)), child: Row(mainAxisSize: MainAxisSize.min, children: [const Icon(Icons.menu_book_rounded, color: Colors.white, size: 15), const SizedBox(width: 6), Text(moduleLabel, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900))])), const SizedBox(width: 10), Expanded(child: Text(moduleTitle, maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.white.withOpacity(0.88), fontSize: 12.5, height: 1.28, fontWeight: FontWeight.w700)))]), const SizedBox(height: 14), ClipRRect(borderRadius: BorderRadius.circular(999), child: LinearProgressIndicator(value: progress.clamp(0.0, 1.0), minHeight: 8, backgroundColor: Colors.white.withOpacity(0.22), valueColor: const AlwaysStoppedAnimation<Color>(Colors.white))), const SizedBox(height: 10), Row(children: [Text('$pageLabel $currentPage/$totalPages', style: TextStyle(color: Colors.white.withOpacity(0.76), fontSize: 12, fontWeight: FontWeight.w700)), const Spacer(), Wrap(spacing: 6, children: List.generate(totalPages, (index) => AnimatedContainer(duration: const Duration(milliseconds: 180), width: index == currentPage - 1 ? 28 : 10, height: 10, decoration: BoxDecoration(color: index == currentPage - 1 ? Colors.white : Colors.white.withOpacity(0.34), borderRadius: BorderRadius.circular(999)))))] )]);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Row(
+          children: [
+            InkWell(
+              onTap: onClose,
+              borderRadius: BorderRadius.circular(999),
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(color: Colors.white.withOpacity(0.18), shape: BoxShape.circle),
+                child: const Icon(Icons.close_rounded, color: Colors.white),
+              ),
+            ),
+            const Spacer(),
+          ],
+        ),
+        const SizedBox(height: 14),
+        Text(
+          sectionTitle,
+          softWrap: true,
+          textAlign: TextAlign.center,
+          style: const TextStyle(color: Colors.white, fontSize: 27, height: 1.12, fontWeight: FontWeight.w900),
+        ),
+        const SizedBox(height: 12),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final moduleBadge = Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(color: AppColors.brandRedLight, borderRadius: BorderRadius.circular(999)),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.menu_book_rounded, color: Colors.white, size: 15),
+                  const SizedBox(width: 6),
+                  Flexible(
+                    child: Text(
+                      moduleLabel,
+                      softWrap: true,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900),
+                    ),
+                  ),
+                ],
+              ),
+            );
+
+            final moduleTitleText = Text(
+              moduleTitle,
+              softWrap: true,
+              style: TextStyle(color: Colors.white.withOpacity(0.88), fontSize: 12.5, height: 1.28, fontWeight: FontWeight.w700),
+            );
+
+            if (constraints.maxWidth < 330) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  moduleBadge,
+                  const SizedBox(height: 8),
+                  moduleTitleText,
+                ],
+              );
+            }
+
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ConstrainedBox(constraints: BoxConstraints(maxWidth: constraints.maxWidth * 0.48), child: moduleBadge),
+                const SizedBox(width: 10),
+                Expanded(child: moduleTitleText),
+              ],
+            );
+          },
+        ),
+        const SizedBox(height: 14),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(999),
+          child: LinearProgressIndicator(
+            value: progress.clamp(0.0, 1.0),
+            minHeight: 8,
+            backgroundColor: Colors.white.withOpacity(0.22),
+            valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+          ),
+        ),
+        const SizedBox(height: 10),
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                '$pageLabel $currentPage/$totalPages',
+                softWrap: true,
+                style: TextStyle(color: Colors.white.withOpacity(0.76), fontSize: 12, fontWeight: FontWeight.w700),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Wrap(
+              spacing: 6,
+              runSpacing: 6,
+              children: List.generate(
+                totalPages,
+                (index) => AnimatedContainer(
+                  duration: const Duration(milliseconds: 180),
+                  width: index == currentPage - 1 ? 28 : 10,
+                  height: 10,
+                  decoration: BoxDecoration(
+                    color: index == currentPage - 1 ? Colors.white : Colors.white.withOpacity(0.34),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
   }
 }
 
 class _BottomNav extends StatelessWidget {
   final bool isLast;
   final bool enabled;
+  final String backLabel;
+  final String nextLabel;
+  final String startPostTestLabel;
   final VoidCallback onBack;
   final VoidCallback onNext;
-  const _BottomNav({required this.isLast, required this.enabled, required this.onBack, required this.onNext});
+
+  const _BottomNav({
+    required this.isLast,
+    required this.enabled,
+    required this.backLabel,
+    required this.nextLabel,
+    required this.startPostTestLabel,
+    required this.onBack,
+    required this.onNext,
+  });
+
   @override
-  Widget build(BuildContext context) => Container(padding: const EdgeInsets.fromLTRB(18, 10, 18, 18), color: AppColors.background, child: Row(children: [Expanded(flex: 4, child: SizedBox(height: 48, child: OutlinedButton(style: OutlinedButton.styleFrom(side: const BorderSide(color: AppColors.brandRed), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22))), onPressed: onBack, child: Text(_uiText(context, 'Back', 'Balik'), style: const TextStyle(color: AppColors.brandRed, fontWeight: FontWeight.bold))))), const SizedBox(width: 12), Expanded(flex: 7, child: SizedBox(height: 48, child: ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: enabled ? AppColors.brandRed : AppColors.brandRedSoft, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22))), onPressed: onNext, child: Text(isLast ? _uiText(context, 'Start Post-Test', 'Simulan ang Panghuling Pagsusulit') : _uiText(context, 'Next', 'Susunod'), maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: enabled ? Colors.white : AppColors.brandRed.withOpacity(0.4), fontWeight: FontWeight.bold)))))]));
+  Widget build(BuildContext context) {
+    final primaryLabel = isLast ? startPostTestLabel : nextLabel;
+
+    Widget backButton() => ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 54),
+          child: OutlinedButton(
+            style: OutlinedButton.styleFrom(
+              side: const BorderSide(color: AppColors.brandRed),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            ),
+            onPressed: onBack,
+            child: Text(
+              backLabel,
+              textAlign: TextAlign.center,
+              softWrap: true,
+              style: const TextStyle(color: AppColors.brandRed, fontWeight: FontWeight.bold),
+            ),
+          ),
+        );
+
+    Widget primaryButton() => ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 54),
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: enabled ? AppColors.brandRed : AppColors.brandRedSoft,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            ),
+            onPressed: onNext,
+            child: Text(
+              primaryLabel,
+              textAlign: TextAlign.center,
+              softWrap: true,
+              style: TextStyle(color: enabled ? Colors.white : AppColors.brandRed.withOpacity(0.4), fontWeight: FontWeight.bold),
+            ),
+          ),
+        );
+
+    return Container(
+      padding: const EdgeInsets.fromLTRB(18, 10, 18, 18),
+      color: AppColors.background,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          if (constraints.maxWidth < 300) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                backButton(),
+                const SizedBox(height: 10),
+                primaryButton(),
+              ],
+            );
+          }
+
+          return IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(flex: 4, child: backButton()),
+                const SizedBox(width: 12),
+                Expanded(flex: 7, child: primaryButton()),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
 }
 
 class _ContentDialog extends StatelessWidget {
@@ -728,9 +1223,69 @@ class _ContentDialog extends StatelessWidget {
   final String body;
   final String button;
   final VoidCallback onPressed;
-  const _ContentDialog({required this.icon, required this.color, required this.title, required this.body, required this.button, required this.onPressed});
+
+  const _ContentDialog({
+    required this.icon,
+    required this.color,
+    required this.title,
+    required this.body,
+    required this.button,
+    required this.onPressed,
+  });
+
   @override
-  Widget build(BuildContext context) => Dialog(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)), insetPadding: const EdgeInsets.symmetric(horizontal: 28), child: Padding(padding: const EdgeInsets.all(24), child: Column(mainAxisSize: MainAxisSize.min, children: [Container(width: 64, height: 64, decoration: BoxDecoration(color: color.withOpacity(0.1), shape: BoxShape.circle), child: Icon(icon, color: color, size: 32)), const SizedBox(height: 16), Text(title, textAlign: TextAlign.center, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: color)), const SizedBox(height: 10), Text(body, textAlign: TextAlign.center, style: const TextStyle(fontSize: 14, height: 1.55, color: Color(0xFF374151))), const SizedBox(height: 20), SizedBox(width: double.infinity, child: ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: color, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)), padding: const EdgeInsets.symmetric(vertical: 14)), onPressed: onPressed, child: Text(button, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900))))])));
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 28),
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(color: color.withOpacity(0.1), shape: BoxShape.circle),
+              child: Icon(icon, color: color, size: 32),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              softWrap: true,
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: color),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              body,
+              textAlign: TextAlign.center,
+              softWrap: true,
+              style: const TextStyle(fontSize: 14, height: 1.55, color: Color(0xFF374151)),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: color,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                ),
+                onPressed: onPressed,
+                child: Text(
+                  button,
+                  textAlign: TextAlign.center,
+                  softWrap: true,
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class _PageBanner extends StatelessWidget {
@@ -747,11 +1302,13 @@ class _PageBanner extends StatelessWidget {
 }
 
 class _MediaCard extends StatelessWidget {
+  final _MaterialData material;
+  final _BlockData block;
   final String imageUrl;
   final String title;
   final String subtitle;
   final bool use3DPreview;
-  const _MediaCard({required this.imageUrl, required this.title, required this.subtitle, this.use3DPreview = false});
+  const _MediaCard({required this.material, required this.block, required this.imageUrl, required this.title, required this.subtitle, this.use3DPreview = false});
 
   @override
   Widget build(BuildContext context) {
@@ -831,7 +1388,7 @@ class _MediaCard extends StatelessWidget {
                 const Icon(Icons.visibility_rounded, size: 16, color: AppColors.brandRed),
                 const SizedBox(width: 8),
                 Text(
-                  _uiText(context, 'TAP TO VIEW IN 3D', 'I-TAP PARA TINGNAN SA 3D'),
+                  material.copy(context, 'tap_to_view_3d'),
                   style: const TextStyle(
                     color: AppColors.brandRed,
                     fontSize: 11,
@@ -844,9 +1401,9 @@ class _MediaCard extends StatelessWidget {
           ),
           const SizedBox(height: 22),
           if (use3DPreview)
-            _PageOne3DPreview(imageUrl: imageUrl)
+            _PageOne3DPreview(material: material, block: block, imageUrl: imageUrl)
           else
-            _StaticPreviewImage(imageUrl: imageUrl),
+            _StaticPreviewImage(imageUrl: imageUrl, unavailableLabel: material.copy(context, 'image_unavailable_3d')),
         ],
       ),
     );
@@ -855,7 +1412,8 @@ class _MediaCard extends StatelessWidget {
 
 class _StaticPreviewImage extends StatelessWidget {
   final String imageUrl;
-  const _StaticPreviewImage({required this.imageUrl});
+  final String unavailableLabel;
+  const _StaticPreviewImage({required this.imageUrl, required this.unavailableLabel});
 
   @override
   Widget build(BuildContext context) {
@@ -911,7 +1469,7 @@ class _StaticPreviewImage extends StatelessWidget {
                     const Icon(Icons.fire_extinguisher_rounded, color: AppColors.brandRed, size: 46),
                     const SizedBox(height: 10),
                     Text(
-                      _uiText(context, '3D image unavailable', 'Hindi ma-load ang 3D image'),
+                      unavailableLabel,
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         color: AppColors.brandRed,
@@ -932,21 +1490,24 @@ class _StaticPreviewImage extends StatelessWidget {
 }
 
 class _PageOne3DPreview extends StatelessWidget {
+  final _MaterialData material;
+  final _BlockData block;
   final String imageUrl;
-  const _PageOne3DPreview({required this.imageUrl});
-
-  static const String _modelPath = 'assets/models/fireex3dFinal.glb';
-
-  // [letter, titleEn, descEn, titleTl, descTl]
-  static const List<List<String>> _passSteps = [
-    ['P', 'Pull the Pin', 'Pull the safety pin to unlock the fire extinguisher and break the tamper seal before use.', 'Bunutin ang Pin', 'Bunutin ang safety pin upang ma-unlock ang fire extinguisher at masira ang tamper seal bago gamitin.'],
-    ['A', 'Aim the Nozzle', 'Aim the nozzle at the base of the fire, not at the flames.', 'Itutok ang Nozzle', 'Itutok ang nozzle sa base ng apoy, hindi sa mga apoy mismo.'],
-    ['S', 'Squeeze the Handle', 'Squeeze the handle slowly and firmly to release the extinguishing agent.', 'Pisilin ang Handle', 'Pisilin nang dahan-dahan at mahigpit ang handle upang mailabas ang extinguishing agent.'],
-    ['S', 'Sweep Side to Side', 'Sweep the nozzle from side to side across the base of the fire until it is fully out.', 'I-Sweep ng Pakaliwa-Pakanan', 'I-sweep ang nozzle mula kaliwa hanggang kanan sa base ng apoy hanggang ganap itong mapatay.'],
-  ];
+  const _PageOne3DPreview({required this.material, required this.block, required this.imageUrl});
 
   @override
   Widget build(BuildContext context) {
+    final modelSrc = material.mediaSource(block.metaString('model_asset_key')).trim();
+    final viewerTitle = block.metaText(context, material, 'viewer_title').trim();
+    final viewerSubtitle = block.metaText(context, material, 'viewer_subtitle').trim();
+    final modelBadge = block.metaText(context, material, 'model_badge').trim();
+    final modelAlt = block.metaText(context, material, 'model_alt').trim();
+    final interactionHint = block.metaText(context, material, 'interaction_hint').trim();
+    final passHeading = block.metaText(context, material, 'pass_heading').trim();
+    final steps = block.mapList('pass_steps');
+    final cameraOrbit = block.metaString('camera_orbit') ?? '0deg 72deg 1.85m';
+    final fieldOfView = block.metaString('field_of_view') ?? '25deg';
+
     return LayoutBuilder(
       builder: (context, constraints) {
         final previewHeight = (constraints.maxWidth * 1.75)
@@ -956,32 +1517,29 @@ class _PageOne3DPreview extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Title
-            Text(
-              _uiText(context, 'PASS Method Fire Extinguisher', 'PASS Method sa Paggamit ng Fire Extinguisher'),
-              style: const TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.w900,
-                color: Color(0xFF111827),
-                height: 1.2,
+            if (viewerTitle.isNotEmpty) ...[
+              Text(
+                viewerTitle,
+                style: const TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w900,
+                  color: Color(0xFF111827),
+                  height: 1.2,
+                ),
               ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              _uiText(
-                context,
-                'Learn the basic parts and how to properly use the extinguisher.',
-                'Alamin ang mga bahagi at tamang paggamit ng fire extinguisher.',
+              const SizedBox(height: 4),
+            ],
+            if (viewerSubtitle.isNotEmpty) ...[
+              Text(
+                viewerSubtitle,
+                style: const TextStyle(
+                  fontSize: 12.5,
+                  color: AppColors.textSecondary,
+                  height: 1.4,
+                ),
               ),
-              style: const TextStyle(
-                fontSize: 12.5,
-                color: AppColors.textSecondary,
-                height: 1.4,
-              ),
-            ),
-            const SizedBox(height: 14),
-
-            // 3D model card
+              const SizedBox(height: 14),
+            ],
             ClipRRect(
               borderRadius: BorderRadius.circular(30),
               child: Container(
@@ -1011,56 +1569,42 @@ class _PageOne3DPreview extends StatelessWidget {
                         ),
                       ),
                     ),
-
-                    Positioned(
-                      top: 14,
-                      left: 14,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.84),
-                          borderRadius: BorderRadius.circular(999),
-                          border: Border.all(
-                            color: AppColors.brandRed.withOpacity(0.14),
+                    if (modelBadge.isNotEmpty)
+                      Positioned(
+                        top: 14,
+                        left: 14,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.84),
+                            borderRadius: BorderRadius.circular(999),
+                            border: Border.all(color: AppColors.brandRed.withOpacity(0.14)),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.view_in_ar_rounded, size: 16, color: AppColors.brandRed),
+                              const SizedBox(width: 7),
+                              Text(
+                                modelBadge,
+                                style: const TextStyle(color: AppColors.brandRed, fontSize: 11.5, fontWeight: FontWeight.w900),
+                              ),
+                            ],
                           ),
                         ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(
-                              Icons.view_in_ar_rounded,
-                              size: 16,
-                              color: AppColors.brandRed,
-                            ),
-                            const SizedBox(width: 7),
-                            Text(
-                              _uiText(context, '3D Preview', '3D Preview'),
-                              style: const TextStyle(
-                                color: AppColors.brandRed,
-                                fontSize: 11.5,
-                                fontWeight: FontWeight.w900,
-                              ),
-                            ),
-                          ],
-                        ),
                       ),
-                    ),
-
                     Positioned.fill(
                       top: 24,
                       bottom: 8,
                       child: ModelViewer(
-                        src: _modelPath,
-                        alt: 'Fire extinguisher 3D model',
+                        src: modelSrc.isNotEmpty ? modelSrc : imageUrl,
+                        alt: modelAlt,
                         autoRotate: true,
                         cameraControls: true,
                         disableZoom: false,
                         backgroundColor: Colors.transparent,
-                        cameraOrbit: '0deg 72deg 1.85m',
-                        fieldOfView: '25deg',
+                        cameraOrbit: cameraOrbit,
+                        fieldOfView: fieldOfView,
                         shadowIntensity: 0.55,
                         exposure: 1.05,
                       ),
@@ -1069,80 +1613,55 @@ class _PageOne3DPreview extends StatelessWidget {
                 ),
               ),
             ),
-
-            const SizedBox(height: 12),
-            // Interaction hint
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.78),
-                borderRadius: BorderRadius.circular(18),
-                border: Border.all(
-                  color: AppColors.brandRed.withOpacity(0.15),
+            if (interactionHint.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.78),
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(color: AppColors.brandRed.withOpacity(0.15)),
                 ),
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Icon(
-                    Icons.touch_app_rounded,
-                    color: AppColors.brandRed,
-                    size: 20,
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      _uiText(
-                        context,
-                        'Drag to rotate. Pinch to zoom.',
-                        'I-drag para i-rotate. I-pinch para i-zoom.',
-                      ),
-                      style: const TextStyle(
-                        color: Color(0xFF7A1014),
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.w800,
-                        height: 1.35,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Icon(Icons.touch_app_rounded, color: AppColors.brandRed, size: 20),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        interactionHint,
+                        style: const TextStyle(color: Color(0xFF7A1014), fontSize: 12.5, fontWeight: FontWeight.w800, height: 1.35),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-
-            // PASS method steps section
-            const SizedBox(height: 20),
-            Row(
-              children: [
-                Container(
-                  width: 4,
-                  height: 18,
-                  decoration: BoxDecoration(
-                    color: AppColors.brandRed,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
+                  ],
                 ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    _uiText(context, 'PASS Method Steps', 'Mga Hakbang sa PASS Method'),
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w900,
-                      color: Color(0xFF111827),
+              ),
+            ],
+            if (passHeading.isNotEmpty || steps.isNotEmpty) ...[
+              const SizedBox(height: 20),
+              if (passHeading.isNotEmpty)
+                Row(
+                  children: [
+                    Container(width: 4, height: 18, decoration: BoxDecoration(color: AppColors.brandRed, borderRadius: BorderRadius.circular(2))),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        passHeading,
+                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: Color(0xFF111827)),
+                      ),
                     ),
-                  ),
+                  ],
+                ),
+              const SizedBox(height: 10),
+              for (int i = 0; i < steps.length; i++) ...[
+                if (i > 0) const SizedBox(height: 8),
+                _PassMethodCard(
+                  letter: (steps[i]['letter'] ?? '').toString(),
+                  title: material.textFrom(context, steps[i], 'title'),
+                  desc: material.textFrom(context, steps[i], 'desc'),
                 ),
               ],
-            ),
-            const SizedBox(height: 10),
-            for (int i = 0; i < _passSteps.length; i++) ...[
-              if (i > 0) const SizedBox(height: 8),
-              _PassMethodCard(
-                letter: _passSteps[i][0],
-                title: _uiText(context, _passSteps[i][1], _passSteps[i][3]),
-                desc: _uiText(context, _passSteps[i][2], _passSteps[i][4]),
-              ),
             ],
           ],
         );
@@ -1374,7 +1893,7 @@ class _FallbackExtinguisherModel extends StatelessWidget {
                 border: Border.all(color: AppColors.brandRedDark.withOpacity(0.12)),
               ),
               child: const Center(
-                child: Icon(Icons.local_fire_department_rounded, color: AppColors.brandRed, size: 25),
+                child: Icon(Icons.fire_extinguisher_rounded, color: AppColors.brandRed, size: 25),
               ),
             ),
           ),
@@ -1467,7 +1986,7 @@ class _FireClassTile extends StatelessWidget {
   final VoidCallback onTap;
   const _FireClassTile({required this.block, required this.guide, required this.material, required this.isRead, required this.onTap});
   @override
-  Widget build(BuildContext context) => InkWell(onTap: onTap, borderRadius: BorderRadius.circular(18), child: Container(padding: const EdgeInsets.all(14), decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(18), border: Border.all(color: isRead ? AppColors.success.withOpacity(0.35) : _hexColor(block.metaString('color_hex'), AppColors.brandRed).withOpacity(0.12))), child: Row(children: [Icon(isRead ? Icons.check_circle_rounded : _roleIcon(block.metaString('icon_role')), color: isRead ? AppColors.success : _hexColor(block.metaString('color_hex'), AppColors.brandRed)), const SizedBox(width: 12), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(guide == null ? block.metaText(context, material, 'class_label') : material.localize(context, guide!.nameEn, guide!.nameTl), style: TextStyle(fontWeight: FontWeight.w900, color: isRead ? AppColors.success : const Color(0xFF111827))), const SizedBox(height: 3), Text(block.text(context, material), style: const TextStyle(fontSize: 12.5, color: Color(0xFF6B7280), height: 1.4))])), Text(isRead ? '✓' : _uiText(context, 'Tap', 'I-tap'), style: TextStyle(color: isRead ? AppColors.success : AppColors.brandRed, fontWeight: FontWeight.w900))])));
+  Widget build(BuildContext context) => InkWell(onTap: onTap, borderRadius: BorderRadius.circular(18), child: Container(padding: const EdgeInsets.all(14), decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(18), border: Border.all(color: isRead ? AppColors.success.withOpacity(0.35) : _hexColor(block.metaString('color_hex'), AppColors.brandRed).withOpacity(0.12))), child: Row(children: [Icon(isRead ? Icons.check_circle_rounded : _roleIcon(block.metaString('icon_role')), color: isRead ? AppColors.success : _hexColor(block.metaString('color_hex'), AppColors.brandRed)), const SizedBox(width: 12), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(guide == null ? block.metaText(context, material, 'class_label') : material.localize(context, guide!.nameEn, guide!.nameTl), style: TextStyle(fontWeight: FontWeight.w900, color: isRead ? AppColors.success : const Color(0xFF111827))), const SizedBox(height: 3), Text(block.text(context, material), style: const TextStyle(fontSize: 12.5, color: Color(0xFF6B7280), height: 1.4))])), Text(isRead ? material.copy(context, 'completed_check_label') : material.copy(context, 'tap_label'), textAlign: TextAlign.center, softWrap: true, style: TextStyle(color: isRead ? AppColors.success : AppColors.brandRed, fontWeight: FontWeight.w900))])));
 }
 
 class _PassStep extends StatefulWidget {
@@ -1483,13 +2002,14 @@ class _PassStep extends StatefulWidget {
 class _PassStepState extends State<_PassStep> {
   bool expanded = false;
   @override
-  Widget build(BuildContext context) => Container(decoration: BoxDecoration(color: const Color(0xFFFFF7F7), borderRadius: BorderRadius.circular(18), border: Border.all(color: widget.isRead ? AppColors.success.withOpacity(0.35) : AppColors.brandRed.withOpacity(0.12))), child: Column(children: [InkWell(onTap: () { setState(() => expanded = !expanded); if (expanded) widget.onOpen(); }, borderRadius: BorderRadius.circular(18), child: Padding(padding: const EdgeInsets.all(14), child: Row(children: [CircleAvatar(backgroundColor: widget.isRead ? AppColors.success : AppColors.brandRed, child: Text(widget.isRead ? '✓' : (widget.block.metaString('letter') ?? ''), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900))), const SizedBox(width: 12), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(widget.block.text(context, widget.material), style: TextStyle(fontWeight: FontWeight.w900, color: widget.isRead ? AppColors.success : const Color(0xFF111827))), Text(widget.block.metaText(context, widget.material, 'desc'), style: const TextStyle(color: Color(0xFF6B7280), height: 1.35))])), Icon(expanded ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded, color: AppColors.brandRed)]))), if (expanded) Padding(padding: const EdgeInsets.fromLTRB(14, 0, 14, 14), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [const Divider(), const SizedBox(height: 12), _VideoCard(title: widget.block.metaText(context, widget.material, 'video_title'), url: widget.material.mediaUrl(widget.block.metaString('asset_key')))]))]));
+  Widget build(BuildContext context) => Container(decoration: BoxDecoration(color: const Color(0xFFFFF7F7), borderRadius: BorderRadius.circular(18), border: Border.all(color: widget.isRead ? AppColors.success.withOpacity(0.35) : AppColors.brandRed.withOpacity(0.12))), child: Column(children: [InkWell(onTap: () { setState(() => expanded = !expanded); if (expanded) widget.onOpen(); }, borderRadius: BorderRadius.circular(18), child: Padding(padding: const EdgeInsets.all(14), child: Row(children: [CircleAvatar(backgroundColor: widget.isRead ? AppColors.success : AppColors.brandRed, child: Text(widget.isRead ? widget.material.copy(context, 'completed_check_label') : (widget.block.metaString('letter') ?? ''), textAlign: TextAlign.center, softWrap: true, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900))), const SizedBox(width: 12), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(widget.block.text(context, widget.material), style: TextStyle(fontWeight: FontWeight.w900, color: widget.isRead ? AppColors.success : const Color(0xFF111827))), Text(widget.block.metaText(context, widget.material, 'desc'), style: const TextStyle(color: Color(0xFF6B7280), height: 1.35))])), Icon(expanded ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded, color: AppColors.brandRed)]))), if (expanded) Padding(padding: const EdgeInsets.fromLTRB(14, 0, 14, 14), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [const Divider(), const SizedBox(height: 12), _VideoCard(title: widget.block.metaText(context, widget.material, 'video_title'), url: widget.material.mediaUrl(widget.block.metaString('asset_key')), failureTitle: widget.material.copy(context, 'video_could_not_load'))]))]));
 }
 
 class _VideoCard extends StatefulWidget {
   final String title;
   final String url;
-  const _VideoCard({required this.title, required this.url});
+  final String failureTitle;
+  const _VideoCard({required this.title, required this.url, required this.failureTitle});
   @override
   State<_VideoCard> createState() => _VideoCardState();
 }
@@ -1513,7 +2033,7 @@ class _VideoCardState extends State<_VideoCard> {
   void dispose() { controller?.dispose(); super.dispose(); }
   @override
   Widget build(BuildContext context) {
-    if (failed) return _VideoPlaceholder(title: _uiText(context, 'Video could not load', 'Hindi ma-load ang video'), subtitle: widget.url);
+    if (failed) return _VideoPlaceholder(title: widget.failureTitle, subtitle: widget.url);
     final c = controller;
     final f = initFuture;
     if (c == null || f == null) return _VideoPlaceholder(title: widget.title, subtitle: widget.url);
@@ -1524,9 +2044,38 @@ class _VideoCardState extends State<_VideoCard> {
 class _VideoPlaceholder extends StatelessWidget {
   final String title;
   final String subtitle;
+
   const _VideoPlaceholder({required this.title, required this.subtitle});
+
   @override
-  Widget build(BuildContext context) => Container(height: 180, alignment: Alignment.center, decoration: BoxDecoration(color: const Color(0xFF111827), borderRadius: BorderRadius.circular(16)), padding: const EdgeInsets.all(16), child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [const Icon(Icons.ondemand_video_rounded, color: Colors.white, size: 36), const SizedBox(height: 8), Text(title, textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900)), const SizedBox(height: 4), Text(subtitle, maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center, style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 11))]));
+  Widget build(BuildContext context) {
+    return Container(
+      constraints: const BoxConstraints(minHeight: 180),
+      alignment: Alignment.center,
+      decoration: BoxDecoration(color: const Color(0xFF111827), borderRadius: BorderRadius.circular(16)),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.ondemand_video_rounded, color: Colors.white, size: 36),
+          const SizedBox(height: 8),
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            softWrap: true,
+            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            subtitle,
+            softWrap: true,
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 11),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _Callout extends StatelessWidget {
@@ -1534,16 +2083,96 @@ class _Callout extends StatelessWidget {
   final List<String> lines;
   final IconData icon;
   final Color color;
+
   const _Callout({required this.title, required this.lines, required this.icon, required this.color});
+
   @override
-  Widget build(BuildContext context) => Container(padding: const EdgeInsets.all(14), decoration: BoxDecoration(color: color.withOpacity(0.07), borderRadius: BorderRadius.circular(18), border: Border.all(color: color.withOpacity(0.15))), child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [Icon(icon, color: color), const SizedBox(width: 10), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(title, style: TextStyle(fontWeight: FontWeight.w900, color: color)), const SizedBox(height: 8), for (final line in lines) Padding(padding: const EdgeInsets.only(bottom: 6), child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [Text('• ', style: TextStyle(color: color, fontWeight: FontWeight.w900)), Expanded(child: Text(line, style: const TextStyle(height: 1.45, color: Color(0xFF374151))))]))]))]));
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(color: color.withOpacity(0.07), borderRadius: BorderRadius.circular(18), border: Border.all(color: color.withOpacity(0.15))),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: color),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, softWrap: true, style: TextStyle(fontWeight: FontWeight.w900, color: color)),
+                const SizedBox(height: 8),
+                for (final line in lines)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 6),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: 5,
+                          height: 5,
+                          margin: const EdgeInsets.only(top: 8, right: 8),
+                          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+                        ),
+                        Expanded(
+                          child: Text(
+                            line,
+                            softWrap: true,
+                            style: const TextStyle(height: 1.45, color: Color(0xFF374151)),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _SourceCard extends StatelessWidget {
   final _SourceData source;
+
   const _SourceCard({required this.source});
+
   @override
-  Widget build(BuildContext context) => Container(width: double.infinity, padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: AppColors.brandRedSoft.withOpacity(0.62), borderRadius: BorderRadius.circular(14), border: Border.all(color: AppColors.brandRed.withOpacity(0.16))), child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [const Icon(Icons.verified_rounded, color: AppColors.brandRed), const SizedBox(width: 10), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(source.label, style: const TextStyle(color: AppColors.brandRed, fontWeight: FontWeight.w900)), const SizedBox(height: 3), Text('${source.title} • ${source.organization}', maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700)), const SizedBox(height: 2), Text(source.url, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: AppColors.textSecondary, fontSize: 10.5))]))]));
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColors.brandRedSoft.withOpacity(0.62),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.brandRed.withOpacity(0.16)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(Icons.verified_rounded, color: AppColors.brandRed),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(source.label, softWrap: true, style: const TextStyle(color: AppColors.brandRed, fontWeight: FontWeight.w900)),
+                const SizedBox(height: 3),
+                Text(source.title, softWrap: true, style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700)),
+                if (source.organization.trim().isNotEmpty) ...[
+                  const SizedBox(height: 2),
+                  Text(source.organization, softWrap: true, style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700)),
+                ],
+                const SizedBox(height: 2),
+                Text(source.url, softWrap: true, style: const TextStyle(color: AppColors.textSecondary, fontSize: 10.5)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _SectionTitle extends StatelessWidget {
@@ -1588,9 +2217,35 @@ class _ActionPill extends StatelessWidget {
   final IconData icon;
   final String label;
   final VoidCallback onTap;
+
   const _ActionPill({required this.icon, required this.label, required this.onTap});
+
   @override
-  Widget build(BuildContext context) => InkWell(onTap: onTap, borderRadius: BorderRadius.circular(16), child: Container(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12), decoration: BoxDecoration(color: const Color(0xFFFFF7F7), borderRadius: BorderRadius.circular(16), border: Border.all(color: AppColors.brandRed.withOpacity(0.10))), child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(icon, size: 16, color: AppColors.brandRed), const SizedBox(width: 6), Flexible(child: Text(label, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w900, color: Color(0xFF111827), fontSize: 12.5)))])));
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        decoration: BoxDecoration(color: const Color(0xFFFFF7F7), borderRadius: BorderRadius.circular(16), border: Border.all(color: AppColors.brandRed.withOpacity(0.10))),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 16, color: AppColors.brandRed),
+            const SizedBox(width: 6),
+            Flexible(
+              child: Text(
+                label,
+                textAlign: TextAlign.center,
+                softWrap: true,
+                style: const TextStyle(fontWeight: FontWeight.w900, color: Color(0xFF111827), fontSize: 12.5),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class _WideAction extends StatelessWidget {
@@ -1604,14 +2259,15 @@ class _WideAction extends StatelessWidget {
 }
 
 class _ReadBadge extends StatelessWidget {
+  final _MaterialData material;
   final int read;
   final int total;
-  const _ReadBadge({required this.read, required this.total});
+  const _ReadBadge({required this.material, required this.read, required this.total});
   @override
   Widget build(BuildContext context) {
     final done = read >= total;
     final color = done ? AppColors.success : AppColors.brandRed;
-    return Container(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12), decoration: BoxDecoration(color: color.withOpacity(0.08), borderRadius: BorderRadius.circular(16), border: Border.all(color: color.withOpacity(0.2))), child: Row(children: [Icon(done ? Icons.check_circle_rounded : Icons.menu_book_rounded, color: color), const SizedBox(width: 10), Expanded(child: Text(done ? _uiText(context, 'All sections read ✓', 'Lahat ng seksyon ay nabasa ✓') : _uiText(context, 'Sections read: $read / $total', 'Mga seksyong nabasa: $read / $total'), style: TextStyle(color: color, fontWeight: FontWeight.w800)))]));
+    return Container(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12), decoration: BoxDecoration(color: color.withOpacity(0.08), borderRadius: BorderRadius.circular(16), border: Border.all(color: color.withOpacity(0.2))), child: Row(children: [Icon(done ? Icons.check_circle_rounded : Icons.menu_book_rounded, color: color), const SizedBox(width: 10), Expanded(child: Text(done ? material.copy(context, 'read_badge_complete') : material.copyFormat(context, 'read_badge_progress', {'read': read.toString(), 'total': total.toString()}), style: TextStyle(color: color, fontWeight: FontWeight.w800)))]));
   }
 }
 
@@ -1641,9 +2297,10 @@ class ClassesOfFirePage extends StatelessWidget {
                     sectionTitle: material.textFrom(context, header, 'section_title'),
                     moduleLabel: material.textFrom(context, header, 'module_label'),
                     moduleTitle: material.textFrom(context, header, 'module_title'),
-                    currentPage: 2,
-                    totalPages: 3,
+                    currentPage: _asInt(header['current_page'], 2),
+                    totalPages: _asInt(header['total_pages'], material.pages.length),
                     progress: 1,
+                    pageLabel: material.copy(context, 'page_label'),
                     onClose: () => Navigator.pop(context),
                   ),
                 ),
@@ -1674,17 +2331,24 @@ class ClassesOfFirePage extends StatelessWidget {
                             style: const TextStyle(height: 1.55, color: Color(0xFF4B5563)),
                           ),
                           const SizedBox(height: 22),
-                          GridView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: guides.length,
-                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              crossAxisSpacing: 16,
-                              mainAxisSpacing: 16,
-                              childAspectRatio: 0.82,
-                            ),
-                            itemBuilder: (_, i) => _GuideCard(material: material, guide: guides[i]),
+                          LayoutBuilder(
+                            builder: (context, constraints) {
+                              final spacing = 16.0;
+                              final twoColumns = constraints.maxWidth >= 300;
+                              final cardWidth = twoColumns ? (constraints.maxWidth - spacing) / 2 : constraints.maxWidth;
+
+                              return Wrap(
+                                spacing: spacing,
+                                runSpacing: spacing,
+                                children: [
+                                  for (final guide in guides)
+                                    SizedBox(
+                                      width: cardWidth,
+                                      child: _GuideCard(material: material, guide: guide),
+                                    ),
+                                ],
+                              );
+                            },
                           ),
                           const SizedBox(height: 28),
                           Text(
@@ -1699,7 +2363,7 @@ class ClassesOfFirePage extends StatelessWidget {
                           const SizedBox(height: 25),
                           OutlinedButton(
                             onPressed: () => Navigator.pop(context),
-                            child: Text(_uiText(context, '« BACK', '« BALIK')),
+                            child: Text(material.copy(context, 'class_back_button')),
                           ),
                         ],
                       ),
@@ -1739,12 +2403,13 @@ class _GuideCard extends StatelessWidget {
               style: const TextStyle(fontWeight: FontWeight.w900, color: AppColors.brandRed),
             ),
             const SizedBox(height: 12),
-            Expanded(
+            SizedBox(
+              height: 112,
               child: Image.network(
                 image,
                 fit: BoxFit.contain,
                 errorBuilder: (_, __, ___) => const Icon(
-                  Icons.local_fire_department_rounded,
+                  Icons.fire_extinguisher_rounded,
                   color: AppColors.brandRed,
                   size: 44,
                 ),
@@ -1752,7 +2417,7 @@ class _GuideCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              _uiText(context, 'Tap to explore', 'I-tap upang tingnan'),
+              material.copy(context, 'tap_to_explore'),
               textAlign: TextAlign.center,
               style: const TextStyle(
                 fontSize: 12,
@@ -1820,7 +2485,7 @@ void _showGuideSheet(BuildContext context, _MaterialData material, _FireGuide gu
             _Callout(
               title: material.textFrom(context, details, 'section1_title'),
               lines: examples,
-              icon: Icons.local_fire_department_rounded,
+              icon: Icons.fire_extinguisher_rounded,
               color: accent,
             ),
             const SizedBox(height: 12),

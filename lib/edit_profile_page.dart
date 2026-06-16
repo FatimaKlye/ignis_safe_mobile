@@ -375,108 +375,137 @@ class _EditProfilePageState extends State<EditProfilePage> {
     return showDialog<bool>(
       context: context,
       barrierDismissible: true,
-      builder: (_) {
+      builder: (dialogContext) {
+        final size = MediaQuery.of(dialogContext).size;
+        final horizontalInset = size.width < 360 ? 12.0 : 18.0;
+        final maxDialogHeight = size.height * 0.82;
+
         return Dialog(
-          insetPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
+          insetPadding: EdgeInsets.symmetric(
+            horizontal: horizontalInset,
+            vertical: 18,
+          ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  _txt('Review Changes', 'Suriin ang mga Pagbabago'),
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w900,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: size.width - (horizontalInset * 2),
+              maxHeight: maxDialogHeight,
+            ),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    _txt('Review Changes', 'Suriin ang mga Pagbabago'),
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w900,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 10),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade100,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.black.withOpacity(0.08)),
+                  const SizedBox(height: 10),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade100,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.black.withOpacity(0.08)),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: changes
+                          .map(
+                            (c) => Padding(
+                              padding: const EdgeInsets.only(bottom: 8),
+                              child: Text(
+                                '• $c',
+                                softWrap: true,
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700,
+                                  height: 1.3,
+                                ),
+                              ),
+                            ),
+                          )
+                          .toList(),
+                    ),
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: changes
-                        .map(
-                          (c) => Padding(
-                            padding: const EdgeInsets.only(bottom: 8),
+                  const SizedBox(height: 10),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      _txt(
+                        'Leave the password fields blank if you want to keep your current password.',
+                        'Iwanang blangko ang password fields kung gusto mong panatilihin ang kasalukuyan mong password.',
+                      ),
+                      softWrap: true,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black54,
+                        height: 1.3,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            side: BorderSide(
+                              color: Colors.black.withOpacity(0.18),
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                          ),
+                          onPressed: () => Navigator.pop(context, false),
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
                             child: Text(
-                              '• $c',
+                              _txt('Back', 'Bumalik'),
                               style: const TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w700,
-                                height: 1.3,
+                                fontWeight: FontWeight.w800,
                               ),
                             ),
                           ),
-                        )
-                        .toList(),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    _txt('Leave the password fields blank if you want to keep your current password.', 'Iwanang blangko ang password fields kung gusto mong panatilihin ang kasalukuyan mong password.'),
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black54,
-                      height: 1.3,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 14),
-                Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton(
-                        style: OutlinedButton.styleFrom(
-                          side: BorderSide(color: Colors.black.withOpacity(0.18)),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                        ),
-                        onPressed: () => Navigator.pop(context, false),
-                        child: Text(
-                          _txt('Back', 'Bumalik'),
-                          style: TextStyle(fontWeight: FontWeight.w800),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: brandRed,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: brandRed,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            elevation: 6,
                           ),
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          elevation: 6,
-                        ),
-                        onPressed: () => Navigator.pop(context, true),
-                        child: Text(
-                          _txt('Update', 'I-update'),
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w900,
+                          onPressed: () => Navigator.pop(context, true),
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              _txt('Update', 'I-update'),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         );
@@ -493,16 +522,29 @@ class _EditProfilePageState extends State<EditProfilePage> {
     return showDialog<bool>(
       context: context,
       barrierDismissible: true,
-      builder: (_) {
+      builder: (dialogContext) {
+        final size = MediaQuery.of(dialogContext).size;
+
         return AlertDialog(
+          insetPadding: EdgeInsets.symmetric(
+            horizontal: size.width < 360 ? 16 : 40,
+            vertical: 24,
+          ),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           title: Text(
             title,
+            textAlign: TextAlign.start,
             style: const TextStyle(fontWeight: FontWeight.w900),
           ),
-          content: Text(
-            message,
-            style: const TextStyle(fontWeight: FontWeight.w600),
+          content: ConstrainedBox(
+            constraints: BoxConstraints(maxHeight: size.height * 0.45),
+            child: SingleChildScrollView(
+              child: Text(
+                message,
+                softWrap: true,
+                style: const TextStyle(fontWeight: FontWeight.w600),
+              ),
+            ),
           ),
           actions: [
             TextButton(
@@ -545,16 +587,29 @@ class _EditProfilePageState extends State<EditProfilePage> {
     return showDialog<void>(
       context: context,
       barrierDismissible: true,
-      builder: (_) {
+      builder: (dialogContext) {
+        final size = MediaQuery.of(dialogContext).size;
+
         return AlertDialog(
+          insetPadding: EdgeInsets.symmetric(
+            horizontal: size.width < 360 ? 16 : 40,
+            vertical: 24,
+          ),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           title: Text(
             title,
+            textAlign: TextAlign.start,
             style: const TextStyle(fontWeight: FontWeight.w900),
           ),
-          content: Text(
-            message,
-            style: const TextStyle(fontWeight: FontWeight.w600),
+          content: ConstrainedBox(
+            constraints: BoxConstraints(maxHeight: size.height * 0.45),
+            child: SingleChildScrollView(
+              child: Text(
+                message,
+                softWrap: true,
+                style: const TextStyle(fontWeight: FontWeight.w600),
+              ),
+            ),
           ),
           actions: [
             ElevatedButton(
@@ -605,6 +660,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
       );
     }
 
+    final mediaQuery = MediaQuery.of(context);
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
@@ -617,180 +674,242 @@ class _EditProfilePageState extends State<EditProfilePage> {
             child: Image.asset('assets/bg.png', fit: BoxFit.cover),
           ),
           SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 14),
-              child: Column(
-                children: [
-                  const SizedBox(height: 18),
-                  Row(
-                    children: [
-                      IconButton(
-                        onPressed: () => Navigator.pop(context),
-                        icon: const Icon(Icons.arrow_back, color: Colors.white),
-                      ),
-                      const Spacer(),
-                      Text(
-                        _txt('Edit Profile', 'I-edit ang Profile'),
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w900,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const Spacer(),
-                      const SizedBox(width: 60),
-                    ],
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final screenWidth = constraints.maxWidth;
+                final horizontalPadding = screenWidth < 360 ? 16.0 : 25.0;
+                final avatarSize =
+                    (screenWidth * 0.42).clamp(132.0, 160.0).toDouble();
+                final cameraSize =
+                    (avatarSize * 0.2625).clamp(36.0, 42.0).toDouble();
+                final maxContentWidth =
+                    screenWidth > 520 ? 520.0 : double.infinity;
+
+                return SingleChildScrollView(
+                  padding: EdgeInsets.fromLTRB(
+                    horizontalPadding,
+                    14,
+                    horizontalPadding,
+                    14 + mediaQuery.viewInsets.bottom,
                   ),
-                  const SizedBox(height: 35),
-                  GestureDetector(
-                    onTap: _pickAvatar,
-                    child: Stack(
-                      alignment: Alignment.bottomRight,
-                      children: [
-                        Container(
-                          width: 160,
-                          height: 160,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.grey.shade200,
-                            image: avatarImage != null
-                                ? DecorationImage(
-                                    image: avatarImage,
-                                    fit: BoxFit.cover,
-                                  )
-                                : null,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.15),
-                                blurRadius: 18,
-                                offset: const Offset(0, 10),
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(maxWidth: maxContentWidth),
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 18),
+                          Row(
+                            children: [
+                              SizedBox(
+                                width: 48,
+                                child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: IconButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    icon: const Icon(
+                                      Icons.arrow_back,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
                               ),
+                              Expanded(
+                                child: Center(
+                                  child: FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    child: Text(
+                                      _txt(
+                                        'Edit Profile',
+                                        'I-edit ang Profile',
+                                      ),
+                                      maxLines: 1,
+                                      style: const TextStyle(
+                                        fontSize: 28,
+                                        fontWeight: FontWeight.w900,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: screenWidth < 360 ? 48 : 60),
                             ],
                           ),
-                          child: avatarImage == null
-                              ? Icon(
-                                  Icons.person,
-                                  size: 64,
-                                  color: Colors.grey.shade500,
-                                )
-                              : null,
-                        ),
-                        Container(
-                          width: 42,
-                          height: 42,
-                          decoration: BoxDecoration(
-                            color: brandRed,
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.18),
-                                blurRadius: 10,
-                                offset: const Offset(0, 6),
-                              ),
-                            ],
-                          ),
-                          child: const Icon(
-                            Icons.camera_alt,
-                            color: Colors.white,
-                            size: 20,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 18),
-                  Container(
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 18),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.black.withOpacity(0.08)),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.10),
-                          blurRadius: 16,
-                          offset: const Offset(0, 10),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      children: [
-                        _Field(
-                          label: _txt('First Name', 'Pangalan'),
-                          controller: _firstNameCtrl,
-                          icon: Icons.badge_outlined,
-                        ),
-                        const SizedBox(height: 12),
-                        _Field(
-                          label: _txt('Last Name', 'Apelyido'),
-                          controller: _lastNameCtrl,
-                          icon: Icons.badge_outlined,
-                        ),
-                        const SizedBox(height: 12),
-                        _Field(
-                          label: _txt('Email', 'Email'),
-                          controller: _emailCtrl,
-                          icon: Icons.mail_outline,
-                          enabled: false,
-                        ),
-                        const SizedBox(height: 18),
-                        _PasswordField(
-                          label: _txt('New Password', 'Bagong Password'),
-                          controller: _passwordCtrl,
-                          show: _showPass,
-                          onToggle: () => setState(() => _showPass = !_showPass),
-                        ),
-                        const SizedBox(height: 12),
-                        _PasswordField(
-                          label: _txt('Confirm Password', 'Kumpirmahin ang Password'),
-                          controller: _confirmCtrl,
-                          show: _showConfirm,
-                          onToggle: () =>
-                              setState(() => _showConfirm = !_showConfirm),
-                        ),
-                        const SizedBox(height: 8),
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            _txt('Leave password blank if you do not want to change it.', 'Iwanang blangko ang password kung ayaw mo itong palitan.'),
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.black54,
+                          const SizedBox(height: 35),
+                          GestureDetector(
+                            onTap: _pickAvatar,
+                            child: Stack(
+                              alignment: Alignment.bottomRight,
+                              children: [
+                                Container(
+                                  width: avatarSize,
+                                  height: avatarSize,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Colors.grey.shade200,
+                                    image: avatarImage != null
+                                        ? DecorationImage(
+                                            image: avatarImage,
+                                            fit: BoxFit.cover,
+                                          )
+                                        : null,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.15),
+                                        blurRadius: 18,
+                                        offset: const Offset(0, 10),
+                                      ),
+                                    ],
+                                  ),
+                                  child: avatarImage == null
+                                      ? Icon(
+                                          Icons.person,
+                                          size: avatarSize * 0.4,
+                                          color: Colors.grey.shade500,
+                                        )
+                                      : null,
+                                ),
+                                Container(
+                                  width: cameraSize,
+                                  height: cameraSize,
+                                  decoration: BoxDecoration(
+                                    color: brandRed,
+                                    shape: BoxShape.circle,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.18),
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 6),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Icon(
+                                    Icons.camera_alt,
+                                    color: Colors.white,
+                                    size: cameraSize * 0.48,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 18),
+                          Container(
+                            padding: const EdgeInsets.fromLTRB(16, 16, 16, 18),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: Colors.black.withOpacity(0.08),
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.10),
+                                  blurRadius: 16,
+                                  offset: const Offset(0, 10),
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              children: [
+                                _Field(
+                                  label: _txt('First Name', 'Pangalan'),
+                                  controller: _firstNameCtrl,
+                                  icon: Icons.badge_outlined,
+                                ),
+                                const SizedBox(height: 12),
+                                _Field(
+                                  label: _txt('Last Name', 'Apelyido'),
+                                  controller: _lastNameCtrl,
+                                  icon: Icons.badge_outlined,
+                                ),
+                                const SizedBox(height: 12),
+                                _Field(
+                                  label: _txt('Email', 'Email'),
+                                  controller: _emailCtrl,
+                                  icon: Icons.mail_outline,
+                                  enabled: false,
+                                ),
+                                const SizedBox(height: 18),
+                                _PasswordField(
+                                  label: _txt(
+                                    'New Password',
+                                    'Bagong Password',
+                                  ),
+                                  controller: _passwordCtrl,
+                                  show: _showPass,
+                                  onToggle: () =>
+                                      setState(() => _showPass = !_showPass),
+                                ),
+                                const SizedBox(height: 12),
+                                _PasswordField(
+                                  label: _txt(
+                                    'Confirm Password',
+                                    'Kumpirmahin ang Password',
+                                  ),
+                                  controller: _confirmCtrl,
+                                  show: _showConfirm,
+                                  onToggle: () => setState(
+                                    () => _showConfirm = !_showConfirm,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    _txt(
+                                      'Leave password blank if you do not want to change it.',
+                                      'Iwanang blangko ang password kung ayaw mo itong palitan.',
+                                    ),
+                                    softWrap: true,
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.black54,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 18),
+                          SizedBox(
+                            width: double.infinity,
+                            height: 56,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: brandRed,
+                                elevation: 8,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              onPressed: _isSaving ? null : _onSavePressed,
+                              child: FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  _isSaving
+                                      ? _txt('Saving...', 'Sine-save...')
+                                      : _txt(
+                                          'Save Changes',
+                                          'I-save ang Pagbabago',
+                                        ),
+                                  maxLines: 1,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w900,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 14),
+                        ],
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 18),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 56,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: brandRed,
-                        elevation: 8,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      onPressed: _isSaving ? null : _onSavePressed,
-                      child: Text(
-                        _isSaving
-                            ? _txt('Saving...', 'Sine-save...')
-                            : _txt('Save Changes', 'I-save ang Pagbabago'),
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w900,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-                ],
-              ),
+                );
+              },
             ),
           ),
         ],
@@ -815,8 +934,8 @@ class _Field extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 56,
-      padding: const EdgeInsets.symmetric(horizontal: 14),
+      constraints: const BoxConstraints(minHeight: 56),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
       decoration: BoxDecoration(
         color: enabled ? Colors.white : Colors.grey.shade100,
         borderRadius: BorderRadius.circular(12),
@@ -830,6 +949,7 @@ class _Field extends StatelessWidget {
             child: TextField(
               controller: controller,
               enabled: enabled,
+              maxLines: 1,
               decoration: InputDecoration(
                 hintText: label,
                 border: InputBorder.none,
@@ -863,8 +983,8 @@ class _PasswordField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 56,
-      padding: const EdgeInsets.symmetric(horizontal: 14),
+      constraints: const BoxConstraints(minHeight: 56),
+      padding: const EdgeInsets.only(left: 14, right: 4, top: 6, bottom: 6),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -878,6 +998,7 @@ class _PasswordField extends StatelessWidget {
             child: TextField(
               controller: controller,
               obscureText: !show,
+              maxLines: 1,
               decoration: InputDecoration(
                 hintText: label,
                 border: InputBorder.none,
@@ -890,6 +1011,8 @@ class _PasswordField extends StatelessWidget {
             ),
           ),
           IconButton(
+            constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+            padding: EdgeInsets.zero,
             onPressed: onToggle,
             icon: Icon(
               show ? Icons.visibility_off : Icons.visibility,

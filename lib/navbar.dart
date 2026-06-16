@@ -1,431 +1,379 @@
-import 'package:flutter/material.dart';
-import 'localization/app_text.dart';
+import 'dart:math' as math;
+import 'dart:ui';
 
+import 'package:flutter/material.dart';
+
+const Color brandRed = Color(0xFFB11217);
 
 class FloatingNavBar extends StatefulWidget {
   final int selectedIndex;
   final ValueChanged<int> onItemTapped;
+
+  /// Exactly 3 outlined/inactive icons.
   final List<IconData> icons;
 
-  // Customization
-  final Color activeColor;
-  final Color inactiveColor;
-  final Color navBarColor;
+  /// Exactly 3 filled/active icons when provided.
+  final List<IconData>? activeIcons;
+
+  /// Hidden visually. Used only for accessibility.
+  final List<String> labels;
+
+  final Color? activeColor;
+  final Color? inactiveColor;
+  final Color? navBarColor;
+  final Color? borderColor;
+
   final double navBarHeight;
+  final double horizontalMargin;
+  final double bottomPadding;
+  final double blurSigma;
+
+  /// Keeps the active icon locked to the brand red even if old home.dart
+  /// still passes activeColor: Colors.black.
+  final bool forceBrandActiveColor;
+
+  /// Kept only so old calls do not break.
   final double fabSize;
   final double dipWidth;
   final double dipDepth;
-  final double horizontalMargin;
-  final double bottomPadding;
 
   const FloatingNavBar({
     super.key,
     required this.selectedIndex,
     required this.onItemTapped,
     required this.icons,
-    this.activeColor = const Color(0xFFB11217),
-    this.inactiveColor = const Color(0xFF9E9E9E),
-    this.navBarColor = Colors.white,
-    this.navBarHeight = 64.0,
-    this.fabSize = 56.0,
-    this.dipWidth = 80.0,
-    this.dipDepth = 22.0,
-    this.horizontalMargin = 20.0,
-    this.bottomPadding = 20.0,
-  }) : assert(icons.length >= 2, 'FloatingNavBar needs at least 2 icons.');
+    this.activeIcons,
+    this.labels = const ['Module', 'About', 'Profile'],
+    this.activeColor,
+    this.inactiveColor,
+    this.navBarColor,
+    this.borderColor,
+    this.navBarHeight = 62.0,
+    this.horizontalMargin = 28.0,
+    this.bottomPadding = 14.0,
+    this.blurSigma = 22.0,
+    this.forceBrandActiveColor = true,
+    this.fabSize = 0.0,
+    this.dipWidth = 0.0,
+    this.dipDepth = 0.0,
+  })  : assert(icons.length == 3, 'FloatingNavBar must have exactly 3 icons.'),
+        assert(
+          activeIcons == null || activeIcons.length == 3,
+          'activeIcons must have exactly 3 icons.',
+        ),
+        assert(labels.length == 3, 'FloatingNavBar must have exactly 3 labels.');
 
   @override
   State<FloatingNavBar> createState() => _FloatingNavBarState();
 }
 
-class _FloatingNavBarState extends State<FloatingNavBar>
-    with TickerProviderStateMixin {
-  late final AnimationController _posCtrl = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 260),
-  );
+class _FloatingNavBarState extends State<FloatingNavBar> {
+  int? _pressedIndex;
 
-  late final AnimationController _iconCtrl = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 180),
-  );
+  void _setPressedIndex(int? index) {
+    if (_pressedIndex == index) return;
 
-  late Animation<double> _posAnim = CurvedAnimation(
-    parent: _posCtrl,
-    curve: Curves.easeOutCubic,
-  );
-
-  late Animation<double> _iconFade = const AlwaysStoppedAnimation(1.0);
-
-  double _barWidth = 0;
-  double _fromX = -1;
-  double _toX = -1;
-
-  int _displayedIndex = 0;
-  int _nextIndex = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _displayedIndex = widget.selectedIndex;
-    _nextIndex = widget.selectedIndex;
+    setState(() {
+      _pressedIndex = index;
+    });
   }
 
-  @override
-  void didUpdateWidget(covariant FloatingNavBar oldWidget) {
-    super.didUpdateWidget(oldWidget);
-
-    if (oldWidget.selectedIndex != widget.selectedIndex && _barWidth > 0) {
-      _animateToIndex(widget.selectedIndex, oldWidget.selectedIndex);
-      _crossFadeDotIcon(widget.selectedIndex);
-    }
+  int _safeIndex(int index) {
+    return index.clamp(0, 2).toInt();
   }
 
-  @override
-  void dispose() {
-    _posCtrl.dispose();
-    _iconCtrl.dispose();
-    super.dispose();
+  double _responsiveHorizontalMargin(double width) {
+    final double maxSafeMargin = math.max(0.0, (width - 240.0) / 2);
+    final double responsiveMargin =
+        (width * 0.065).clamp(14.0, 30.0).toDouble();
+
+    return math
+        .min(widget.horizontalMargin, math.min(responsiveMargin, maxSafeMargin))
+        .clamp(0.0, 40.0)
+        .toDouble();
   }
 
-  double _slotCentreX(int index) {
-    final slotW = _barWidth / widget.icons.length;
-    return slotW * index + slotW / 2;
+  double _responsiveHeight(double width) {
+    final double responsiveHeight =
+        (width * 0.18).clamp(54.0, 64.0).toDouble();
+
+    return math
+        .min(widget.navBarHeight, responsiveHeight)
+        .clamp(52.0, 68.0)
+        .toDouble();
   }
 
-  double _currentX() {
-    if (_fromX < 0 || _toX < 0) {
-      return _barWidth > 0 ? _slotCentreX(widget.selectedIndex) : 0;
-    }
-    return _fromX + (_toX - _fromX) * _posAnim.value;
+  double _responsiveIconSize({
+    required double barWidth,
+    required double barHeight,
+  }) {
+    final double slotWidth = barWidth / 3;
+
+    final double heightBased =
+        (barHeight * 0.43).clamp(23.0, 28.0).toDouble();
+    final double widthBased = (slotWidth * 0.30).clamp(22.0, 28.0).toDouble();
+
+    return math.min(heightBased, widthBased);
   }
 
-  void _animateToIndex(int newIndex, int oldIndex) {
-    // Start from wherever the dot currently is (even mid-animation)
-    _fromX = _currentX();
-    _toX = _slotCentreX(newIndex);
+  Size _responsiveIndicatorSize({
+    required double slotWidth,
+    required double barHeight,
+    required double iconSize,
+  }) {
+    final double maxPillWidth = math.max(0.0, slotWidth - 8.0);
+    final double maxPillHeight = math.max(0.0, barHeight - 10.0);
 
-    final dist = (_toX - _fromX).abs();
-    final pct = _barWidth == 0 ? 0.0 : (dist / _barWidth).clamp(0.0, 1.0);
+    final double preferredPillWidth =
+        math.min(math.max(iconSize * 2.65, 48.0), 78.0);
+    final double preferredPillHeight =
+        math.min(math.max(iconSize * 1.95, 42.0), 54.0);
 
-    // Scale duration slightly with travel distance
-    final ms = (190 + (pct * 130)).round();
-    _posCtrl.duration = Duration(milliseconds: ms);
-
-    _posCtrl
-      ..stop()
-      ..reset()
-      ..forward();
-  }
-
-  void _crossFadeDotIcon(int newIndex) {
-    _nextIndex = newIndex;
-
-    _iconFade = Tween<double>(begin: 1.0, end: 0.0).animate(
-      CurvedAnimation(parent: _iconCtrl, curve: Curves.easeIn),
+    return Size(
+      math.min(preferredPillWidth, maxPillWidth),
+      math.min(preferredPillHeight, maxPillHeight),
     );
-
-    _iconCtrl
-      ..stop()
-      ..reset()
-      ..forward().then((_) {
-        if (!mounted) return;
-        setState(() => _displayedIndex = _nextIndex);
-
-        _iconFade = Tween<double>(begin: 0.0, end: 1.0).animate(
-          CurvedAnimation(parent: _iconCtrl, curve: Curves.easeOut),
-        );
-
-        _iconCtrl
-          ..stop()
-          ..reset()
-          ..forward();
-      });
   }
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Padding(
-        padding: EdgeInsets.only(bottom: widget.bottomPadding),
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: widget.horizontalMargin),
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final barW = constraints.maxWidth;
+    final ThemeData theme = Theme.of(context);
+    final bool isDark = theme.brightness == Brightness.dark;
 
-              if (_barWidth != barW) {
-                _barWidth = barW;
-                _fromX = _slotCentreX(widget.selectedIndex);
-                _toX = _fromX;
-              }
+    final Color activeIconColor =
+        widget.forceBrandActiveColor ? brandRed : (widget.activeColor ?? brandRed);
 
-              final totalH =
-                  widget.navBarHeight + widget.dipDepth + widget.fabSize / 2;
+    final Color inactiveIconColor = widget.inactiveColor ??
+        (isDark
+            ? Colors.white.withOpacity(0.46)
+            : Colors.black.withOpacity(0.42));
 
-              return SizedBox(
-                height: totalH,
-                child: AnimatedBuilder(
-                  animation: Listenable.merge([_posCtrl, _iconCtrl]),
-                  builder: (context, _) {
-                    final animX = _currentX();
+    final Color glassColor = widget.navBarColor ??
+        (isDark
+            ? Colors.black.withOpacity(0.34)
+            : Colors.white.withOpacity(0.68));
 
-                    return Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        // Background pill with dip
-                        Positioned(
-                          bottom: 0,
-                          left: 0,
-                          right: 0,
-                          height: widget.navBarHeight + widget.dipDepth,
-                          child: CustomPaint(
-                            painter: _NavBarPainter(
-                              activeX: animX,
-                              navHeight: widget.navBarHeight,
-                              dipWidth: widget.dipWidth,
-                              dipDepth: widget.dipDepth,
-                              color: widget.navBarColor,
-                            ),
-                          ),
-                        ),
+    final Color effectiveBorderColor = widget.borderColor ??
+        (isDark
+            ? Colors.white.withOpacity(0.18)
+            : Colors.black.withOpacity(0.10));
 
-                        // Tap targets + labels
-                        Positioned(
-                          bottom: 0,
-                          left: 0,
-                          right: 0,
-                          height: widget.navBarHeight,
-                          child: Row(
-                            children: List.generate(widget.icons.length, (i) {
-                              return _NavItem(
-                                icon: widget.icons[i],
-                                label: _getLabel(i),
-                                fabX: animX,
-                                slotCentreX: _slotCentreX(i),
-                                dipWidth: widget.dipWidth,
-                                inactiveColor: widget.inactiveColor,
-                                onTap: () => widget.onItemTapped(i),
-                              );
-                            }),
-                          ),
-                        ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final double screenWidth = constraints.maxWidth.isFinite
+            ? constraints.maxWidth
+            : MediaQuery.of(context).size.width;
 
-                        // Floating dot
-                        Positioned(
-                          bottom: widget.navBarHeight - widget.fabSize / 2,
-                          left: animX - widget.fabSize / 2,
-                          child: FadeTransition(
-                            opacity: _iconFade,
-                            child: _FloatingDot(
-                              size: widget.fabSize,
-                              icon: widget.icons[_displayedIndex],
-                              color: widget.activeColor,
-                            ),
-                          ),
+        final double sideMargin = _responsiveHorizontalMargin(screenWidth);
+        final double barHeight = _responsiveHeight(screenWidth);
+        final double bottomGap = widget.bottomPadding.clamp(10.0, 18.0).toDouble();
+        final double radius = barHeight / 2;
+
+        return SafeArea(
+          top: false,
+          minimum: EdgeInsets.only(bottom: bottomGap),
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: sideMargin),
+            child: SizedBox(
+              height: barHeight,
+              child: LayoutBuilder(
+                builder: (context, barConstraints) {
+                  final double barWidth = barConstraints.maxWidth.isFinite
+                      ? barConstraints.maxWidth
+                      : math.max(0.0, screenWidth - (sideMargin * 2));
+
+                  final double slotWidth = barWidth / 3;
+                  final double iconSize = _responsiveIconSize(
+                    barWidth: barWidth,
+                    barHeight: barHeight,
+                  );
+
+                  final int safeSelectedIndex = _safeIndex(widget.selectedIndex);
+
+                  final Size indicatorSize = _responsiveIndicatorSize(
+                    slotWidth: slotWidth,
+                    barHeight: barHeight,
+                    iconSize: iconSize,
+                  );
+
+                  final double indicatorLeft =
+                      (safeSelectedIndex * slotWidth) +
+                      ((slotWidth - indicatorSize.width) / 2);
+
+                  final double indicatorTop =
+                      (barHeight - indicatorSize.height) / 2;
+
+                  return DecoratedBox(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(radius),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(isDark ? 0.28 : 0.14),
+                          blurRadius: 28,
+                          spreadRadius: -8,
+                          offset: const Offset(0, 14),
                         ),
                       ],
-                    );
-                  },
-                ),
-              );
-            },
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(radius),
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(
+                          sigmaX: widget.blurSigma,
+                          sigmaY: widget.blurSigma,
+                        ),
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            color: glassColor,
+                            borderRadius: BorderRadius.circular(radius),
+                            border: Border.all(
+                              color: effectiveBorderColor,
+                              width: 0.7,
+                            ),
+                          ),
+                          child: Stack(
+                            clipBehavior: Clip.hardEdge,
+                            children: [
+                              AnimatedPositioned(
+                                duration: const Duration(milliseconds: 180),
+                                curve: Curves.easeOutCubic,
+                                left: indicatorLeft,
+                                top: indicatorTop,
+                                width: indicatorSize.width,
+                                height: indicatorSize.height,
+                                child: AnimatedContainer(
+                                  duration: const Duration(milliseconds: 160),
+                                  curve: Curves.easeOutCubic,
+                                  decoration: BoxDecoration(
+                                    color: brandRed.withOpacity(0.12),
+                                    borderRadius: BorderRadius.circular(
+                                      indicatorSize.height / 2,
+                                    ),
+                                    border: Border.all(
+                                      color: brandRed.withOpacity(0.10),
+                                      width: 0.7,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Positioned.fill(
+                                child: Row(
+                                  children: List.generate(3, (index) {
+                                    final bool isActive =
+                                        index == safeSelectedIndex;
+                                    final bool isPressed =
+                                        index == _pressedIndex;
+
+                                    return _GlassInstagramNavItem(
+                                      label: widget.labels[index],
+                                      icon: widget.icons[index],
+                                      activeIcon: widget.activeIcons?[index] ??
+                                          widget.icons[index],
+                                      isActive: isActive,
+                                      isPressed: isPressed,
+                                      iconSize: iconSize,
+                                      activeColor: activeIconColor,
+                                      inactiveColor: inactiveIconColor,
+                                      onTapDown: () => _setPressedIndex(index),
+                                      onTapCancel: () => _setPressedIndex(null),
+                                      onTapUp: () {
+                                        Future<void>.delayed(
+                                          const Duration(milliseconds: 70),
+                                          () {
+                                            if (!mounted) return;
+                                            _setPressedIndex(null);
+                                          },
+                                        );
+                                      },
+                                      onTap: () => widget.onItemTapped(index),
+                                    );
+                                  }),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
           ),
-        ),
-      ),
-    );
-  }
-
-  String _getLabel(int index) {
-    final labels = [
-      context.tr('learn'),
-      context.tr('profile'),
-      context.tr('about'),
-    ];
-    return index < labels.length ? labels[index] : '';
-  }
-}
-
-class _NavBarPainter extends CustomPainter {
-  final double activeX;
-  final double navHeight;
-  final double dipWidth;
-  final double dipDepth;
-  final Color color;
-
-  const _NavBarPainter({
-    required this.activeX,
-    required this.navHeight,
-    required this.dipWidth,
-    required this.dipDepth,
-    required this.color,
-  });
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final path = _buildPath(size);
-    canvas.drawShadow(path, Colors.black.withOpacity(0.14), 12, false);
-    canvas.drawPath(path, Paint()..color = color);
-  }
-
-  Path _buildPath(Size size) {
-    final W = size.width;
-    final top = dipDepth;
-    final bot = size.height;
-
-    const r = 32.0;
-    final cp = dipWidth * 0.3;
-
-    final ax = activeX.clamp(dipWidth / 2 + r, W - dipWidth / 2 - r);
-    final L = ax - dipWidth / 2;
-    final R = ax + dipWidth / 2;
-
-    return Path()
-      ..moveTo(r, top)
-      ..lineTo(L, top)
-      ..cubicTo(L + cp, top, ax - cp, top + dipDepth, ax, top + dipDepth)
-      ..cubicTo(ax + cp, top + dipDepth, R - cp, top, R, top)
-      ..lineTo(W - r, top)
-      ..quadraticBezierTo(W, top, W, top + r)
-      ..lineTo(W, bot - r)
-      ..quadraticBezierTo(W, bot, W - r, bot)
-      ..lineTo(r, bot)
-      ..quadraticBezierTo(0, bot, 0, bot - r)
-      ..lineTo(0, top + r)
-      ..quadraticBezierTo(0, top, r, top)
-      ..close();
-  }
-
-  @override
-  bool shouldRepaint(_NavBarPainter old) {
-    return old.activeX != activeX || old.color != color;
-  }
-}
-
-class _FloatingDot extends StatelessWidget {
-  final double size;
-  final IconData icon;
-  final Color color;
-
-  const _FloatingDot({
-    required this.size,
-    required this.icon,
-    required this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Color.lerp(color, Colors.white, 0.05)!,
-            color,
-            Color.lerp(color, Colors.black, 0.15)!,
-          ],
-          stops: const [0.0, 0.5, 1.0],
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: color.withOpacity(0.38),
-            blurRadius: 16,
-            offset: const Offset(0, 6),
-          ),
-          BoxShadow(
-            color: color.withOpacity(0.18),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Icon(
-        icon,
-        color: Colors.white,
-        size: size * 0.42,
-        shadows: const [
-          Shadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 1)),
-        ],
-      ),
+        );
+      },
     );
   }
 }
 
-class _NavItem extends StatefulWidget {
-  final IconData icon;
+class _GlassInstagramNavItem extends StatelessWidget {
   final String label;
-  final double fabX;
-  final double slotCentreX;
-  final double dipWidth;
+  final IconData icon;
+  final IconData activeIcon;
+  final bool isActive;
+  final bool isPressed;
+  final double iconSize;
+  final Color activeColor;
   final Color inactiveColor;
+  final VoidCallback onTapDown;
+  final VoidCallback onTapCancel;
+  final VoidCallback onTapUp;
   final VoidCallback onTap;
 
-  const _NavItem({
-    required this.icon,
+  const _GlassInstagramNavItem({
     required this.label,
-    required this.fabX,
-    required this.slotCentreX,
-    required this.dipWidth,
+    required this.icon,
+    required this.activeIcon,
+    required this.isActive,
+    required this.isPressed,
+    required this.iconSize,
+    required this.activeColor,
     required this.inactiveColor,
+    required this.onTapDown,
+    required this.onTapCancel,
+    required this.onTapUp,
     required this.onTap,
   });
 
   @override
-  State<_NavItem> createState() => _NavItemState();
-}
-
-class _NavItemState extends State<_NavItem> {
-  bool _pressed = false;
-
-  @override
   Widget build(BuildContext context) {
-    final dist = (widget.fabX - widget.slotCentreX).abs();
-    final fadeZone = widget.dipWidth * 0.55;
-    final t = (dist / fadeZone).clamp(0.0, 1.0);
-
-    // When the floating dot is over this slot, fade + disable tap
-    final enabled = t > 0.15;
+    final Color iconColor = isActive ? activeColor : inactiveColor;
+    final double scale = isPressed ? 0.88 : (isActive ? 1.06 : 1.0);
 
     return Expanded(
-      child: Material(
-        color: Colors.transparent,
-        child: InkResponse(
-          onTap: enabled ? widget.onTap : null,
-          onHighlightChanged: (v) => setState(() => _pressed = v),
-          radius: 28,
-          splashColor: widget.inactiveColor.withOpacity(0.12),
-          highlightColor: widget.inactiveColor.withOpacity(0.06),
-          child: AnimatedOpacity(
-            duration: const Duration(milliseconds: 140),
-            opacity: t,
+      child: Semantics(
+        button: true,
+        selected: isActive,
+        label: label,
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTapDown: (_) => onTapDown(),
+          onTapCancel: onTapCancel,
+          onTapUp: (_) => onTapUp(),
+          onTap: onTap,
+          child: Center(
             child: AnimatedScale(
-              duration: const Duration(milliseconds: 140),
-              scale: _pressed ? 0.96 : 1.0,
-              child: Transform.translate(
-                offset: Offset(0, (1 - t) * -5),
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(widget.icon, size: 24, color: widget.inactiveColor),
-                      const SizedBox(height: 4),
-                      Text(
-                        widget.label,
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                          color: widget.inactiveColor,
-                          letterSpacing: 0.3,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
+              scale: scale,
+              duration: const Duration(milliseconds: 95),
+              curve: Curves.easeOutCubic,
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 120),
+                switchInCurve: Curves.easeOutCubic,
+                switchOutCurve: Curves.easeInCubic,
+                transitionBuilder: (child, animation) {
+                  return FadeTransition(
+                    opacity: animation,
+                    child: ScaleTransition(
+                      scale: animation,
+                      child: child,
+                    ),
+                  );
+                },
+                child: Icon(
+                  isActive ? activeIcon : icon,
+                  key: ValueKey('$label-$isActive'),
+                  size: iconSize,
+                  color: iconColor,
                 ),
               ),
             ),

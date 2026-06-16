@@ -7,6 +7,24 @@ import 'login.dart';
 
 enum AboutFilter { all, about, team, bfpDasmarinas, contacts }
 
+class _NoOverscrollScrollBehavior extends ScrollBehavior {
+  const _NoOverscrollScrollBehavior();
+
+  @override
+  ScrollPhysics getScrollPhysics(BuildContext context) {
+    return const ClampingScrollPhysics();
+  }
+
+  @override
+  Widget buildOverscrollIndicator(
+    BuildContext context,
+    Widget child,
+    ScrollableDetails details,
+  ) {
+    return child;
+  }
+}
+
 class AboutUsPage extends StatefulWidget {
   const AboutUsPage({super.key, this.onRequestTabChange});
 
@@ -137,132 +155,182 @@ class _AboutUsPageState extends State<AboutUsPage> {
     final visible = sections
         .where((s) => _matchesFilter(s) && _matchesSearch(s, q))
         .toList();
+    final avatarProvider = _avatarUrl != null && _avatarUrl!.trim().isNotEmpty
+        ? NetworkImage(_avatarUrl!) as ImageProvider
+        : null;
+    final topPadding = MediaQuery.of(context).padding.top;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.transparent,
       body: Stack(
         children: [
-          // background image
+          Positioned.fill(
+            child: Image.asset('assets/bg.png', fit: BoxFit.cover),
+          ),
           Positioned(
             top: 0,
             left: 0,
             right: 0,
-            height: 900,
-            child: Image.asset('assets/bg.png', fit: BoxFit.cover),
+            child: Container(
+              height: topPadding + 200,
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color(0xFFB11217),
+                    Color(0xFFB11217),
+                    Colors.transparent,
+                  ],
+                  stops: [0.0, 0.65, 1.0],
+                ),
+              ),
+            ),
           ),
-
           SafeArea(
-            child: Column(
-              children: [
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 25, vertical: 14),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final width = constraints.maxWidth;
+                final height = constraints.maxHeight;
+                final compactWidth = width < 370;
+                final compactHeight = height < 660;
+                final horizontalPadding = compactWidth ? 16.0 : 25.0;
+                final verticalPadding = compactHeight ? 8.0 : 14.0;
+                final topGap = compactHeight ? 8.0 : 20.0;
+                final titleGap = compactHeight ? 18.0 : 30.0;
+                final listGap = compactHeight ? 16.0 : 24.0;
+                final avatarRadius = compactWidth ? 20.0 : 22.0;
+                final titleSize = (width * 0.075).clamp(20.0, 30.0).toDouble();
+
+                return Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: horizontalPadding,
+                    vertical: verticalPadding,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(height: 20),
-
-                      // header
+                      SizedBox(height: topGap),
                       Row(
                         children: [
                           PopupMenuButton<String>(
-                            tooltip: "",
+                            tooltip: '',
                             offset: const Offset(0, 55),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(14),
                             ),
                             onSelected: (value) async {
-                              if (value == "profile") {
+                              if (value == 'profile') {
                                 await _goToProfile();
                                 return;
                               }
-                              if (value == "logout") {
+                              if (value == 'logout') {
                                 await _logout();
                                 return;
                               }
                             },
                             itemBuilder: (context) => [
                               PopupMenuItem(
-                                value: "profile",
+                                value: 'profile',
                                 child: Row(
                                   children: [
                                     const Icon(Icons.person_outline_rounded),
                                     const SizedBox(width: 8),
-                                    Text(t(context, 'Profile', 'Profile')),
+                                    Flexible(
+                                      child: Text(
+                                        t(context, 'Profile', 'Profile'),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
                               PopupMenuItem(
-                                value: "logout",
+                                value: 'logout',
                                 child: Row(
                                   children: [
                                     const Icon(Icons.logout_rounded),
                                     const SizedBox(width: 8),
-                                    Text(t(context, 'Log Out', 'Mag-logout')),
+                                    Flexible(
+                                      child: Text(
+                                        t(context, 'Log Out', 'Mag-logout'),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
                             ],
                             child: CircleAvatar(
-                              radius: 22,
+                              radius: avatarRadius,
                               backgroundColor: Colors.grey.shade400,
-                              backgroundImage: _avatarUrl != null
-                                  ? NetworkImage(_avatarUrl!) as ImageProvider
-                                  : null,
-                              child: _avatarUrl == null
-                                  ? const Icon(Icons.person,
-                                      size: 22, color: Colors.white)
+                              backgroundImage: avatarProvider,
+                              child: avatarProvider == null
+                                  ? const Icon(
+                                      Icons.person,
+                                      size: 22,
+                                      color: Colors.white,
+                                    )
                                   : null,
                             ),
                           ),
                           const SizedBox(width: 10),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                _firstName.isEmpty && _lastName.isEmpty
-                                    ? t(context, 'Hi!', 'Kumusta!')
-                                    : t(
-                                        context,
-                                        'Hi, $_firstName $_lastName'.trim(),
-                                        'Kumusta, $_firstName $_lastName'
-                                            .trim(),
-                                      ),
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  _firstName.isEmpty && _lastName.isEmpty
+                                      ? t(context, 'Hi!', 'Kumusta!')
+                                      : t(
+                                          context,
+                                          'Hi, $_firstName $_lastName'.trim(),
+                                          'Kumusta, $_firstName $_lastName'.trim(),
+                                        ),
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                t(context, 'Welcome to Ignis Safe',
-                                    'Maligayang pagdating sa Ignis Safe'),
-                                style: const TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700,
+                                const SizedBox(height: 2),
+                                Text(
+                                  t(
+                                    context,
+                                    'Welcome to Ignis Safe',
+                                    'Mabuhay, Ignis Safe',
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w700,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ],
                       ),
-
-                      const SizedBox(height: 30),
+                      SizedBox(height: titleGap),
                       Center(
                         child: Text(
                           t(context, 'About Us', 'Tungkol sa Amin'),
-                          style: const TextStyle(
-                            fontSize: 30,
+                          textAlign: TextAlign.center,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: titleSize,
                             fontWeight: FontWeight.w800,
-                            color: Color(0xFF222222),
+                            color: Colors.white,
+                            height: 1.12,
                           ),
                         ),
                       ),
-                      const SizedBox(height: 30),
-
-                      // Search with filter icon
+                      SizedBox(height: listGap),
                       Container(
                         height: 50,
                         padding: const EdgeInsets.symmetric(horizontal: 14),
@@ -285,10 +353,8 @@ class _AboutUsPageState extends State<AboutUsPage> {
                               child: TextField(
                                 onChanged: _onSearchChanged,
                                 decoration: InputDecoration(
-                                  hintText:
-                                      t(context, 'Search', 'Maghanap'),
-                                  hintStyle:
-                                      const TextStyle(color: Colors.grey),
+                                  hintText: t(context, 'Search', 'Maghanap'),
+                                  hintStyle: const TextStyle(color: Colors.grey),
                                   border: InputBorder.none,
                                   isDense: true,
                                 ),
@@ -307,36 +373,62 @@ class _AboutUsPageState extends State<AboutUsPage> {
                           ],
                         ),
                       ),
+                      const SizedBox(height: 20),
+                      Expanded(
+                        child: _buildAboutContent(
+                          visible: visible,
+                          horizontalPadding: 0,
+                        ),
+                      ),
                     ],
                   ),
-                ),
-
-                // content
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(25, 8, 25, 110),
-                    child: Column(
-                      children: [
-                        if (visible.isEmpty)
-                          _EmptyState(
-                            onClear: () => setState(() {
-                              _searchQuery = '';
-                              _filter = AboutFilter.all;
-                            }),
-                          )
-                        else
-                          ...visible.map((s) => Padding(
-                                padding: const EdgeInsets.only(bottom: 14),
-                                child: s.builder(context),
-                              )),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+                );
+              },
             ),
           ),
         ],
+      ),
+    );
+  }
+
+
+
+  Widget _buildAboutContent({
+    required List<_AboutSection> visible,
+    required double horizontalPadding,
+  }) {
+    return ScrollConfiguration(
+      behavior: const _NoOverscrollScrollBehavior(),
+      child: SingleChildScrollView(
+        physics: const ClampingScrollPhysics(),
+        clipBehavior: Clip.hardEdge,
+        padding: EdgeInsets.fromLTRB(
+          horizontalPadding,
+          0,
+          horizontalPadding,
+          12,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (visible.isEmpty)
+              _EmptyState(
+                onClear: () => setState(() {
+                  _searchQuery = '';
+                  _filter = AboutFilter.all;
+                }),
+              )
+            else
+              for (int index = 0; index < visible.length; index++)
+                Padding(
+                  padding: EdgeInsets.only(
+                    bottom: index == visible.length - 1 ? 0 : 14,
+                  ),
+                  child: visible[index].builder(context),
+                ),
+          ],
+        ),
       ),
     );
   }
@@ -601,7 +693,7 @@ class _LogoMeaningCard extends StatelessWidget {
                           "Ang fire truck at hose ay nagpapakita ng kahandaang tumugon nang mabilis sa mga emerhensiya. "
                           "Ang apoy ay kumakatawan sa panganib ng sunog, habang ang tubig ay kumakatawan sa kontrol at pag-iwas.",
                     ),
-                    textAlign: TextAlign.justify,
+                    textAlign: TextAlign.left,
                     style: const TextStyle(
                       fontSize: 12.8,
                       height: 1.35,
@@ -615,7 +707,8 @@ class _LogoMeaningCard extends StatelessWidget {
 
             const SizedBox(height: 14),
 
-            const Center(
+            const Align(
+              alignment: Alignment.centerLeft,
               child: Text(
                 "IGNIS SAFE",
                 style: TextStyle(
@@ -669,7 +762,7 @@ class _LogoMeaningCard extends StatelessWidget {
                     "Sumasalamin ito sa isang misyon na nakatuon sa pag-iwas sa panganib ng sunog, pagtitiyak ng kahandaan, "
                     "at pagpapanatiling ligtas ang mga tao at ari-arian mula sa mga panganib na may kaugnayan sa sunog.",
               ),
-              textAlign: TextAlign.justify,
+              textAlign: TextAlign.left,
               style: const TextStyle(
                 fontSize: 12.8,
                 height: 1.35,
@@ -686,7 +779,7 @@ class _LogoMeaningCard extends StatelessWidget {
                 "Ignis Safe focuses on fire safety, prevention, and emergency preparedness.",
                 "Ang Ignis Safe ay nakatuon sa kaligtasan sa sunog, pag-iwas, at paghahanda para sa emerhensiya.",
               ),
-              textAlign: TextAlign.center,
+              textAlign: TextAlign.left,
               style: const TextStyle(
                 fontSize: 12.8,
                 height: 1.35,
@@ -707,7 +800,7 @@ class _LogoMeaningCard extends StatelessWidget {
                     "ang mga indibidwal at organisasyon na maunawaan ang mga panganib ng sunog at kung paano tumugon nang wasto sa mga emerhensiya. "
                     "Sinusuportahan din nito ang inspeksyon, pagsunod, at pag-uulat sa kaligtasan upang palakasin ang pangkalahatang sistema ng proteksyon sa sunog.",
               ),
-              textAlign: TextAlign.justify,
+              textAlign: TextAlign.left,
               style: const TextStyle(
                 fontSize: 12.8,
                 height: 1.35,
@@ -732,7 +825,7 @@ class _LogoMeaningCard extends StatelessWidget {
                   "In essence, Ignis Safe helps prevent fires, prepare people for emergencies, and protect lives and property.",
                   "Sa esensya, tinutulungan ng Ignis Safe ang pag-iwas sa sunog, paghahanda ng mga tao para sa mga emerhensiya, at pagprotekta ng buhay at ari-arian.",
                 ),
-                textAlign: TextAlign.center,
+                textAlign: TextAlign.left,
                 style: const TextStyle(
                   fontSize: 12.8,
                   height: 1.35,
@@ -763,7 +856,7 @@ class _MeaningMiniBlock extends StatelessWidget {
         border: Border.all(color: const Color(0xFFEDEDED)),
       ),
       child: RichText(
-        textAlign: TextAlign.center,
+        textAlign: TextAlign.left,
         text: TextSpan(
           style: const TextStyle(
             fontFamily: 'Poppins',
@@ -903,7 +996,7 @@ class _TeamCard extends StatelessWidget {
                       "Nakatuon kami sa pagbuo ng mga interactive at user-centered na solusyon na nagtataguyod ng kaalaman sa sunog, pag-iwas, at wastong pagtugon sa emerhensiya. "
                       "Ang aming layunin ay lumikha ng isang praktikal na sistema na may kaugnayan sa totoong mundo at epekto sa komunidad.",
                 ),
-                textAlign: TextAlign.justify,
+                textAlign: TextAlign.left,
                 style: const TextStyle(
                   fontSize: 12.8,
                   height: 1.35,
@@ -980,7 +1073,7 @@ class _PartnerCard extends StatelessWidget {
                 "An official fire service unit operating under the Bureau of Fire Protection (BFP) in the Philippines. The BFP is a national government agency tasked with preventing and suppressing destructive fires, enforcing the Fire Code, and conducting community fire safety education nationwide.",
                 "Isang opisyal na yunit ng serbisyong pangsunog na nag-ooperate sa ilalim ng Bureau of Fire Protection (BFP) sa Pilipinas. Ang BFP ay isang pambansang ahensya ng gobyerno na may tungkuling pigilan at supilin ang mga mapanwasak na sunog, ipatupad ang Fire Code, at magsagawa ng edukasyon sa kaligtasan sa sunog sa buong bansa.",
               ),
-              textAlign: TextAlign.justify,
+              textAlign: TextAlign.left,
               style: const TextStyle(
                 height: 1.35,
                 fontSize: 13.2,
@@ -1032,7 +1125,7 @@ class _PartnerCard extends StatelessWidget {
                             "In case of Fire or other Emergencies, call:\n(046) 884-6131 / 416-0875 | 0995 336 9534",
                             "Sa kaso ng Sunog o iba pang Emerhensiya, tumawag sa:\n(046) 884-6131 / 416-0875 | 0995 336 9534",
                           ),
-                          textAlign: TextAlign.justify,
+                          textAlign: TextAlign.left,
                           style: const TextStyle(
                             fontSize: 12.8,
                             height: 1.3,
@@ -1047,13 +1140,15 @@ class _PartnerCard extends StatelessWidget {
                   const SizedBox(height: 12),
 
                   // Fire marshal
-                  Center(
+                  Align(
+                    alignment: Alignment.centerLeft,
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
                           "FCINSP MICHAEL JOHN V ESCAÑO",
-                          textAlign: TextAlign.center,
+                          textAlign: TextAlign.left,
                           style: TextStyle(
                             fontSize: 12.8,
                             fontWeight: FontWeight.w900,
@@ -1064,7 +1159,7 @@ class _PartnerCard extends StatelessWidget {
                         Text(
                           t(context, "City Fire Marshal",
                               "Lungsod na Fire Marshal"),
-                          textAlign: TextAlign.center,
+                          textAlign: TextAlign.left,
                           style: const TextStyle(
                             fontSize: 12.2,
                             fontWeight: FontWeight.w700,
@@ -1095,7 +1190,7 @@ class _PartnerCard extends StatelessWidget {
                 "A modern fire service fully capable of ensuring a fire safe nation by 2034.",
                 "Isang modernong serbisyong pangsunog na ganap na kayang tiyakin ang isang ligtas na bansang walang sunog sa taong 2034.",
               ),
-              textAlign: TextAlign.justify,
+              textAlign: TextAlign.left,
               style: const TextStyle(
                 fontSize: 12.8,
                 height: 1.35,
@@ -1121,7 +1216,7 @@ class _PartnerCard extends StatelessWidget {
                 "We commit to prevent and suppress destructive fires, investigate its causes; enforce Fire Code and other related laws; respond to man-made and natural disasters and other emergencies.",
                 "Kami ay nakatuon sa pagpigil at pagsugpo ng mapanwasak na sunog, pagsisiyasat ng sanhi nito; pagpapatupad ng Fire Code at iba pang kaugnay na batas; pagtugon sa mga man-made at natural na sakuna at iba pang emerhensiya.",
               ),
-              textAlign: TextAlign.justify,
+              textAlign: TextAlign.left,
               style: const TextStyle(
                 fontSize: 12.8,
                 height: 1.35,
@@ -1169,13 +1264,20 @@ class _ContactCard extends StatelessWidget {
               children: [
                 const Icon(Icons.phone_in_talk_rounded, color: brandRed),
                 const SizedBox(width: 10),
-                Text(
-                  t(context, "Emergency Contact Information",
-                      "Impormasyon sa Emergency"),
-                  style: const TextStyle(
-                    fontSize: 15.5,
-                    fontWeight: FontWeight.w900,
-                    color: Color(0xFF1E1E1E),
+                Expanded(
+                  child: Text(
+                    t(
+                      context,
+                      "Emergency Contact Information",
+                      "Impormasyon sa Emergency",
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 15.5,
+                      fontWeight: FontWeight.w900,
+                      color: Color(0xFF1E1E1E),
+                    ),
                   ),
                 ),
               ],
@@ -1307,38 +1409,42 @@ class _DevTile extends StatelessWidget {
               m.fullName,
               style: const TextStyle(fontWeight: FontWeight.w900),
             ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  t(context, m.role, m.roleTl),
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w800,
-                    color: Color(0xFFB11217),
-                  ),
-                ),
-                if (m.email.trim().isNotEmpty) ...[
-                  const SizedBox(height: 8),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                   Text(
-                    "EMAIL: ${m.email}",
+                    t(context, m.role, m.roleTl),
                     style: const TextStyle(
-                      fontWeight: FontWeight.w700,
-                      decoration: TextDecoration.underline,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFFB11217),
+                    ),
+                  ),
+                  if (m.email.trim().isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      "EMAIL: ${m.email}",
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w700,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 10),
+                  Text(
+                    t(context, m.bio, m.bioTl),
+                    textAlign: TextAlign.left,
+                    style: const TextStyle(
+                      height: 1.4,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 13,
                     ),
                   ),
                 ],
-                const SizedBox(height: 10),
-                Text(
-                  t(context, m.bio, m.bioTl),
-                  textAlign: TextAlign.justify,
-                  style: const TextStyle(
-                    height: 1.4,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 13,
-                  ),
-                ),
-              ],
+              ),
             ),
             actions: [
               TextButton(
@@ -1366,6 +1472,7 @@ class _DevTile extends StatelessWidget {
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             CircleAvatar(
               radius: 26,
@@ -1376,7 +1483,7 @@ class _DevTile extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               m.displayFirst,
-              textAlign: TextAlign.center,
+              textAlign: TextAlign.left,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
@@ -1389,7 +1496,7 @@ class _DevTile extends StatelessWidget {
             const SizedBox(height: 2),
             Text(
               m.displayLast,
-              textAlign: TextAlign.center,
+              textAlign: TextAlign.left,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
@@ -1404,7 +1511,7 @@ class _DevTile extends StatelessWidget {
               t(context, m.role, m.roleTl),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
+              textAlign: TextAlign.left,
               style: const TextStyle(
                 fontSize: 10,
                 fontWeight: FontWeight.w700,
@@ -1451,27 +1558,37 @@ class _Chip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF7F7F7),
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: const Color(0xFFEDEDED)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 16, color: const Color(0xFFB11217)),
-          const SizedBox(width: 6),
-          Text(
-            text,
-            style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-              color: Color(0xFF2D2D2D),
+    final screenWidth = MediaQuery.of(context).size.width;
+    final maxChipWidth = screenWidth > 82 ? screenWidth - 82 : screenWidth;
+
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxWidth: maxChipWidth),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF7F7F7),
+          borderRadius: BorderRadius.circular(999),
+          border: Border.all(color: const Color(0xFFEDEDED)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 16, color: const Color(0xFFB11217)),
+            const SizedBox(width: 6),
+            Flexible(
+              child: Text(
+                text,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF2D2D2D),
+                ),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -1498,6 +1615,7 @@ class _EmptyState extends StatelessWidget {
         ],
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Icon(Icons.search_off_rounded, size: 44, color: Colors.grey),
           const SizedBox(height: 10),
@@ -1516,7 +1634,7 @@ class _EmptyState extends StatelessWidget {
               "Try a different keyword or reset filters.",
               "Subukan ang ibang keyword o i-reset ang mga filter.",
             ),
-            textAlign: TextAlign.center,
+            textAlign: TextAlign.left,
             style: const TextStyle(
               fontSize: 12.5,
               height: 1.25,
@@ -1610,6 +1728,8 @@ class _CaviteBfpDirectoryCard extends StatelessWidget {
                   child: Text(
                     t(context, "Cavite BFP Directory",
                         "Direktoryo ng Cavite BFP"),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       fontSize: 15.5,
                       fontWeight: FontWeight.w900,
@@ -1702,6 +1822,8 @@ class _DistrictAccordion extends StatelessWidget {
           iconColor: const Color(0xFFB11217),
           title: Text(
             group.title,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
             style: const TextStyle(
               fontSize: 13.5,
               fontWeight: FontWeight.w900,
@@ -1740,6 +1862,8 @@ class _DirectoryEntryTile extends StatelessWidget {
         children: [
           Text(
             entry.name,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
             style: const TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w900,
@@ -1761,6 +1885,8 @@ class _DirectoryEntryTile extends StatelessWidget {
                   Expanded(
                     child: Text(
                       entry.email,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         fontSize: 12.8,
                         height: 1.25,

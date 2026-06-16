@@ -23,7 +23,7 @@ const Map<String, Map<String, String>> _strings = {
   },
   'welcome_to_ignis_safe': {
     'en': 'Welcome to, IGNIS SAFE',
-    'tl': 'Maligayang pagdating sa IGNIS SAFE',
+    'tl': 'Mabuhay, IGNIS SAFE',
   },
   'email_address': {
     'en': 'EMAIL ADDRESS:',
@@ -131,7 +131,7 @@ const Map<String, Map<String, String>> _strings = {
   },
   'welcome_to_ignis_safe_short': {
     'en': 'Welcome to Ignis Safe',
-    'tl': 'Maligayang pagdating sa Ignis Safe',
+    'tl': 'Mabuhay, Ignis Safe',
   },
   'learning_materials': {
     'en': 'Learning Materials',
