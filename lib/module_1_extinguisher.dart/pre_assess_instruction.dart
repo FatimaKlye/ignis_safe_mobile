@@ -139,6 +139,7 @@ class PreAssessmentIntroPage extends StatelessWidget {
                             const SizedBox(width: 6),
                             Text(
                               context.tr('module_1'),
+                              softWrap: false,
                               style: const TextStyle(
                                 color: AppColors.textOnRed,
                                 fontFamily: 'Poppins',
@@ -154,227 +155,52 @@ class PreAssessmentIntroPage extends StatelessWidget {
                 ),
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 22, 20, 12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          width: double.infinity,
-                          child: Text(
-                            getAssessmentDisplayTitle(context),
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              color: AppColors.textOnRed,
-                              fontFamily: 'Poppins',
-                              fontSize: 30,
-                              height: 1.12,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: -0.4,
+                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        final veryTight = constraints.maxHeight < 560;
+                        final tight = constraints.maxHeight < 625;
+                        final titleSize = veryTight ? 24.0 : (tight ? 27.0 : 30.0);
+                        final subtitleSize = veryTight ? 12.2 : (tight ? 13.0 : 14.0);
+                        final titleGap = veryTight ? 5.0 : 7.0;
+                        final cardGap = veryTight ? 11.0 : (tight ? 15.0 : 20.0);
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Text(
+                              getAssessmentDisplayTitle(context),
+                              textAlign: TextAlign.center,
+                              softWrap: true,
+                              style: TextStyle(
+                                color: AppColors.textOnRed,
+                                fontFamily: 'Poppins',
+                                fontSize: titleSize,
+                                height: 1.08,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: -0.4,
+                              ),
                             ),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          context.tr('module_1_full_header'),
-                          style: TextStyle(
-                            color: AppColors.textOnRed.withOpacity(0.88),
-                            fontFamily: 'Poppins',
-                            fontSize: 14,
-                            height: 1.45,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(height: 26),
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(20),
-                          decoration: BoxDecoration(
-                            color: AppColors.surface,
-                            borderRadius: BorderRadius.circular(28),
-                            boxShadow: [
-                              BoxShadow(
-                                color: AppColors.shadow,
-                                blurRadius: 30,
-                                offset: const Offset(0, 18),
+                            SizedBox(height: titleGap),
+                            Text(
+                              context.tr('module_1_full_header'),
+                              textAlign: TextAlign.center,
+                              softWrap: true,
+                              style: TextStyle(
+                                color: AppColors.textOnRed.withOpacity(0.88),
+                                fontFamily: 'Poppins',
+                                fontSize: subtitleSize,
+                                height: 1.32,
+                                fontWeight: FontWeight.w600,
                               ),
-                            ],
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    width: 56,
-                                    height: 56,
-                                    decoration: BoxDecoration(
-                                      gradient: const LinearGradient(
-                                        colors: [
-                                          AppColors.brandRed,
-                                          AppColors.brandRedDark,
-                                        ],
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                      ),
-                                      borderRadius: BorderRadius.circular(18),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: AppColors.brandRed
-                                              .withOpacity(0.28),
-                                          blurRadius: 16,
-                                          offset: const Offset(0, 8),
-                                        ),
-                                      ],
-                                    ),
-                                    child: const Icon(
-                                      Icons.quiz_rounded,
-                                      color: AppColors.textOnRed,
-                                      size: 30,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 14),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          isTl
-                                              ? 'Handa ka na ba?'
-                                              : 'Ready to begin?',
-                                          style: const TextStyle(
-                                            color: AppColors.textPrimary,
-                                            fontFamily: 'Poppins',
-                                            fontSize: 22,
-                                            height: 1.18,
-                                            fontWeight: FontWeight.w900,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 5),
-                                        Text(
-                                          isTl
-                                              ? 'Sagutan muna ang paunang pagsusulit bago simulan ang aralin.'
-                                              : 'Take this pre-assessment before starting the lesson.',
-                                          style: const TextStyle(
-                                            color: AppColors.textSecondary,
-                                            fontFamily: 'Poppins',
-                                            fontSize: 13.5,
-                                            height: 1.38,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 22),
-                              Text(
-                                context.tr('module_1_full_title'),
-                                style: const TextStyle(
-                                  color: AppColors.textPrimary,
-                                  fontFamily: 'Poppins',
-                                  fontSize: 15.5,
-                                  height: 1.35,
-                                  fontWeight: FontWeight.w800,
-                                ),
-                              ),
-                              const SizedBox(height: 14),
-                              _IntroInfoTile(
-                                icon: Icons.dynamic_form_rounded,
-                                title: isTl ? 'Mga tanong' : 'Questions',
-                                value: isTl
-                                    ? 'Mula sa Bureau of Fire Protection DASMARIÑAS'
-                                    : 'From Bureau of Fire Protection DASMARIÑAS',
-                              ),
-                              const SizedBox(height: 10),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Expanded(
-                                    child: _IntroInfoTile(
-                                      icon: Icons.schedule_rounded,
-                                      title: isTl ? 'Oras' : 'Time',
-                                      value: '5 mins',
-                                    ),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Expanded(
-                                    child: _IntroInfoTile(
-                                      icon: Icons.school_rounded,
-                                      title: isTl ? 'Uri' : 'Type',
-                                      value: 'Practice',
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 22),
-                              Container(
-                                width: double.infinity,
-                                padding: const EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                  color: AppColors.surfaceSoft,
-                                  borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(
-                                    color: AppColors.border,
-                                  ),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Container(
-                                          padding: const EdgeInsets.all(8),
-                                          decoration: BoxDecoration(
-                                            color: AppColors.brandRedSoft,
-                                            borderRadius:
-                                                BorderRadius.circular(12),
-                                          ),
-                                          child: const Icon(
-                                            Icons.lightbulb_outline_rounded,
-                                            color: AppColors.brandRed,
-                                            size: 18,
-                                          ),
-                                        ),
-                                        const SizedBox(width: 10),
-                                        Text(
-                                          isTl
-                                              ? 'Bago ka magsimula'
-                                              : 'Before you start',
-                                          style: const TextStyle(
-                                            color: AppColors.textPrimary,
-                                            fontFamily: 'Poppins',
-                                            fontSize: 15.5,
-                                            fontWeight: FontWeight.w900,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 13),
-                                    _InstructionLine(
-                                      text: isTl
-                                          ? 'Piliin ang pinakamainam na sagot sa bawat tanong.'
-                                          : 'Choose the best answer for each question.',
-                                    ),
-                                    _InstructionLine(
-                                      text: isTl
-                                          ? 'Maaari mong balikan ang mga tanong bago ipasa.'
-                                          : 'You can review your answers before submitting.',
-                                    ),
-                                    _InstructionLine(
-                                      text: isTl
-                                          ? 'Hindi graded ang pre-assessment na ito; gabay lamang ito sa pagkatuto.'
-                                          : 'This pre-assessment is not graded; it is only used as a learning guide.',
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                            ),
+                            SizedBox(height: cardGap),
+                            Expanded(
+                              child: _AssessmentIntroCard(isTl: isTl),
+                            ),
+                          ],
+                        );
+                      },
                     ),
                   ),
                 ),
@@ -384,48 +210,753 @@ class PreAssessmentIntroPage extends StatelessWidget {
         ],
       ),
       bottomNavigationBar: SafeArea(
-        minimum: const EdgeInsets.fromLTRB(20, 10, 20, 18),
-        child: SizedBox(
+        minimum: const EdgeInsets.fromLTRB(20, 6, 20, 16),
+        child: _SwipeStartButton(
+          label: isTl ? 'Simulan ang Pagsusulit' : 'Start Test',
+          onCompleted: () => _openPreAssessmentIfAllowed(context),
+        ),
+      ),
+    );
+  }
+}
+
+class _AssessmentIntroCard extends StatefulWidget {
+  const _AssessmentIntroCard({required this.isTl});
+
+  final bool isTl;
+
+  @override
+  State<_AssessmentIntroCard> createState() => _AssessmentIntroCardState();
+}
+
+class _AssessmentIntroCardState extends State<_AssessmentIntroCard> {
+  int _selectedGuide = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final height = constraints.maxHeight;
+        final veryTight = height < 500;
+        final tight = height < 560;
+        final compact = height < 635;
+        final cardPadding = veryTight ? 12.0 : (tight ? 14.0 : (compact ? 16.0 : 18.0));
+        final iconSize = veryTight ? 40.0 : (tight ? 46.0 : (compact ? 52.0 : 58.0));
+        final headingSize = veryTight ? 17.0 : (tight ? 18.0 : (compact ? 20.0 : 22.0));
+        final bodySize = veryTight ? 10.8 : (tight ? 11.6 : (compact ? 12.3 : 13.0));
+        final sectionGap = veryTight ? 7.0 : (tight ? 9.0 : (compact ? 11.0 : 13.0));
+        final miniGap = veryTight ? 6.0 : 8.0;
+        final isTl = widget.isTl;
+
+        return Container(
           width: double.infinity,
-          child: ElevatedButton(
-            onPressed: () => _openPreAssessmentIfAllowed(context),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primaryButton,
-              elevation: 8,
-              shadowColor: AppColors.primaryButton.withOpacity(0.35),
-              minimumSize: const Size.fromHeight(56),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(18),
+          height: double.infinity,
+          padding: EdgeInsets.all(cardPadding),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(30),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.shadow,
+                blurRadius: 30,
+                offset: const Offset(0, 18),
               ),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Flexible(
-                  child: Text(
-                    isTl ? 'Simulan ang Pagsusulit' : 'Start Test',
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: iconSize,
+                    height: iconSize,
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [
+                          AppColors.brandRed,
+                          AppColors.brandRedDark,
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(18),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.brandRed.withOpacity(0.25),
+                          blurRadius: 16,
+                          offset: const Offset(0, 8),
+                        ),
+                      ],
+                    ),
+                    child: Icon(
+                      Icons.quiz_rounded,
                       color: AppColors.textOnRed,
-                      fontFamily: 'Poppins',
-                      fontSize: 16,
-                      fontWeight: FontWeight.w900,
+                      size: veryTight ? 23 : (tight ? 26 : 30),
                     ),
                   ),
+                  const SizedBox(width: 13),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          isTl ? 'Handa ka na ba?' : 'Ready to begin?',
+                          softWrap: true,
+                          style: TextStyle(
+                            color: AppColors.textPrimary,
+                            fontFamily: 'Poppins',
+                            fontSize: headingSize,
+                            height: 1.12,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+                        Text(
+                          isTl
+                              ? 'I-tap ang gabay sa ibaba para makita ang kailangan mong tandaan. Hindi kailangan kabisado lahat bago magsimula.'
+                              : 'Tap a guide below to see what you need to remember. You do not need to know everything before starting.',
+                          softWrap: true,
+                          style: TextStyle(
+                            color: AppColors.textSecondary,
+                            fontFamily: 'Poppins',
+                            fontSize: bodySize,
+                            height: 1.34,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: sectionGap),
+              _ModuleTitleBand(
+                text: context.tr('module_1_full_title'),
+                veryTight: veryTight,
+                tight: tight,
+              ),
+              SizedBox(height: sectionGap),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: _MetricPill(
+                      icon: Icons.schedule_rounded,
+                      title: isTl ? 'Oras' : 'Time',
+                      value: '5 mins',
+                      compact: compact,
+                      tight: tight,
+                      veryTight: veryTight,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: _MetricPill(
+                      icon: Icons.school_rounded,
+                      title: isTl ? 'Layunin' : 'Purpose',
+                      value: isTl ? 'Baseline' : 'Baseline',
+                      compact: compact,
+                      tight: tight,
+                      veryTight: veryTight,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: miniGap),
+              _AssessmentSourceTile(
+                icon: Icons.verified_rounded,
+                title: isTl ? 'Pinagmulan ng tanong' : 'Question source',
+                value: isTl
+                    ? 'Bureau of Fire Protection DASMARIÑAS'
+                    : 'Bureau of Fire Protection DASMARIÑAS',
+                compact: compact,
+                tight: tight,
+                veryTight: veryTight,
+              ),
+              SizedBox(height: sectionGap),
+              _GuideSelector(
+                selectedIndex: _selectedGuide,
+                isTl: isTl,
+                compact: compact,
+                tight: tight,
+                veryTight: veryTight,
+                onChanged: (index) {
+                  setState(() {
+                    _selectedGuide = index;
+                  });
+                },
+              ),
+              SizedBox(height: sectionGap),
+              Expanded(
+                child: _InteractiveGuidePanel(
+                  selectedIndex: _selectedGuide,
+                  isTl: isTl,
+                  compact: compact,
+                  tight: tight,
+                  veryTight: veryTight,
                 ),
-                const SizedBox(width: 8),
-                const Icon(
-                  Icons.arrow_forward_rounded,
-                  color: AppColors.textOnRed,
-                  size: 21,
-                ),
-              ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _GuideSelector extends StatelessWidget {
+  const _GuideSelector({
+    required this.selectedIndex,
+    required this.isTl,
+    required this.compact,
+    required this.tight,
+    required this.veryTight,
+    required this.onChanged,
+  });
+
+  final int selectedIndex;
+  final bool isTl;
+  final bool compact;
+  final bool tight;
+  final bool veryTight;
+  final ValueChanged<int> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final items = <_GuideTabData>[
+      _GuideTabData(
+        icon: Icons.psychology_alt_rounded,
+        label: isTl ? 'Ano ito?' : 'What is it?',
+      ),
+      _GuideTabData(
+        icon: Icons.touch_app_rounded,
+        label: isTl ? 'Paano?' : 'How?',
+      ),
+      _GuideTabData(
+        icon: Icons.lightbulb_outline_rounded,
+        label: isTl ? 'Tandaan' : 'Remember',
+      ),
+    ];
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: List.generate(items.length, (index) {
+        return Expanded(
+          child: Padding(
+            padding: EdgeInsets.only(left: index == 0 ? 0 : 7),
+            child: _GuideTab(
+              data: items[index],
+              isSelected: selectedIndex == index,
+              compact: compact,
+              tight: tight,
+              veryTight: veryTight,
+              onTap: () => onChanged(index),
             ),
+          ),
+        );
+      }),
+    );
+  }
+}
+
+class _GuideTabData {
+  const _GuideTabData({
+    required this.icon,
+    required this.label,
+  });
+
+  final IconData icon;
+  final String label;
+}
+
+class _GuideTab extends StatelessWidget {
+  const _GuideTab({
+    required this.data,
+    required this.isSelected,
+    required this.compact,
+    required this.tight,
+    required this.veryTight,
+    required this.onTap,
+  });
+
+  final _GuideTabData data;
+  final bool isSelected;
+  final bool compact;
+  final bool tight;
+  final bool veryTight;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final fontSize = veryTight ? 9.5 : (tight ? 10.1 : (compact ? 10.7 : 11.3));
+    final verticalPadding = veryTight ? 7.0 : (tight ? 8.0 : 9.0);
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(18),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          curve: Curves.easeOut,
+          width: double.infinity,
+          padding: EdgeInsets.symmetric(
+            horizontal: veryTight ? 6 : 8,
+            vertical: verticalPadding,
+          ),
+          decoration: BoxDecoration(
+            color: isSelected ? AppColors.brandRedSoft : AppColors.surfaceSoft,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: isSelected ? AppColors.brandRed.withOpacity(0.55) : AppColors.border,
+              width: isSelected ? 1.3 : 1,
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                data.icon,
+                color: isSelected ? AppColors.brandRed : AppColors.textMuted,
+                size: veryTight ? 16 : 18,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                data.label,
+                textAlign: TextAlign.center,
+                softWrap: true,
+                style: TextStyle(
+                  color: isSelected ? AppColors.brandRed : AppColors.textPrimary,
+                  fontFamily: 'Poppins',
+                  fontSize: fontSize,
+                  height: 1.13,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+            ],
           ),
         ),
       ),
+    );
+  }
+}
+
+class _InteractiveGuidePanel extends StatelessWidget {
+  const _InteractiveGuidePanel({
+    required this.selectedIndex,
+    required this.isTl,
+    required this.compact,
+    required this.tight,
+    required this.veryTight,
+  });
+
+  final int selectedIndex;
+  final bool isTl;
+  final bool compact;
+  final bool tight;
+  final bool veryTight;
+
+  @override
+  Widget build(BuildContext context) {
+    final panel = _GuideContent.forIndex(selectedIndex, isTl);
+    final titleSize = veryTight ? 13.4 : (tight ? 14.3 : (compact ? 15.2 : 16.2));
+    final bodySize = veryTight ? 10.3 : (tight ? 11.0 : (compact ? 11.8 : 12.5));
+    final bulletSize = veryTight ? 10.0 : (tight ? 10.6 : (compact ? 11.2 : 11.8));
+    final panelPadding = veryTight ? 10.0 : (tight ? 12.0 : (compact ? 14.0 : 16.0));
+    final itemGap = veryTight ? 5.0 : (tight ? 6.0 : 8.0);
+
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 220),
+      switchInCurve: Curves.easeOut,
+      switchOutCurve: Curves.easeIn,
+      child: Container(
+        key: ValueKey<int>(selectedIndex),
+        width: double.infinity,
+        height: double.infinity,
+        padding: EdgeInsets.all(panelPadding),
+        decoration: BoxDecoration(
+          color: AppColors.surfaceSoft,
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(color: AppColors.border),
+        ),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.topLeft,
+              child: SizedBox(
+                width: constraints.maxWidth,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: veryTight ? 30 : (tight ? 33 : 37),
+                          height: veryTight ? 30 : (tight ? 33 : 37),
+                          decoration: BoxDecoration(
+                            color: AppColors.brandRedSoft,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Icon(
+                            panel.icon,
+                            color: AppColors.brandRed,
+                            size: veryTight ? 16 : 19,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            panel.title,
+                            softWrap: true,
+                            style: TextStyle(
+                              color: AppColors.textPrimary,
+                              fontFamily: 'Poppins',
+                              fontSize: titleSize,
+                              height: 1.18,
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: itemGap),
+                    Text(
+                      panel.body,
+                      softWrap: true,
+                      style: TextStyle(
+                        color: AppColors.textSecondary,
+                        fontFamily: 'Poppins',
+                        fontSize: bodySize,
+                        height: 1.33,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    SizedBox(height: itemGap),
+                    ...panel.points.map(
+                      (point) => _InstructionLine(
+                        text: point,
+                        fontSize: bulletSize,
+                        bottomGap: itemGap,
+                      ),
+                    ),
+                    SizedBox(height: veryTight ? 2 : 4),
+                    _SwipeHint(
+                      text: isTl
+                          ? 'Kapag handa ka na, i-swipe ang button sa ibaba.'
+                          : 'When ready, swipe the button below.',
+                      fontSize: veryTight ? 9.8 : (tight ? 10.6 : 11.3),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class _GuideContent {
+  const _GuideContent({
+    required this.icon,
+    required this.title,
+    required this.body,
+    required this.points,
+  });
+
+  final IconData icon;
+  final String title;
+  final String body;
+  final List<String> points;
+
+  static _GuideContent forIndex(int index, bool isTl) {
+    switch (index) {
+      case 1:
+        return _GuideContent(
+          icon: Icons.touch_app_rounded,
+          title: isTl ? 'Paano ito sasagutan?' : 'How do you answer it?',
+          body: isTl
+              ? 'Basahin ang tanong, piliin ang pinakaangkop na sagot, at isumite kapag tapos ka na.'
+              : 'Read the question, choose the best answer, and submit when you are done.',
+          points: isTl
+              ? <String>[
+                  'May 5 minuto ka para matapos.',
+                  'Kapag naubos ang oras, ang hindi nasagutan ay mamamarkahang mali.',
+                ]
+              : <String>[
+                  'You have 5 minutes to finish.',
+                  'When time runs out, unanswered items will be marked incorrect.',
+                ],
+        );
+      case 2:
+        return _GuideContent(
+          icon: Icons.lightbulb_outline_rounded,
+          title: isTl ? 'Mahalagang tandaan' : 'Important reminder',
+          body: isTl
+              ? 'Sagutan muna ito bago basahin ang module para makita ang tunay mong panimulang kaalaman.'
+              : 'Answer this before reading the module so your real starting knowledge can be measured.',
+          points: isTl
+              ? <String>[
+                  'Isang beses lang ito masasagutan.',
+                  'Gagamitin ang resulta bilang gabay sa pag-aaral mo.',
+                ]
+              : <String>[
+                  'You can answer this only once.',
+                  'Your result will be used as your learning guide.',
+                ],
+        );
+      default:
+        return _GuideContent(
+          icon: Icons.psychology_alt_rounded,
+          title: isTl ? 'Ano ang paunang pagsusulit?' : 'What is the pre-assessment?',
+          body: isTl
+              ? 'Ito ay maikling pagsusulit bago ang Module 1. Layunin nitong malaman kung ano na ang alam mo ngayon.'
+              : 'This is a short quiz before Module 1. Its purpose is to check what you already know right now.',
+          points: isTl
+              ? <String>[
+                  'Hindi ito kailangang perpekto.',
+                  'Mas madali mong malalaman kung alin ang dapat pagtuunan sa aralin.',
+                ]
+              : <String>[
+                  'It does not need to be perfect.',
+                  'It helps you see what to focus on during the lesson.',
+                ],
+        );
+    }
+  }
+}
+
+class _SwipeHint extends StatelessWidget {
+  const _SwipeHint({
+    required this.text,
+    required this.fontSize,
+  });
+
+  final String text;
+  final double fontSize;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(
+            Icons.swipe_rounded,
+            color: AppColors.brandRed,
+            size: 16,
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              text,
+              softWrap: true,
+              style: TextStyle(
+                color: AppColors.textPrimary,
+                fontFamily: 'Poppins',
+                fontSize: fontSize,
+                height: 1.25,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SwipeStartButton extends StatefulWidget {
+  const _SwipeStartButton({
+    required this.label,
+    required this.onCompleted,
+  });
+
+  final String label;
+  final Future<void> Function() onCompleted;
+
+  @override
+  State<_SwipeStartButton> createState() => _SwipeStartButtonState();
+}
+
+class _SwipeStartButtonState extends State<_SwipeStartButton> {
+  static const double _height = 62;
+  static const double _thumbSize = 50;
+  static const double _sidePadding = 6;
+
+  double _dragX = 0;
+  bool _draggingFromRight = false;
+  bool _isCompleting = false;
+
+  Future<void> _complete(double maxTravel) async {
+    if (_isCompleting) return;
+
+    setState(() {
+      _isCompleting = true;
+      _dragX = _draggingFromRight ? 0 : maxTravel;
+    });
+
+    await widget.onCompleted();
+
+    if (!mounted) return;
+    setState(() {
+      _isCompleting = false;
+      _draggingFromRight = false;
+      _dragX = 0;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final maxTravel = constraints.maxWidth - _thumbSize - (_sidePadding * 2);
+        final progress = maxTravel <= 0
+            ? 0.0
+            : (_dragX / maxTravel).clamp(0.0, 1.0).toDouble();
+
+        return Semantics(
+          button: true,
+          label: widget.label,
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onHorizontalDragStart: _isCompleting
+                ? null
+                : (details) {
+                    setState(() {
+                      _draggingFromRight =
+                          details.localPosition.dx > constraints.maxWidth / 2;
+                      _dragX = _draggingFromRight ? maxTravel : 0;
+                    });
+                  },
+            onHorizontalDragUpdate: _isCompleting
+                ? null
+                : (details) {
+                    setState(() {
+                      _dragX = (_dragX + details.delta.dx)
+                          .clamp(0.0, maxTravel)
+                          .toDouble();
+                    });
+                  },
+            onHorizontalDragEnd: _isCompleting
+                ? null
+                : (_) {
+                    final completed = _draggingFromRight
+                        ? _dragX <= maxTravel * 0.28
+                        : _dragX >= maxTravel * 0.72;
+
+                    if (completed) {
+                      _complete(maxTravel);
+                    } else {
+                      setState(() {
+                        _draggingFromRight = false;
+                        _dragX = 0;
+                      });
+                    }
+                  },
+            child: Container(
+              height: _height,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: AppColors.primaryButton,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primaryButton.withOpacity(0.35),
+                    blurRadius: 18,
+                    offset: const Offset(0, 9),
+                  ),
+                ],
+              ),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Positioned.fill(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: FractionallySizedBox(
+                        alignment: _draggingFromRight
+                            ? Alignment.centerRight
+                            : Alignment.centerLeft,
+                        widthFactor: (0.16 + (progress * 0.84))
+                            .clamp(0.16, 1.0)
+                            .toDouble(),
+                        child: Container(
+                          color: AppColors.textOnRed.withOpacity(0.08),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 66),
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        widget.label,
+                        textAlign: TextAlign.center,
+                        softWrap: false,
+                        style: TextStyle(
+                          color: AppColors.textOnRed.withOpacity(
+                            _isCompleting ? 0.72 : 0.94,
+                          ),
+                          fontFamily: 'Poppins',
+                          fontSize: 16,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                    ),
+                  ),
+                  AnimatedPositioned(
+                    duration: _isCompleting
+                        ? const Duration(milliseconds: 140)
+                        : const Duration(milliseconds: 60),
+                    curve: Curves.easeOut,
+                    left: _sidePadding + _dragX,
+                    top: (_height - _thumbSize) / 2,
+                    child: Container(
+                      width: _thumbSize,
+                      height: _thumbSize,
+                      decoration: BoxDecoration(
+                        color: AppColors.textOnRed.withOpacity(
+                          0.80 + (progress * 0.16),
+                        ),
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.12),
+                            blurRadius: 14,
+                            offset: const Offset(0, 7),
+                          ),
+                        ],
+                      ),
+                      child: Icon(
+                        _draggingFromRight
+                            ? Icons.arrow_back_rounded
+                            : Icons.arrow_forward_rounded,
+                        color: AppColors.primaryButton,
+                        size: 25,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
@@ -526,45 +1057,82 @@ class _CircleIconButton extends StatelessWidget {
   }
 }
 
-class _IntroInfoTile extends StatelessWidget {
-  const _IntroInfoTile({
-    required this.icon,
-    required this.title,
-    required this.value,
+class _ModuleTitleBand extends StatelessWidget {
+  const _ModuleTitleBand({
+    required this.text,
+    required this.veryTight,
+    required this.tight,
   });
 
-  final IconData icon;
-  final String title;
-  final String value;
+  final String text;
+  final bool veryTight;
+  final bool tight;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(
-        horizontal: 12,
-        vertical: 11,
+      padding: EdgeInsets.symmetric(
+        horizontal: veryTight ? 10 : 12,
+        vertical: veryTight ? 8 : 10,
       ),
       decoration: BoxDecoration(
         color: AppColors.surfaceSoft,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Text(
+        text,
+        softWrap: true,
+        style: TextStyle(
+          color: AppColors.textPrimary,
+          fontFamily: 'Poppins',
+          fontSize: veryTight ? 11.2 : (tight ? 12.2 : 13.4),
+          height: 1.28,
+          fontWeight: FontWeight.w900,
+        ),
+      ),
+    );
+  }
+}
+
+class _AssessmentSourceTile extends StatelessWidget {
+  const _AssessmentSourceTile({
+    required this.icon,
+    required this.title,
+    required this.value,
+    required this.compact,
+    required this.tight,
+    required this.veryTight,
+  });
+
+  final IconData icon;
+  final String title;
+  final String value;
+  final bool compact;
+  final bool tight;
+  final bool veryTight;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(
+        horizontal: veryTight ? 9 : (tight ? 10 : 12),
+        vertical: veryTight ? 7 : (tight ? 8 : (compact ? 9 : 11)),
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceSoft,
+        borderRadius: BorderRadius.circular(17),
         border: Border.all(color: AppColors.border),
       ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: 34,
-            height: 34,
-            decoration: BoxDecoration(
-              color: AppColors.brandRedSoft,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(
-              icon,
-              color: AppColors.brandRed,
-              size: 18,
-            ),
+          _MiniIconBox(
+            icon: icon,
+            size: veryTight ? 28 : (tight ? 30 : 34),
+            iconSize: veryTight ? 15 : (tight ? 16 : 18),
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -574,25 +1142,24 @@ class _IntroInfoTile extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  softWrap: true,
+                  style: TextStyle(
                     color: AppColors.textMuted,
                     fontFamily: 'Poppins',
-                    fontSize: 11,
+                    fontSize: veryTight ? 9.4 : (tight ? 10.2 : 11),
+                    height: 1.18,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   value,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  softWrap: true,
+                  style: TextStyle(
                     color: AppColors.textPrimary,
                     fontFamily: 'Poppins',
-                    fontSize: 12,
-                    height: 1.35,
+                    fontSize: veryTight ? 10.2 : (tight ? 10.9 : (compact ? 11.4 : 12.1)),
+                    height: 1.25,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -605,17 +1172,126 @@ class _IntroInfoTile extends StatelessWidget {
   }
 }
 
+class _MetricPill extends StatelessWidget {
+  const _MetricPill({
+    required this.icon,
+    required this.title,
+    required this.value,
+    required this.compact,
+    required this.tight,
+    required this.veryTight,
+  });
+
+  final IconData icon;
+  final String title;
+  final String value;
+  final bool compact;
+  final bool tight;
+  final bool veryTight;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(
+        horizontal: veryTight ? 9 : (tight ? 10 : 12),
+        vertical: veryTight ? 7 : (tight ? 8 : (compact ? 9 : 11)),
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceSoft,
+        borderRadius: BorderRadius.circular(17),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _MiniIconBox(
+            icon: icon,
+            size: veryTight ? 28 : (tight ? 30 : 34),
+            iconSize: veryTight ? 15 : (tight ? 16 : 18),
+          ),
+          const SizedBox(width: 9),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  title,
+                  softWrap: true,
+                  style: TextStyle(
+                    color: AppColors.textMuted,
+                    fontFamily: 'Poppins',
+                    fontSize: veryTight ? 9.3 : (tight ? 10.1 : 11),
+                    height: 1.16,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 1),
+                Text(
+                  value,
+                  softWrap: true,
+                  style: TextStyle(
+                    color: AppColors.textPrimary,
+                    fontFamily: 'Poppins',
+                    fontSize: veryTight ? 10.3 : (tight ? 11.4 : (compact ? 12.0 : 12.8)),
+                    height: 1.18,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MiniIconBox extends StatelessWidget {
+  const _MiniIconBox({
+    required this.icon,
+    required this.size,
+    required this.iconSize,
+  });
+
+  final IconData icon;
+  final double size;
+  final double iconSize;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: AppColors.brandRedSoft,
+        borderRadius: BorderRadius.circular(11),
+      ),
+      child: Icon(
+        icon,
+        color: AppColors.brandRed,
+        size: iconSize,
+      ),
+    );
+  }
+}
+
 class _InstructionLine extends StatelessWidget {
   const _InstructionLine({
     required this.text,
+    required this.fontSize,
+    required this.bottomGap,
   });
 
   final String text;
+  final double fontSize;
+  final double bottomGap;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 9),
+      padding: EdgeInsets.only(bottom: bottomGap),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -628,15 +1304,16 @@ class _InstructionLine extends StatelessWidget {
               shape: BoxShape.circle,
             ),
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: 9),
           Expanded(
             child: Text(
               text,
-              style: const TextStyle(
+              softWrap: true,
+              style: TextStyle(
                 color: AppColors.textSecondary,
                 fontFamily: 'Poppins',
-                fontSize: 13.5,
-                height: 1.42,
+                fontSize: fontSize,
+                height: 1.3,
                 fontWeight: FontWeight.w600,
               ),
             ),
