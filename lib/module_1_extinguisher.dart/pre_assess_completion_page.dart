@@ -331,7 +331,10 @@ class PreAssessmentCompletionPage extends StatelessWidget {
                                   ),
                                 ),
                               ),
-                              onPressed: () => Navigator.pop(context),
+                              onPressed: () => Navigator.pushNamed(
+                                context,
+                                'module_1_1learningmataterials',
+                              ),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 mainAxisSize: MainAxisSize.min,
@@ -346,8 +349,8 @@ class PreAssessmentCompletionPage extends StatelessWidget {
                                     child: Text(
                                       t(
                                         context,
-                                        'Back to Learning Activities',
-                                        'Bumalik sa Mga Gawain sa Pag-aaral',
+                                        'Go to Learning Materials',
+                                        'Pumunta sa Mga Materyales sa Pag-aaral',
                                       ),
                                       textAlign: TextAlign.center,
                                       maxLines: 2,

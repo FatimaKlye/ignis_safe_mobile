@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../localization/language_controller.dart';
 
 class AppColors {
-  // Module 3 Electrical Fire blue palette
+  // Module 3 Electrical Fire palette
   static const Color brandRed = Color(0xFF2563EB);
   static const Color brandRedDark = Color(0xFF1D4ED8);
   static const Color brandRedDeep = Color(0xFF1E3A8A);
@@ -32,9 +32,9 @@ class AppColors {
   static const Color info = Color(0xFF2563EB);
 
   // Buttons
-  static const Color primaryButton = Color(0xFF2563EB);
-  static const Color primaryButtonPressed = Color(0xFF1D4ED8);
-  static const Color secondaryButton = Color(0xFFEFF6FF);
+  static const Color primaryButton = brandRed;
+  static const Color primaryButtonPressed = brandRedDark;
+  static const Color secondaryButton = brandRedSoft;
 
   // Shadows
   static const Color shadow = Color(0x1A000000);
@@ -219,8 +219,8 @@ class PostAssessmentCompletionPage extends StatelessWidget {
                                       Text(
                                         t(
                                           context,
-                                          'Congratulations! Your score shows how well you understood the Module 3 Electrical Fire Learning Materials.',
-                                          'Binabati ka namin! Ipinapakita ng iyong score kung gaano mo naunawaan ang Modyul 3 tungkol sa electrical fire.',
+                                          'Congratulations! Your score shows how well you understood the Module 3 Learning Materials.',
+                                          'Binabati ka namin! Ipinapakita ng iyong score kung gaano mo naunawaan ang Modyul 3 sa Pag-aaral.',
                                         ),
                                         textAlign: TextAlign.center,
                                         softWrap: true,
@@ -329,8 +329,8 @@ class PostAssessmentCompletionPage extends StatelessWidget {
                                         child: Text(
                                           t(
                                             context,
-                                            'Your post-assessment result has been recorded. This score helps identify what you learned about electrical fire causes, warning signs, prevention, and safe emergency actions.',
-                                            'Naitala na ang iyong resulta sa panghuling pagsusulit. Ang score na ito ay tumutulong matukoy kung ano ang natutunan mo tungkol sa sanhi, babala, pag-iwas, at ligtas na aksyon sa electrical fire.',
+                                            'Your post-assessment result has been recorded. This score helps identify what you learned from the electrical fire safety lesson.',
+                                            'Naitala na ang iyong resulta sa panghuling pagsusulit. Ang score na ito ay tumutulong matukoy kung ano ang natutunan mo tungkol sa kaligtasan at tamang pagtugon sa sunog na elektrikal.',
                                           ),
                                           softWrap: true,
                                           style: const TextStyle(

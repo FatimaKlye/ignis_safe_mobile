@@ -3,6 +3,7 @@ import 'package:model_viewer_plus/model_viewer_plus.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:video_player/video_player.dart';
 import 'post_assess_instruction.dart';
+import 'module_progression_service.dart';
 
 
 // =============================================================================
@@ -177,6 +178,10 @@ String _lmText(BuildContext context, String key) {
       '';
 }
 
+String _localizedText(BuildContext context, String en, String tl) {
+  return Localizations.localeOf(context).languageCode == 'tl' ? tl : en;
+}
+
 _LearningSource _lmSource(BuildContext context, String key) {
   return context
           .dependOnInheritedWidgetOfExactType<_LearningMaterialScope>()
@@ -280,6 +285,8 @@ class _LearningMaterialElectricalPageState
   bool _canNext = false;
   bool _isSwitchingPage = false;
   bool _lastPageCompleted = false;
+  bool _moduleThreePostTestCompleted = false;
+  bool _checkingProgression = true;
 
   // Page 0: 4 expandable sections
   // Page 1: 3 expandable sections
@@ -289,6 +296,7 @@ class _LearningMaterialElectricalPageState
   bool _introShown = false;
   bool _unreadPromptVisible = false;
   bool _isContentLoading = true;
+  bool _savingCompletion = false;
   String? _contentError;
   _LearningMaterialContent? _content;
 
@@ -296,7 +304,7 @@ class _LearningMaterialElectricalPageState
   void initState() {
     super.initState();
     _scrollCtrl.addListener(_onScroll);
-    _loadContent();
+    _guardAccessAndLoadContent();
     WidgetsBinding.instance.addPostFrameCallback((_) => _onScroll());
   }
 
@@ -332,6 +340,57 @@ class _LearningMaterialElectricalPageState
     }
   }
 
+
+
+  Future<void> _guardAccessAndLoadContent() async {
+    if (mounted) {
+      setState(() {
+        _checkingProgression = true;
+        _isContentLoading = true;
+        _contentError = null;
+      });
+    }
+
+    try {
+      final state = await ModuleProgressionService()
+          .ensureCanOpenLearningModule(moduleNo: 3);
+      final postCompleted = state.hasValidPostTest;
+
+      if (!mounted) return;
+      setState(() {
+        _moduleThreePostTestCompleted = postCompleted;
+        _checkingProgression = false;
+      });
+
+      await _loadContent();
+    } on ProgressionAccessDenied catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _checkingProgression = false;
+        _isContentLoading = false;
+        _contentError = null;
+      });
+      await _showAccessDeniedAndPop(e.message);
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _checkingProgression = false;
+        _isContentLoading = false;
+        _contentError = e.toString().replaceFirst('Exception: ', '');
+      });
+    }
+  }
+
+  Future<void> _refreshProgressionState() async {
+    try {
+      final state = await ModuleProgressionService().getState(moduleNo: 3);
+      final postCompleted = state.hasValidPostTest;
+      if (!mounted) return;
+      setState(() => _moduleThreePostTestCompleted = postCompleted);
+    } catch (e) {
+      debugPrint('MODULE 3 PROGRESSION REFRESH ERROR: $e');
+    }
+  }
 
   Future<void> _loadContent() async {
     try {
@@ -428,6 +487,11 @@ class _LearningMaterialElectricalPageState
   }
 
   void _goNext() {
+    if (_pageIndex == 2 && _moduleThreePostTestCompleted) {
+      _showPostTestLockedPopup();
+      return;
+    }
+
     if (!_hasReadAllRequiredSections(_pageIndex)) {
       _showUnreadSectionsPopup();
       return;
@@ -524,17 +588,103 @@ class _LearningMaterialElectricalPageState
         title: _lmText(context, 'm3_lm_013_all_done'),
         body: _lmText(context, 'm3_lm_014_great_job_you_have_completed_the_module_3'),
         buttonLabel: _lmText(context, 'm3_lm_015_start_post_assessment'),
-        onPressed: () {
+        onPressed: () async {
           Navigator.pop(context);
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => const PostAssessmentIntroPage(),
-            ),
-          );
+          await _startPostAssessmentFromLearningModule();
         },
       ),
     );
+  }
+
+
+  Future<void> _startPostAssessmentFromLearningModule() async {
+    if (_savingCompletion) return;
+
+    setState(() => _savingCompletion = true);
+
+    try {
+      final service = ModuleProgressionService();
+      final state = await service.getState(moduleNo: 3);
+      final postCompleted = state.hasValidPostTest;
+
+      if (!mounted) return;
+      setState(() => _moduleThreePostTestCompleted = postCompleted);
+
+      if (postCompleted) {
+        _showPostTestLockedPopup();
+        return;
+      }
+
+      await service.markLearningMaterialCompleted(moduleNo: 3);
+      await service.ensureCanStartPostTest(moduleNo: 3);
+      if (!mounted) return;
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const PostAssessmentIntroPage(),
+        ),
+      );
+      await _refreshProgressionState();
+    } on ProgressionAccessDenied catch (e) {
+      if (!mounted) return;
+      if (e.message == ModuleProgressionService.postTestAlreadyTakenMessage) {
+        setState(() => _moduleThreePostTestCompleted = true);
+      }
+      _showPostTestLockedPopup(message: e.message);
+    } catch (e) {
+      if (!mounted) return;
+      _showInfoPopup(
+        title: _localizedText(
+          context,
+          'Unable to open Post-Assessment',
+          'Hindi mabuksan ang Panghuling Pagsusulit',
+        ),
+        message: e.toString().replaceFirst('Exception: ', ''),
+        icon: Icons.error_outline_rounded,
+        color: AppColors.brandRed,
+      );
+    } finally {
+      if (mounted) setState(() => _savingCompletion = false);
+    }
+  }
+
+  void _showPostTestLockedPopup({String? message}) {
+    _showInfoPopup(
+      title: _localizedText(
+        context,
+        'Post-Test Locked',
+        'Naka-lock ang Panghuling Pagsusulit',
+      ),
+      message: message ??
+          _localizedText(
+            context,
+            ModuleProgressionService.postTestAlreadyTakenMessage,
+            'Isang beses lang pwedeng sagutan ang Panghuling Pagsusulit. Subukan ang susunod na modyul.',
+          ),
+      icon: Icons.lock_rounded,
+      color: AppColors.brandRed,
+    );
+  }
+
+  Future<void> _showAccessDeniedAndPop(String message) async {
+    if (!mounted) return;
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      builder: (_) => _StyledDialog(
+        icon: Icons.lock_rounded,
+        iconColor: AppColors.brandRed,
+        title: _localizedText(
+          context,
+          'Learning Module Locked',
+          'Naka-lock ang Modyul sa Pag-aaral',
+        ),
+        body: message,
+        buttonLabel: _localizedText(context, 'OK', 'OK'),
+        onPressed: () => Navigator.pop(context),
+      ),
+    );
+    if (mounted) Navigator.pop(context);
   }
 
   void _showInfoPopup({
@@ -577,9 +727,10 @@ class _LearningMaterialElectricalPageState
   @override
   Widget build(BuildContext context) {
     final isLast = _pageIndex == 2;
-    final nextEnabled = _hasReadAllRequiredSections(_pageIndex);
+    final nextEnabled = _hasReadAllRequiredSections(_pageIndex) &&
+        !(isLast && _moduleThreePostTestCompleted);
 
-    if (_isContentLoading) {
+    if (_isContentLoading || _checkingProgression) {
       return _ContentStateScaffold(
         message: 'Loading learning materials...',
         showRetry: false,
@@ -597,7 +748,7 @@ class _LearningMaterialElectricalPageState
             _isContentLoading = true;
             _contentError = null;
           });
-          _loadContent();
+          _guardAccessAndLoadContent();
         },
       );
     }
@@ -829,7 +980,7 @@ class _LearningMaterialElectricalPageState
                 desc: _lmText(context, 'm3_lm_050_internal_wiring_or_components_fail_inside'),
               ),
               _InfoTile(
-                color: const Color(0xFFEA580C),
+                color: AppColors.brandRedLight,
                 icon: Icons.cable_rounded,
                 title: _lmText(context, 'm3_lm_051_loose_wiring'),
                 desc: _lmText(context, 'm3_lm_052_loose_connections_create_resistance_heat_a'),
@@ -1307,8 +1458,6 @@ class _BottomNavBar extends StatelessWidget {
                       Flexible(
                         child: Text(
                           _lmText(context, 'm3_lm_118_back'),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
                             color: AppColors.brandRed,
                             fontWeight: FontWeight.bold,
@@ -1355,8 +1504,6 @@ class _BottomNavBar extends StatelessWidget {
                       Flexible(
                         child: Text(
                           nextLabel,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
@@ -1431,8 +1578,6 @@ class _ReadingProgressBadge extends StatelessWidget {
             Flexible(
               child: Text(
                 _lmText(context, 'm3_lm_121_scroll_tap_sections'),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
                 style: TextStyle(color: color.withOpacity(0.6), fontSize: 11),
               ),
             ),
@@ -1735,72 +1880,171 @@ class _ElectricalPreviewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tapLabel = _lmText(context, 'm3_lm_chip_tap_to_view_in_3d')
+        .trim()
+        .toUpperCase();
+    final sectionTitle = _lmText(context, 'm3_lm_024_electrical_fire_basics');
+    final sectionSubtitle =
+        _lmText(context, 'm3_lm_025_understand_what_makes_this_fire_different');
+
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 18),
+      margin: const EdgeInsets.only(top: 30),
+      padding: const EdgeInsets.fromLTRB(16, 48, 16, 18),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(26),
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFFFFF7F7), Color(0xFFFFE8EA)],
-        ),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(28),
         border: Border.all(
-          color: AppColors.brandRed.withOpacity(0.12),
+          color: AppColors.brandRed.withOpacity(0.10),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.brandRed.withOpacity(0.10),
+            color: AppColors.brandRed.withOpacity(0.07),
             blurRadius: 18,
             offset: const Offset(0, 8),
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Stack(
+        clipBehavior: Clip.none,
         children: [
-          Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: onTap,
-              borderRadius: BorderRadius.circular(20),
-              child: Padding(
-                padding: const EdgeInsets.all(2),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: _ElectricalInfoBlock(
-                        title: title,
-                        subtitle: subtitle,
-                        compact: false,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Container(
-                      width: 42,
-                      height: 42,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.78),
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(
-                          color: AppColors.brandRed.withOpacity(0.16),
-                        ),
-                      ),
-                      child: const Icon(
-                        Icons.open_in_full_rounded,
-                        color: AppColors.brandRed,
-                        size: 20,
-                      ),
-                    ),
-                  ],
-                ),
+          Positioned(
+            top: -78,
+            left: 0,
+            child: Container(
+              width: 70,
+              height: 70,
+              decoration: BoxDecoration(
+                color: AppColors.brandRed,
+                borderRadius: BorderRadius.circular(18),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.brandRed.withOpacity(0.28),
+                    blurRadius: 14,
+                    offset: const Offset(0, 7),
+                  ),
+                ],
+              ),
+              child: const Icon(
+                Icons.view_in_ar_rounded,
+                color: Colors.white,
+                size: 34,
               ),
             ),
           ),
-          const SizedBox(height: 16),
-          _ElectricalVisualStack(assetPath: assetPath),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                softWrap: true,
+                style: const TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 25,
+                  height: 1.12,
+                  fontWeight: FontWeight.w900,
+                  color: Color(0xFF111827),
+                  letterSpacing: -0.45,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                subtitle,
+                softWrap: true,
+                style: const TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 15.5,
+                  height: 1.38,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 18),
+              Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: onTap,
+                  borderRadius: BorderRadius.circular(999),
+                  child: Container(
+                    constraints: const BoxConstraints(maxWidth: 270),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 11,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(999),
+                      border: Border.all(
+                        color: AppColors.brandRed.withOpacity(0.18),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.035),
+                          blurRadius: 8,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.visibility_rounded,
+                          size: 18,
+                          color: AppColors.brandRed,
+                        ),
+                        const SizedBox(width: 9),
+                        Flexible(
+                          child: Text(
+                            tapLabel.isEmpty
+                                ? 'TAP TO VIEW IN 3D'
+                                : tapLabel,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontFamily: 'Poppins',
+                              color: AppColors.brandRed,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 0.2,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                sectionTitle,
+                softWrap: true,
+                style: const TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 19,
+                  height: 1.18,
+                  fontWeight: FontWeight.w900,
+                  color: Color(0xFF111827),
+                  letterSpacing: -0.25,
+                ),
+              ),
+              const SizedBox(height: 7),
+              Text(
+                sectionSubtitle,
+                softWrap: true,
+                style: const TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 13.5,
+                  height: 1.38,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 18),
+              _ElectricalVisualStack(assetPath: assetPath),
+            ],
+          ),
         ],
       ),
     );
@@ -2010,8 +2254,6 @@ class _ElectricalVideoCard extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         fontWeight: FontWeight.w900,
                         color: AppColors.textPrimary,
@@ -2022,8 +2264,6 @@ class _ElectricalVideoCard extends StatelessWidget {
                     const SizedBox(height: 5),
                     Text(
                       subtitle,
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         color: AppColors.textSecondary,
                         height: 1.45,
@@ -2305,8 +2545,6 @@ class _ElectricalInfoBlock extends StatelessWidget {
         SizedBox(height: compact ? 10 : 12),
         Text(
           title,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
           style: TextStyle(
             color: AppColors.textPrimary,
             fontSize: compact ? 15.5 : 16.5,
@@ -2318,8 +2556,6 @@ class _ElectricalInfoBlock extends StatelessWidget {
         const SizedBox(height: 6),
         Text(
           subtitle,
-          maxLines: compact ? 4 : 3,
-          overflow: TextOverflow.ellipsis,
           style: const TextStyle(
             color: AppColors.textSecondary,
             fontSize: 12.5,
@@ -2355,8 +2591,6 @@ class _ElectricalInPageChip extends StatelessWidget {
           Flexible(
             child: Text(
               _lmText(context, 'm3_lm_chip_tap_to_view_in_3d'),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 color: AppColors.brandRed,
                 fontSize: 10,
@@ -2383,8 +2617,8 @@ class _ElectricalVisualStack extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final previewHeight = (constraints.maxWidth * 1.45)
-            .clamp(420.0, 580.0)
+        final previewHeight = (constraints.maxWidth * 1.75)
+            .clamp(560.0, 720.0)
             .toDouble();
         final modelPath = _resolveElectricalModelPath(assetPath);
         final isTagalog = Localizations.localeOf(context).languageCode
@@ -2395,27 +2629,18 @@ class _ElectricalVisualStack extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ClipRRect(
-              borderRadius: BorderRadius.circular(28),
+              borderRadius: BorderRadius.circular(30),
               child: Container(
                 width: double.infinity,
                 height: previewHeight,
                 decoration: BoxDecoration(
-                  color: AppColors.brandRedSoft,
-                  borderRadius: BorderRadius.circular(28),
+                  color: const Color(0xFFFFF0F1),
+                  borderRadius: BorderRadius.circular(30),
                   border: Border.all(
-                    color: AppColors.brandRed.withOpacity(0.14),
-                    width: 1,
+                    color: AppColors.brandRed.withOpacity(0.10),
                   ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.brandRed.withOpacity(0.10),
-                      blurRadius: 18,
-                      offset: const Offset(0, 8),
-                    ),
-                  ],
                 ),
                 child: Stack(
-                  clipBehavior: Clip.hardEdge,
                   children: [
                     Positioned.fill(
                       child: DecoratedBox(
@@ -2424,34 +2649,11 @@ class _ElectricalVisualStack extends StatelessWidget {
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                             colors: [
-                              Colors.white.withOpacity(0.82),
-                              AppColors.brandRedSoft.withOpacity(0.94),
-                              AppColors.brandRed.withOpacity(0.10),
+                              Colors.white.withOpacity(0.50),
+                              AppColors.brandRedSoft.withOpacity(0.55),
+                              AppColors.brandRed.withOpacity(0.08),
                             ],
                           ),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      left: -46,
-                      top: -44,
-                      child: _ElectricalGlowBlob(
-                        size: 160,
-                        color: AppColors.brandRed.withOpacity(0.10),
-                      ),
-                    ),
-                    Positioned(
-                      right: -52,
-                      bottom: -58,
-                      child: _ElectricalGlowBlob(
-                        size: 190,
-                        color: AppColors.brandRedLight.withOpacity(0.16),
-                      ),
-                    ),
-                    Positioned.fill(
-                      child: CustomPaint(
-                        painter: _ElectricalGridPainter(
-                          color: AppColors.brandRed.withOpacity(0.045),
                         ),
                       ),
                     ),
@@ -2465,61 +2667,21 @@ class _ElectricalVisualStack extends StatelessWidget {
                       ),
                     ),
                     Positioned.fill(
-                      top: 34,
-                      bottom: 22,
+                      top: 24,
+                      bottom: 8,
                       child: _AnimatedElectricalModelViewer(
                         modelPath: modelPath,
-                      ),
-                    ),
-                    Positioned.fill(
-                      child: IgnorePointer(
-                        child: Stack(
-                          children: [
-                            Positioned(
-                              top: previewHeight * 0.16,
-                              left: 14,
-                              child: _ElectricalModelLabel(
-                                isTagalog ? 'Fuse\nBox' : 'Fuse\nBox',
-                              ),
-                            ),
-                            Positioned(
-                              top: previewHeight * 0.20,
-                              right: 14,
-                              child: _ElectricalModelLabel(
-                                isTagalog ? 'Breaker' : 'Breaker',
-                              ),
-                            ),
-                            Positioned(
-                              top: previewHeight * 0.47,
-                              left: 12,
-                              child: _ElectricalModelLabel(
-                                isTagalog ? 'Mga\nKable' : 'Wiring',
-                              ),
-                            ),
-                            Positioned(
-                              top: previewHeight * 0.52,
-                              right: 12,
-                              child: _ElectricalModelLabel(
-                                isTagalog ? 'Panel' : 'Panel',
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      left: 14,
-                      right: 14,
-                      bottom: 14,
-                      child: _ElectricalInteractionHint(
-                        text: isTagalog
-                            ? 'I-drag para i-rotate. I-pinch para i-zoom.'
-                            : 'Drag to rotate. Pinch to zoom.',
                       ),
                     ),
                   ],
                 ),
               ),
+            ),
+            const SizedBox(height: 12),
+            _ElectricalInteractionHint(
+              text: isTagalog
+                  ? 'I-drag para i-rotate. I-pinch para i-zoom.'
+                  : 'Drag to rotate. Pinch to zoom.',
             ),
           ],
         );
@@ -2536,68 +2698,25 @@ class _ElectricalVisualStack extends StatelessWidget {
   }
 }
 
-class _AnimatedElectricalModelViewer extends StatefulWidget {
+class _AnimatedElectricalModelViewer extends StatelessWidget {
   final String modelPath;
 
   const _AnimatedElectricalModelViewer({required this.modelPath});
 
   @override
-  State<_AnimatedElectricalModelViewer> createState() =>
-      _AnimatedElectricalModelViewerState();
-}
-
-class _AnimatedElectricalModelViewerState
-    extends State<_AnimatedElectricalModelViewer>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _floatController;
-
-  @override
-  void initState() {
-    super.initState();
-    _floatController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 2200),
-    )..repeat(reverse: true);
-  }
-
-  @override
-  void dispose() {
-    _floatController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _floatController,
-      builder: (context, child) {
-        final floatOffset = -4.0 + (_floatController.value * 8.0);
-
-        return Transform.translate(
-          offset: Offset(0, floatOffset),
-          child: child,
-        );
-      },
-      child: ModelViewer(
-        key: ValueKey(widget.modelPath),
-        src: widget.modelPath,
-        alt: '3D electrical fuse box model preview',
-        backgroundColor: Colors.transparent,
-        cameraControls: true,
-        autoRotate: true,
-        autoRotateDelay: 0,
-        rotationPerSecond: '22deg',
-        disableZoom: false,
-        interactionPrompt: InteractionPrompt.auto,
-        cameraOrbit: '35deg 68deg 4.2m',
-        fieldOfView: '30deg',
-        minCameraOrbit: 'auto auto 2.4m',
-        maxCameraOrbit: 'auto auto 7m',
-        shadowIntensity: 0.52,
-        exposure: 1.08,
-        loading: Loading.eager,
-        reveal: Reveal.auto,
-      ),
+    return ModelViewer(
+      key: ValueKey(modelPath),
+      src: modelPath,
+      alt: '3D electrical fire model preview',
+      autoRotate: true,
+      cameraControls: true,
+      disableZoom: false,
+      backgroundColor: Colors.transparent,
+      cameraOrbit: '0deg 72deg 1.85m',
+      fieldOfView: '25deg',
+      shadowIntensity: 0.55,
+      exposure: 1.05,
     );
   }
 }
@@ -2657,16 +2776,9 @@ class _ElectricalViewerBadge extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.88),
+          color: Colors.white.withOpacity(0.84),
           borderRadius: BorderRadius.circular(999),
-          border: Border.all(color: color.withOpacity(0.15)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.06),
-              blurRadius: 8,
-              offset: const Offset(0, 3),
-            ),
-          ],
+          border: Border.all(color: color.withOpacity(0.14)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -2698,35 +2810,29 @@ class _ElectricalInteractionHint extends StatelessWidget {
     return IgnorePointer(
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 11),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.86),
+          color: Colors.white.withOpacity(0.78),
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: AppColors.brandRed.withOpacity(0.14)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 7,
-              offset: const Offset(0, 2),
-            ),
-          ],
+          border: Border.all(color: AppColors.brandRed.withOpacity(0.15)),
         ),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Icon(
               Icons.touch_app_rounded,
               color: AppColors.brandRed,
-              size: 19,
+              size: 20,
             ),
-            const SizedBox(width: 9),
+            const SizedBox(width: 10),
             Expanded(
               child: Text(
                 text,
                 style: const TextStyle(
-                  color: AppColors.brandRedDark,
+                  color: Color(0xFF7A1014),
                   fontSize: 12.5,
                   fontWeight: FontWeight.w800,
-                  height: 1.32,
+                  height: 1.35,
                 ),
               ),
             ),
@@ -2934,8 +3040,6 @@ class _ReferenceSourceCard extends StatelessWidget {
               children: [
                 Text(
                   label,
-                  maxLines: compact ? 1 : 2,
-                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: AppColors.brandRed,
                     fontSize: 12.5,
@@ -2946,8 +3050,6 @@ class _ReferenceSourceCard extends StatelessWidget {
                 const SizedBox(height: 3),
                 Text(
                   '$title • $organization',
-                  maxLines: compact ? 2 : 3,
-                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: AppColors.textPrimary,
                     fontSize: 11.5,
@@ -3030,8 +3132,6 @@ class _VideoSourceCard extends StatelessWidget {
                 const SizedBox(height: 3),
                 Text(
                   title,
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: AppColors.textPrimary,
                     fontSize: 11.5,
@@ -3042,8 +3142,6 @@ class _VideoSourceCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   purpose,
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: AppColors.textSecondary,
                     fontSize: 10.5,
@@ -3358,7 +3456,6 @@ class _ActionPill extends StatelessWidget {
             Flexible(
               child: Text(
                 label,
-                overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
                   fontWeight: FontWeight.w900,
                   color: Color(0xFF111827),
@@ -3832,8 +3929,6 @@ class _LearningAssessmentHeader extends StatelessWidget {
           width: double.infinity,
           child: Text(
             sectionTitle,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
             style: const TextStyle(
               color: AppColors.textOnRed,
@@ -3887,8 +3982,6 @@ class _LearningAssessmentHeader extends StatelessWidget {
             Expanded(
               child: Text(
                 moduleTitle,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   color: AppColors.textOnRed.withOpacity(0.88),
                   fontFamily: 'Poppins',

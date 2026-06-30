@@ -268,7 +268,7 @@ class _SimulationScene3State extends State<SimulationScene3> {
                                     ],
                                   ),
                                   child: const Icon(
-                                    Icons.electric_bolt_rounded,
+                                    Icons.electrical_services_rounded,
                                     color: Colors.white,
                                     size: 38,
                                   ),

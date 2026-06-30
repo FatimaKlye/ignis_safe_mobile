@@ -50,6 +50,61 @@ class _NoOverscrollScrollBehavior extends ScrollBehavior {
   }
 }
 
+class _ModuleProgressSnapshot {
+  const _ModuleProgressSnapshot({
+    required this.loading,
+    required this.loaded,
+    required this.preTestCompleted,
+    required this.canOpenLearning,
+    required this.learningCompleted,
+    required this.canOpenPostTest,
+    required this.postTestCompleted,
+    this.error,
+  });
+
+  const _ModuleProgressSnapshot.initial()
+      : loading = true,
+        loaded = false,
+        preTestCompleted = false,
+        canOpenLearning = false,
+        learningCompleted = false,
+        canOpenPostTest = false,
+        postTestCompleted = false,
+        error = null;
+
+  final bool loading;
+  final bool loaded;
+  final bool preTestCompleted;
+  final bool canOpenLearning;
+  final bool learningCompleted;
+  final bool canOpenPostTest;
+  final bool postTestCompleted;
+  final String? error;
+
+  _ModuleProgressSnapshot copyWith({
+    bool? loading,
+    bool? loaded,
+    bool? preTestCompleted,
+    bool? canOpenLearning,
+    bool? learningCompleted,
+    bool? canOpenPostTest,
+    bool? postTestCompleted,
+    String? error,
+    bool clearError = false,
+  }) {
+    return _ModuleProgressSnapshot(
+      loading: loading ?? this.loading,
+      loaded: loaded ?? this.loaded,
+      preTestCompleted: preTestCompleted ?? this.preTestCompleted,
+      canOpenLearning: canOpenLearning ?? this.canOpenLearning,
+      learningCompleted: learningCompleted ?? this.learningCompleted,
+      canOpenPostTest: canOpenPostTest ?? this.canOpenPostTest,
+      postTestCompleted: postTestCompleted ?? this.postTestCompleted,
+      error: clearError ? null : error ?? this.error,
+    );
+  }
+}
+
 class LearningMaterialsTab extends StatefulWidget {
   const LearningMaterialsTab({super.key, this.onRequestTabChange});
 
@@ -78,14 +133,11 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
   bool _openingModuleThreeSimulation = false;
   bool _openingModuleFourSimulation = false;
 
-  bool _moduleOneProgressLoading = true;
-  bool _moduleOneProgressLoaded = false;
-  bool _moduleOnePreTestCompleted = false;
-  bool _moduleOneCanOpenLearning = false;
-  bool _moduleOneLearningCompleted = false;
-  bool _moduleOneCanOpenPostTest = false;
-  bool _moduleOnePostTestCompleted = false;
-  String? _moduleOneProgressError;
+  final Set<int> _trackedProgressModules = const <int>{1, 2, 3, 4, 5};
+  final Map<int, _ModuleProgressSnapshot> _progressByModule = {
+    for (final moduleNo in const <int>[1, 2, 3, 4, 5])
+      moduleNo: const _ModuleProgressSnapshot.initial(),
+  };
 
   bool get _isTl => Localizations.localeOf(context).languageCode == 'tl';
 
@@ -94,7 +146,7 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
     super.initState();
     _loadProfile();
     _loadModules();
-    _loadModuleOneProgress();
+    _loadAllTrackedProgress();
     _listenRealtime();
   }
 
@@ -162,7 +214,7 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
   Future<void> _refreshModulesAndProgress() async {
     await Future.wait([
       _loadModules(),
-      _loadModuleOneProgress(),
+      _loadAllTrackedProgress(),
     ]);
   }
 
@@ -197,9 +249,7 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
           event: PostgresChangeEvent.all,
           schema: 'public',
           table: 'module_progress',
-          callback: (_) {
-            _loadModuleOneProgress();
-          },
+          callback: (_) => _loadAllTrackedProgress(),
         )
         .subscribe();
   }
@@ -222,14 +272,18 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
   }
 
   Future<void> _openModule(int moduleNo) async {
-    if (moduleNo == 1) {
-      await _loadModuleOneProgress();
+    // TEMPORARILY UNLOCKED: learning-material access guard is commented out
+    // so every module can be opened while testing/fixing content and flow.
+    /*
+    if (_isTrackedProgressModule(moduleNo)) {
+      await _loadProgressForTrackedModule(moduleNo);
       if (!mounted) return;
-      if (!_moduleOneCanOpenLearning) {
-        _showLockedNotice('learning_materials');
+      if (_isModuleActionLocked(moduleNo, 'learning_materials')) {
+        await _showLockedNotice('learning_materials', moduleNo: moduleNo);
         return;
       }
     }
+    */
 
     Widget page;
 
@@ -259,82 +313,141 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
       MaterialPageRoute(builder: (_) => page),
     );
 
-    if (mounted && moduleNo == 1) {
-      await _loadModuleOneProgress();
+    if (mounted && _isTrackedProgressModule(moduleNo)) {
+      await _loadProgressForTrackedModule(moduleNo);
     }
   }
 
   String _t(String en, String tl) =>
       _isTl && tl.trim().isNotEmpty ? tl : en;
 
-  Future<void> _loadModuleOneProgress() async {
+  _ModuleProgressSnapshot _progressFor(int moduleNo) {
+    return _progressByModule[moduleNo] ?? const _ModuleProgressSnapshot.initial();
+  }
+
+  Future<void> _loadAllTrackedProgress() async {
+    await Future.wait(
+      _trackedProgressModules.map(_loadProgressForTrackedModule),
+    );
+  }
+
+  Future<void> _loadProgressForTrackedModule(int moduleNo) async {
+    if (!_isTrackedProgressModule(moduleNo)) return;
+
     final user = _client.auth.currentUser;
     if (user == null) {
       if (!mounted) return;
       setState(() {
-        _moduleOneProgressLoaded = true;
-        _moduleOneProgressLoading = false;
-        _moduleOnePreTestCompleted = false;
-        _moduleOneCanOpenLearning = false;
-        _moduleOneLearningCompleted = false;
-        _moduleOneCanOpenPostTest = false;
-        _moduleOnePostTestCompleted = false;
-        _moduleOneProgressError = 'Please log in again to continue.';
+        _progressByModule[moduleNo] = _ModuleProgressSnapshot(
+          loading: false,
+          loaded: true,
+          preTestCompleted: false,
+          canOpenLearning: false,
+          learningCompleted: false,
+          canOpenPostTest: false,
+          postTestCompleted: false,
+          error: 'Please log in again to continue.',
+        );
       });
       return;
     }
 
     if (mounted) {
+      final current = _progressFor(moduleNo);
       setState(() {
-        _moduleOneProgressLoading = true;
-        _moduleOneProgressError = null;
+        _progressByModule[moduleNo] = current.copyWith(
+          loading: true,
+          clearError: true,
+        );
       });
     }
 
     try {
-      final state = await ModuleProgressionService(client: _client).getState(moduleNo: 1);
+      final state = await ModuleProgressionService(client: _client).getState(
+        moduleNo: moduleNo,
+      );
 
       final preTestCompleted = state.hasValidPreTest ||
           state.hasSubmittedPreTest ||
           state.hasProgressPreTestCompletion;
       final canOpenLearning = state.hasValidPreTest;
       final learningCompleted = state.hasLearningModuleCompletion;
-      final postTestCompleted = state.hasValidPostTest ||
-          state.hasSubmittedPostTest ||
-          state.hasProgressPostTestCompletion;
+      final postTestCompleted = state.hasValidPostTest;
       final canOpenPostTest = state.hasValidPreTest &&
           state.hasLearningModuleCompletion &&
           !postTestCompleted;
 
       if (!mounted) return;
       setState(() {
-        _moduleOnePreTestCompleted = preTestCompleted;
-        _moduleOneCanOpenLearning = canOpenLearning;
-        _moduleOneLearningCompleted = learningCompleted;
-        _moduleOneCanOpenPostTest = canOpenPostTest;
-        _moduleOnePostTestCompleted = postTestCompleted;
-        _moduleOneProgressLoaded = true;
-        _moduleOneProgressLoading = false;
-        _moduleOneProgressError = null;
+        _progressByModule[moduleNo] = _ModuleProgressSnapshot(
+          loading: false,
+          loaded: true,
+          preTestCompleted: preTestCompleted,
+          canOpenLearning: canOpenLearning,
+          learningCompleted: learningCompleted,
+          canOpenPostTest: canOpenPostTest,
+          postTestCompleted: postTestCompleted,
+        );
       });
     } catch (e) {
-      debugPrint('LOAD MODULE 1 PROGRESS ERROR: $e');
+      debugPrint('LOAD MODULE $moduleNo PROGRESS ERROR: $e');
       if (!mounted) return;
       setState(() {
-        _moduleOnePreTestCompleted = false;
-        _moduleOneCanOpenLearning = false;
-        _moduleOneLearningCompleted = false;
-        _moduleOneCanOpenPostTest = false;
-        _moduleOnePostTestCompleted = false;
-        _moduleOneProgressLoaded = true;
-        _moduleOneProgressLoading = false;
-        _moduleOneProgressError = e.toString().replaceFirst('Exception: ', '');
+        _progressByModule[moduleNo] = _ModuleProgressSnapshot(
+          loading: false,
+          loaded: true,
+          preTestCompleted: false,
+          canOpenLearning: false,
+          learningCompleted: false,
+          canOpenPostTest: false,
+          postTestCompleted: false,
+          error: e.toString().replaceFirst('Exception: ', ''),
+        );
       });
     }
   }
 
+  bool _isTrackedProgressModule(int moduleNo) {
+    return _trackedProgressModules.contains(moduleNo);
+  }
+
+  bool _progressLoadingFor(int moduleNo) {
+    if (!_isTrackedProgressModule(moduleNo)) return false;
+    final progress = _progressFor(moduleNo);
+    return progress.loading || !progress.loaded;
+  }
+
+  String? _progressErrorFor(int moduleNo) {
+    if (!_isTrackedProgressModule(moduleNo)) return null;
+    return _progressFor(moduleNo).error;
+  }
+
+  bool _preTestCompletedFor(int moduleNo) {
+    if (!_isTrackedProgressModule(moduleNo)) return false;
+    return _progressFor(moduleNo).preTestCompleted;
+  }
+
+  bool _canOpenLearningFor(int moduleNo) {
+    if (!_isTrackedProgressModule(moduleNo)) return true;
+    return _progressFor(moduleNo).canOpenLearning;
+  }
+
+  bool _canOpenPostTestFor(int moduleNo) {
+    if (!_isTrackedProgressModule(moduleNo)) return true;
+    return _progressFor(moduleNo).canOpenPostTest;
+  }
+
+  bool _postTestCompletedFor(int moduleNo) {
+    if (!_isTrackedProgressModule(moduleNo)) return false;
+    return _progressFor(moduleNo).postTestCompleted;
+  }
   bool _isModuleActionLocked(int moduleNo, String actionKey) {
-    if (moduleNo != 1) return false;
+    // TEMPORARILY UNLOCKED: all module menu actions are accessible.
+    // Original locking mechanism is preserved below and can be restored later.
+    return false;
+
+    /*
+    if (!_isTrackedProgressModule(moduleNo)) return false;
     if (actionKey == 'simulation') return false;
     if (actionKey != 'pre_test' &&
         actionKey != 'learning_materials' &&
@@ -342,31 +455,32 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
       return false;
     }
 
-    if (_moduleOneProgressLoading || !_moduleOneProgressLoaded) return true;
-    if (_moduleOneProgressError != null) return true;
+    if (_progressLoadingFor(moduleNo)) return true;
+    if (_progressErrorFor(moduleNo) != null) return true;
 
     if (actionKey == 'pre_test') {
-      return _moduleOnePreTestCompleted;
+      return _preTestCompletedFor(moduleNo);
     }
     if (actionKey == 'learning_materials') {
-      return !_moduleOneCanOpenLearning;
+      return !_canOpenLearningFor(moduleNo);
     }
     if (actionKey == 'post_test') {
-      return !_moduleOneCanOpenPostTest;
+      return !_canOpenPostTestFor(moduleNo);
     }
     return false;
+    */
   }
 
-  String _lockedMessageFor(String actionKey) {
-    if (_moduleOneProgressLoading || !_moduleOneProgressLoaded) {
+  String _lockedMessageFor(int moduleNo, String actionKey) {
+    if (_progressLoadingFor(moduleNo)) {
       return _t(
         'Checking your saved progress. Please try again in a moment.',
         'Sinusuri pa ang naka-save mong progress. Subukan muli pagkaraan ng ilang sandali.',
       );
     }
 
-    if (_moduleOneProgressError != null) {
-      return _moduleOneProgressError!;
+    if (_progressErrorFor(moduleNo) != null) {
+      return _progressErrorFor(moduleNo)!;
     }
 
     if (actionKey == 'pre_test') {
@@ -382,7 +496,7 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
       );
     }
     if (actionKey == 'post_test') {
-      if (_moduleOnePostTestCompleted) {
+      if (_postTestCompletedFor(moduleNo)) {
         return _t(
           ModuleProgressionService.postTestAlreadyTakenMessage,
           'Isang beses lang pwedeng sagutan ang Panghuling Pagsusulit. Subukan ang susunod na modyul.',
@@ -400,29 +514,33 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
   }
 
   String? _lockedSubtitleFor(int moduleNo, String actionKey) {
+    // TEMPORARILY UNLOCKED: hide locked subtitles while all modules/actions are open.
+    // Original locked-subtitle mechanism is preserved below and can be restored later.
+    return null;
+
+    /*
     if (!_isModuleActionLocked(moduleNo, actionKey)) return null;
 
-    if (moduleNo == 1 &&
-        (_moduleOneProgressLoading || !_moduleOneProgressLoaded)) {
+    if (_isTrackedProgressModule(moduleNo) && _progressLoadingFor(moduleNo)) {
       return _t('Checking saved progress...', 'Sinusuri ang naka-save na progress...');
     }
 
-    if (moduleNo == 1 && actionKey == 'pre_test') {
+    if (_isTrackedProgressModule(moduleNo) && actionKey == 'pre_test') {
       return _t(
         'You can only take the pre-test once.',
         'Isang beses lang pwedeng sagutan ang Paunang Pagsusulit.',
       );
     }
 
-    if (moduleNo == 1 && actionKey == 'learning_materials') {
+    if (_isTrackedProgressModule(moduleNo) && actionKey == 'learning_materials') {
       return _t(
         'Locked until the Pre-Assessment is completed.',
         'Naka-lock hanggang matapos ang Paunang Pagsusulit.',
       );
     }
 
-    if (moduleNo == 1 && actionKey == 'post_test') {
-      if (_moduleOnePostTestCompleted) {
+    if (_isTrackedProgressModule(moduleNo) && actionKey == 'post_test') {
+      if (_postTestCompletedFor(moduleNo)) {
         return _t(
           'You can only take the post-test once.',
           'Isang beses lang pwedeng sagutan ang Panghuling Pagsusulit.',
@@ -435,6 +553,7 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
     }
 
     return _t('Locked', 'Naka-lock');
+    */
   }
 
   String _lockedTitleFor(String actionKey) {
@@ -450,12 +569,12 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
     return _t('Locked', 'Naka-lock');
   }
 
-  Future<void> _showLockedNotice(String actionKey) async {
+  Future<void> _showLockedNotice(String actionKey, {int moduleNo = 1}) async {
     if (!mounted) return;
 
     final title = _lockedTitleFor(actionKey);
-    final message = _lockedMessageFor(actionKey);
-    final accent = _moduleAccent(1);
+    final message = _lockedMessageFor(moduleNo, actionKey);
+    final accent = _moduleAccent(moduleNo);
 
     await showDialog<void>(
       context: context,
@@ -568,16 +687,20 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
       _expandedModuleNo = moduleNo;
     });
 
-    if (moduleNo == 1) {
-      await _loadModuleOneProgress();
+    // TEMPORARILY UNLOCKED: module action lock guard is commented out
+    // so Pre-Test, Learning Materials, Post-Test, and Simulation are all accessible.
+    /*
+    if (_isTrackedProgressModule(moduleNo)) {
+      await _loadProgressForTrackedModule(moduleNo);
       if (!mounted) return;
 
       if (_isModuleActionLocked(moduleNo, actionKey)) {
         setState(() => _selectedModuleActionKey = null);
-        _showLockedNotice(actionKey);
+        await _showLockedNotice(actionKey, moduleNo: moduleNo);
         return;
       }
     }
+    */
 
     if (!mounted) return;
     setState(() {
@@ -811,14 +934,17 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
 
 
   Future<void> _openPreAssessment(int moduleNo) async {
-    if (moduleNo == 1) {
-      await _loadModuleOneProgress();
+    // TEMPORARILY UNLOCKED: pre-test access guard is commented out.
+    /*
+    if (_isTrackedProgressModule(moduleNo)) {
+      await _loadProgressForTrackedModule(moduleNo);
       if (!mounted) return;
       if (_isModuleActionLocked(moduleNo, 'pre_test')) {
-        _showLockedNotice('pre_test');
+        await _showLockedNotice('pre_test', moduleNo: moduleNo);
         return;
       }
     }
+    */
 
     Widget page;
 
@@ -845,20 +971,23 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
 
     await Navigator.push(context, MaterialPageRoute(builder: (_) => page));
 
-    if (mounted && moduleNo == 1) {
-      await _loadModuleOneProgress();
+    if (mounted && _isTrackedProgressModule(moduleNo)) {
+      await _loadProgressForTrackedModule(moduleNo);
     }
   }
 
   Future<void> _openPostAssessment(int moduleNo) async {
-    if (moduleNo == 1) {
-      await _loadModuleOneProgress();
+    // TEMPORARILY UNLOCKED: post-test access guard is commented out.
+    /*
+    if (_isTrackedProgressModule(moduleNo)) {
+      await _loadProgressForTrackedModule(moduleNo);
       if (!mounted) return;
       if (_isModuleActionLocked(moduleNo, 'post_test')) {
-        _showLockedNotice('post_test');
+        await _showLockedNotice('post_test', moduleNo: moduleNo);
         return;
       }
     }
+    */
 
     Widget page;
 
@@ -887,8 +1016,8 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
 
     await Navigator.push(context, MaterialPageRoute(builder: (_) => page));
 
-    if (mounted && moduleNo == 1) {
-      await _loadModuleOneProgress();
+    if (mounted && _isTrackedProgressModule(moduleNo)) {
+      await _loadProgressForTrackedModule(moduleNo);
     }
   }
 
@@ -1238,10 +1367,16 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
               isTl: _isTl,
               isExpanded: _expandedModuleNo == m.moduleNo,
               selectedActionKey: _selectedModuleActionKey,
+              // TEMPORARILY UNLOCKED: show every action as available in the UI.
+              // Original lock callbacks are preserved below for easy restore.
+              isActionLocked: (_) => false,
+              lockedSubtitle: (_) => null,
+              /*
               isActionLocked: (actionKey) =>
                   _isModuleActionLocked(m.moduleNo, actionKey),
               lockedSubtitle: (actionKey) =>
                   _lockedSubtitleFor(m.moduleNo, actionKey),
+              */
               onHeaderTap: () => _toggleModule(m.moduleNo),
               onChildTap: (actionKey) {
                 _handleModuleAction(m.moduleNo, actionKey);
@@ -1560,29 +1695,65 @@ class _DatabaseLearningMaterialPageState
       return;
     }
 
-    Widget page;
-    switch (widget.moduleNo) {
-      case 1:
-        page = const pre1.PreAssessmentIntroPage();
-        break;
-      case 2:
-        page = const pre2.PreAssessmentIntroPage2();
-        break;
-      case 3:
-        page = const pre3.PreAssessmentIntroPage2();
-        break;
-      case 4:
-        page = const pre4.PreAssessmentIntroPage2();
-        break;
-      case 5:
-        page = const pre5.PreAssessmentIntroPage2();
-        break;
-      default:
-        Navigator.pop(context);
-        return;
-    }
+    _completeLearningMaterialAndOpenPostAssessment(m.moduleNo);
+  }
 
-    Navigator.push(context, MaterialPageRoute(builder: (_) => page));
+  Future<void> _completeLearningMaterialAndOpenPostAssessment(int moduleNo) async {
+    try {
+      final progression = ModuleProgressionService(client: _client);
+      await progression.markLearningMaterialCompleted(moduleNo: moduleNo);
+      // TEMPORARILY UNLOCKED: post-test start guard is commented out for open access.
+      // await progression.ensureCanStartPostTest(moduleNo: moduleNo);
+      if (!mounted) return;
+
+      Widget page;
+      switch (moduleNo) {
+        case 1:
+          page = const post1.PostAssessmentIntroPage();
+          break;
+        case 2:
+          page = const house_post.PostAssessmentIntroPage();
+          break;
+        case 3:
+          page = const post3.PostAssessmentIntroPage();
+          break;
+        case 4:
+          page = const post4.PostAssessmentIntroPage2();
+          break;
+        case 5:
+          page = const post5.PostAssessmentIntroPage();
+          break;
+        default:
+          await _showLearningDialog(
+            icon: Icons.info_outline_rounded,
+            title: _t('Module unavailable', 'Hindi pa available ang modyul'),
+            message: _t(
+              'This module is not available yet.',
+              'Hindi pa available ang modyul na ito.',
+            ),
+            buttonText: _t('OK', 'Sige'),
+          );
+          return;
+      }
+
+      Navigator.push(context, MaterialPageRoute(builder: (_) => page));
+    } on ProgressionAccessDenied catch (e) {
+      if (!mounted) return;
+      await _showLearningDialog(
+        icon: Icons.lock_outline_rounded,
+        title: _t('Post-Test Locked', 'Naka-lock ang Panghuling Pagsusulit'),
+        message: e.message,
+        buttonText: _t('OK', 'Sige'),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      await _showLearningDialog(
+        icon: Icons.error_outline_rounded,
+        title: _t('Completion not saved', 'Hindi na-save ang completion'),
+        message: e.toString().replaceFirst('Exception: ', ''),
+        buttonText: _t('OK', 'Sige'),
+      );
+    }
   }
 
   String _t(String en, String tl) =>

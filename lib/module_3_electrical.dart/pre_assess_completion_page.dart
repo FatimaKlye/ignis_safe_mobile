@@ -1,23 +1,29 @@
 import 'package:flutter/material.dart';
 
 import '../localization/language_controller.dart';
-import 'module_3_learningmaterials.dart';
+import 'module_3_learningmaterials.dart' as electrical_lm;
+
+const Color kElectricalBlue = Color(0xFF2563EB);
+const Color kElectricalBlueDark = Color(0xFF1D4ED8);
+const Color kElectricalBlueSoft = Color(0xFFEFF6FF);
+const Color kDarkText = Color(0xFF1F2937);
+const Color kSoftBg = Color(0xFFF8FAFC);
 
 class AppColors {
-  // Module 3 Electrical Fire blue palette
-  static const Color brandRed = Color(0xFF2563EB);
-  static const Color brandRedDark = Color(0xFF1D4ED8);
+  // Module 3 Electrical Fire palette
+  static const Color brandRed = kElectricalBlue;
+  static const Color brandRedDark = kElectricalBlueDark;
   static const Color brandRedDeep = Color(0xFF1E3A8A);
   static const Color brandRedLight = Color(0xFF60A5FA);
-  static const Color brandRedSoft = Color(0xFFEFF6FF);
+  static const Color brandRedSoft = kElectricalBlueSoft;
 
   // Background Colors
-  static const Color background = Color(0xFFF8FAFC);
+  static const Color background = kSoftBg;
   static const Color surface = Color(0xFFFFFFFF);
-  static const Color surfaceSoft = Color(0xFFEFF6FF);
+  static const Color surfaceSoft = kElectricalBlueSoft;
 
   // Text Colors
-  static const Color textPrimary = Color(0xFF1F2937);
+  static const Color textPrimary = kDarkText;
   static const Color textSecondary = Color(0xFF64748B);
   static const Color textMuted = Color(0xFF94A3B8);
   static const Color textOnRed = Color(0xFFFFFFFF);
@@ -33,9 +39,9 @@ class AppColors {
   static const Color info = Color(0xFF2563EB);
 
   // Buttons
-  static const Color primaryButton = Color(0xFF2563EB);
-  static const Color primaryButtonPressed = Color(0xFF1D4ED8);
-  static const Color secondaryButton = Color(0xFFEFF6FF);
+  static const Color primaryButton = kElectricalBlue;
+  static const Color primaryButtonPressed = kElectricalBlueDark;
+  static const Color secondaryButton = kElectricalBlueSoft;
 
   // Shadows
   static const Color shadow = Color(0x1A000000);
@@ -47,13 +53,11 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
     required this.score,
     required this.totalQuestions,
     required this.assessmentTitle,
-    this.onFinish,
   });
 
   final int score;
   final int totalQuestions;
   final String assessmentTitle;
-  final VoidCallback? onFinish;
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +76,7 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
             child: LayoutBuilder(
               builder: (context, constraints) {
                 final compactWidth = constraints.maxWidth < 370;
-                final compactHeight = constraints.maxHeight < 690;
+                final compactHeight = constraints.maxHeight < 660;
                 final horizontalPadding = compactWidth ? 16.0 : 20.0;
                 final topGap = compactHeight ? 22.0 : 38.0;
                 final cardPadding = compactWidth ? 18.0 : 22.0;
@@ -86,9 +90,9 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
                     ),
                     padding: EdgeInsets.fromLTRB(
                       horizontalPadding,
-                      24,
+                      compactHeight ? 18 : 24,
                       horizontalPadding,
-                      24,
+                      compactHeight ? 18 : 24,
                     ),
                     child: Column(
                       children: [
@@ -101,7 +105,7 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
                               cardPadding,
                               compactWidth ? 22 : 26,
                               cardPadding,
-                              22,
+                              compactWidth ? 20 : 22,
                             ),
                             decoration: BoxDecoration(
                               color: AppColors.surface,
@@ -146,7 +150,7 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
                                     size: compactWidth ? 44 : 50,
                                   ),
                                 ),
-                                const SizedBox(height: 20),
+                                SizedBox(height: compactHeight ? 16 : 20),
                                 Text(
                                   t(
                                     context,
@@ -168,8 +172,8 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
                                 Text(
                                   t(
                                     context,
-                                    'You have completed the Module 3 Pre-Assessment.',
-                                    'Natapos mo na ang Paunang Pagsusulit ng Modyul 3.',
+                                    '$assessmentTitle completed',
+                                    '$assessmentTitle',
                                   ),
                                   textAlign: TextAlign.center,
                                   softWrap: true,
@@ -181,28 +185,12 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
                                     color: AppColors.textSecondary,
                                   ),
                                 ),
-                                if (assessmentTitle.trim().isNotEmpty) ...[
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    assessmentTitle.trim(),
-                                    textAlign: TextAlign.center,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                      fontFamily: 'Poppins',
-                                      fontSize: 12.5,
-                                      height: 1.35,
-                                      fontWeight: FontWeight.w700,
-                                      color: AppColors.textMuted,
-                                    ),
-                                  ),
-                                ],
-                                const SizedBox(height: 22),
+                                SizedBox(height: compactHeight ? 18 : 22),
                                 Container(
                                   width: double.infinity,
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: compactWidth ? 14 : 18,
-                                    vertical: compactWidth ? 18 : 20,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 18,
+                                    vertical: 20,
                                   ),
                                   decoration: BoxDecoration(
                                     color: AppColors.surfaceSoft,
@@ -212,7 +200,7 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
                                   child: Column(
                                     children: [
                                       const Icon(
-                                        Icons.emoji_events_rounded,
+                                        Icons.menu_book_rounded,
                                         color: AppColors.brandRed,
                                         size: 34,
                                       ),
@@ -220,8 +208,8 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
                                       Text(
                                         t(
                                           context,
-                                          'This result shows your starting knowledge before studying the Module 3 Electrical Fire Learning Materials.',
-                                          'Ipinapakita ng resultang ito ang paunang kaalaman mo bago pag-aralan ang Modyul 3 tungkol sa electrical fire.',
+                                          'Congratulations! You can now proceed to Module 3 Learning Materials.',
+                                          'Binabati ka namin! Maaari ka nang magpatuloy sa Modyul 3 sa Pag-aaral.',
                                         ),
                                         textAlign: TextAlign.center,
                                         softWrap: true,
@@ -239,7 +227,7 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
                                 const SizedBox(height: 18),
                                 Container(
                                   width: double.infinity,
-                                  padding: EdgeInsets.all(compactWidth ? 16 : 18),
+                                  padding: const EdgeInsets.all(18),
                                   decoration: BoxDecoration(
                                     color: AppColors.surface,
                                     borderRadius: BorderRadius.circular(24),
@@ -248,11 +236,8 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
                                   child: Column(
                                     children: [
                                       Text(
-                                        t(
-                                          context,
-                                          'Score',
-                                          'Iskor',
-                                        ),
+                                        t(context, 'Final Score',
+                                            'Panghuling Iskor'),
                                         style: const TextStyle(
                                           fontFamily: 'Poppins',
                                           fontSize: 13,
@@ -304,7 +289,7 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
                                 const SizedBox(height: 18),
                                 Container(
                                   width: double.infinity,
-                                  padding: EdgeInsets.all(compactWidth ? 14 : 16),
+                                  padding: const EdgeInsets.all(16),
                                   decoration: BoxDecoration(
                                     color: AppColors.brandRedSoft,
                                     borderRadius: BorderRadius.circular(20),
@@ -330,8 +315,8 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
                                         child: Text(
                                           t(
                                             context,
-                                            'Your pre-assessment result has been recorded. This is not graded; it is used to check your knowledge before the lesson about electrical fire causes, warning signs, prevention, and safe emergency actions.',
-                                            'Naitala na ang iyong resulta sa paunang pagsusulit. Hindi ito graded; ginagamit ito upang masukat ang kaalaman mo bago ang aralin tungkol sa sanhi, babala, pag-iwas, at ligtas na aksyon sa electrical fire.',
+                                            'Your pre-assessment result has been recorded. Continue to the Electrical Fire learning materials to review the module content before moving to the next activity.',
+                                            'Naitala na ang iyong resulta sa paunang pagsusulit. Magpatuloy sa modyul tungkol sa Sunog na Elektrikal upang marepaso ang nilalaman bago pumunta sa susunod na gawain.',
                                           ),
                                           softWrap: true,
                                           style: const TextStyle(
@@ -346,7 +331,7 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
                                     ],
                                   ),
                                 ),
-                                const SizedBox(height: 24),
+                                SizedBox(height: compactHeight ? 20 : 24),
                                 SizedBox(
                                   width: double.infinity,
                                   child: ElevatedButton(
@@ -355,8 +340,8 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
                                           const WidgetStatePropertyAll<Size>(
                                         Size.fromHeight(54),
                                       ),
-                                      padding:
-                                          const WidgetStatePropertyAll<EdgeInsets>(
+                                      padding: const WidgetStatePropertyAll<
+                                          EdgeInsets>(
                                         EdgeInsets.symmetric(
                                           horizontal: 18,
                                           vertical: 14,
@@ -367,7 +352,8 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
                                         (states) {
                                           if (states
                                               .contains(WidgetState.pressed)) {
-                                            return AppColors.primaryButtonPressed;
+                                            return AppColors
+                                                .primaryButtonPressed;
                                           }
                                           return AppColors.primaryButton;
                                         },
@@ -381,23 +367,32 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
                                       shadowColor: WidgetStatePropertyAll<Color>(
                                         AppColors.brandRed.withOpacity(0.30),
                                       ),
-                                      shape:
-                                          WidgetStatePropertyAll<OutlinedBorder>(
+                                      shape: WidgetStatePropertyAll<
+                                          OutlinedBorder>(
                                         RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(18),
+                                          borderRadius:
+                                              BorderRadius.circular(18),
                                         ),
                                       ),
                                     ),
-                                    onPressed: () => _finishModule(context),
+                                    onPressed: () {
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => const electrical_lm.LearningMaterialElectricalPage(),
+                                        ),
+                                      );
+                                    },
                                     child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
                                         Flexible(
                                           child: Text(
                                             t(
                                               context,
-                                              'Continue to Learning Materials',
+                                              'Proceed to Learning Materials',
                                               'Magpatuloy sa Modyul sa Pag-aaral',
                                             ),
                                             textAlign: TextAlign.center,
@@ -436,19 +431,20 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
       ),
     );
   }
+}
 
-  void _finishModule(BuildContext context) {
-    if (onFinish != null) {
-      onFinish!();
-      return;
-    }
 
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (_) => const LearningMaterialElectricalPage(),
-      ),
-    );
-  }
+class PreAssessmentCompletionPage extends PreAssessmentCompletionPage1 {
+  const PreAssessmentCompletionPage({
+    super.key,
+    required int score,
+    required int totalQuestions,
+    required String assessmentTitle,
+  }) : super(
+          score: score,
+          totalQuestions: totalQuestions,
+          assessmentTitle: assessmentTitle,
+        );
 }
 
 class _CompletionGradientHeader extends StatelessWidget {

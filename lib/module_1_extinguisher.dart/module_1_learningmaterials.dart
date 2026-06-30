@@ -427,6 +427,7 @@ class _LearningMaterialExtinguisherPageState extends State<LearningMaterialExtin
   double _scrollProgress = 0.0;
   bool _introShown = false;
   bool _savingCompletion = false;
+  bool _postTestAlreadyCompleted = false;
 
   @override
   void initState() {
@@ -456,7 +457,9 @@ class _LearningMaterialExtinguisherPageState extends State<LearningMaterialExtin
 
     try {
       final data = await _Repository.load();
-      final allowed = await _hasConfirmedPreTest(data.moduleId);
+      final progressionState = await ModuleProgressionService().getState(moduleNo: data.moduleNo);
+      final allowed = progressionState.hasValidPreTest;
+      final postTestCompleted = progressionState.hasValidPostTest;
       if (!mounted) return;
 
       if (!allowed) {
@@ -465,6 +468,7 @@ class _LearningMaterialExtinguisherPageState extends State<LearningMaterialExtin
           _bootstrapTexts = data.texts;
           _readSections = List.generate(data.pages.length, (_) => <int>{});
           _loading = false;
+          _postTestAlreadyCompleted = postTestCompleted;
           _error = _bootstrapCopy(
             'learning_locked_error',
             fallback: 'Learning Module is locked until the Pre-Assessment is completed and saved.',
@@ -478,6 +482,7 @@ class _LearningMaterialExtinguisherPageState extends State<LearningMaterialExtin
         _data = data;
         _bootstrapTexts = data.texts;
         _readSections = List.generate(data.pages.length, (_) => <int>{});
+        _postTestAlreadyCompleted = postTestCompleted;
         _loading = false;
       });
       if (!_introShown) {
@@ -494,14 +499,38 @@ class _LearningMaterialExtinguisherPageState extends State<LearningMaterialExtin
   }
 
   Future<bool> _hasConfirmedPreTest(String moduleId) async {
-    try {
-      await ModuleProgressionService().ensureCanOpenLearningModule(moduleNo: 1);
-      return true;
-    } on ProgressionAccessDenied {
-      return false;
-    } catch (_) {
+    final client = Supabase.instance.client;
+    final user = client.auth.currentUser;
+    if (user == null) return false;
+
+    final progressRows = await client
+        .from('module_progress')
+        .select('pre_test_completed_at, pre_test_attempt_id, updated_at')
+        .eq('user_id', user.id)
+        .eq('module_id', moduleId)
+        .order('updated_at', ascending: false)
+        .limit(1);
+
+    if ((progressRows as List).isEmpty) return false;
+    final progressRow = Map<String, dynamic>.from(progressRows.first as Map);
+    final attemptId = progressRow['pre_test_attempt_id']?.toString();
+    if (attemptId == null ||
+        attemptId.isEmpty ||
+        progressRow['pre_test_completed_at'] == null) {
       return false;
     }
+
+    final attemptRow = await client
+        .from('assessment_attempts')
+        .select('id, submitted_at, status, score')
+        .eq('id', attemptId)
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+    return attemptRow != null &&
+        attemptRow['submitted_at'] != null &&
+        attemptRow['status'] == 'submitted' &&
+        attemptRow['score'] != null;
   }
 
   Future<void> _showLockedAccessAndClose() async {
@@ -580,6 +609,126 @@ class _LearningMaterialExtinguisherPageState extends State<LearningMaterialExtin
     );
   }
 
+  bool get _isTagalog => Localizations.localeOf(context).languageCode == 'tl';
+
+  Future<void> _showPostTestAlreadyCompletedDialog() async {
+    if (!mounted) return;
+    final title = _isTagalog
+        ? 'Naka-lock ang Panghuling Pagsusulit'
+        : 'Post-Test Locked';
+    final body = _isTagalog
+        ? 'Isang beses lang puwedeng sagutan ang Panghuling Pagsusulit. Maaari mong balikan ang modyul para mag-review, pero hindi na puwedeng ulitin ang post-test.'
+        : 'You can only take the post-test once. You may review the learning module again, but you can no longer retake the post-test.';
+    final okLabel = _isTagalog ? 'OK' : 'OK';
+
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      builder: (dialogContext) {
+        return Dialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          insetPadding: const EdgeInsets.symmetric(horizontal: 28),
+          child: Stack(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 28, 24, 24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 64,
+                      height: 64,
+                      decoration: BoxDecoration(
+                        color: AppColors.brandRed.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.lock_outline_rounded,
+                        color: AppColors.brandRed,
+                        size: 32,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      title,
+                      textAlign: TextAlign.center,
+                      softWrap: true,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w900,
+                        color: AppColors.brandRed,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      body,
+                      textAlign: TextAlign.center,
+                      softWrap: true,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        height: 1.55,
+                        color: Color(0xFF374151),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.brandRed,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 14,
+                          ),
+                        ),
+                        onPressed: () => Navigator.pop(dialogContext),
+                        child: Text(
+                          okLabel,
+                          textAlign: TextAlign.center,
+                          softWrap: true,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Positioned(
+                right: 10,
+                top: 10,
+                child: IconButton(
+                  visualDensity: VisualDensity.compact,
+                  icon: const Icon(Icons.close_rounded, color: Color(0xFF6B7280)),
+                  onPressed: () => Navigator.pop(dialogContext),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+
+  Future<void> _refreshPostTestCompletionState() async {
+    try {
+      final state = await ModuleProgressionService().getState(moduleNo: data.moduleNo);
+      if (!mounted) return;
+      setState(() {
+        _postTestAlreadyCompleted = state.hasValidPostTest;
+      });
+    } catch (e) {
+      debugPrint('REFRESH POST-TEST COMPLETION STATE ERROR: $e');
+    }
+  }
+
+
   int _requiredSections(int pageIndex) {
     for (final block in data.page(pageIndex + 1).blocks) {
       if (block.type == 'reading_progress') return block.metaInt('required_sections', 0);
@@ -590,26 +739,71 @@ class _LearningMaterialExtinguisherPageState extends State<LearningMaterialExtin
   bool _pageRead(int pageIndex) => pageIndex >= 0 && pageIndex < _readSections.length && _readSections[pageIndex].length >= _requiredSections(pageIndex);
 
   Future<bool> _markLearningMaterialCompleted() async {
-    try {
-      await ModuleProgressionService().markLearningMaterialCompleted(moduleNo: 1);
-      return true;
-    } on ProgressionAccessDenied catch (e) {
+    final user = Supabase.instance.client.auth.currentUser;
+    if (user == null) {
       _showInfo(
-        data.copy(context, 'learning_locked_title', fallback: 'Learning Module Locked'),
-        e.message,
+        data.copy(context, 'auth_required_title', fallback: 'Login Required'),
+        data.copy(
+          context,
+          'auth_required_body',
+          fallback: 'Please log in again before completing this module.',
+        ),
         Icons.lock_outline_rounded,
         AppColors.brandRed,
       );
       return false;
-    } catch (e) {
+    }
+
+    final client = Supabase.instance.client;
+    final hasPreTest = await _hasConfirmedPreTest(data.moduleId);
+    if (!hasPreTest) {
       _showInfo(
-        data.copy(context, 'completion_save_failed_title', fallback: 'Completion not saved'),
-        e.toString().replaceFirst('Exception: ', ''),
-        Icons.error_outline_rounded,
+        data.copy(context, 'learning_locked_title', fallback: 'Learning Module Locked'),
+        data.copy(
+          context,
+          'learning_locked_body',
+          fallback: 'Complete the Paunang Pagsusulit first. The module cannot be marked completed without a saved pre-test score.',
+        ),
+        Icons.lock_outline_rounded,
         AppColors.brandRed,
       );
       return false;
     }
+
+    final completedAt = DateTime.now().toUtc().toIso8601String();
+
+    final progressRows = await client
+        .from('module_progress')
+        .select('id, updated_at')
+        .eq('user_id', user.id)
+        .eq('module_id', data.moduleId)
+        .order('updated_at', ascending: false)
+        .limit(1);
+
+    final progressRow = (progressRows as List).isEmpty
+        ? null
+        : Map<String, dynamic>.from(progressRows.first as Map);
+
+    final progressPayload = {
+      'learning_material_read_status': true,
+      'learning_material_completed_at': completedAt,
+      'updated_at': completedAt,
+    };
+
+    if (progressRow == null) {
+      await client.from('module_progress').insert({
+        'user_id': user.id,
+        'module_id': data.moduleId,
+        ...progressPayload,
+      });
+    } else {
+      await client
+          .from('module_progress')
+          .update(progressPayload)
+          .eq('id', progressRow['id']);
+    }
+
+    return true;
   }
 
   Future<void> _completeLearningMaterialAndOpenPostAssessment() async {
@@ -618,23 +812,56 @@ class _LearningMaterialExtinguisherPageState extends State<LearningMaterialExtin
     setState(() => _savingCompletion = true);
 
     try {
-      final saved = await _markLearningMaterialCompleted();
-      if (!mounted || !saved) return;
+      final progression = ModuleProgressionService();
+      final state = await progression.getState(moduleNo: data.moduleNo);
+      if (!mounted) return;
+
+      if (state.hasValidPostTest) {
+        setState(() => _postTestAlreadyCompleted = true);
+        Navigator.pop(context);
+        await _showPostTestAlreadyCompletedDialog();
+        return;
+      }
+
+      await progression.markLearningMaterialCompleted(moduleNo: data.moduleNo);
+      await progression.ensureCanStartPostTest(moduleNo: data.moduleNo);
+      if (!mounted) return;
 
       Navigator.pop(context);
       Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => const PostAssessmentIntroPage()),
+      ).then((_) {
+        if (mounted) _refreshPostTestCompletionState();
+      });
+    } on ProgressionAccessDenied catch (e) {
+      debugPrint('POST-TEST ACCESS DENIED FROM LEARNING MODULE: ${e.message}');
+      if (!mounted) return;
+      Navigator.pop(context);
+      if (e.message == ModuleProgressionService.postTestAlreadyTakenMessage) {
+        await _showPostTestAlreadyCompletedDialog();
+        return;
+      }
+      _showInfo(
+        _isTagalog ? 'Naka-lock ang Panghuling Pagsusulit' : 'Post-Test Locked',
+        _isTagalog
+            ? 'Hindi pa puwedeng buksan ang Panghuling Pagsusulit. Siguraduhing kumpleto at naka-save ang Paunang Pagsusulit at Modyul sa Pag-aaral.'
+            : e.message,
+        Icons.lock_outline_rounded,
+        AppColors.brandRed,
       );
     } catch (e) {
       debugPrint('SAVE LEARNING MATERIAL COMPLETION ERROR: $e');
       if (!mounted) return;
+      Navigator.pop(context);
       _showInfo(
-        data.copy(context, 'completion_save_failed_title', fallback: 'Completion not saved'),
+        data.copy(context, 'completion_save_failed_title', fallback: _isTagalog ? 'Hindi na-save ang completion' : 'Completion not saved'),
         data.copy(
           context,
           'completion_save_failed_body',
-          fallback: 'The learning module completion could not be saved. Please try again.',
+          fallback: _isTagalog
+              ? 'Hindi na-save ang completion ng modyul. Pakisubukan ulit.'
+              : 'The learning module completion could not be saved. Please try again.',
         ),
         Icons.error_outline_rounded,
         AppColors.brandRed,
@@ -647,6 +874,10 @@ class _LearningMaterialExtinguisherPageState extends State<LearningMaterialExtin
   }
 
   void _goNext() {
+    if (_pageIndex == data.pages.length - 1 && _postTestAlreadyCompleted) {
+      _showPostTestAlreadyCompletedDialog();
+      return;
+    }
     if (!_pageRead(_pageIndex)) {
       _showDialogFromDb('unread_sections', Icons.menu_book_rounded, AppColors.brandRed);
       return;
@@ -754,6 +985,7 @@ class _LearningMaterialExtinguisherPageState extends State<LearningMaterialExtin
                 _BottomNav(
                   isLast: _pageIndex == data.pages.length - 1,
                   enabled: _pageRead(_pageIndex),
+                  postTestLocked: _pageIndex == data.pages.length - 1 && _postTestAlreadyCompleted,
                   backLabel: data.copy(context, 'nav_back'),
                   nextLabel: data.copy(context, 'nav_next'),
                   startPostTestLabel: data.copy(context, 'nav_start_post_test'),
@@ -1040,7 +1272,7 @@ class _TopHeader extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.menu_book_rounded, color: Colors.white, size: 15),
+                  const Icon(Icons.fire_extinguisher_rounded, color: Colors.white, size: 15),
                   const SizedBox(width: 6),
                   Flexible(
                     child: Text(
@@ -1128,6 +1360,7 @@ class _TopHeader extends StatelessWidget {
 class _BottomNav extends StatelessWidget {
   final bool isLast;
   final bool enabled;
+  final bool postTestLocked;
   final String backLabel;
   final String nextLabel;
   final String startPostTestLabel;
@@ -1137,6 +1370,7 @@ class _BottomNav extends StatelessWidget {
   const _BottomNav({
     required this.isLast,
     required this.enabled,
+    required this.postTestLocked,
     required this.backLabel,
     required this.nextLabel,
     required this.startPostTestLabel,
@@ -1147,6 +1381,7 @@ class _BottomNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final primaryLabel = isLast ? startPostTestLabel : nextLabel;
+    final primaryLooksLocked = postTestLocked || !enabled;
 
     Widget backButton() => ConstrainedBox(
           constraints: const BoxConstraints(minHeight: 54),
@@ -1170,7 +1405,7 @@ class _BottomNav extends StatelessWidget {
           constraints: const BoxConstraints(minHeight: 54),
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: enabled ? AppColors.brandRed : AppColors.brandRedSoft,
+              backgroundColor: primaryLooksLocked ? const Color(0xFFE5E7EB) : AppColors.brandRed,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
             ),
@@ -1179,7 +1414,7 @@ class _BottomNav extends StatelessWidget {
               primaryLabel,
               textAlign: TextAlign.center,
               softWrap: true,
-              style: TextStyle(color: enabled ? Colors.white : AppColors.brandRed.withOpacity(0.4), fontWeight: FontWeight.bold),
+              style: TextStyle(color: primaryLooksLocked ? const Color(0xFF9CA3AF) : Colors.white, fontWeight: FontWeight.bold),
             ),
           ),
         );

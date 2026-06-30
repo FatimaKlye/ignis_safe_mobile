@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:video_player/video_player.dart';
+import 'module_progression_service.dart';
 import 'post_assess_instruction.dart';
 
 // =============================================================================
@@ -331,6 +332,8 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
   bool _canNext = false;
   bool _isSwitchingPage = false;
   bool _lastPageCompleted = false;
+  bool _savingCompletion = false;
+  bool _postTestAlreadyCompleted = false;
 
   // Page 0: 3 expandable sections
   // Page 1: 4 escape steps + 1 important reminder section
@@ -394,6 +397,30 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
 
   Future<void> _loadLearningMaterials() async {
     try {
+      setState(() {
+        _isLoading = true;
+        _loadError = null;
+      });
+
+      final progression = ModuleProgressionService();
+      final progressionState = await progression.getState(moduleNo: 2);
+      final postTestCompleted = progressionState.hasValidPostTest;
+
+      if (!progressionState.hasValidPreTest) {
+        if (!mounted) return;
+        setState(() {
+          _postTestAlreadyCompleted = postTestCompleted;
+          _isLoading = false;
+          _loadError = _isTl
+              ? 'Naka-lock ang Modyul sa Pag-aaral hanggang makumpleto at ma-save ang Paunang Pagsusulit.'
+              : 'Learning Module is locked until the Pre-Assessment is completed and saved.';
+        });
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) _showLearningLockedAccessAndClose();
+        });
+        return;
+      }
+
       final client = Supabase.instance.client;
 
       final material = await client
@@ -521,6 +548,7 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
         _media
           ..clear()
           ..addAll(loadedMedia);
+        _postTestAlreadyCompleted = postTestCompleted;
         _isLoading = false;
         _loadError = null;
       });
@@ -676,7 +704,122 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
     });
   }
 
+  Future<void> _refreshPostTestCompletionState() async {
+    try {
+      final state = await ModuleProgressionService().getState(moduleNo: 2);
+      if (!mounted) return;
+      setState(() {
+        _postTestAlreadyCompleted = state.hasValidPostTest;
+      });
+    } catch (error) {
+      debugPrint('Module 2 post-test completion refresh failed: $error');
+    }
+  }
+
+  String get _postTestLockedTitle =>
+      _isTl ? 'Panghuling Pagsusulit Naka-lock' : 'Post-Test Locked';
+
+  String get _postTestLockedBody => _isTl
+      ? 'Isang beses lang pwedeng sagutan ang Panghuling Pagsusulit. Maaari mong balikan ang modyul para mag-review.'
+      : 'You can only take the post-test once. You can still reopen the learning module for review.';
+
+  Future<void> _showLearningLockedAccessAndClose() async {
+    if (!mounted) return;
+
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => _StyledDialog(
+        icon: Icons.lock_rounded,
+        iconColor: AppColors.brandRed,
+        title: _isTl ? 'Naka-lock ang Modyul sa Pag-aaral' : 'Learning Module Locked',
+        body: _isTl
+            ? 'Kumpletuhin muna ang Paunang Pagsusulit. Magbubukas lang ang modyul kapag may score ka na sa pre-assessment.'
+            : 'Complete the Pre-Assessment first. The Learning Module will only open once you have a score from the pre-assessment.',
+        buttonLabel: _isTl ? 'Sige' : 'OK',
+        onPressed: () => Navigator.pop(context),
+      ),
+    );
+
+    if (mounted) Navigator.of(context).maybePop();
+  }
+
+  void _showPostTestAlreadyCompletedDialog() {
+    showDialog(
+      context: context,
+      builder: (_) => _StyledDialog(
+        icon: Icons.lock_rounded,
+        iconColor: kHouseOrange,
+        title: _postTestLockedTitle,
+        body: _postTestLockedBody,
+        buttonLabel: _txt('dialog_info_ok'),
+        onPressed: () => Navigator.pop(context),
+      ),
+    );
+  }
+
+  Future<void> _completeLearningMaterialAndOpenPostAssessment() async {
+    if (_savingCompletion) return;
+
+    setState(() => _savingCompletion = true);
+
+    try {
+      final progression = ModuleProgressionService();
+      final state = await progression.getState(moduleNo: 2);
+      if (!mounted) return;
+
+      if (state.hasValidPostTest) {
+        setState(() => _postTestAlreadyCompleted = true);
+        _showPostTestAlreadyCompletedDialog();
+        return;
+      }
+
+      await progression.markLearningMaterialCompleted(moduleNo: 2);
+      await progression.ensureCanStartPostTest(moduleNo: 2);
+
+      if (!mounted) return;
+      await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const PostAssessmentIntroPage()),
+      );
+      await _refreshPostTestCompletionState();
+    } on ProgressionAccessDenied catch (error) {
+      if (!mounted) return;
+      final message = error.message;
+      if (message == ModuleProgressionService.postTestAlreadyTakenMessage) {
+        setState(() => _postTestAlreadyCompleted = true);
+        _showPostTestAlreadyCompletedDialog();
+        return;
+      }
+      _showInfoPopup(
+        title: _isTl ? 'Naka-lock' : 'Locked',
+        message: _isTl
+            ? 'Hindi pa maaaring buksan ang Panghuling Pagsusulit. Siguraduhing kumpleto at naka-save ang Modyul sa Pag-aaral.'
+            : message,
+        icon: Icons.lock_rounded,
+        color: AppColors.brandRed,
+      );
+    } catch (error) {
+      if (!mounted) return;
+      _showInfoPopup(
+        title: _isTl ? 'Hindi Na-save' : 'Could Not Continue',
+        message: _isTl
+            ? 'Hindi ma-save ang pagkumpleto ng modyul. Pakisubukan ulit.'
+            : 'The learning module completion could not be saved. Please try again.',
+        icon: Icons.error_outline_rounded,
+        color: AppColors.error,
+      );
+    } finally {
+      if (mounted) setState(() => _savingCompletion = false);
+    }
+  }
+
   void _goNext() {
+    if (_pageIndex == 2 && _postTestAlreadyCompleted) {
+      _showPostTestAlreadyCompletedDialog();
+      return;
+    }
+
     if (!_hasReadAllRequiredSections(_pageIndex)) {
       _showUnreadSectionsPopup();
       return;
@@ -724,7 +867,7 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
       context: context,
       barrierDismissible: false,
       builder: (_) => _StyledDialog(
-        icon: Icons.home_work_rounded,
+        icon: Icons.home_rounded,
         iconColor: accent,
         title: _txt('dialog_intro_title'),
         body: _txt('dialog_intro_body'),
@@ -771,10 +914,7 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
         buttonLabel: _txt('dialog_final_button'),
         onPressed: () {
           Navigator.pop(context);
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const PostAssessmentIntroPage()),
-          );
+          _completeLearningMaterialAndOpenPostAssessment();
         },
       ),
     );
@@ -936,6 +1076,7 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
                       onPageChanged: (i) {
                         setState(() => _pageIndex = i);
                         _resetForNewPage();
+                        if (i == 2) _refreshPostTestCompletionState();
                       },
                       children: [
                         _pageWrap(_page1HouseFireOverview()),
@@ -948,6 +1089,7 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
                     pageIndex: _pageIndex,
                     isLast: isLast,
                     nextEnabled: nextEnabled,
+                    postTestLocked: isLast && _postTestAlreadyCompleted,
                     onBack: _goBack,
                     onNext: _goNext,
                     context: context,
@@ -1006,7 +1148,7 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _PageBanner(
-          icon: Icons.home_work_rounded,
+          icon: Icons.home_rounded,
           accent1: accent,
           accent2: accent2,
           pageTag: _txt('page_1_tag'),
@@ -1500,6 +1642,7 @@ class _BottomNavBar extends StatelessWidget {
   final int pageIndex;
   final bool isLast;
   final bool nextEnabled;
+  final bool postTestLocked;
   final VoidCallback onBack;
   final VoidCallback onNext;
   final BuildContext context;
@@ -1508,6 +1651,7 @@ class _BottomNavBar extends StatelessWidget {
     required this.pageIndex,
     required this.isLast,
     required this.nextEnabled,
+    required this.postTestLocked,
     required this.onBack,
     required this.onNext,
     required this.context,
@@ -1518,6 +1662,7 @@ class _BottomNavBar extends StatelessWidget {
     final nextLabel = isLast
         ? _lm(ctx, 'nav_start_post_test')
         : _lm(ctx, 'nav_next');
+    final primaryLooksLocked = postTestLocked || !nextEnabled;
 
     return Container(
       padding: const EdgeInsets.fromLTRB(18, 10, 18, 18),
@@ -1579,13 +1724,14 @@ class _BottomNavBar extends StatelessWidget {
               height: 48,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      nextEnabled ? AppColors.brandRed : AppColors.brandRedSoft,
+                  backgroundColor: primaryLooksLocked
+                      ? const Color(0xFFE5E7EB)
+                      : AppColors.brandRed,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(22),
                   ),
                   padding: const EdgeInsets.symmetric(horizontal: 12),
-                  elevation: nextEnabled ? 4 : 0,
+                  elevation: primaryLooksLocked ? 0 : 4,
                   shadowColor: AppColors.brandRed.withOpacity(0.35),
                 ),
                 onPressed: onNext,
@@ -1597,9 +1743,9 @@ class _BottomNavBar extends StatelessWidget {
                           ? Icons.play_arrow_rounded
                           : Icons.arrow_forward_ios_rounded,
                       size: 16,
-                      color: nextEnabled
-                          ? Colors.white
-                          : AppColors.brandRed.withOpacity(0.4),
+                      color: primaryLooksLocked
+                          ? const Color(0xFF9CA3AF)
+                          : Colors.white,
                     ),
                     const SizedBox(width: 7),
                     Flexible(
@@ -1610,9 +1756,9 @@ class _BottomNavBar extends StatelessWidget {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: nextEnabled
-                              ? Colors.white
-                              : AppColors.brandRed.withOpacity(0.4),
+                          color: primaryLooksLocked
+                              ? const Color(0xFF9CA3AF)
+                              : Colors.white,
                         ),
                       ),
                     ),
@@ -2596,9 +2742,8 @@ class _PageOneHouseFire3DPreview extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.w900,
-                color: AppColors.textPrimary,
+                color: Color(0xFF111827),
                 height: 1.2,
-                fontFamily: 'Poppins',
               ),
             ),
             const SizedBox(height: 4),
@@ -2608,7 +2753,6 @@ class _PageOneHouseFire3DPreview extends StatelessWidget {
                 fontSize: 12.5,
                 color: AppColors.textSecondary,
                 height: 1.4,
-                fontWeight: FontWeight.w600,
               ),
             ),
             const SizedBox(height: 14),
@@ -2618,9 +2762,11 @@ class _PageOneHouseFire3DPreview extends StatelessWidget {
                 width: double.infinity,
                 height: previewHeight,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFFF1E7),
+                  color: const Color(0xFFFFF0F1),
                   borderRadius: BorderRadius.circular(30),
-                  border: Border.all(color: AppColors.brandRed.withOpacity(0.10)),
+                  border: Border.all(
+                    color: AppColors.brandRed.withOpacity(0.10),
+                  ),
                 ),
                 child: Stack(
                   children: [
@@ -2632,33 +2778,10 @@ class _PageOneHouseFire3DPreview extends StatelessWidget {
                             end: Alignment.bottomRight,
                             colors: [
                               Colors.white.withOpacity(0.50),
-                              AppColors.brandRedSoft.withOpacity(0.58),
+                              AppColors.brandRedSoft.withOpacity(0.55),
                               AppColors.brandRed.withOpacity(0.08),
                             ],
                           ),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      left: -42,
-                      top: -44,
-                      child: _HouseFireSoftGlowBlob(
-                        size: 150,
-                        color: AppColors.brandRed.withOpacity(0.11),
-                      ),
-                    ),
-                    Positioned(
-                      right: -46,
-                      bottom: -52,
-                      child: _HouseFireSoftGlowBlob(
-                        size: 170,
-                        color: AppColors.warning.withOpacity(0.15),
-                      ),
-                    ),
-                    Positioned.fill(
-                      child: CustomPaint(
-                        painter: _HouseFireGridPainter(
-                          color: AppColors.brandRed.withOpacity(0.045),
                         ),
                       ),
                     ),
@@ -2677,44 +2800,6 @@ class _PageOneHouseFire3DPreview extends StatelessWidget {
                       child: modelPath == null
                           ? _MissingHouseFireModelCard()
                           : _AnimatedHouseFireModelViewer(modelPath: modelPath),
-                    ),
-                    Positioned.fill(
-                      child: IgnorePointer(
-                        child: Stack(
-                          children: [
-                            Positioned(
-                              top: previewHeight * 0.12,
-                              left: 16,
-                              child: const _HouseFireModelLabel(''),
-                            ),
-                            Positioned(
-                              top: previewHeight * 0.17,
-                              right: 16,
-                              child: const _HouseFireModelLabel(''),
-                            ),
-                            Positioned(
-                              top: previewHeight * 0.40,
-                              left: 12,
-                              child: const _HouseFireModelLabel(''),
-                            ),
-                            Positioned(
-                              top: previewHeight * 0.48,
-                              right: 12,
-                              child: const _HouseFireModelLabel(''),
-                            ),
-                            Positioned(
-                              bottom: previewHeight * 0.18,
-                              left: 14,
-                              child: const _HouseFireModelLabel(''),
-                            ),
-                            Positioned(
-                              bottom: previewHeight * 0.10,
-                              right: 14,
-                              child: const _HouseFireModelLabel(''),
-                            ),
-                          ],
-                        ),
-                      ),
                     ),
                   ],
                 ),
@@ -2742,7 +2827,7 @@ class _PageOneHouseFire3DPreview extends StatelessWidget {
                     child: Text(
                       _lm(context, 'house_fire_3d_rotate_instruction'),
                       style: const TextStyle(
-                        color: AppColors.brandRedDark,
+                        color: Color(0xFF7A1014),
                         fontSize: 12.5,
                         fontWeight: FontWeight.w800,
                         height: 1.35,
@@ -2789,101 +2874,24 @@ class _MissingHouseFireModelCard extends StatelessWidget {
   }
 }
 
-class _AnimatedHouseFireModelViewer extends StatefulWidget {
+class _AnimatedHouseFireModelViewer extends StatelessWidget {
   final String modelPath;
 
   const _AnimatedHouseFireModelViewer({required this.modelPath});
 
   @override
-  State<_AnimatedHouseFireModelViewer> createState() =>
-      _AnimatedHouseFireModelViewerState();
-}
-
-class _AnimatedHouseFireModelViewerState extends State<_AnimatedHouseFireModelViewer>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 2200),
-    )..repeat(reverse: true);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, _) {
-        final floatOffset = -4.0 + (_controller.value * 8.0);
-
-        return Transform.translate(
-          offset: Offset(0, floatOffset),
-          child: ModelViewer(
-            key: ValueKey(widget.modelPath),
-            src: widget.modelPath,
-            alt: _lm(context, 'house_fire_3d_alt_text'),
-            backgroundColor: Colors.transparent,
-            cameraControls: true,
-            autoRotate: true,
-            autoRotateDelay: 0,
-            rotationPerSecond: '24deg',
-            disableZoom: false,
-            interactionPrompt: InteractionPrompt.auto,
-            cameraOrbit: '35deg 68deg 4.6m',
-            fieldOfView: '28deg',
-            minCameraOrbit: 'auto auto 3.2m',
-            maxCameraOrbit: 'auto auto 7m',
-            shadowIntensity: 0.55,
-            exposure: 1.05,
-            loading: Loading.eager,
-            reveal: Reveal.auto,
-          ),
-        );
-      },
-    );
-  }
-}
-
-class _HouseFireModelLabel extends StatelessWidget {
-  final String label;
-
-  const _HouseFireModelLabel(this.label);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.90),
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: AppColors.brandRed.withOpacity(0.22)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Text(
-        label,
-        textAlign: TextAlign.center,
-        style: const TextStyle(
-          fontSize: 10.5,
-          fontWeight: FontWeight.w900,
-          color: AppColors.brandRedDark,
-          height: 1.2,
-        ),
-      ),
+    return ModelViewer(
+      src: modelPath,
+      alt: _lm(context, 'house_fire_3d_alt_text'),
+      autoRotate: true,
+      cameraControls: true,
+      disableZoom: false,
+      backgroundColor: Colors.transparent,
+      cameraOrbit: '0deg 72deg 1.85m',
+      fieldOfView: '25deg',
+      shadowIntensity: 0.55,
+      exposure: 1.05,
     );
   }
 }
@@ -2908,13 +2916,6 @@ class _HouseFireViewerBadge extends StatelessWidget {
           color: Colors.white.withOpacity(0.84),
           borderRadius: BorderRadius.circular(999),
           border: Border.all(color: color.withOpacity(0.14)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.06),
-              blurRadius: 8,
-              offset: const Offset(0, 3),
-            ),
-          ],
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -2933,64 +2934,6 @@ class _HouseFireViewerBadge extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-class _HouseFireSoftGlowBlob extends StatelessWidget {
-  final double size;
-  final Color color;
-
-  const _HouseFireSoftGlowBlob({
-    required this.size,
-    required this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        color: color,
-        shape: BoxShape.circle,
-      ),
-    );
-  }
-}
-
-class _HouseFireGridPainter extends CustomPainter {
-  final Color color;
-
-  const _HouseFireGridPainter({required this.color});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = color
-      ..strokeWidth = 1;
-
-    const spacing = 18.0;
-
-    for (double x = -size.height; x < size.width + size.height; x += spacing) {
-      canvas.drawLine(
-        Offset(x, size.height),
-        Offset(x + size.height, 0),
-        paint,
-      );
-    }
-
-    for (double x = 0; x < size.width + size.height; x += spacing) {
-      canvas.drawLine(
-        Offset(x, 0),
-        Offset(x - size.height, size.height),
-        paint,
-      );
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant _HouseFireGridPainter oldDelegate) {
-    return oldDelegate.color != color;
   }
 }
 
@@ -3287,7 +3230,7 @@ class _ImageBox extends StatelessWidget {
       child: Image.asset(
         asset,
         fit: BoxFit.contain,
-        errorBuilder: (_, __, ___) => Icon(Icons.home_work_rounded, color: c1, size: 42),
+        errorBuilder: (_, __, ___) => Icon(Icons.home_rounded, color: c1, size: 42),
       ),
     );
   }

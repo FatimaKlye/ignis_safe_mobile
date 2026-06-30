@@ -17,6 +17,14 @@ const Map<String, Map<String, String>> _strings = {
     'en': 'Tagalog',
     'tl': 'Tagalog',
   },
+  'language_change_note_title': {
+    'en': 'Note',
+    'tl': 'Paalala',
+  },
+  'language_change_note_message': {
+    'en': 'You can only change the app language before logging in. To change language again, please log out, select another language, then log in again.',
+    'tl': 'Maaari mo lang palitan ang wika ng app bago mag-login. Para palitan muli ang wika, mag-log out muna, pumili ng ibang wika, pagkatapos ay mag-login ulit.',
+  },
   'login': {
     'en': 'Login',
     'tl': 'Mag-login',

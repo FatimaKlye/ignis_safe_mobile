@@ -7,6 +7,7 @@ import '../localization/language_controller.dart';
 import '../localization/localized_db_text.dart';
 import '../profile_progress_sync.dart';
 import 'post_assess_completion.dart';
+import 'module_progression_service.dart';
 
 class AppColors {
   // Module 3 Electrical Fire blue palette
@@ -248,9 +249,15 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
   }
 
   List<_QuestionVm> _orderedQuestions(List<_QuestionVm> questions) {
-    final mcq = questions.where(_isMcq).toList()..shuffle();
-    final essay = questions.where(_isEssay).toList();
-    return [...mcq, ...essay];
+    // Keep the same order as the admin/web page. The database field question_no
+    // is the canonical order, so never shuffle the post-test questions here.
+    final ordered = List<_QuestionVm>.from(questions)
+      ..sort((a, b) {
+        final questionNoCompare = a.questionNo.compareTo(b.questionNo);
+        if (questionNoCompare != 0) return questionNoCompare;
+        return a.id.compareTo(b.id);
+      });
+    return ordered;
   }
 
   Future<void> _loadOrCreateAttempt({bool forceNewAttempt = false}) async {
@@ -263,6 +270,9 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
         _remainingSeconds = _quizDurationSeconds;
         _oneMinuteWarningShown = false;
       });
+
+      await ModuleProgressionService(client: _supabase)
+          .ensureCanStartPostTest(moduleNo: _moduleNo);
 
       final user = _user;
 
@@ -283,6 +293,8 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
           .select('id, title, title_tl, instructions, instructions_tl')
           .eq('module_id', moduleId)
           .eq('type', _assessmentType)
+          .order('created_at', ascending: false)
+          .limit(1)
           .maybeSingle();
 
       if (assessmentRow == null) {
@@ -311,7 +323,7 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
               'id, question_no, prompt, prompt_tl, explanation, explanation_tl, question_type')
           .eq('assessment_id', assessmentId)
           .eq('is_active', true)
-          .order('question_no');
+          .order('question_no', ascending: true).order('created_at', ascending: true);
 
       if (questionRows.isEmpty) {
         throw Exception('No active questions found for this assessment.');
@@ -323,8 +335,9 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
       final optionRows = await _supabase
           .from('assessment_options')
           .select(
-              'id, question_id, option_key, option_text, option_text_tl, is_correct, display_order')
+              'id, question_id, option_key, option_text, option_text_tl, is_correct, display_order, is_active')
           .inFilter('question_id', questionIds)
+          .eq('is_active', true)
           .order('question_id')
           .order('display_order');
 
@@ -356,12 +369,18 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
 
       final baseQuestions = questionRows.map((row) {
         final questionId = row['id'].toString();
+        final rawQuestionNo = row['question_no'];
+        final questionNo = rawQuestionNo is num
+            ? rawQuestionNo.toInt()
+            : int.tryParse((rawQuestionNo ?? '').toString()) ?? 999999;
+
         return _QuestionVm(
           id: questionId,
+          questionNo: questionNo,
           prompt: LocalizedDbText.pick(context, row, 'prompt', 'prompt_tl'),
           explanation: LocalizedDbText.pick(
               context, row, 'explanation', 'explanation_tl'),
-          type: (row['question_type'] ?? 'multiple_choice').toString(),
+          type: (row['question_type'] ?? 'multiple_choice').toString().toLowerCase(),
           options: optionsByQuestion[questionId] ?? [],
         );
       }).toList();
@@ -371,138 +390,20 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
             'One or more multiple-choice questions do not have options.');
       }
 
-      String attemptId;
-      List<_QuestionVm> orderedQuestions;
-      List<String?> selectedOptionIds;
-      List<String?> writtenAnswers;
-      Set<int> flaggedIndexes;
+      final created = await _createNewAttempt(
+        userId: user.id,
+        moduleId: moduleId,
+        assessmentId: assessmentId,
+        questions: baseQuestions,
+      );
 
-      if (!forceNewAttempt) {
-        final attemptRows = await _supabase
-            .from('assessment_attempts')
-            .select('id, started_at')
-            .eq('user_id', user.id)
-            .eq('assessment_id', assessmentId)
-            .eq('status', 'in_progress')
-            .order('started_at', ascending: false)
-            .limit(1);
-
-        if (attemptRows.isNotEmpty) {
-          attemptId = attemptRows.first['id'].toString();
-
-          final savedRows = await _supabase
-              .from('assessment_attempt_answers')
-              .select(
-                  'question_id, selected_option_id, answer_text, is_flagged, display_order')
-              .eq('attempt_id', attemptId)
-              .order('display_order');
-
-          if (savedRows.isEmpty) {
-            final created = await _createAnswerRowsForExistingAttempt(
-              attemptId: attemptId,
-              questions: baseQuestions,
-            );
-            orderedQuestions = created.questions;
-            selectedOptionIds =
-                List<String?>.filled(orderedQuestions.length, null);
-            writtenAnswers =
-                List<String?>.filled(orderedQuestions.length, null);
-            flaggedIndexes = {};
-          } else {
-            final existingQuestionIds = savedRows
-                .map((row) => row['question_id'].toString())
-                .toSet();
-
-            final missingQuestions = baseQuestions
-                .where((q) => !existingQuestionIds.contains(q.id))
-                .toList();
-
-            if (missingQuestions.isNotEmpty) {
-              final startOrder = savedRows.length;
-              final orderedMissing = _orderedQuestions(missingQuestions);
-
-              await _supabase.from('assessment_attempt_answers').insert(
-                    List.generate(
-                      orderedMissing.length,
-                      (index) => {
-                        'attempt_id': attemptId,
-                        'question_id': orderedMissing[index].id,
-                        'display_order': startOrder + index,
-                        'is_flagged': false,
-                      },
-                    ),
-                  );
-            }
-
-            final refreshedSavedRows = await _supabase
-                .from('assessment_attempt_answers')
-                .select(
-                    'question_id, selected_option_id, answer_text, is_flagged, display_order')
-                .eq('attempt_id', attemptId)
-                .order('display_order');
-
-            final questionMap = {for (final q in baseQuestions) q.id: q};
-
-            orderedQuestions = [];
-            selectedOptionIds = [];
-            writtenAnswers = [];
-            flaggedIndexes = {};
-
-            for (int i = 0; i < refreshedSavedRows.length; i++) {
-              final row = refreshedSavedRows[i];
-              final questionId = row['question_id'].toString();
-              final question = questionMap[questionId];
-              if (question == null) continue;
-
-              orderedQuestions.add(question);
-              selectedOptionIds.add(row['selected_option_id']?.toString());
-              writtenAnswers.add(row['answer_text']?.toString());
-
-              if ((row['is_flagged'] ?? false) as bool) {
-                flaggedIndexes.add(i);
-              }
-            }
-
-            if (orderedQuestions.isEmpty) {
-              final created = await _createNewAttempt(
-                userId: user.id,
-                assessmentId: assessmentId,
-                questions: baseQuestions,
-              );
-              attemptId = created.attemptId;
-              orderedQuestions = created.questions;
-              selectedOptionIds =
-                  List<String?>.filled(orderedQuestions.length, null);
-              writtenAnswers =
-                  List<String?>.filled(orderedQuestions.length, null);
-              flaggedIndexes = {};
-            }
-          }
-        } else {
-          final created = await _createNewAttempt(
-            userId: user.id,
-            assessmentId: assessmentId,
-            questions: baseQuestions,
-          );
-          attemptId = created.attemptId;
-          orderedQuestions = created.questions;
-          selectedOptionIds =
-              List<String?>.filled(orderedQuestions.length, null);
-          writtenAnswers = List<String?>.filled(orderedQuestions.length, null);
-          flaggedIndexes = {};
-        }
-      } else {
-        final created = await _createNewAttempt(
-          userId: user.id,
-          assessmentId: assessmentId,
-          questions: baseQuestions,
-        );
-        attemptId = created.attemptId;
-        orderedQuestions = created.questions;
-        selectedOptionIds = List<String?>.filled(orderedQuestions.length, null);
-        writtenAnswers = List<String?>.filled(orderedQuestions.length, null);
-        flaggedIndexes = {};
-      }
+      final attemptId = created.attemptId;
+      final orderedQuestions = created.questions;
+      final selectedOptionIds =
+          List<String?>.filled(orderedQuestions.length, null);
+      final writtenAnswers =
+          List<String?>.filled(orderedQuestions.length, null);
+      final flaggedIndexes = <int>{};
 
       _rebuildEssayControllers(orderedQuestions, writtenAnswers);
 
@@ -534,6 +435,15 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
         if (_pageCtrl.hasClients) _pageCtrl.jumpToPage(0);
         _startQuizTimer();
       });
+    } on ProgressionAccessDenied catch (e) {
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+      await _showInfoDialog(
+        title: _txt('Post-Assessment Locked', 'Naka-lock ang Panghuling Pagsusulit'),
+        message: e.message,
+        buttonText: _txt('OK', 'Sige'),
+      );
+      if (mounted) Navigator.pop(context);
     } catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);
@@ -550,79 +460,134 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
 
   Future<_CreatedAttempt> _createNewAttempt({
     required String userId,
+    required String moduleId,
     required String assessmentId,
     required List<_QuestionVm> questions,
   }) async {
-    final ordered = _orderedQuestions(questions);
+    final ordered = _orderedUniqueQuestions(questions);
+    final now = DateTime.now().toUtc().toIso8601String();
 
-    final insertedAttempt = await _supabase
+    final existingAttempts = await _supabase
         .from('assessment_attempts')
-        .insert({
-          'user_id': userId,
-          'assessment_id': assessmentId,
-          'status': 'in_progress',
-          'total_questions': ordered.length,
-          'correct_count': 0,
-          'score': 0,
-        })
         .select('id')
-        .single();
+        .eq('user_id', userId)
+        .eq('assessment_id', assessmentId)
+        .eq('status', 'in_progress')
+        .order('started_at', ascending: false)
+        .limit(1);
 
-    final attemptId = insertedAttempt['id'].toString();
+    final String attemptId;
 
-    await _supabase.from('assessment_attempt_answers').insert(
-          List.generate(
-            ordered.length,
-            (index) => {
-              'attempt_id': attemptId,
-              'question_id': ordered[index].id,
-              'display_order': index,
-              'is_flagged': false,
-            },
-          ),
-        );
+    if (existingAttempts.isNotEmpty) {
+      attemptId = existingAttempts.first['id'].toString();
+      await _supabase.from('assessment_attempts').update({
+        'module_id': moduleId,
+        'started_at': now,
+        'submitted_at': null,
+        'status': 'in_progress',
+        'total_questions': ordered.length,
+        'correct_count': 0,
+        'score': 0,
+      }).eq('id', attemptId);
+    } else {
+      final insertedAttempt = await _supabase
+          .from('assessment_attempts')
+          .insert({
+            'user_id': userId,
+            'module_id': moduleId,
+            'assessment_id': assessmentId,
+            'status': 'in_progress',
+            'total_questions': ordered.length,
+            'correct_count': 0,
+            'score': 0,
+          })
+          .select('id')
+          .single();
+      attemptId = insertedAttempt['id'].toString();
+    }
+
+    await _replaceAttemptAnswerRows(
+      attemptId: attemptId,
+      questions: ordered,
+    );
 
     return _CreatedAttempt(attemptId: attemptId, questions: ordered);
+  }
+
+  List<_QuestionVm> _orderedUniqueQuestions(List<_QuestionVm> questions) {
+    final seen = <String>{};
+    final unique = <_QuestionVm>[];
+
+    for (final question in _orderedQuestions(questions)) {
+      if (seen.add(question.id)) {
+        unique.add(question);
+      }
+    }
+
+    return unique;
+  }
+
+  Future<void> _replaceAttemptAnswerRows({
+    required String attemptId,
+    required List<_QuestionVm> questions,
+  }) async {
+    final now = DateTime.now().toUtc().toIso8601String();
+
+    // Best effort cleanup. If RLS blocks delete or there are old rows, the upsert below
+    // still prevents duplicate-key crashes and resets each current question row.
+    try {
+      await _supabase
+          .from('assessment_attempt_answers')
+          .delete()
+          .eq('attempt_id', attemptId);
+    } catch (e) {
+      debugPrint('POST TEST STALE ANSWER DELETE SKIPPED: $e');
+    }
+
+    for (int index = 0; index < questions.length; index++) {
+      await _supabase.from('assessment_attempt_answers').upsert(
+        {
+          'attempt_id': attemptId,
+          'question_id': questions[index].id,
+          'selected_option_id': null,
+          'answer_text': null,
+          'is_flagged': false,
+          'display_order': index,
+          'is_correct': null,
+          'updated_at': now,
+        },
+        onConflict: 'attempt_id,question_id',
+      );
+    }
   }
 
   Future<_CreatedAttempt> _createAnswerRowsForExistingAttempt({
     required String attemptId,
     required List<_QuestionVm> questions,
   }) async {
-    final ordered = _orderedQuestions(questions);
+    final ordered = _orderedUniqueQuestions(questions);
 
-    await _supabase.from('assessment_attempt_answers').insert(
-          List.generate(
-            ordered.length,
-            (index) => {
-              'attempt_id': attemptId,
-              'question_id': ordered[index].id,
-              'display_order': index,
-              'is_flagged': false,
-            },
-          ),
-        );
+    await _replaceAttemptAnswerRows(
+      attemptId: attemptId,
+      questions: ordered,
+    );
 
     return _CreatedAttempt(attemptId: attemptId, questions: ordered);
   }
+
 
   Future<void> _handleRefresh() async {
     if (_timeExpired || _isSubmitting) return;
 
     if (_showReview) {
-      final confirmed = await _showConfirmDialog(
-        title: _txt('Start new attempt?', 'Magsimula ng bagong subok?'),
+      await _showInfoDialog(
+        title: _txt('Post-Assessment Locked', 'Naka-lock ang Panghuling Pagsusulit'),
         message: _txt(
-          'You already finished this post-assessment. Starting again will generate a new attempt.',
-          'Natapos mo na ang panghuling pagsusulit na ito. Ang pagsisimula ulit ay lilikha ng bagong subok.',
+          ModuleProgressionService.postTestAlreadyTakenMessage,
+          'Isang beses lang pwedeng sagutan ang Panghuling Pagsusulit. Subukan ang susunod na modyul.',
         ),
-        confirmText: _txt('New Attempt', 'Bagong Subok'),
-        cancelText: _txt('Cancel', 'Kanselahin'),
+        buttonText: _txt('OK', 'Sige'),
       );
-
-      if (confirmed == true) {
-        await _loadOrCreateAttempt(forceNewAttempt: true);
-      }
       return;
     }
 
@@ -652,6 +617,7 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
           'question_id': _questions[questionIndex].id,
           'selected_option_id': optionId,
           'answer_text': null,
+          'display_order': questionIndex,
           'is_correct': _isCorrectSelection(questionIndex, optionId),
           'updated_at': DateTime.now().toUtc().toIso8601String(),
         },
@@ -676,6 +642,7 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
           'question_id': _questions[questionIndex].id,
           'selected_option_id': null,
           'answer_text': value.trim().isEmpty ? null : value.trim(),
+          'display_order': questionIndex,
           'is_correct': false,
           'updated_at': DateTime.now().toUtc().toIso8601String(),
         },
@@ -704,6 +671,7 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
         {
           'attempt_id': _attemptId,
           'question_id': _questions[questionIndex].id,
+          'display_order': questionIndex,
           'is_flagged': newFlagState,
           'updated_at': DateTime.now().toUtc().toIso8601String(),
         },
@@ -931,6 +899,10 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
     });
 
     try {
+      await ModuleProgressionService(client: _supabase).ensureCanStartPostTest(
+        moduleNo: _moduleNo,
+      );
+
       int correctCount = 0;
 
       for (int i = 0; i < _questions.length; i++) {
@@ -976,30 +948,50 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
       final scorePercent =
           _scoredTotal == 0 ? 0 : (correctCount / _scoredTotal) * 100;
 
+      final submittedAt = DateTime.now().toUtc().toIso8601String();
+
       await _supabase.from('assessment_attempts').update({
-        'submitted_at': DateTime.now().toUtc().toIso8601String(),
+        'submitted_at': submittedAt,
         'status': 'submitted',
+        'total_questions': _scoredTotal,
         'correct_count': correctCount,
         'score': scorePercent,
       }).eq('id', _attemptId!);
 
       final progressRow = await _supabase
           .from('module_progress')
-          .select('id')
+          .select('id, pre_test_score')
           .eq('user_id', _user.id)
           .eq('module_id', _moduleId!)
           .maybeSingle();
+
+      final preScoreRaw = progressRow == null ? null : progressRow['pre_test_score'];
+      final preScore = preScoreRaw is num
+          ? preScoreRaw.toDouble()
+          : double.tryParse((preScoreRaw ?? '').toString()) ?? 0;
+      final improvementScore = scorePercent - preScore;
+      final progressPayload = {
+        'post_test_completed_at': submittedAt,
+        'post_test_attempt_id': _attemptId,
+        'post_test_score': scorePercent,
+        'post_test_correct_count': correctCount,
+        'post_test_total_questions': _scoredTotal,
+        'improvement_score': improvementScore,
+        'has_improved': improvementScore > 0,
+        'updated_at': submittedAt,
+      };
 
       if (progressRow == null) {
         await _supabase.from('module_progress').insert({
           'user_id': _user.id,
           'module_id': _moduleId,
-          'post_test_completed_at': DateTime.now().toUtc().toIso8601String(),
+          ...progressPayload,
         });
       } else {
-        await _supabase.from('module_progress').update({
-          'post_test_completed_at': DateTime.now().toUtc().toIso8601String(),
-        }).eq('id', progressRow['id']);
+        await _supabase
+            .from('module_progress')
+            .update(progressPayload)
+            .eq('id', progressRow['id']);
       }
 
       await ProfileProgressSync.syncCompletedSimulations();
@@ -1025,6 +1017,22 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
         ),
       );
       return;
+    } on ProgressionAccessDenied catch (e) {
+      debugPrint('POST-ASSESSMENT ACCESS DENIED DURING SUBMIT: ${e.message}');
+
+      if (!mounted) return;
+      await _showInfoDialog(
+        title: _txt('Post-Test Locked', 'Naka-lock ang Panghuling Pagsusulit'),
+        message: _txt(
+          e.message,
+          e.message == ModuleProgressionService.postTestAlreadyTakenMessage
+              ? 'Isang beses lang pwedeng sagutan ang Panghuling Pagsusulit. Magpatuloy sa susunod na modyul.'
+              : e.message,
+        ),
+        buttonText: _txt('OK', 'Sige'),
+      );
+
+      if (mounted) Navigator.of(context).maybePop();
     } catch (e) {
       debugPrint('SUBMIT POST-ASSESSMENT ERROR: $e');
 
@@ -1677,8 +1685,6 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
               Flexible(
                 child: Text(
                   label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     color: AppColors.textOnRed,
@@ -1727,8 +1733,6 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
               Flexible(
                 child: Text(
                   label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     color: AppColors.primaryButton,
@@ -1760,11 +1764,11 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
             const SizedBox(width: 10),
             Expanded(
               child: primaryButton(
-                label: _txt('New Attempt', 'Bagong Subok'),
-                icon: Icons.replay_rounded,
+                label: _txt('Close', 'Isara'),
+                icon: Icons.lock_rounded,
                 onPressed: _isSubmitting
                     ? null
-                    : () => _loadOrCreateAttempt(forceNewAttempt: true),
+                    : () => Navigator.pop(context),
               ),
             ),
           ],
@@ -1912,12 +1916,14 @@ class _CreatedAttempt {
 
 class _QuestionVm {
   final String id;
+  final int questionNo;
   final String prompt;
   final String explanation;
   final String type;
   final List<_OptionVm> options;
   const _QuestionVm({
     required this.id,
+    required this.questionNo,
     required this.prompt,
     required this.explanation,
     required this.type,
@@ -2083,8 +2089,6 @@ class _TopAssessmentBar extends StatelessWidget {
           width: double.infinity,
           child: Text(
             title,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
             style: const TextStyle(
               color: AppColors.textOnRed,
@@ -2138,8 +2142,6 @@ class _TopAssessmentBar extends StatelessWidget {
             Expanded(
               child: Text(
                 moduleTitle,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   color: AppColors.textOnRed.withOpacity(0.88),
                   fontFamily: 'Poppins',
@@ -2422,8 +2424,6 @@ class _StatChip extends StatelessWidget {
               children: [
                 Text(
                   label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     fontFamily: 'Poppins',
                     fontSize: 11.5,
@@ -2651,8 +2651,6 @@ class _OptionCard extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 1),
                   child: Text(
                     text,
-                    maxLines: maxTextLines,
-                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       fontFamily: 'Poppins',
                       fontSize: compact ? 13.2 : 15,

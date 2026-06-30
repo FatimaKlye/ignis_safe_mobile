@@ -82,7 +82,7 @@ class PostAssessmentIntroPage2 extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             const Icon(
-                              Icons.local_fire_department_rounded,
+                              Icons.restaurant_rounded,
                               color: AppColors.textOnRed,
                               size: 16,
                             ),

@@ -4,10 +4,11 @@ import 'package:video_player/video_player.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'post_assess_instruction.dart';
+import 'module_progression_service.dart';
 
 const int _moduleNo = 4;
 const String _learningMaterialsBucket = 'Learning Materials';
-const String _module4KitchenModelAsset = 'assets/models/kitchennglb.glb';
+const String _module4KitchenModelAsset = 'assets/models/Kitchennglb.glb';
 const String _module4Page3VideoAsset = 'assets/kitchen_fire.mp4';
 
 class AppColors {
@@ -58,6 +59,8 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
   bool _isLoading = true;
   bool _introShown = false;
   bool _unreadPromptVisible = false;
+  bool _postTestAlreadyCompleted = false;
+  bool _savingCompletion = false;
   String? _loadError;
 
   final List<Set<int>> _readSections = [<int>{}, <int>{}, <int>{}];
@@ -87,6 +90,11 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
     });
 
     try {
+      final progression = ModuleProgressionService();
+      final progressionState =
+          await progression.ensureCanOpenLearningModule(moduleNo: _moduleNo);
+      final postTestCompleted = progressionState.hasValidPostTest;
+
       final client = Supabase.instance.client;
 
       final materialRow = await client
@@ -151,6 +159,7 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
             (mediaRows as List).map((row) => Map<String, dynamic>.from(row as Map)),
           ),
         );
+        _postTestAlreadyCompleted = postTestCompleted;
         _isLoading = false;
       });
 
@@ -163,6 +172,23 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
             if (mounted) _showIntroPopup();
           });
         }
+      });
+    } on ProgressionAccessDenied catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+        _loadError = error.message;
+      });
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        _showInfoPopup(
+          title: _isTl
+              ? 'Naka-lock ang Modyul sa Pag-aaral'
+              : 'Learning Module Locked',
+          message: error.message,
+          icon: Icons.lock_rounded,
+          color: AppColors.brandRed,
+        );
       });
     } catch (error) {
       if (!mounted) return;
@@ -268,6 +294,11 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
   }
 
   void _goNext() {
+    if (_pageIndex == 2 && _postTestAlreadyCompleted) {
+      _showPostTestAlreadyCompletedDialog();
+      return;
+    }
+
     if (!_hasReadAllRequiredSections(_pageIndex)) {
       _showUnreadSectionsPopup();
       return;
@@ -343,6 +374,80 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
     );
   }
 
+  Future<void> _refreshPostTestCompletionState() async {
+    try {
+      final state = await ModuleProgressionService().getState(moduleNo: _moduleNo);
+      if (!mounted) return;
+      setState(() => _postTestAlreadyCompleted = state.hasValidPostTest);
+    } catch (error) {
+      debugPrint('Module 4 post-test completion refresh failed: $error');
+    }
+  }
+
+  void _showPostTestAlreadyCompletedDialog() {
+    _showInfoPopup(
+      title: _isTl ? 'Panghuling Pagsusulit Naka-lock' : 'Post-Test Locked',
+      message: _isTl
+          ? 'Isang beses lang pwedeng sagutan ang Panghuling Pagsusulit. Maaari mong balikan ang modyul para mag-review.'
+          : 'You can only take the post-test once. You can still reopen the learning module for review.',
+      icon: Icons.lock_rounded,
+      color: AppColors.brandRed,
+    );
+  }
+
+  Future<void> _completeLearningMaterialAndOpenPostAssessment() async {
+    if (_savingCompletion) return;
+
+    setState(() => _savingCompletion = true);
+
+    try {
+      final progression = ModuleProgressionService();
+      final state = await progression.getState(moduleNo: _moduleNo);
+      if (!mounted) return;
+
+      if (state.hasValidPostTest) {
+        setState(() => _postTestAlreadyCompleted = true);
+        _showPostTestAlreadyCompletedDialog();
+        return;
+      }
+
+      await progression.markLearningMaterialCompleted(moduleNo: _moduleNo);
+      await progression.ensureCanStartPostTest(moduleNo: _moduleNo);
+
+      if (!mounted) return;
+      await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const PostAssessmentIntroPage2()),
+      );
+      await _refreshPostTestCompletionState();
+    } on ProgressionAccessDenied catch (error) {
+      if (!mounted) return;
+      if (error.message == ModuleProgressionService.postTestAlreadyTakenMessage) {
+        setState(() => _postTestAlreadyCompleted = true);
+        _showPostTestAlreadyCompletedDialog();
+        return;
+      }
+      _showInfoPopup(
+        title: _isTl ? 'Naka-lock' : 'Locked',
+        message: error.message,
+        icon: Icons.lock_rounded,
+        color: AppColors.brandRed,
+      );
+    } catch (error) {
+      if (!mounted) return;
+      _showInfoPopup(
+        title: _isTl ? 'Hindi Na-save' : 'Could Not Continue',
+        message: _isTl
+            ? 'Hindi ma-save ang pagkumpleto ng modyul. Pakisubukan ulit.'
+            : 'The learning module completion could not be saved. Please try again.',
+        icon: Icons.error_outline_rounded,
+        color: AppColors.error,
+      );
+    } finally {
+      if (mounted) setState(() => _savingCompletion = false);
+    }
+  }
+
   void _showFinalCompletePopup() {
     showDialog(
       context: context,
@@ -355,10 +460,7 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
         buttonLabel: _uiText('dialog_final_button'),
         onPressed: () {
           Navigator.pop(context);
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const PostAssessmentIntroPage2()),
-          );
+          _completeLearningMaterialAndOpenPostAssessment();
         },
       ),
     );
@@ -1820,108 +1922,134 @@ class _KitchenFire3DCardHolder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final resolvedChipLabel = chipLabel.trim().toUpperCase();
+
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(18, 18, 18, 20),
+      margin: const EdgeInsets.only(top: 30),
+      padding: const EdgeInsets.fromLTRB(16, 48, 16, 18),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFFFFFBF2), Color(0xFFFFF1D6)],
-        ),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: AppColors.brandRed.withOpacity(0.12)),
+        border: Border.all(
+          color: AppColors.brandRed.withOpacity(0.10),
+          width: 1,
+        ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.brandRed.withOpacity(0.08),
+            color: AppColors.brandRed.withOpacity(0.07),
             blurRadius: 18,
             offset: const Offset(0, 8),
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Stack(
+        clipBehavior: Clip.none,
         children: [
-          Container(
-            width: 58,
-            height: 58,
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [AppColors.brandRed, AppColors.brandRedDark],
-              ),
-              borderRadius: BorderRadius.circular(18),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.brandRed.withOpacity(0.22),
-                  blurRadius: 14,
-                  offset: const Offset(0, 6),
-                ),
-              ],
-            ),
-            child: const Icon(
-              Icons.view_in_ar_rounded,
-              color: Colors.white,
-              size: 30,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.w900,
-              color: AppColors.textPrimary,
-              height: 1.12,
-              fontFamily: 'Poppins',
-            ),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            subtitle,
-            style: const TextStyle(
-              fontSize: 15.5,
-              color: AppColors.textSecondary,
-              height: 1.35,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.72),
-              borderRadius: BorderRadius.circular(999),
-              border: Border.all(color: AppColors.brandRed.withOpacity(0.18)),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(
-                  Icons.visibility_rounded,
-                  size: 16,
-                  color: AppColors.brandRed,
-                ),
-                const SizedBox(width: 8),
-                Flexible(
-                  child: Text(
-                    chipLabel,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: AppColors.brandRed,
-                      fontSize: 11,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 0.25,
-                    ),
+          Positioned(
+            top: -78,
+            left: 0,
+            child: Container(
+              width: 70,
+              height: 70,
+              decoration: BoxDecoration(
+                color: AppColors.brandRed,
+                borderRadius: BorderRadius.circular(18),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.brandRed.withOpacity(0.28),
+                    blurRadius: 14,
+                    offset: const Offset(0, 7),
                   ),
-                ),
-              ],
+                ],
+              ),
+              child: const Icon(
+                Icons.view_in_ar_rounded,
+                color: Colors.white,
+                size: 34,
+              ),
             ),
           ),
-          const SizedBox(height: 22),
-          _PageOneKitchenFire3DPreview(assetPath: assetPath, chipLabel: chipLabel),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                softWrap: true,
+                style: const TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 25,
+                  height: 1.12,
+                  fontWeight: FontWeight.w900,
+                  color: Color(0xFF111827),
+                  letterSpacing: -0.45,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                subtitle,
+                softWrap: true,
+                style: const TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 15.5,
+                  height: 1.38,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 18),
+              Container(
+                constraints: const BoxConstraints(maxWidth: 270),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 11,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(999),
+                  border: Border.all(
+                    color: AppColors.brandRed.withOpacity(0.18),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.035),
+                      blurRadius: 8,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.visibility_rounded,
+                      size: 18,
+                      color: AppColors.brandRed,
+                    ),
+                    const SizedBox(width: 9),
+                    Flexible(
+                      child: Text(
+                        resolvedChipLabel.isEmpty
+                            ? 'TAP TO VIEW IN 3D'
+                            : resolvedChipLabel,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontFamily: 'Poppins',
+                          color: AppColors.brandRed,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 0.2,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+              _PageOneKitchenFire3DPreview(assetPath: assetPath),
+            ],
+          ),
         ],
       ),
     );
@@ -1930,19 +2058,15 @@ class _KitchenFire3DCardHolder extends StatelessWidget {
 
 class _PageOneKitchenFire3DPreview extends StatelessWidget {
   final String assetPath;
-  final String chipLabel;
 
-  const _PageOneKitchenFire3DPreview({
-    required this.assetPath,
-    required this.chipLabel,
-  });
+  const _PageOneKitchenFire3DPreview({required this.assetPath});
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final previewHeight = (constraints.maxWidth * 1.82)
-            .clamp(580.0, 780.0)
+        final previewHeight = (constraints.maxWidth * 1.75)
+            .clamp(560.0, 720.0)
             .toDouble();
         final modelPath = _resolveKitchenModelPath(assetPath);
         final isTl = Localizations.localeOf(context).languageCode
@@ -1952,36 +2076,17 @@ class _PageOneKitchenFire3DPreview extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              isTl ? '3D Model Preview' : '3D Model Preview',
-              style: const TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.w900,
-                color: AppColors.textPrimary,
-                height: 1.2,
-                fontFamily: 'Poppins',
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              chipLabel,
-              style: const TextStyle(
-                fontSize: 12.5,
-                color: AppColors.textSecondary,
-                height: 1.4,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 14),
             ClipRRect(
               borderRadius: BorderRadius.circular(30),
               child: Container(
                 width: double.infinity,
                 height: previewHeight,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFFF1D6),
+                  color: const Color(0xFFFFF0F1),
                   borderRadius: BorderRadius.circular(30),
-                  border: Border.all(color: AppColors.brandRed.withOpacity(0.10)),
+                  border: Border.all(
+                    color: AppColors.brandRed.withOpacity(0.10),
+                  ),
                 ),
                 child: Stack(
                   children: [
@@ -1992,34 +2097,11 @@ class _PageOneKitchenFire3DPreview extends StatelessWidget {
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                             colors: [
-                              Colors.white.withOpacity(0.54),
-                              AppColors.brandRedSoft.withOpacity(0.62),
+                              Colors.white.withOpacity(0.50),
+                              AppColors.brandRedSoft.withOpacity(0.55),
                               AppColors.brandRed.withOpacity(0.08),
                             ],
                           ),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      left: -42,
-                      top: -44,
-                      child: _KitchenFireSoftGlowBlob(
-                        size: 150,
-                        color: AppColors.brandRed.withOpacity(0.11),
-                      ),
-                    ),
-                    Positioned(
-                      right: -46,
-                      bottom: -52,
-                      child: _KitchenFireSoftGlowBlob(
-                        size: 170,
-                        color: AppColors.warning.withOpacity(0.15),
-                      ),
-                    ),
-                    Positioned.fill(
-                      child: CustomPaint(
-                        painter: _KitchenFireGridPainter(
-                          color: AppColors.brandRed.withOpacity(0.045),
                         ),
                       ),
                     ),
@@ -2036,44 +2118,6 @@ class _PageOneKitchenFire3DPreview extends StatelessWidget {
                       top: 24,
                       bottom: 8,
                       child: _AnimatedKitchenFireModelViewer(modelPath: modelPath),
-                    ),
-                    Positioned.fill(
-                      child: IgnorePointer(
-                        child: Stack(
-                          children: [
-                            Positioned(
-                              top: previewHeight * 0.12,
-                              left: 16,
-                              child: const _KitchenFireModelLabel('Kitchen\nArea'),
-                            ),
-                            Positioned(
-                              top: previewHeight * 0.18,
-                              right: 16,
-                              child: const _KitchenFireModelLabel('Cooking\nZone'),
-                            ),
-                            Positioned(
-                              top: previewHeight * 0.42,
-                              left: 12,
-                              child: const _KitchenFireModelLabel('Heat\nSource'),
-                            ),
-                            Positioned(
-                              top: previewHeight * 0.50,
-                              right: 12,
-                              child: const _KitchenFireModelLabel('Fire\nRisk'),
-                            ),
-                            Positioned(
-                              bottom: previewHeight * 0.18,
-                              left: 14,
-                              child: const _KitchenFireModelLabel('Safe\nDistance'),
-                            ),
-                            Positioned(
-                              bottom: previewHeight * 0.10,
-                              right: 14,
-                              child: const _KitchenFireModelLabel('Kitchen\nAssets'),
-                            ),
-                          ],
-                        ),
-                      ),
                     ),
                   ],
                 ),
@@ -2128,64 +2172,25 @@ class _PageOneKitchenFire3DPreview extends StatelessWidget {
   }
 }
 
-class _AnimatedKitchenFireModelViewer extends StatefulWidget {
+class _AnimatedKitchenFireModelViewer extends StatelessWidget {
   final String modelPath;
 
   const _AnimatedKitchenFireModelViewer({required this.modelPath});
 
   @override
-  State<_AnimatedKitchenFireModelViewer> createState() =>
-      _AnimatedKitchenFireModelViewerState();
-}
-
-class _AnimatedKitchenFireModelViewerState
-    extends State<_AnimatedKitchenFireModelViewer>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 2200),
-    )..repeat(reverse: true);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, _) {
-        final floatOffset = -4.0 + (_controller.value * 8.0);
-
-        return Transform.translate(
-          offset: Offset(0, floatOffset),
-          child: ModelViewer(
-            key: ValueKey(widget.modelPath),
-            src: widget.modelPath,
-            alt: 'Kitchen fire 3D model preview',
-            backgroundColor: Colors.transparent,
-            cameraControls: true,
-            autoRotate: true,
-            autoRotateDelay: 0,
-            rotationPerSecond: '22deg',
-            disableZoom: false,
-            cameraOrbit: '35deg 68deg 4.8m',
-            fieldOfView: '28deg',
-            minCameraOrbit: 'auto auto 3.2m',
-            maxCameraOrbit: 'auto auto 7.2m',
-            shadowIntensity: 0.55,
-            exposure: 1.05,
-          ),
-        );
-      },
+    return ModelViewer(
+      key: ValueKey(modelPath),
+      src: modelPath,
+      alt: 'Kitchen fire 3D model preview',
+      autoRotate: true,
+      cameraControls: true,
+      disableZoom: false,
+      backgroundColor: Colors.transparent,
+      cameraOrbit: '0deg 72deg 1.85m',
+      fieldOfView: '25deg',
+      shadowIntensity: 0.55,
+      exposure: 1.05,
     );
   }
 }
@@ -2240,11 +2245,12 @@ class _KitchenFireViewerBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     return IgnorePointer(
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        constraints: const BoxConstraints(minWidth: 128),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.84),
+          color: Colors.white,
           borderRadius: BorderRadius.circular(999),
-          border: Border.all(color: color.withOpacity(0.14)),
+          border: Border.all(color: color.withOpacity(0.18)),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.06),
@@ -2262,7 +2268,7 @@ class _KitchenFireViewerBadge extends StatelessWidget {
               label,
               style: TextStyle(
                 color: color,
-                fontSize: 11.5,
+                fontSize: 12.5,
                 fontWeight: FontWeight.w900,
               ),
             ),

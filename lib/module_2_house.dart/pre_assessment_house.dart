@@ -7,6 +7,7 @@ import '../localization/localized_db_text.dart';
 import '../localization/language_controller.dart';
 import 'pre_assess_completion_page.dart';
 import '../profile_progress_sync.dart';
+import 'module_progression_service.dart';
 
 const Color kHouseOrange = Color(0xFFF97316);
 const Color kHouseAmber = Color(0xFFF59E0B);
@@ -209,6 +210,22 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
     );
   }
 
+  int _intFrom(dynamic value, [int fallback = 0]) {
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    return int.tryParse((value ?? '').toString()) ?? fallback;
+  }
+
+  List<_QuestionVm> _orderedQuestions(List<_QuestionVm> questions) {
+    final ordered = List<_QuestionVm>.from(questions)
+      ..sort((a, b) {
+        final byNumber = a.questionNo.compareTo(b.questionNo);
+        if (byNumber != 0) return byNumber;
+        return a.id.compareTo(b.id);
+      });
+    return ordered;
+  }
+
   Future<void> _loadOrCreateAttempt({bool forceNewAttempt = false}) async {
     _stopQuizTimer();
 
@@ -219,6 +236,9 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
         _remainingSeconds = _quizDurationSeconds;
         _oneMinuteWarningShown = false;
       });
+
+      // Keep Module 2 progression guards. Only refresh DB questions/attempt rows.
+      forceNewAttempt = false;
 
       final user = _user;
 
@@ -239,6 +259,8 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
           .select('id, title, title_tl, instructions, instructions_tl')
           .eq('module_id', moduleId)
           .eq('type', _assessmentType)
+          .order('created_at', ascending: false)
+          .limit(1)
           .maybeSingle();
 
       if (assessmentRow == null) {
@@ -248,6 +270,9 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
       }
 
       final assessmentId = assessmentRow['id'].toString();
+
+      await ModuleProgressionService().ensureCanStartPreTest(moduleNo: _moduleNo);
+      forceNewAttempt = false;
 
       final assessmentTitle = LocalizedDbText.pick(
         context,
@@ -268,11 +293,12 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
       final questionRows = await _supabase
           .from('assessment_questions')
           .select(
-            'id, question_no, prompt, prompt_tl, explanation, explanation_tl',
+            'id, question_no, prompt, prompt_tl, explanation, explanation_tl, created_at',
           )
           .eq('assessment_id', assessmentId)
           .eq('is_active', true)
-          .order('question_no');
+          .order('question_no', ascending: true)
+          .order('created_at', ascending: true);
 
       if (questionRows.isEmpty) {
         throw Exception('No active questions found for this assessment.');
@@ -287,8 +313,9 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
             'id, question_id, option_key, option_text, option_text_tl, is_correct, display_order',
           )
           .inFilter('question_id', questionIds)
+          .eq('is_active', true)
           .order('question_id')
-          .order('display_order');
+          .order('display_order', ascending: true);
 
       final optionsByQuestion = <String, List<_OptionVm>>{};
 
@@ -326,6 +353,7 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
 
         return _QuestionVm(
           id: questionId,
+          questionNo: _intFrom(row['question_no'], 999),
           prompt: LocalizedDbText.pick(
             context,
             row,
@@ -348,137 +376,17 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
         );
       }
 
-      String attemptId;
-      List<_QuestionVm> orderedQuestions;
-      List<String?> selectedOptionIds;
-      Set<int> flaggedIndexes;
-
-      if (!forceNewAttempt) {
-        final attemptRows = await _supabase
-            .from('assessment_attempts')
-            .select('id, started_at')
-            .eq('user_id', user.id)
-            .eq('assessment_id', assessmentId)
-            .eq('status', 'in_progress')
-            .order('started_at', ascending: false)
-            .limit(1);
-
-        if (attemptRows.isNotEmpty) {
-          attemptId = attemptRows.first['id'].toString();
-
-          final savedRows = await _supabase
-              .from('assessment_attempt_answers')
-              .select(
-                'question_id, selected_option_id, is_flagged, display_order',
-              )
-              .eq('attempt_id', attemptId)
-              .order('display_order');
-
-          if (savedRows.isEmpty) {
-            final created = await _createAnswerRowsForExistingAttempt(
-              attemptId: attemptId,
-              questions: baseQuestions,
-            );
-
-            orderedQuestions = created.questions;
-            selectedOptionIds =
-                List<String?>.filled(orderedQuestions.length, null);
-            flaggedIndexes = {};
-          } else {
-            final existingQuestionIds =
-                savedRows.map((row) => row['question_id'].toString()).toSet();
-
-            final missingQuestions = baseQuestions
-                .where((q) => !existingQuestionIds.contains(q.id))
-                .toList();
-
-            if (missingQuestions.isNotEmpty) {
-              final startOrder = savedRows.length;
-
-              await _supabase.from('assessment_attempt_answers').insert(
-                    List.generate(
-                      missingQuestions.length,
-                      (index) => {
-                        'attempt_id': attemptId,
-                        'question_id': missingQuestions[index].id,
-                        'display_order': startOrder + index,
-                        'is_flagged': false,
-                      },
-                    ),
-                  );
-            }
-
-            final refreshedSavedRows = await _supabase
-                .from('assessment_attempt_answers')
-                .select(
-                  'question_id, selected_option_id, is_flagged, display_order',
-                )
-                .eq('attempt_id', attemptId)
-                .order('display_order');
-
-            final questionMap = {
-              for (final q in baseQuestions) q.id: q,
-            };
-
-            orderedQuestions = [];
-            selectedOptionIds = [];
-            flaggedIndexes = {};
-
-            for (int i = 0; i < refreshedSavedRows.length; i++) {
-              final row = refreshedSavedRows[i];
-              final questionId = row['question_id'].toString();
-              final question = questionMap[questionId];
-
-              if (question == null) continue;
-
-              orderedQuestions.add(question);
-              selectedOptionIds.add(row['selected_option_id']?.toString());
-
-              if ((row['is_flagged'] ?? false) as bool) {
-                flaggedIndexes.add(i);
-              }
-            }
-
-            if (orderedQuestions.isEmpty) {
-              final created = await _createNewAttempt(
-                userId: user.id,
-                assessmentId: assessmentId,
-                questions: baseQuestions,
-              );
-
-              attemptId = created.attemptId;
-              orderedQuestions = created.questions;
-              selectedOptionIds =
-                  List<String?>.filled(orderedQuestions.length, null);
-              flaggedIndexes = {};
-            }
-          }
-        } else {
-          final created = await _createNewAttempt(
-            userId: user.id,
-            assessmentId: assessmentId,
-            questions: baseQuestions,
-          );
-
-          attemptId = created.attemptId;
-          orderedQuestions = created.questions;
-          selectedOptionIds =
-              List<String?>.filled(orderedQuestions.length, null);
-          flaggedIndexes = {};
-        }
-      } else {
-        final created = await _createNewAttempt(
-          userId: user.id,
-          assessmentId: assessmentId,
-          questions: baseQuestions,
-        );
-
-        attemptId = created.attemptId;
-        orderedQuestions = created.questions;
-        selectedOptionIds =
-            List<String?>.filled(orderedQuestions.length, null);
-        flaggedIndexes = {};
-      }
+      final created = await _createNewAttempt(
+        userId: user.id,
+        assessmentId: assessmentId,
+        moduleId: moduleId,
+        questions: baseQuestions,
+      );
+      final attemptId = created.attemptId;
+      final orderedQuestions = created.questions;
+      final selectedOptionIds =
+          List<String?>.filled(orderedQuestions.length, null);
+      final flaggedIndexes = <int>{};
 
       if (!mounted) return;
 
@@ -510,6 +418,28 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
 
         _startQuizTimer();
       });
+    } on ProgressionAccessDenied catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      await _showInfoDialog(
+        title: _txt(
+          'Pre-Test Locked',
+          'Naka-lock ang Paunang Pagsusulit',
+        ),
+        message: _txt(
+          e.message,
+          e.message == ModuleProgressionService.preTestAlreadyTakenMessage
+              ? 'Isang beses lang pwedeng sagutan ang Paunang Pagsusulit. Magpatuloy sa susunod na modyul.'
+              : e.message,
+        ),
+        buttonText: _txt('OK', 'Sige'),
+      );
+
+      if (mounted) Navigator.pop(context);
     } catch (e) {
       if (!mounted) return;
 
@@ -528,88 +458,134 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
     }
   }
 
+
   Future<_CreatedAttempt> _createNewAttempt({
     required String userId,
     required String assessmentId,
+    required String moduleId,
     required List<_QuestionVm> questions,
   }) async {
-    final shuffled = List<_QuestionVm>.from(questions)..shuffle();
+    final ordered = _orderedQuestions(questions);
+    final now = DateTime.now().toUtc().toIso8601String();
 
-    final insertedAttempt = await _supabase
+    final existingAttempts = await _supabase
         .from('assessment_attempts')
-        .insert({
-          'user_id': userId,
-          'assessment_id': assessmentId,
-          'status': 'in_progress',
-          'total_questions': shuffled.length,
-          'correct_count': 0,
-          'score': 0,
-        })
         .select('id')
-        .single();
+        .eq('user_id', userId)
+        .eq('assessment_id', assessmentId)
+        .order('started_at', ascending: false)
+        .limit(1);
 
-    final attemptId = insertedAttempt['id'].toString();
+    final String attemptId;
 
-    await _supabase.from('assessment_attempt_answers').insert(
-          List.generate(
-            shuffled.length,
-            (index) => {
-              'attempt_id': attemptId,
-              'question_id': shuffled[index].id,
-              'display_order': index,
-              'is_flagged': false,
-            },
-          ),
-        );
+    if ((existingAttempts as List).isNotEmpty) {
+      attemptId = existingAttempts.first['id'].toString();
+
+      await _supabase.from('assessment_attempts').update({
+        'module_id': moduleId,
+        'started_at': now,
+        'submitted_at': null,
+        'status': 'in_progress',
+        'total_questions': ordered.length,
+        'correct_count': 0,
+        'score': 0,
+      }).eq('id', attemptId);
+    } else {
+      final insertedAttempt = await _supabase
+          .from('assessment_attempts')
+          .insert({
+            'user_id': userId,
+            'assessment_id': assessmentId,
+            'module_id': moduleId,
+            'status': 'in_progress',
+            'total_questions': ordered.length,
+            'correct_count': 0,
+            'score': 0,
+          })
+          .select('id')
+          .single();
+
+      attemptId = insertedAttempt['id'].toString();
+    }
+
+    try {
+      await _supabase
+          .from('assessment_attempt_answers')
+          .delete()
+          .eq('attempt_id', attemptId);
+    } catch (e) {
+      debugPrint('CLEAR HOUSE PRE-ASSESSMENT ANSWERS WARNING: $e');
+    }
+
+    if (ordered.isNotEmpty) {
+      await _supabase.from('assessment_attempt_answers').upsert(
+        List.generate(
+          ordered.length,
+          (index) => {
+            'attempt_id': attemptId,
+            'question_id': ordered[index].id,
+            'selected_option_id': null,
+            'is_flagged': false,
+            'display_order': index,
+            'is_correct': null,
+            'updated_at': now,
+          },
+        ),
+        onConflict: 'attempt_id,question_id',
+      );
+    }
 
     return _CreatedAttempt(
       attemptId: attemptId,
-      questions: shuffled,
+      questions: ordered,
     );
   }
+
 
   Future<_CreatedAttempt> _createAnswerRowsForExistingAttempt({
     required String attemptId,
     required List<_QuestionVm> questions,
   }) async {
-    final shuffled = List<_QuestionVm>.from(questions)..shuffle();
+    final ordered = _orderedQuestions(questions);
+    final now = DateTime.now().toUtc().toIso8601String();
 
-    await _supabase.from('assessment_attempt_answers').insert(
-          List.generate(
-            shuffled.length,
-            (index) => {
-              'attempt_id': attemptId,
-              'question_id': shuffled[index].id,
-              'display_order': index,
-              'is_flagged': false,
-            },
-          ),
-        );
+    if (ordered.isNotEmpty) {
+      await _supabase.from('assessment_attempt_answers').upsert(
+        List.generate(
+          ordered.length,
+          (index) => {
+            'attempt_id': attemptId,
+            'question_id': ordered[index].id,
+            'selected_option_id': null,
+            'is_flagged': false,
+            'display_order': index,
+            'is_correct': null,
+            'updated_at': now,
+          },
+        ),
+        onConflict: 'attempt_id,question_id',
+      );
+    }
 
     return _CreatedAttempt(
       attemptId: attemptId,
-      questions: shuffled,
+      questions: ordered,
     );
   }
+
 
   Future<void> _handleRefresh() async {
     if (_timeExpired || _isSubmitting) return;
 
     if (_showReview) {
-      final confirmed = await _showConfirmDialog(
-        title: _txt('Start new attempt?', 'Magsimula ng bagong subok?'),
+      await _showInfoDialog(
+        title: _txt('Pre-Test Locked', 'Naka-lock ang Paunang Pagsusulit'),
         message: _txt(
-          'You already finished this pre-assessment. Starting again will generate a new attempt.',
-          'Natapos mo na ang paunang pagsusulit na ito. Ang pagsisimula ulit ay lilikha ng bagong subok.',
+          ModuleProgressionService.preTestAlreadyTakenMessage,
+          'Isang beses lang pwedeng sagutan ang Paunang Pagsusulit. Magpatuloy sa susunod na modyul.',
         ),
-        confirmText: _txt('New Attempt', 'Bagong Subok'),
-        cancelText: _txt('Cancel', 'Kanselahin'),
+        buttonText: _txt('OK', 'Sige'),
       );
-
-      if (confirmed == true) {
-        await _loadOrCreateAttempt(forceNewAttempt: true);
-      }
-
       return;
     }
 
@@ -906,6 +882,10 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
     });
 
     try {
+      await ModuleProgressionService().ensureCanStartPreTest(
+        moduleNo: _moduleNo,
+      );
+
       int correctCount = 0;
 
       for (int i = 0; i < _questions.length; i++) {
@@ -933,8 +913,10 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
       final scorePercent =
           _questions.isEmpty ? 0 : (correctCount / _questions.length) * 100;
 
+      final submittedAt = DateTime.now().toUtc().toIso8601String();
+
       await _supabase.from('assessment_attempts').update({
-        'submitted_at': DateTime.now().toUtc().toIso8601String(),
+        'submitted_at': submittedAt,
         'status': 'submitted',
         'correct_count': correctCount,
         'score': scorePercent,
@@ -947,16 +929,26 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
           .eq('module_id', _moduleId!)
           .maybeSingle();
 
+      final progressPayload = {
+        'pre_test_completed_at': submittedAt,
+        'pre_test_attempt_id': _attemptId,
+        'pre_test_score': scorePercent,
+        'pre_test_correct_count': correctCount,
+        'pre_test_total_questions': _questions.length,
+        'updated_at': submittedAt,
+      };
+
       if (progressRow == null) {
         await _supabase.from('module_progress').insert({
           'user_id': _user.id,
           'module_id': _moduleId,
-          'pre_test_completed_at': DateTime.now().toUtc().toIso8601String(),
+          ...progressPayload,
         });
       } else {
-        await _supabase.from('module_progress').update({
-          'pre_test_completed_at': DateTime.now().toUtc().toIso8601String(),
-        }).eq('id', progressRow['id']);
+        await _supabase
+            .from('module_progress')
+            .update(progressPayload)
+            .eq('id', progressRow['id']);
       }
 
       await ProfileProgressSync.syncCompletedSimulations();
@@ -975,6 +967,23 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
           ),
         ),
       );
+    } on ProgressionAccessDenied catch (e) {
+      debugPrint('PRE-ASSESSMENT ACCESS DENIED DURING SUBMIT: ${e.message}');
+
+      if (!mounted) return;
+
+      await _showInfoDialog(
+        title: _txt('Pre-Test Locked', 'Naka-lock ang Paunang Pagsusulit'),
+        message: _txt(
+          e.message,
+          e.message == ModuleProgressionService.preTestAlreadyTakenMessage
+              ? 'Isang beses lang pwedeng sagutan ang Paunang Pagsusulit. Magpatuloy sa susunod na modyul.'
+              : e.message,
+        ),
+        buttonText: _txt('OK', 'Sige'),
+      );
+
+      if (mounted) Navigator.of(context).maybePop();
     } catch (e) {
       debugPrint('SUBMIT ASSESSMENT ERROR: $e');
 
@@ -1462,7 +1471,6 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
                                       ? null
                                       : () => _selectAnswer(index, option.id),
                                   compact: compact,
-                                  maxTextLines: compact ? 2 : 3,
                                 ),
                               );
                             }).toList(),
@@ -1665,11 +1673,18 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
             const SizedBox(width: 10),
             Expanded(
               child: primaryButton(
-                label: _txt('New Attempt', 'Bagong Subok'),
-                icon: Icons.replay_rounded,
+                label: _txt('Locked', 'Naka-lock'),
+                icon: Icons.lock_rounded,
                 onPressed: _isSubmitting
                     ? null
-                    : () => _loadOrCreateAttempt(forceNewAttempt: true),
+                    : () => _showInfoDialog(
+                          title: _txt('Pre-Test Locked', 'Naka-lock ang Paunang Pagsusulit'),
+                          message: _txt(
+                            ModuleProgressionService.preTestAlreadyTakenMessage,
+                            'Isang beses lang pwedeng sagutan ang Paunang Pagsusulit. Magpatuloy sa susunod na modyul.',
+                          ),
+                          buttonText: _txt('OK', 'Sige'),
+                        ),
               ),
             ),
           ],
@@ -1948,8 +1963,6 @@ class _TopAssessmentBar extends StatelessWidget {
           width: double.infinity,
           child: Text(
             title,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
             style: const TextStyle(
               color: AppColors.textOnRed,
@@ -2010,8 +2023,6 @@ class _TopAssessmentBar extends StatelessWidget {
             Expanded(
               child: Text(
                 moduleTitle,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   color: AppColors.textOnRed.withOpacity(0.92),
                   fontFamily: 'Poppins',
@@ -2138,12 +2149,14 @@ class _CreatedAttempt {
 
 class _QuestionVm {
   final String id;
+  final int questionNo;
   final String prompt;
   final String explanation;
   final List<_OptionVm> options;
 
   const _QuestionVm({
     required this.id,
+    required this.questionNo,
     required this.prompt,
     required this.explanation,
     required this.options,
@@ -2245,38 +2258,48 @@ class _QuizProgressHeader extends StatelessWidget {
           ),
           SizedBox(height: compact ? 8 : 12),
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                t(context, 'Progress', 'Progreso'),
-                style: TextStyle(
-                  color: AppColors.textOnRed.withOpacity(0.76),
-                  fontFamily: 'Poppins',
-                  fontSize: compact ? 11.5 : 12.5,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const Spacer(),
-              Text(
-                '${t(context, 'Answered', 'Nasagutan')}: $answered/$totalQuestions',
-                style: TextStyle(
-                  color: AppColors.textOnRed,
-                  fontFamily: 'Poppins',
-                  fontSize: compact ? 11.5 : 12.5,
-                  fontWeight: FontWeight.w900,
-                ),
-              ),
-              if (flagged > 0) ...[
-                const SizedBox(width: 10),
-                Text(
-                  '${t(context, 'Flagged', 'Naka-flag')}: $flagged',
+              Flexible(
+                child: Text(
+                  t(context, 'Progress', 'Progreso'),
                   style: TextStyle(
-                    color: AppColors.textOnRed,
+                    color: AppColors.textOnRed.withOpacity(0.76),
                     fontFamily: 'Poppins',
                     fontSize: compact ? 11.5 : 12.5,
-                    fontWeight: FontWeight.w900,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
-              ],
+              ),
+              const SizedBox(width: 8),
+              Flexible(
+                child: Wrap(
+                  alignment: WrapAlignment.end,
+                  spacing: 10,
+                  runSpacing: 2,
+                  children: [
+                    Text(
+                      '${t(context, 'Answered', 'Nasagutan')}: $answered/$totalQuestions',
+                      style: TextStyle(
+                        color: AppColors.textOnRed,
+                        fontFamily: 'Poppins',
+                        fontSize: compact ? 11.5 : 12.5,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                    if (flagged > 0)
+                      Text(
+                        '${t(context, 'Flagged', 'Naka-flag')}: $flagged',
+                        style: TextStyle(
+                          color: AppColors.textOnRed,
+                          fontFamily: 'Poppins',
+                          fontSize: compact ? 11.5 : 12.5,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
             ],
           ),
         ],
@@ -2409,8 +2432,6 @@ class _StatChip extends StatelessWidget {
               children: [
                 Text(
                   label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     fontFamily: 'Poppins',
                     fontSize: 11.5,
@@ -2567,7 +2588,6 @@ class _OptionCard extends StatelessWidget {
     required this.enabled,
     required this.onTap,
     required this.compact,
-    required this.maxTextLines,
   });
 
   final String label;
@@ -2576,7 +2596,6 @@ class _OptionCard extends StatelessWidget {
   final bool enabled;
   final VoidCallback? onTap;
   final bool compact;
-  final int maxTextLines;
 
   @override
   Widget build(BuildContext context) {
@@ -2642,8 +2661,6 @@ class _OptionCard extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 1),
                   child: Text(
                     text,
-                    maxLines: maxTextLines,
-                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       fontFamily: 'Poppins',
                       fontSize: compact ? 13.2 : 15,

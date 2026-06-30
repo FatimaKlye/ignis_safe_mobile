@@ -59,7 +59,7 @@ class AppColors {
 // ============================================================================
 const int _moduleNo = 5;
 const String _learningMaterialsBucketName = 'Learning Materials';
-const String _module5BuildingModelAsset = 'assets/models/procedural_hong_kong_building.glb';
+const String _module5BuildingModelAsset = 'assets/models/buildingfinal.glb';
 
 class _SourceReference {
   const _SourceReference({
@@ -516,7 +516,7 @@ class _LearningMaterialTenementPageState
   void _showDoThisNowPopup() {
     _showInfoPopup(
       title: _dbText(context, 'popup.emergency_steps.title'),
-      icon: Icons.local_fire_department_rounded,
+      icon: Icons.apartment_rounded,
       color: AppColors.brandRed,
       message: _dbText(context, 'popup.emergency_steps.body'),
     );
@@ -983,7 +983,7 @@ class _LearningMaterialTenementPageState
               _BodyText(_dbText(context, 'page3.section4.body')),
               const SizedBox(height: 10),
               _ActionPill(
-                icon:  Icons.local_fire_department_rounded,
+                icon:  Icons.apartment_rounded,
                 label: _dbText(context, 'page3.section4.action_label'),
                 onTap: _showDoThisNowPopup,
               ),
@@ -2143,15 +2143,16 @@ class _PageOneBuilding3DPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final modelPath = _resolveBuildingModelPath(assetPath);
+    final isTl = Localizations.localeOf(context).languageCode
+        .toLowerCase()
+        .startsWith('tl');
+
     return LayoutBuilder(
       builder: (context, constraints) {
-        final previewHeight = (constraints.maxWidth * 1.76)
-            .clamp(560.0, 760.0)
+        final previewHeight = (constraints.maxWidth * 1.75)
+            .clamp(560.0, 720.0)
             .toDouble();
-        final modelPath = _resolveBuildingModelPath(assetPath);
-        final isTl = Localizations.localeOf(context).languageCode
-            .toLowerCase()
-            .startsWith('tl');
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -2186,7 +2187,9 @@ class _PageOneBuilding3DPreview extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: AppColors.purple50,
                   borderRadius: BorderRadius.circular(30),
-                  border: Border.all(color: AppColors.brandRed.withOpacity(0.10)),
+                  border: Border.all(
+                    color: AppColors.brandRed.withOpacity(0.10),
+                  ),
                 ),
                 child: Stack(
                   children: [
@@ -2197,34 +2200,11 @@ class _PageOneBuilding3DPreview extends StatelessWidget {
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                             colors: [
-                              Colors.white.withOpacity(0.64),
-                              AppColors.purple100.withOpacity(0.80),
-                              AppColors.brandRed.withOpacity(0.10),
+                              Colors.white.withOpacity(0.50),
+                              AppColors.purple100.withOpacity(0.55),
+                              AppColors.brandRed.withOpacity(0.08),
                             ],
                           ),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      left: -42,
-                      top: -44,
-                      child: _BuildingSoftGlowBlob(
-                        size: 150,
-                        color: AppColors.brandRed.withOpacity(0.10),
-                      ),
-                    ),
-                    Positioned(
-                      right: -48,
-                      bottom: -54,
-                      child: _BuildingSoftGlowBlob(
-                        size: 174,
-                        color: AppColors.purple300.withOpacity(0.24),
-                      ),
-                    ),
-                    Positioned.fill(
-                      child: CustomPaint(
-                        painter: _BuildingPreviewGridPainter(
-                          color: AppColors.brandRed.withOpacity(0.045),
                         ),
                       ),
                     ),
@@ -2240,44 +2220,6 @@ class _PageOneBuilding3DPreview extends StatelessWidget {
                       top: 24,
                       bottom: 8,
                       child: _AnimatedBuildingModelViewer(modelPath: modelPath),
-                    ),
-                    Positioned.fill(
-                      child: IgnorePointer(
-                        child: Stack(
-                          children: [
-                            Positioned(
-                              top: previewHeight * 0.12,
-                              left: 16,
-                              child: const _BuildingModelLabel('Building\nLayout'),
-                            ),
-                            Positioned(
-                              top: previewHeight * 0.18,
-                              right: 16,
-                              child: const _BuildingModelLabel('Upper\nFloors'),
-                            ),
-                            Positioned(
-                              top: previewHeight * 0.42,
-                              left: 12,
-                              child: const _BuildingModelLabel('Exit\nRoute'),
-                            ),
-                            Positioned(
-                              top: previewHeight * 0.50,
-                              right: 12,
-                              child: const _BuildingModelLabel('Fire\nRisk'),
-                            ),
-                            Positioned(
-                              bottom: previewHeight * 0.18,
-                              left: 14,
-                              child: const _BuildingModelLabel('Safe\nPath'),
-                            ),
-                            Positioned(
-                              bottom: previewHeight * 0.10,
-                              right: 14,
-                              child: const _BuildingModelLabel('Assembly\nArea'),
-                            ),
-                          ],
-                        ),
-                      ),
                     ),
                   ],
                 ),
@@ -2333,63 +2275,24 @@ class _PageOneBuilding3DPreview extends StatelessWidget {
   }
 }
 
-class _AnimatedBuildingModelViewer extends StatefulWidget {
+class _AnimatedBuildingModelViewer extends StatelessWidget {
   final String modelPath;
 
   const _AnimatedBuildingModelViewer({required this.modelPath});
 
   @override
-  State<_AnimatedBuildingModelViewer> createState() =>
-      _AnimatedBuildingModelViewerState();
-}
-
-class _AnimatedBuildingModelViewerState extends State<_AnimatedBuildingModelViewer>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 2200),
-    )..repeat(reverse: true);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, _) {
-        final floatOffset = -4.0 + (_controller.value * 8.0);
-
-        return Transform.translate(
-          offset: Offset(0, floatOffset),
-          child: ModelViewer(
-            key: ValueKey(widget.modelPath),
-            src: widget.modelPath,
-            alt: 'Building fire 3D model preview',
-            backgroundColor: Colors.transparent,
-            cameraControls: true,
-            autoRotate: true,
-            autoRotateDelay: 0,
-            rotationPerSecond: '22deg',
-            disableZoom: false,
-            cameraOrbit: '35deg 68deg 5.2m',
-            fieldOfView: '28deg',
-            minCameraOrbit: 'auto auto 3.4m',
-            maxCameraOrbit: 'auto auto 8.0m',
-            shadowIntensity: 0.55,
-            exposure: 1.05,
-          ),
-        );
-      },
+    return ModelViewer(
+      src: modelPath,
+      alt: 'Building fire 3D model preview',
+      autoRotate: true,
+      cameraControls: true,
+      disableZoom: false,
+      backgroundColor: Colors.transparent,
+      cameraOrbit: '0deg 72deg 1.85m',
+      fieldOfView: '25deg',
+      shadowIntensity: 0.55,
+      exposure: 1.05,
     );
   }
 }

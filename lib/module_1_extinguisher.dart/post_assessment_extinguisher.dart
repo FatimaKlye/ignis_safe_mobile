@@ -249,9 +249,13 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
   }
 
   List<_QuestionVm> _orderedQuestions(List<_QuestionVm> questions) {
-    final mcq = questions.where(_isMcq).toList()..shuffle();
-    final essay = questions.where(_isEssay).toList();
-    return [...mcq, ...essay];
+    final ordered = List<_QuestionVm>.from(questions)
+      ..sort((a, b) {
+        final byNumber = a.questionNo.compareTo(b.questionNo);
+        if (byNumber != 0) return byNumber;
+        return a.id.compareTo(b.id);
+      });
+    return ordered;
   }
 
   int _intFrom(dynamic value, [int fallback = 0]) {
@@ -436,6 +440,8 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
           .select('id, title, title_tl, instructions, instructions_tl')
           .eq('module_id', moduleId)
           .eq('type', _assessmentType)
+          .order('created_at', ascending: false)
+          .limit(1)
           .maybeSingle();
 
       if (assessmentRow == null) {
@@ -475,7 +481,8 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
               'id, question_no, prompt, prompt_tl, explanation, explanation_tl, question_type')
           .eq('assessment_id', assessmentId)
           .eq('is_active', true)
-          .order('question_no');
+          .order('question_no', ascending: true)
+          .order('created_at', ascending: true);
 
       if (questionRows.isEmpty) {
         throw Exception('No active questions found for this assessment.');
@@ -489,8 +496,9 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
           .select(
               'id, question_id, option_key, option_text, option_text_tl, is_correct, display_order')
           .inFilter('question_id', questionIds)
+          .eq('is_active', true)
           .order('question_id')
-          .order('display_order');
+          .order('display_order', ascending: true);
 
       final optionsByQuestion = <String, List<_OptionVm>>{};
       for (final row in optionRows) {
@@ -522,6 +530,7 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
         final questionId = row['id'].toString();
         return _QuestionVm(
           id: questionId,
+          questionNo: _intFrom(row['question_no'], 999),
           prompt: LocalizedDbText.pick(context, row, 'prompt', 'prompt_tl'),
           explanation: LocalizedDbText.pick(
               context, row, 'explanation', 'explanation_tl'),
@@ -535,138 +544,18 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
             'One or more multiple-choice questions do not have options.');
       }
 
-      String attemptId;
-      List<_QuestionVm> orderedQuestions;
-      List<String?> selectedOptionIds;
-      List<String?> writtenAnswers;
-      Set<int> flaggedIndexes;
-
-      if (!forceNewAttempt) {
-        final attemptRows = await _supabase
-            .from('assessment_attempts')
-            .select('id, started_at')
-            .eq('user_id', user.id)
-            .eq('assessment_id', assessmentId)
-            .eq('status', 'in_progress')
-            .order('started_at', ascending: false)
-            .limit(1);
-
-        if (attemptRows.isNotEmpty) {
-          attemptId = attemptRows.first['id'].toString();
-
-          final savedRows = await _supabase
-              .from('assessment_attempt_answers')
-              .select(
-                  'question_id, selected_option_id, answer_text, is_flagged, display_order')
-              .eq('attempt_id', attemptId)
-              .order('display_order');
-
-          if (savedRows.isEmpty) {
-            final created = await _createAnswerRowsForExistingAttempt(
-              attemptId: attemptId,
-              questions: baseQuestions,
-            );
-            orderedQuestions = created.questions;
-            selectedOptionIds =
-                List<String?>.filled(orderedQuestions.length, null);
-            writtenAnswers =
-                List<String?>.filled(orderedQuestions.length, null);
-            flaggedIndexes = {};
-          } else {
-            final existingQuestionIds = savedRows
-                .map((row) => row['question_id'].toString())
-                .toSet();
-
-            final missingQuestions = baseQuestions
-                .where((q) => !existingQuestionIds.contains(q.id))
-                .toList();
-
-            if (missingQuestions.isNotEmpty) {
-              final startOrder = savedRows.length;
-              final orderedMissing = _orderedQuestions(missingQuestions);
-
-              await _supabase.from('assessment_attempt_answers').insert(
-                    List.generate(
-                      orderedMissing.length,
-                      (index) => {
-                        'attempt_id': attemptId,
-                        'question_id': orderedMissing[index].id,
-                        'display_order': startOrder + index,
-                        'is_flagged': false,
-                      },
-                    ),
-                  );
-            }
-
-            final refreshedSavedRows = await _supabase
-                .from('assessment_attempt_answers')
-                .select(
-                    'question_id, selected_option_id, answer_text, is_flagged, display_order')
-                .eq('attempt_id', attemptId)
-                .order('display_order');
-
-            final questionMap = {for (final q in baseQuestions) q.id: q};
-
-            orderedQuestions = [];
-            selectedOptionIds = [];
-            writtenAnswers = [];
-            flaggedIndexes = {};
-
-            for (int i = 0; i < refreshedSavedRows.length; i++) {
-              final row = refreshedSavedRows[i];
-              final questionId = row['question_id'].toString();
-              final question = questionMap[questionId];
-              if (question == null) continue;
-
-              orderedQuestions.add(question);
-              selectedOptionIds.add(row['selected_option_id']?.toString());
-              writtenAnswers.add(row['answer_text']?.toString());
-
-              if ((row['is_flagged'] ?? false) as bool) {
-                flaggedIndexes.add(i);
-              }
-            }
-
-            if (orderedQuestions.isEmpty) {
-              final created = await _createNewAttempt(
-                userId: user.id,
-                assessmentId: assessmentId,
-                questions: baseQuestions,
-              );
-              attemptId = created.attemptId;
-              orderedQuestions = created.questions;
-              selectedOptionIds =
-                  List<String?>.filled(orderedQuestions.length, null);
-              writtenAnswers =
-                  List<String?>.filled(orderedQuestions.length, null);
-              flaggedIndexes = {};
-            }
-          }
-        } else {
-          final created = await _createNewAttempt(
-            userId: user.id,
-            assessmentId: assessmentId,
-            questions: baseQuestions,
-          );
-          attemptId = created.attemptId;
-          orderedQuestions = created.questions;
-          selectedOptionIds =
-              List<String?>.filled(orderedQuestions.length, null);
-          writtenAnswers = List<String?>.filled(orderedQuestions.length, null);
-          flaggedIndexes = {};
-        }
-      } else {
-        final created = await _createNewAttempt(
-          userId: user.id,
-          assessmentId: assessmentId,
-          questions: baseQuestions,
-        );
-        attemptId = created.attemptId;
-        orderedQuestions = created.questions;
-        selectedOptionIds = List<String?>.filled(orderedQuestions.length, null);
-        writtenAnswers = List<String?>.filled(orderedQuestions.length, null);
-        flaggedIndexes = {};
-      }
+      final created = await _createNewAttempt(
+        userId: user.id,
+        assessmentId: assessmentId,
+        moduleId: moduleId,
+        questions: baseQuestions,
+      );
+      final attemptId = created.attemptId;
+      final orderedQuestions = created.questions;
+      final selectedOptionIds =
+          List<String?>.filled(orderedQuestions.length, null);
+      final writtenAnswers = List<String?>.filled(orderedQuestions.length, null);
+      final flaggedIndexes = <int>{};
 
       _rebuildEssayControllers(orderedQuestions, writtenAnswers);
 
@@ -717,36 +606,80 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
   Future<_CreatedAttempt> _createNewAttempt({
     required String userId,
     required String assessmentId,
+    required String moduleId,
     required List<_QuestionVm> questions,
   }) async {
     final ordered = _orderedQuestions(questions);
+    final now = DateTime.now().toUtc().toIso8601String();
 
-    final insertedAttempt = await _supabase
+    final existingAttempts = await _supabase
         .from('assessment_attempts')
-        .insert({
-          'user_id': userId,
-          'assessment_id': assessmentId,
-          'status': 'in_progress',
-          'total_questions': ordered.length,
-          'correct_count': 0,
-          'score': 0,
-        })
         .select('id')
-        .single();
+        .eq('user_id', userId)
+        .eq('assessment_id', assessmentId)
+        .eq('status', 'in_progress')
+        .order('started_at', ascending: false)
+        .limit(1);
 
-    final attemptId = insertedAttempt['id'].toString();
+    final String attemptId;
 
-    await _supabase.from('assessment_attempt_answers').insert(
-          List.generate(
-            ordered.length,
-            (index) => {
-              'attempt_id': attemptId,
-              'question_id': ordered[index].id,
-              'display_order': index,
-              'is_flagged': false,
-            },
-          ),
-        );
+    if ((existingAttempts as List).isNotEmpty) {
+      attemptId = existingAttempts.first['id'].toString();
+
+      await _supabase.from('assessment_attempts').update({
+        'module_id': moduleId,
+        'started_at': now,
+        'submitted_at': null,
+        'status': 'in_progress',
+        'total_questions': ordered.length,
+        'correct_count': 0,
+        'score': 0,
+      }).eq('id', attemptId);
+    } else {
+      final insertedAttempt = await _supabase
+          .from('assessment_attempts')
+          .insert({
+            'user_id': userId,
+            'assessment_id': assessmentId,
+            'module_id': moduleId,
+            'status': 'in_progress',
+            'total_questions': ordered.length,
+            'correct_count': 0,
+            'score': 0,
+          })
+          .select('id')
+          .single();
+
+      attemptId = insertedAttempt['id'].toString();
+    }
+
+    try {
+      await _supabase
+          .from('assessment_attempt_answers')
+          .delete()
+          .eq('attempt_id', attemptId);
+    } catch (e) {
+      debugPrint('CLEAR POST-ASSESSMENT ANSWERS WARNING: $e');
+    }
+
+    if (ordered.isNotEmpty) {
+      await _supabase.from('assessment_attempt_answers').upsert(
+        List.generate(
+          ordered.length,
+          (index) => {
+            'attempt_id': attemptId,
+            'question_id': ordered[index].id,
+            'selected_option_id': null,
+            'answer_text': null,
+            'is_flagged': false,
+            'display_order': index,
+            'is_correct': null,
+            'updated_at': now,
+          },
+        ),
+        onConflict: 'attempt_id,question_id',
+      );
+    }
 
     return _CreatedAttempt(attemptId: attemptId, questions: ordered);
   }
@@ -756,18 +689,26 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
     required List<_QuestionVm> questions,
   }) async {
     final ordered = _orderedQuestions(questions);
+    final now = DateTime.now().toUtc().toIso8601String();
 
-    await _supabase.from('assessment_attempt_answers').insert(
-          List.generate(
-            ordered.length,
-            (index) => {
-              'attempt_id': attemptId,
-              'question_id': ordered[index].id,
-              'display_order': index,
-              'is_flagged': false,
-            },
-          ),
-        );
+    if (ordered.isNotEmpty) {
+      await _supabase.from('assessment_attempt_answers').upsert(
+        List.generate(
+          ordered.length,
+          (index) => {
+            'attempt_id': attemptId,
+            'question_id': ordered[index].id,
+            'selected_option_id': null,
+            'answer_text': null,
+            'is_flagged': false,
+            'display_order': index,
+            'is_correct': null,
+            'updated_at': now,
+          },
+        ),
+        onConflict: 'attempt_id,question_id',
+      );
+    }
 
     return _CreatedAttempt(attemptId: attemptId, questions: ordered);
   }
@@ -2108,12 +2049,14 @@ class _CreatedAttempt {
 
 class _QuestionVm {
   final String id;
+  final int questionNo;
   final String prompt;
   final String explanation;
   final String type;
   final List<_OptionVm> options;
   const _QuestionVm({
     required this.id,
+    required this.questionNo,
     required this.prompt,
     required this.explanation,
     required this.type,

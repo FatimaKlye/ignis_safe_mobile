@@ -293,7 +293,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           const SizedBox(height: 24),
                           _languageSelector(),
-                          const SizedBox(height: 24),
+                          const SizedBox(height: 22),
                           _inputLabel(context.tr('email_address')),
                           _buildValidatedField(
                             hint: context.tr('enter_email'),
@@ -302,7 +302,7 @@ class _LoginPageState extends State<LoginPage> {
                             validator: _validateEmail,
                             textInputAction: TextInputAction.next,
                           ),
-                          const SizedBox(height: 25),
+                          const SizedBox(height: 22),
                           _inputLabel(context.tr('password')),
                           _buildValidatedField(
                             hint: context.tr('enter_password'),
@@ -311,39 +311,20 @@ class _LoginPageState extends State<LoginPage> {
                             textInputAction: TextInputAction.done,
                             isPassword: true,
                             showPassword: _showPassword,
-                            suffixText: _showPassword
-                                ? context.tr('hide')
-                                : context.tr('show'),
                             onSuffixTap: () =>
                                 setState(() => _showPassword = !_showPassword),
-                            onSubmitted: (_) => _isLoading ? null : _login(),
+                            onSubmitted: (_) {
+                              if (!_isLoading) _login();
+                            },
                           ),
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: TextButton(
-                              onPressed: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) => const ForgotPassPage(),
-                                  ),
-                                );
-                              },
-                              child: Text(
-                                context.tr('forgot_password'),
-                                style: TextStyle(
-                                  fontFamily: 'Poppins',
-                                  color: brandRed,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 40),
+                          const SizedBox(height: 6),
+                          _buildForgotPasswordLink(),
+                          const SizedBox(height: 24),
                           _buildLoginButton(),
-                          const SizedBox(height: 20),
-                          const SizedBox(height: 10),
-                          _buildFooter(),
+                          const SizedBox(height: 16),
+                          _buildTermsLink(),
+                          const SizedBox(height: 18),
+                          _buildSignUpFooter(),
                           const SizedBox(height: 20),
                         ],
                       ),
@@ -380,7 +361,6 @@ class _LoginPageState extends State<LoginPage> {
     ValueChanged<String>? onSubmitted,
     bool isPassword = false,
     bool showPassword = false,
-    String? suffixText,
     VoidCallback? onSuffixTap,
   }) {
     final obscure = isPassword && !showPassword;
@@ -421,20 +401,18 @@ class _LoginPageState extends State<LoginPage> {
                     horizontal: 20,
                     vertical: 18,
                   ),
-                  suffixIcon: suffixText != null
-                      ? InkWell(
-                          onTap: onSuffixTap,
-                          child: Padding(
-                            padding: const EdgeInsets.all(15),
-                            child: Text(
-                              suffixText,
-                              style: const TextStyle(
-                                fontFamily: 'Poppins',
-                                color: brandRed,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
+                  suffixIcon: isPassword
+                      ? IconButton(
+                          onPressed: onSuffixTap,
+                          icon: Icon(
+                            showPassword
+                                ? Icons.visibility_off_rounded
+                                : Icons.visibility_rounded,
+                            color: brandRed,
                           ),
+                          tooltip: showPassword
+                              ? context.tr('hide')
+                              : context.tr('show'),
                         )
                       : null,
                 ),
@@ -469,7 +447,11 @@ class _LoginPageState extends State<LoginPage> {
               borderRadius: BorderRadius.circular(10),
             ),
           ),
-          onPressed: _isLoading ? null : () async { await _login(); },
+          onPressed: _isLoading
+              ? null
+              : () async {
+                  await _login();
+                },
           child: _isLoading
               ? const SizedBox(
                   width: 20,
@@ -491,39 +473,68 @@ class _LoginPageState extends State<LoginPage> {
         ),
       );
 
-  Widget _buildFooter() => Column(
-        children: [
-          const SizedBox(height: 20),
-          GestureDetector(
-            onTap: () async {
-              final user = supabase.auth.currentUser;
-              final agreed = await Navigator.push<bool>(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => TermsAndConditionsPage(
-                    userId: user?.id,
-                    readOnly: user == null,
-                  ),
-                ),
-              );
-              if (agreed == true && mounted && user != null) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(context.tr('terms_accepted'))),
-                );
-              }
-            },
-            child: Text(
-              context.tr('terms_privacy'),
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontFamily: 'Poppins',
-                color: brandRed,
-                fontWeight: FontWeight.bold,
-                fontSize: 12,
+  Widget _buildTermsLink() => GestureDetector(
+        onTap: () async {
+          final user = supabase.auth.currentUser;
+          final agreed = await Navigator.push<bool>(
+            context,
+            MaterialPageRoute(
+              builder: (_) => TermsAndConditionsPage(
+                userId: user?.id,
+                readOnly: user == null,
               ),
             ),
+          );
+          if (agreed == true && mounted && user != null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(context.tr('terms_accepted'))),
+            );
+          }
+        },
+        child: Text(
+          context.tr('terms_privacy'),
+          textAlign: TextAlign.center,
+          softWrap: true,
+          style: TextStyle(
+            fontFamily: 'Poppins',
+            color: brandRed,
+            fontWeight: FontWeight.bold,
+            fontSize: 12,
+            height: 1.25,
           ),
-          const SizedBox(height: 16),
+        ),
+      );
+
+  Widget _buildForgotPasswordLink() => Align(
+        alignment: Alignment.centerRight,
+        child: TextButton(
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const ForgotPassPage(),
+              ),
+            );
+          },
+          style: TextButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            minimumSize: Size.zero,
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
+          child: Text(
+            context.tr('forgot_password'),
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: 'Poppins',
+              color: brandRed,
+              fontWeight: FontWeight.w600,
+              fontSize: 12,
+            ),
+          ),
+        ),
+      );
+
+  Widget _buildSignUpFooter() => Column(
+        children: [
           Row(
             children: [
               Expanded(child: Divider(thickness: 1)),
@@ -542,8 +553,9 @@ class _LoginPageState extends State<LoginPage> {
             ],
           ),
           const SizedBox(height: 10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+          Wrap(
+            alignment: WrapAlignment.center,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               Text(
                 "${context.tr('no_account')} ",
@@ -559,6 +571,11 @@ class _LoginPageState extends State<LoginPage> {
                     MaterialPageRoute(builder: (_) => const RegisterPage()),
                   );
                 },
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
                 child: Text(
                   context.tr('sign_up'),
                   style: TextStyle(
@@ -576,47 +593,227 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _languageSelector() {
     final languageController = context.watch<LanguageController>();
-
-    Widget buildOption({
+    final selectedCode = languageController.locale.languageCode == 'tl'
+        ? 'tl'
+        : 'en';
+    DropdownMenuItem<String> buildLanguageItem({
       required String code,
       required String labelKey,
     }) {
-      final selected = languageController.locale.languageCode == code;
-      return Expanded(
-        child: OutlinedButton(
-          onPressed: () => languageController.setLanguage(code),
-          style: OutlinedButton.styleFrom(
-            backgroundColor: selected ? brandRed : Colors.white,
-            side: BorderSide(color: selected ? brandRed : Colors.black26),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
+      final selected = selectedCode == code;
+
+      return DropdownMenuItem<String>(
+        value: code,
+        child: Row(
+          children: [
+            Icon(
+              selected ? Icons.check_circle : Icons.radio_button_unchecked,
+              size: 18,
+              color: selected ? brandRed : Colors.black45,
             ),
-          ),
-          child: Text(
-            context.tr(labelKey),
-            style: TextStyle(
-              fontFamily: 'Poppins',
-              color: selected ? Colors.white : Colors.black87,
-              fontWeight: FontWeight.w600,
+            const SizedBox(width: 10),
+            Flexible(
+              child: Text(
+                context.tr(labelKey),
+                softWrap: true,
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  color: selected ? brandRed : Colors.black87,
+                  fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
+                  fontSize: 14,
+                  height: 1.2,
+                ),
+              ),
             ),
-          ),
+          ],
         ),
       );
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _inputLabel('${context.tr('language')}:'),
-        const SizedBox(height: 8),
-        Row(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            buildOption(code: 'tl', labelKey: 'tagalog'),
-            const SizedBox(width: 10),
-            buildOption(code: 'en', labelKey: 'english'),
+            _inputLabel('${context.tr('language')}:'),
+            const SizedBox(height: 8),
+            Container(
+              width: double.infinity,
+              constraints: const BoxConstraints(minHeight: 50),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(15),
+                border: Border.all(color: Colors.black12),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 8,
+                    offset: Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  value: selectedCode,
+                  isExpanded: true,
+                  borderRadius: BorderRadius.circular(15),
+                  icon: const Icon(
+                    Icons.keyboard_arrow_down_rounded,
+                    color: brandRed,
+                  ),
+                  selectedItemBuilder: (context) {
+                    return [
+                      _selectedLanguageLabel(context.tr('tagalog')),
+                      _selectedLanguageLabel(context.tr('english')),
+                    ];
+                  },
+                  items: [
+                    buildLanguageItem(code: 'tl', labelKey: 'tagalog'),
+                    buildLanguageItem(code: 'en', labelKey: 'english'),
+                  ],
+                  onChanged: (code) {
+                    if (code == null) return;
+                    _changeLanguageAndShowReminder(languageController, code);
+                  },
+                ),
+              ),
+            ),
           ],
-        ),
-      ],
+        );
+      },
+    );
+  }
+
+  Future<void> _changeLanguageAndShowReminder(
+    LanguageController languageController,
+    String code,
+  ) async {
+    await languageController.setLanguage(code);
+
+    if (!mounted) return;
+    await _showLanguageReminderDialog(code);
+  }
+
+  Future<void> _showLanguageReminderDialog(String languageCode) async {
+    final isTagalog = languageCode == 'tl';
+    final title = isTagalog ? 'Paalala' : 'Note';
+    final message = isTagalog
+        ? 'Maaari mo lang palitan ang wika ng app bago mag-login. Para palitan muli ang wika, mag-log out muna, pumili ng ibang wika, pagkatapos ay mag-login ulit.'
+        : 'You can only change the app language before logging in. To change language again, please log out, select another language, then log in again.';
+    final buttonText = isTagalog ? 'Sige' : 'OK';
+
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      builder: (dialogContext) {
+        return Dialog(
+          insetPadding: const EdgeInsets.symmetric(horizontal: 28),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(22),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 22, 20, 18),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: brandRed.withOpacity(0.08),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.info_outline_rounded,
+                    color: brandRed,
+                    size: 28,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  softWrap: true,
+                  style: const TextStyle(
+                    fontFamily: 'Poppins',
+                    color: brandRed,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 18,
+                    height: 1.2,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  message,
+                  textAlign: TextAlign.center,
+                  softWrap: true,
+                  style: const TextStyle(
+                    fontFamily: 'Poppins',
+                    color: Colors.black87,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 13,
+                    height: 1.35,
+                  ),
+                ),
+                const SizedBox(height: 18),
+                SizedBox(
+                  width: double.infinity,
+                  height: 44,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.of(dialogContext).pop(),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: brandRed,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    child: Text(
+                      buttonText,
+                      style: const TextStyle(
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.w700,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _selectedLanguageLabel(String label) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Row(
+        children: [
+          const Icon(
+            Icons.language_rounded,
+            color: brandRed,
+            size: 19,
+          ),
+          const SizedBox(width: 10),
+          Flexible(
+            child: Text(
+              label,
+              softWrap: true,
+              style: const TextStyle(
+                fontFamily: 'Poppins',
+                color: Colors.black87,
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
+                height: 1.2,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

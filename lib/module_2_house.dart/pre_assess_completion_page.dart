@@ -434,6 +434,20 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
   }
 }
 
+
+class PreAssessmentCompletionPage extends PreAssessmentCompletionPage1 {
+  const PreAssessmentCompletionPage({
+    super.key,
+    required int score,
+    required int totalQuestions,
+    required String assessmentTitle,
+  }) : super(
+          score: score,
+          totalQuestions: totalQuestions,
+          assessmentTitle: assessmentTitle,
+        );
+}
+
 class _CompletionGradientHeader extends StatelessWidget {
   const _CompletionGradientHeader();
 

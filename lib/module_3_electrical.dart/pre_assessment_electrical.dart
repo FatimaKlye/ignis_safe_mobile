@@ -7,6 +7,7 @@ import '../localization/localized_db_text.dart';
 import '../localization/language_controller.dart';
 import 'pre_assess_completion_page.dart';
 import 'pre_assess_instruction.dart';
+import 'module_progression_service.dart';
 import '../profile_progress_sync.dart';
 
 class AppColors {
@@ -214,6 +215,9 @@ class _PreAssessmentElectricalPageState
         _oneMinuteWarningShown = false;
       });
 
+      await ModuleProgressionService(client: _supabase)
+          .ensureCanStartPreTest(moduleNo: _moduleNo);
+
       final user = _user;
 
       final moduleRow = await _supabase
@@ -233,6 +237,8 @@ class _PreAssessmentElectricalPageState
           .select('id, title, title_tl, instructions, instructions_tl')
           .eq('module_id', moduleId)
           .eq('type', _assessmentType)
+          .order('created_at', ascending: false)
+          .limit(1)
           .maybeSingle();
 
       if (assessmentRow == null) {
@@ -274,9 +280,10 @@ class _PreAssessmentElectricalPageState
       final optionRows = await _supabase
           .from('assessment_options')
           .select(
-            'id, question_id, option_key, option_text, option_text_tl, is_correct, display_order',
+            'id, question_id, option_key, option_text, option_text_tl, is_correct, display_order, is_active',
           )
           .inFilter('question_id', questionIds)
+          .eq('is_active', true)
           .order('question_id')
           .order('display_order');
 
@@ -494,6 +501,17 @@ class _PreAssessmentElectricalPageState
         }
         _startQuizTimer();
       });
+    } on ProgressionAccessDenied catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+      });
+      await _showInfoDialog(
+        title: _txt('Pre-Assessment Locked', 'Naka-lock ang Paunang Pagsusulit'),
+        message: e.message,
+        buttonText: _txt('OK', 'Sige'),
+      );
+      if (mounted) Navigator.pop(context);
     } catch (e) {
       if (!mounted) return;
 
@@ -515,33 +533,64 @@ class _PreAssessmentElectricalPageState
     required List<_QuestionVm> questions,
   }) async {
     final shuffled = List<_QuestionVm>.from(questions)..shuffle();
+    final now = DateTime.now().toUtc().toIso8601String();
 
-    final insertedAttempt = await _supabase
+    final existingAttempts = await _supabase
         .from('assessment_attempts')
-        .insert({
-          'user_id': userId,
-          'assessment_id': assessmentId,
-          'status': 'in_progress',
-          'total_questions': shuffled.length,
-          'correct_count': 0,
-          'score': 0,
-        })
         .select('id')
-        .single();
+        .eq('user_id', userId)
+        .eq('assessment_id', assessmentId)
+        .eq('status', 'in_progress')
+        .order('started_at', ascending: false)
+        .limit(1);
 
-    final attemptId = insertedAttempt['id'].toString();
+    final String attemptId;
 
-    await _supabase.from('assessment_attempt_answers').insert(
-      List.generate(
-        shuffled.length,
-        (index) => {
-          'attempt_id': attemptId,
-          'question_id': shuffled[index].id,
-          'display_order': index,
-          'is_flagged': false,
-        },
-      ),
-    );
+    if (existingAttempts.isNotEmpty) {
+      attemptId = existingAttempts.first['id'].toString();
+
+      await _supabase.from('assessment_attempts').update({
+        'started_at': now,
+        'submitted_at': null,
+        'status': 'in_progress',
+        'total_questions': shuffled.length,
+        'correct_count': 0,
+        'score': 0,
+      }).eq('id', attemptId);
+    } else {
+      final insertedAttempt = await _supabase
+          .from('assessment_attempts')
+          .insert({
+            'user_id': userId,
+            'assessment_id': assessmentId,
+            'status': 'in_progress',
+            'total_questions': shuffled.length,
+            'correct_count': 0,
+            'score': 0,
+          })
+          .select('id')
+          .single();
+
+      attemptId = insertedAttempt['id'].toString();
+    }
+
+    if (shuffled.isNotEmpty) {
+      await _supabase.from('assessment_attempt_answers').upsert(
+        List.generate(
+          shuffled.length,
+          (index) => {
+            'attempt_id': attemptId,
+            'question_id': shuffled[index].id,
+            'selected_option_id': null,
+            'is_flagged': false,
+            'display_order': index,
+            'is_correct': null,
+            'updated_at': now,
+          },
+        ),
+        onConflict: 'attempt_id,question_id',
+      );
+    }
 
     return _CreatedAttempt(
       attemptId: attemptId,
@@ -555,17 +604,25 @@ class _PreAssessmentElectricalPageState
   }) async {
     final shuffled = List<_QuestionVm>.from(questions)..shuffle();
 
-    await _supabase.from('assessment_attempt_answers').insert(
-      List.generate(
-        shuffled.length,
-        (index) => {
-          'attempt_id': attemptId,
-          'question_id': shuffled[index].id,
-          'display_order': index,
-          'is_flagged': false,
-        },
-      ),
-    );
+    if (shuffled.isNotEmpty) {
+      final now = DateTime.now().toUtc().toIso8601String();
+
+      await _supabase.from('assessment_attempt_answers').upsert(
+        List.generate(
+          shuffled.length,
+          (index) => {
+            'attempt_id': attemptId,
+            'question_id': shuffled[index].id,
+            'selected_option_id': null,
+            'is_flagged': false,
+            'display_order': index,
+            'is_correct': null,
+            'updated_at': now,
+          },
+        ),
+        onConflict: 'attempt_id,question_id',
+      );
+    }
 
     return _CreatedAttempt(
       attemptId: attemptId,
@@ -577,32 +634,25 @@ class _PreAssessmentElectricalPageState
     if (_timeExpired || _isSubmitting) return;
 
     if (_showReview) {
-      final confirmed = await _showConfirmDialog(
-        title: _txt('Start new attempt?', 'Magsimula ng bagong subok?'),
+      await _showInfoDialog(
+        title: _txt('Pre-Assessment Locked', 'Naka-lock ang Paunang Pagsusulit'),
         message: _txt(
-          'You already finished this pre-assessment. Starting again will generate a new attempt.',
-          'Natapos mo na ang paunang pagsusulit na ito. Ang pagsisimula ulit ay lilikha ng bagong subok.',
+          ModuleProgressionService.preTestAlreadyTakenMessage,
+          'Isang beses lang pwedeng sagutan ang Paunang Pagsusulit. Subukan ang susunod na modyul.',
         ),
-        confirmText: _txt('New Attempt', 'Bagong Subok'),
-        cancelText: _txt('Cancel', 'Kanselahin'),
+        buttonText: _txt('OK', 'Sige'),
       );
-
-      if (confirmed == true) {
-        await _loadOrCreateAttempt(forceNewAttempt: true);
-      }
       return;
     }
 
     await _showInfoDialog(
       title: _txt('Current attempt preserved', 'Napanatili ang kasalukuyang subok'),
       message: _txt(
-        'This pre-assessment is still unfinished, so refresh will keep the same attempt and the same questions.',
-        'Hindi pa tapos ang paunang pagsusulit na ito, kaya ang i-refresh ay magpapanatili ng parehong subok at mga tanong.',
+        'This pre-assessment is already in progress. The loaded questions will stay fixed until you submit or leave and start again.',
+        'Kasalukuyang sinasagutan ang paunang pagsusulit. Mananatili muna ang naka-load na mga tanong hanggang maipasa mo ito o lumabas at magsimula ulit.',
       ),
       buttonText: _txt('OK', 'Sige'),
     );
-
-    await _loadOrCreateAttempt(forceNewAttempt: false);
   }
 
   Future<void> _selectAnswer(int questionIndex, String optionId) async {
@@ -875,6 +925,10 @@ class _PreAssessmentElectricalPageState
     });
 
     try {
+      await ModuleProgressionService(client: _supabase).ensureCanStartPreTest(
+        moduleNo: _moduleNo,
+      );
+
       int correctCount = 0;
 
       for (int i = 0; i < _questions.length; i++) {
@@ -902,9 +956,12 @@ class _PreAssessmentElectricalPageState
       final scorePercent =
           _questions.isEmpty ? 0 : (correctCount / _questions.length) * 100;
 
+      final submittedAt = DateTime.now().toUtc().toIso8601String();
+
       await _supabase.from('assessment_attempts').update({
-        'submitted_at': DateTime.now().toUtc().toIso8601String(),
+        'submitted_at': submittedAt,
         'status': 'submitted',
+        'total_questions': _questions.length,
         'correct_count': correctCount,
         'score': scorePercent,
       }).eq('id', _attemptId!);
@@ -916,16 +973,26 @@ class _PreAssessmentElectricalPageState
           .eq('module_id', _moduleId!)
           .maybeSingle();
 
+      final progressPayload = {
+        'pre_test_completed_at': submittedAt,
+        'pre_test_attempt_id': _attemptId,
+        'pre_test_score': scorePercent,
+        'pre_test_correct_count': correctCount,
+        'pre_test_total_questions': _questions.length,
+        'updated_at': submittedAt,
+      };
+
       if (progressRow == null) {
         await _supabase.from('module_progress').insert({
           'user_id': _user.id,
           'module_id': _moduleId,
-          'pre_test_completed_at': DateTime.now().toUtc().toIso8601String(),
+          ...progressPayload,
         });
       } else {
-        await _supabase.from('module_progress').update({
-          'pre_test_completed_at': DateTime.now().toUtc().toIso8601String(),
-        }).eq('id', progressRow['id']);
+        await _supabase
+            .from('module_progress')
+            .update(progressPayload)
+            .eq('id', progressRow['id']);
       }
 
       await ProfileProgressSync.syncCompletedSimulations();
@@ -944,6 +1011,23 @@ class _PreAssessmentElectricalPageState
           ),
         ),
       );
+    } on ProgressionAccessDenied catch (e) {
+      debugPrint('PRE-ASSESSMENT ACCESS DENIED DURING SUBMIT: ${e.message}');
+
+      if (!mounted) return;
+
+      await _showInfoDialog(
+        title: _txt('Pre-Test Locked', 'Naka-lock ang Paunang Pagsusulit'),
+        message: _txt(
+          e.message,
+          e.message == ModuleProgressionService.preTestAlreadyTakenMessage
+              ? 'Isang beses lang pwedeng sagutan ang Paunang Pagsusulit. Magpatuloy sa susunod na modyul.'
+              : e.message,
+        ),
+        buttonText: _txt('OK', 'Sige'),
+      );
+
+      if (mounted) Navigator.of(context).maybePop();
     } catch (e) {
       debugPrint('SUBMIT ASSESSMENT ERROR: $e');
 
@@ -1546,8 +1630,6 @@ class _PreAssessmentElectricalPageState
               Flexible(
                 child: Text(
                   label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     color: AppColors.textOnRed,
@@ -1596,8 +1678,6 @@ class _PreAssessmentElectricalPageState
               Flexible(
                 child: Text(
                   label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     color: AppColors.primaryButton,
@@ -1629,11 +1709,11 @@ class _PreAssessmentElectricalPageState
             const SizedBox(width: 10),
             Expanded(
               child: primaryButton(
-                label: _txt('New Attempt', 'Bagong Subok'),
-                icon: Icons.replay_rounded,
+                label: _txt('Close', 'Isara'),
+                icon: Icons.lock_rounded,
                 onPressed: _isSubmitting
                     ? null
-                    : () => _loadOrCreateAttempt(forceNewAttempt: true),
+                    : () => Navigator.pop(context),
               ),
             ),
           ],
@@ -1900,8 +1980,6 @@ class _TopAssessmentBar extends StatelessWidget {
           width: double.infinity,
           child: Text(
             title,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
             style: const TextStyle(
               color: AppColors.textOnRed,
@@ -1955,8 +2033,6 @@ class _TopAssessmentBar extends StatelessWidget {
             Expanded(
               child: Text(
                 moduleTitle,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   color: AppColors.textOnRed.withOpacity(0.88),
                   fontFamily: 'Poppins',
@@ -2360,8 +2436,6 @@ class _StatChip extends StatelessWidget {
               children: [
                 Text(
                   label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     fontFamily: 'Poppins',
                     fontSize: 11.5,
@@ -2589,8 +2663,6 @@ class _OptionCard extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 1),
                   child: Text(
                     text,
-                    maxLines: maxTextLines,
-                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       fontFamily: 'Poppins',
                       fontSize: compact ? 13.2 : 15,

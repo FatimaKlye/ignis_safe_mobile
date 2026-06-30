@@ -1,28 +1,134 @@
 import 'package:flutter/material.dart';
 import '../localization/app_text.dart';
 import 'pre_assessment_house.dart';
+import 'module_progression_service.dart';
 
-String _localizedText(String en, String tl, BuildContext context) {
+/// Helper to get localized text based on context language
+String _getLocalizedText(String en, String tl, BuildContext context) {
   return Localizations.localeOf(context).languageCode == 'tl' ? tl : en;
 }
 
-String _getAssessmentDisplayTitle(BuildContext context) {
-  return _localizedText(
+/// Returns the assessment display title with proper localization
+String getAssessmentDisplayTitle(BuildContext context) {
+  return _getLocalizedText(
     'Pre-Assessment',
     'Paunang Pagsusulit',
     context,
   );
 }
 
-class PreAssessmentIntroPage2 extends StatelessWidget {
-  const PreAssessmentIntroPage2({super.key});
+/// Returns the concise instructions list with proper localization
+List<String> getConciseInstructions(BuildContext context) {
+  return [
+    _getLocalizedText(
+      'Answer each question carefully.',
+      'Sagutan nang maayos ang bawat tanong.',
+      context,
+    ),
+    _getLocalizedText(
+      'You have 5 minutes to complete the quiz.',
+      'Mayroon kang 5 minuto para matapos ang pagsusulit.',
+      context,
+    ),
+    _getLocalizedText(
+      'Unanswered questions will be marked incorrect when time runs out.',
+      'Ang hindi nasagutang tanong ay mamarkahang mali kapag naubos ang oras.',
+      context,
+    ),
+    _getLocalizedText(
+      'Review your answer before proceeding.',
+      'Suriin muna ang sagot bago magpatuloy.',
+      context,
+    ),
+  ];
+}
+
+
+Future<void> _showPreAssessmentAccessDialog(
+  BuildContext context,
+  String message,
+) async {
+  final isTl = Localizations.localeOf(context).languageCode == 'tl';
+  await showDialog<void>(
+    context: context,
+    builder: (dialogContext) => AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      titlePadding: const EdgeInsets.fromLTRB(20, 16, 8, 0),
+      contentPadding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+      actionsPadding: const EdgeInsets.fromLTRB(16, 8, 16, 14),
+      title: Row(
+        children: [
+          Expanded(
+            child: Text(
+              isTl ? 'Naka-lock ang Paunang Pagsusulit' : 'Pre-Test Locked',
+              style: const TextStyle(
+                fontFamily: 'Poppins',
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+          ),
+          IconButton(
+            tooltip: isTl ? 'Isara' : 'Close',
+            onPressed: () => Navigator.pop(dialogContext),
+            icon: const Icon(Icons.close_rounded),
+          ),
+        ],
+      ),
+      content: Text(
+        message,
+        style: const TextStyle(
+          fontFamily: 'Poppins',
+          height: 1.45,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      actions: [
+        ElevatedButton(
+          onPressed: () => Navigator.pop(dialogContext),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.primaryButton,
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+          child: const Text('OK'),
+        ),
+      ],
+    ),
+  );
+}
+
+Future<void> _openPreAssessmentIfAllowed(BuildContext context) async {
+  final isTl = Localizations.localeOf(context).languageCode == 'tl';
+  try {
+    await ModuleProgressionService().ensureCanStartPreTest(moduleNo: 2);
+    if (!context.mounted) return;
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => const PreAssessmentHousePage()),
+    );
+  } on ProgressionAccessDenied catch (error) {
+    if (!context.mounted) return;
+    await _showPreAssessmentAccessDialog(
+      context,
+      isTl && error.message == ModuleProgressionService.preTestAlreadyTakenMessage
+          ? 'Isang beses lang pwedeng sagutan ang Paunang Pagsusulit. Magpatuloy sa susunod na modyul.'
+          : error.message,
+    );
+  } catch (error) {
+    if (!context.mounted) return;
+    await _showPreAssessmentAccessDialog(context, error.toString());
+  }
+}
+
+class PreAssessmentIntroPage extends StatelessWidget {
+  const PreAssessmentIntroPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     final isTl = Localizations.localeOf(context).languageCode == 'tl';
 
     return Scaffold(
-      backgroundColor: _IntroAppColors.background,
+      backgroundColor: AppColors.background,
       body: Stack(
         children: [
           const _IntroGradientHeader(),
@@ -44,10 +150,10 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                           vertical: 8,
                         ),
                         decoration: BoxDecoration(
-                          color: _IntroAppColors.textOnRed.withOpacity(0.18),
+                          color: AppColors.textOnRed.withOpacity(0.18),
                           borderRadius: BorderRadius.circular(999),
                           border: Border.all(
-                            color: _IntroAppColors.textOnRed.withOpacity(0.22),
+                            color: AppColors.textOnRed.withOpacity(0.22),
                           ),
                         ),
                         child: Row(
@@ -55,14 +161,14 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                           children: [
                             const Icon(
                               Icons.home_rounded,
-                              color: _IntroAppColors.textOnRed,
+                              color: AppColors.textOnRed,
                               size: 16,
                             ),
                             const SizedBox(width: 6),
                             Text(
-                              context.tr('module_2'),
+                              isTl ? 'MODYUL 2' : 'MODULE 2',
                               style: const TextStyle(
-                                color: _IntroAppColors.textOnRed,
+                                color: AppColors.textOnRed,
                                 fontFamily: 'Poppins',
                                 fontSize: 12.5,
                                 fontWeight: FontWeight.w800,
@@ -75,18 +181,18 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                   ),
                 ),
                 Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(20, 22, 20, 130),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 22, 20, 12),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         SizedBox(
                           width: double.infinity,
                           child: Text(
-                            _getAssessmentDisplayTitle(context),
+                            getAssessmentDisplayTitle(context),
                             textAlign: TextAlign.center,
                             style: const TextStyle(
-                              color: _IntroAppColors.textOnRed,
+                              color: AppColors.textOnRed,
                               fontFamily: 'Poppins',
                               fontSize: 30,
                               height: 1.12,
@@ -97,9 +203,9 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          context.tr('module_2_full_header'),
+                          isTl ? 'Sunog sa Bahay: Mga Dapat Gawin Bago, Habang, at Pagkatapos' : 'House Fire Safety: Before, During, and After',
                           style: TextStyle(
-                            color: _IntroAppColors.textOnRed.withOpacity(0.88),
+                            color: AppColors.textOnRed.withOpacity(0.88),
                             fontFamily: 'Poppins',
                             fontSize: 14,
                             height: 1.45,
@@ -109,13 +215,13 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                         const SizedBox(height: 26),
                         Container(
                           width: double.infinity,
-                          padding: const EdgeInsets.all(22),
+                          padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
-                            color: _IntroAppColors.surface,
+                            color: AppColors.surface,
                             borderRadius: BorderRadius.circular(28),
                             boxShadow: [
                               BoxShadow(
-                                color: _IntroAppColors.shadow,
+                                color: AppColors.shadow,
                                 blurRadius: 30,
                                 offset: const Offset(0, 18),
                               ),
@@ -133,8 +239,8 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                                     decoration: BoxDecoration(
                                       gradient: const LinearGradient(
                                         colors: [
-                                          _IntroAppColors.brandRed,
-                                          _IntroAppColors.brandRedDark,
+                                          AppColors.brandRed,
+                                          AppColors.brandRedDark,
                                         ],
                                         begin: Alignment.topLeft,
                                         end: Alignment.bottomRight,
@@ -142,8 +248,7 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                                       borderRadius: BorderRadius.circular(18),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: _IntroAppColors.brandRed
-                                              .withOpacity(0.28),
+                                          color: AppColors.brandRed.withOpacity(0.28),
                                           blurRadius: 16,
                                           offset: const Offset(0, 8),
                                         ),
@@ -151,22 +256,19 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                                     ),
                                     child: const Icon(
                                       Icons.quiz_rounded,
-                                      color: _IntroAppColors.textOnRed,
+                                      color: AppColors.textOnRed,
                                       size: 30,
                                     ),
                                   ),
                                   const SizedBox(width: 14),
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          isTl
-                                              ? 'Handa ka na ba?'
-                                              : 'Ready to begin?',
+                                          isTl ? 'Handa ka na ba?' : 'Ready to begin?',
                                           style: const TextStyle(
-                                            color: _IntroAppColors.textPrimary,
+                                            color: AppColors.textPrimary,
                                             fontFamily: 'Poppins',
                                             fontSize: 22,
                                             height: 1.18,
@@ -179,8 +281,7 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                                               ? 'Sagutan muna ang paunang pagsusulit bago simulan ang aralin.'
                                               : 'Take this pre-assessment before starting the lesson.',
                                           style: const TextStyle(
-                                            color:
-                                                _IntroAppColors.textSecondary,
+                                            color: AppColors.textSecondary,
                                             fontFamily: 'Poppins',
                                             fontSize: 13.5,
                                             height: 1.38,
@@ -194,66 +295,55 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                               ),
                               const SizedBox(height: 22),
                               Text(
-                                context.tr('module_2_full_title'),
+                                isTl ? 'Sunog sa Bahay: Mga Dapat Gawin Bago, Habang, at Pagkatapos' : 'House Fire Safety: Before, During, and After',
                                 style: const TextStyle(
-                                  color: _IntroAppColors.textPrimary,
+                                  color: AppColors.textPrimary,
                                   fontFamily: 'Poppins',
                                   fontSize: 15.5,
                                   height: 1.35,
                                   fontWeight: FontWeight.w800,
                                 ),
                               ),
-                              const SizedBox(height: 18),
-                              LayoutBuilder(
-                                builder: (context, constraints) {
-                                  final compact = constraints.maxWidth < 330;
-                                  return Wrap(
-                                    spacing: 10,
-                                    runSpacing: 10,
-                                    children: [
-                                      _IntroInfoTile(
-                                        compact: compact,
-                                        width: compact
-                                            ? constraints.maxWidth
-                                            : 138,
-                                        icon: Icons.dynamic_form_rounded,
-                                        title:
-                                            isTl ? 'Mga tanong' : 'Questions',
-                                        value: isTl
-                                            ? 'Mula sa Bureau of Fire Protection DASMARIÑAS'
-                                            : 'From Bureau of Fire Protection DASMARIÑAS',
-                                      ),
-                                      _IntroInfoTile(
-                                        compact: compact,
-                                        width: compact
-                                            ? constraints.maxWidth
-                                            : 138,
-                                        icon: Icons.schedule_rounded,
-                                        title: isTl ? 'Oras' : 'Time',
-                                        value: '5 mins',
-                                      ),
-                                      _IntroInfoTile(
-                                        compact: compact,
-                                        width: compact
-                                            ? constraints.maxWidth
-                                            : 138,
-                                        icon: Icons.school_rounded,
-                                        title: isTl ? 'Uri' : 'Type',
-                                        value: 'Practice',
-                                      ),
-                                    ],
-                                  );
-                                },
+                              const SizedBox(height: 14),
+                              // Questions tile spans full width (long value text needs room)
+                              _IntroInfoTile(
+                                icon: Icons.dynamic_form_rounded,
+                                title: isTl ? 'Mga tanong' : 'Questions',
+                                value: isTl
+                                    ? 'Mula sa Bureau of Fire Protection DASMARIÑAS'
+                                    : 'From Bureau of Fire Protection DASMARIÑAS',
+                              ),
+                              const SizedBox(height: 10),
+                              // Time + Type share a row
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: _IntroInfoTile(
+                                      icon: Icons.schedule_rounded,
+                                      title: isTl ? 'Oras' : 'Time',
+                                      value: '5 mins',
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: _IntroInfoTile(
+                                      icon: Icons.school_rounded,
+                                      title: isTl ? 'Uri' : 'Type',
+                                      value: 'Practice',
+                                    ),
+                                  ),
+                                ],
                               ),
                               const SizedBox(height: 22),
                               Container(
                                 width: double.infinity,
                                 padding: const EdgeInsets.all(16),
                                 decoration: BoxDecoration(
-                                  color: _IntroAppColors.surfaceSoft,
+                                  color: AppColors.surfaceSoft,
                                   borderRadius: BorderRadius.circular(20),
                                   border: Border.all(
-                                    color: _IntroAppColors.border,
+                                    color: AppColors.border,
                                   ),
                                 ),
                                 child: Column(
@@ -264,25 +354,20 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
                                         Container(
                                           padding: const EdgeInsets.all(8),
                                           decoration: BoxDecoration(
-                                            color:
-                                                _IntroAppColors.brandRedSoft,
-                                            borderRadius:
-                                                BorderRadius.circular(12),
+                                            color: AppColors.brandRedSoft,
+                                            borderRadius: BorderRadius.circular(12),
                                           ),
                                           child: const Icon(
                                             Icons.lightbulb_outline_rounded,
-                                            color: _IntroAppColors.brandRed,
+                                            color: AppColors.brandRed,
                                             size: 18,
                                           ),
                                         ),
                                         const SizedBox(width: 10),
                                         Text(
-                                          isTl
-                                              ? 'Bago ka magsimula'
-                                              : 'Before you start',
+                                          isTl ? 'Bago ka magsimula' : 'Before you start',
                                           style: const TextStyle(
-                                            color:
-                                                _IntroAppColors.textPrimary,
+                                            color: AppColors.textPrimary,
                                             fontFamily: 'Poppins',
                                             fontSize: 15.5,
                                             fontWeight: FontWeight.w900,
@@ -324,42 +409,39 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
       bottomNavigationBar: SafeArea(
         minimum: const EdgeInsets.fromLTRB(20, 10, 20, 18),
         child: SizedBox(
-          height: 56,
           width: double.infinity,
           child: ElevatedButton(
-            onPressed: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const PreAssessmentHousePage(),
-                ),
-              );
-            },
+            onPressed: () => _openPreAssessmentIfAllowed(context),
             style: ElevatedButton.styleFrom(
-              backgroundColor: _IntroAppColors.primaryButton,
+              backgroundColor: AppColors.primaryButton,
               elevation: 8,
-              shadowColor:
-                  _IntroAppColors.primaryButton.withOpacity(0.35),
+              shadowColor: AppColors.primaryButton.withOpacity(0.35),
+              minimumSize: const Size.fromHeight(56),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(18),
               ),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  isTl ? 'Simulan ang Pagsusulit' : 'Start Test',
-                  style: const TextStyle(
-                    color: _IntroAppColors.textOnRed,
-                    fontFamily: 'Poppins',
-                    fontSize: 16,
-                    fontWeight: FontWeight.w900,
+                Flexible(
+                  child: Text(
+                    isTl ? 'Simulan ang Pagsusulit' : 'Start Test',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: AppColors.textOnRed,
+                      fontFamily: 'Poppins',
+                      fontSize: 16,
+                      fontWeight: FontWeight.w900,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 8),
                 const Icon(
                   Icons.arrow_forward_rounded,
-                  color: _IntroAppColors.textOnRed,
+                  color: AppColors.textOnRed,
                   size: 21,
                 ),
               ],
@@ -369,6 +451,10 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
       ),
     );
   }
+}
+
+class PreAssessmentIntroPage2 extends PreAssessmentIntroPage {
+  const PreAssessmentIntroPage2({super.key});
 }
 
 class _IntroGradientHeader extends StatelessWidget {
@@ -383,9 +469,9 @@ class _IntroGradientHeader extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            _IntroAppColors.brandRedDeep,
-            _IntroAppColors.brandRedDark,
-            _IntroAppColors.brandRed,
+            AppColors.brandRedDeep,
+            AppColors.brandRedDark,
+            AppColors.brandRed,
           ],
         ),
         borderRadius: BorderRadius.only(
@@ -423,7 +509,7 @@ class _GlowCircle extends StatelessWidget {
       width: size,
       height: size,
       decoration: BoxDecoration(
-        color: _IntroAppColors.textOnRed.withOpacity(opacity),
+        color: AppColors.textOnRed.withOpacity(opacity),
         shape: BoxShape.circle,
       ),
     );
@@ -445,13 +531,13 @@ class _CircleIconButton extends StatelessWidget {
         width: 42,
         height: 42,
         decoration: BoxDecoration(
-          color: _IntroAppColors.textOnRed.withOpacity(0.18),
+          color: AppColors.textOnRed.withOpacity(0.18),
           shape: BoxShape.circle,
           border: Border.all(
-            color: _IntroAppColors.textOnRed.withOpacity(0.24),
+            color: AppColors.textOnRed.withOpacity(0.24),
           ),
         ),
-        child: Icon(icon, color: _IntroAppColors.textOnRed, size: 22),
+        child: Icon(icon, color: AppColors.textOnRed, size: 22),
       ),
     );
   }
@@ -459,15 +545,11 @@ class _CircleIconButton extends StatelessWidget {
 
 class _IntroInfoTile extends StatelessWidget {
   const _IntroInfoTile({
-    required this.compact,
-    required this.width,
     required this.icon,
     required this.title,
     required this.value,
   });
 
-  final bool compact;
-  final double width;
   final IconData icon;
   final String title;
   final String value;
@@ -475,50 +557,48 @@ class _IntroInfoTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: width,
-      padding: const EdgeInsets.all(13),
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
       decoration: BoxDecoration(
-        color: _IntroAppColors.surfaceSoft,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: _IntroAppColors.border),
+        color: AppColors.surfaceSoft,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.border),
       ),
       child: Row(
-        mainAxisSize: compact ? MainAxisSize.max : MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
             width: 34,
             height: 34,
             decoration: BoxDecoration(
-              color: _IntroAppColors.brandRedSoft,
-              borderRadius: BorderRadius.circular(12),
+              color: AppColors.brandRedSoft,
+              borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(icon, color: _IntroAppColors.brandRed, size: 18),
+            child: Icon(icon, color: AppColors.brandRed, size: 18),
           ),
           const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                    color: _IntroAppColors.textMuted,
+                    color: AppColors.textMuted,
                     fontFamily: 'Poppins',
-                    fontSize: 11.5,
+                    fontSize: 11,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   value,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                    color: _IntroAppColors.textPrimary,
+                    color: AppColors.textPrimary,
                     fontFamily: 'Poppins',
-                    fontSize: 12.5,
+                    fontSize: 12,
+                    height: 1.35,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -548,7 +628,7 @@ class _InstructionLine extends StatelessWidget {
             width: 7,
             height: 7,
             decoration: const BoxDecoration(
-              color: _IntroAppColors.brandRed,
+              color: AppColors.brandRed,
               shape: BoxShape.circle,
             ),
           ),
@@ -557,7 +637,7 @@ class _InstructionLine extends StatelessWidget {
             child: Text(
               text,
               style: const TextStyle(
-                color: _IntroAppColors.textSecondary,
+                color: AppColors.textSecondary,
                 fontFamily: 'Poppins',
                 fontSize: 13.5,
                 height: 1.42,
@@ -569,50 +649,4 @@ class _InstructionLine extends StatelessWidget {
       ),
     );
   }
-}
-
-const Color kHouseOrange = Color(0xFFF97316);
-const Color kHouseAmber = Color(0xFFF59E0B);
-const Color kHouseOrangeSoft = Color(0xFFFFF7ED);
-const Color kDarkText = Color(0xFF1F2937);
-const Color kSoftBg = Color(0xFFF8FAFC);
-
-class _IntroAppColors {
-  const _IntroAppColors._();
-
-  // Module 2 House Fire palette
-  static const Color brandRed = kHouseOrange;
-  static const Color brandRedDark = kHouseOrange;
-  static const Color brandRedDeep = kHouseAmber;
-  static const Color brandRedLight = kHouseAmber;
-  static const Color brandRedSoft = kHouseOrangeSoft;
-
-  // Background Colors
-  static const Color background = kSoftBg;
-  static const Color surface = Color(0xFFFFFFFF);
-  static const Color surfaceSoft = kHouseOrangeSoft;
-
-  // Text Colors
-  static const Color textPrimary = kDarkText;
-  static const Color textSecondary = Color(0xFF64748B);
-  static const Color textMuted = Color(0xFF94A3B8);
-  static const Color textOnRed = Color(0xFFFFFFFF);
-
-  // Borders / Dividers
-  static const Color border = Color(0xFFF1D8C5);
-  static const Color divider = Color(0xFFFDEAD7);
-
-  // Status Colors
-  static const Color success = Color(0xFF16A34A);
-  static const Color warning = kHouseAmber;
-  static const Color error = Color(0xFFD32F2F);
-  static const Color info = Color(0xFF2563EB);
-
-  // Buttons
-  static const Color primaryButton = kHouseOrange;
-  static const Color primaryButtonPressed = kHouseAmber;
-  static const Color secondaryButton = kHouseOrangeSoft;
-
-  // Shadows
-  static const Color shadow = Color(0x1A000000);
 }

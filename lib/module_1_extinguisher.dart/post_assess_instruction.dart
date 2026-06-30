@@ -134,7 +134,11 @@ class _PostAssessmentIntroPageState extends State<PostAssessmentIntroPage> {
                     children: [
                       _CircleIconButton(
                         icon: Icons.close_rounded,
-                        onTap: () => Navigator.pop(context),
+                        onTap: () => Navigator.pushNamedAndRemoveUntil(
+                          context,
+                          '/home',
+                          (route) => false,
+                        ),
                       ),
                       const Spacer(),
                       Container(

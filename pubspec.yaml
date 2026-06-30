@@ -67,11 +67,11 @@ flutter:
     - assets/models/fire_extinguisher.glb
     - assets/models/old__house__wooden__enterable__rusty.glb
     - assets/models/houseescape3d.glb
-    - assets/models/kitchennglb.glb
     - assets/models/Electricalfinal1.glb
+    - assets/models/buildingfinal.glb
+    - assets/models/Kitchennglb.glb
     - assets/models/FireExtinguisher3D.glb
     - assets/models/fuseboxa.glb
-    - assets/models/kitchen_-_assets.glb
     - assets/models/procedural_hong_kong_building.glb
     - assets/models/fireex3dFinal.glb
     - assets/react_immediately.mp4

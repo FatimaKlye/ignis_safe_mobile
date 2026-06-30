@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../localization/app_text.dart';
 import 'post_assessment_electrical.dart';
+import 'module_progression_service.dart';
 
 /// Helper to get localized text based on context language
 String _getLocalizedText(String en, String tl, BuildContext context) {
@@ -42,8 +43,98 @@ List<String> getConciseInstructions(BuildContext context) {
   ];
 }
 
-class PostAssessmentIntroPage extends StatelessWidget {
+class PostAssessmentIntroPage extends StatefulWidget {
   const PostAssessmentIntroPage({super.key});
+
+  @override
+  State<PostAssessmentIntroPage> createState() => _PostAssessmentIntroPageState();
+}
+
+class _PostAssessmentIntroPageState extends State<PostAssessmentIntroPage> {
+  bool _checkingAccess = false;
+
+  Future<void> _startPostAssessment() async {
+    if (_checkingAccess) return;
+
+    setState(() => _checkingAccess = true);
+
+    try {
+      await ModuleProgressionService().ensureCanStartPostTest(moduleNo: 3);
+      if (!mounted) return;
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const PostAssessmentElectricalPage(),
+        ),
+      );
+    } on ProgressionAccessDenied catch (e) {
+      if (!mounted) return;
+      await showDialog<void>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  _getLocalizedText(
+              'Post-Assessment Locked',
+              'Naka-lock ang Panghuling Pagsusulit',
+              context,
+                  ),
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.close_rounded),
+                onPressed: () => Navigator.pop(dialogContext),
+              ),
+            ],
+          ),
+          content: Text(e.message),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text(_getLocalizedText('OK', 'Sige', context)),
+            ),
+          ],
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      await showDialog<void>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  _getLocalizedText(
+              'Post-Assessment Locked',
+              'Naka-lock ang Panghuling Pagsusulit',
+              context,
+                  ),
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.close_rounded),
+                onPressed: () => Navigator.pop(dialogContext),
+              ),
+            ],
+          ),
+          content: Text(e.toString().replaceFirst('Exception: ', '')),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text(_getLocalizedText('OK', 'Sige', context)),
+            ),
+          ],
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _checkingAccess = false);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -137,15 +228,15 @@ class PostAssessmentIntroPage extends StatelessWidget {
                         const SizedBox(height: 26),
                         Container(
                           width: double.infinity,
-                          padding: const EdgeInsets.all(22),
+                          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
                           decoration: BoxDecoration(
                             color: AppColors.surface,
-                            borderRadius: BorderRadius.circular(28),
+                            borderRadius: BorderRadius.circular(20),
                             boxShadow: [
                               BoxShadow(
                                 color: AppColors.shadow,
-                                blurRadius: 30,
-                                offset: const Offset(0, 18),
+                                blurRadius: 26,
+                                offset: const Offset(0, 12),
                               ),
                             ],
                           ),
@@ -202,10 +293,10 @@ class PostAssessmentIntroPage extends StatelessWidget {
                                         const SizedBox(height: 5),
                                         Text(
                                           isTl
-                                              ? 'Sagutan ang panghuling pagsusulit matapos basahin ang Modyul 3 sa Pag-aaral. Susukatin nito kung ano ang natutunan mo tungkol sa sanhi ng electrical fire, mga babala, at ligtas na aksyon sa emerhensiya.'
-                                              : 'Take this post-assessment after reading the Module 3 Learning Materials. This will help identify what you learned about electrical fire causes, warning signs, and safe emergency actions.',
+                                              ? 'Sagutan ang panghuling pagsusulit matapos basahin ang Modyul 3 sa Pag-aaral. Susukatin nito kung ano ang natutunan mo tungkol sa sanhi ng sunog sa kuryente, ligtas na aksyon, at pag-iwas.'
+                                              : 'Take this post-assessment after reading the Module 3 Learning Materials. This will help identify what you learned about electrical fire causes, safe actions, and prevention.',
                                           style: const TextStyle(
-                                            color: AppColors.textSecondary,
+                                            color: Color.fromARGB(255, 141, 27, 27),
                                             fontFamily: 'Poppins',
                                             fontSize: 13.5,
                                             height: 1.38,
@@ -217,7 +308,7 @@ class PostAssessmentIntroPage extends StatelessWidget {
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 22),
+                              const SizedBox(height: 18),
                               Text(
                                 context.tr('module_3_full_title'),
                                 style: const TextStyle(
@@ -231,14 +322,19 @@ class PostAssessmentIntroPage extends StatelessWidget {
                               const SizedBox(height: 18),
                               LayoutBuilder(
                                 builder: (context, constraints) {
-                                  final compact = constraints.maxWidth < 330;
+                                  // Use a slightly larger breakpoint for medium phones
+                                  final compact = constraints.maxWidth < 360;
+                                  // Calculate sensible tile width for multi-column or single-column
+                                  final tileWidth = compact
+                                      ? constraints.maxWidth
+                                      : (constraints.maxWidth - 20) / 3;
                                   return Wrap(
                                     spacing: 10,
                                     runSpacing: 10,
                                     children: [
                                       _IntroInfoTile(
                                         compact: compact,
-                                        width: compact ? constraints.maxWidth : 138,
+                                        width: tileWidth.clamp(120.0, constraints.maxWidth),
                                         icon: Icons.dynamic_form_rounded,
                                         title: isTl ? 'Mga tanong' : 'Questions',
                                         value: isTl
@@ -247,14 +343,14 @@ class PostAssessmentIntroPage extends StatelessWidget {
                                       ),
                                       _IntroInfoTile(
                                         compact: compact,
-                                        width: compact ? constraints.maxWidth : 138,
+                                        width: tileWidth.clamp(100.0, constraints.maxWidth),
                                         icon: Icons.schedule_rounded,
                                         title: isTl ? 'Oras' : 'Time',
                                         value: '5 mins',
                                       ),
                                       _IntroInfoTile(
                                         compact: compact,
-                                        width: compact ? constraints.maxWidth : 138,
+                                        width: tileWidth.clamp(120.0, constraints.maxWidth),
                                         icon: Icons.school_rounded,
                                         title: isTl ? 'Uri' : 'Type',
                                         value: isTl ? 'Panghuling Pagsusulit' : 'Post-Test',
@@ -342,37 +438,39 @@ class PostAssessmentIntroPage extends StatelessWidget {
       bottomNavigationBar: SafeArea(
         minimum: const EdgeInsets.fromLTRB(20, 10, 20, 18),
         child: SizedBox(
-          height: 56,
           width: double.infinity,
           child: ElevatedButton(
-            onPressed: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const PostAssessmentElectricalPage(),
-                ),
-              );
-            },
+            onPressed: _checkingAccess
+                ? null
+                : () {
+                    _startPostAssessment();
+                  },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primaryButton,
               elevation: 8,
               shadowColor: AppColors.primaryButton.withOpacity(0.35),
+              minimumSize: const Size.fromHeight(56),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(18),
               ),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  isTl
-                      ? 'Simulan ang Panghuling Pagsusulit'
-                      : 'Start Post-Test',
-                  style: const TextStyle(
-                    color: AppColors.textOnRed,
-                    fontFamily: 'Poppins',
-                    fontSize: 16,
-                    fontWeight: FontWeight.w900,
+                Flexible(
+                  child: Text(
+                    isTl
+                        ? 'Simulan ang Panghuling Pagsusulit'
+                        : 'Start Post-Test',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: AppColors.textOnRed,
+                      fontFamily: 'Poppins',
+                      fontSize: 16,
+                      fontWeight: FontWeight.w900,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -495,14 +593,15 @@ class _IntroInfoTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: width,
-      padding: const EdgeInsets.all(13),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
         color: AppColors.surfaceSoft,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppColors.border),
       ),
       child: Row(
         mainAxisSize: compact ? MainAxisSize.max : MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
             width: 34,
@@ -514,9 +613,10 @@ class _IntroInfoTile extends StatelessWidget {
             child: Icon(icon, color: AppColors.brandRed, size: 18),
           ),
           const SizedBox(width: 10),
-          Expanded(
+          Flexible(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   title,
@@ -529,15 +629,15 @@ class _IntroInfoTile extends StatelessWidget {
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: 4),
                 Text(
                   value,
-                  maxLines: 1,
+                  maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: AppColors.textPrimary,
                     fontFamily: 'Poppins',
-                    fontSize: 12.5,
+                    fontSize: 12.0,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -558,12 +658,12 @@ class _InstructionLine extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 9),
+      padding: const EdgeInsets.only(bottom: 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            margin: const EdgeInsets.only(top: 6),
+            margin: const EdgeInsets.only(top: 4),
             width: 7,
             height: 7,
             decoration: const BoxDecoration(
