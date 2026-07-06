@@ -43,30 +43,147 @@ List<String> getConciseInstructions(BuildContext context) {
   ];
 }
 
+String _getLocalizedPreAssessmentAccessMessage(
+  BuildContext context,
+  String rawMessage,
+) {
+  final isTl = Localizations.localeOf(context).languageCode == 'tl';
+  final normalized = rawMessage.toLowerCase();
+
+  if (normalized.contains('already') ||
+      normalized.contains('completed') ||
+      normalized.contains('taken') ||
+      normalized.contains('submitted') ||
+      normalized.contains('once') ||
+      normalized.contains('nasagutan') ||
+      normalized.contains('tapos') ||
+      normalized.contains('isang beses')) {
+    return isTl
+        ? 'Isang beses lang maaaring kunin ang Paunang Pagsusulit. Maaari ka nang magpatuloy sa Modyul sa Pag-aaral.'
+        : 'The Pre-Assessment can only be taken once. You can now continue to the Learning Module.';
+  }
+
+  return isTl
+      ? 'Hindi pa maaaring simulan ang Paunang Pagsusulit sa ngayon. Subukan muli mamaya.'
+      : 'The pre-assessment cannot be started right now. Please try again later.';
+}
+
 Future<void> _showPreAssessmentAccessDialog(
   BuildContext context,
   String message,
 ) async {
   if (!context.mounted) return;
 
+  final localizedMessage = _getLocalizedPreAssessmentAccessMessage(
+    context,
+    message,
+  );
+
   await showDialog<void>(
     context: context,
-    builder: (_) => AlertDialog(
-      title: Text(
-        _getLocalizedText(
-          'Pre-Assessment Locked',
-          'Naka-lock ang Paunang Pagsusulit',
-          context,
+    barrierDismissible: true,
+    builder: (dialogContext) {
+      return Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 26, vertical: 24),
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 430),
+          padding: const EdgeInsets.fromLTRB(24, 28, 24, 24),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(28),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.shadow.withOpacity(0.24),
+                blurRadius: 28,
+                offset: const Offset(0, 16),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Center(
+                child: Container(
+                  width: 66,
+                  height: 66,
+                  decoration: const BoxDecoration(
+                    color: AppColors.brandRedSoft,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.lock_outline_rounded,
+                    color: AppColors.brandRed,
+                    size: 34,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                _getLocalizedText(
+                  'Pre-Assessment Locked',
+                  'Naka-lock ang Paunang Pagsusulit',
+                  context,
+                ),
+                textAlign: TextAlign.center,
+                softWrap: true,
+                style: const TextStyle(
+                  color: AppColors.brandRed,
+                  fontFamily: 'Poppins',
+                  fontSize: 20,
+                  height: 1.22,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: -0.2,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                localizedMessage,
+                textAlign: TextAlign.center,
+                softWrap: true,
+                style: const TextStyle(
+                  color: AppColors.textSecondary,
+                  fontFamily: 'Poppins',
+                  fontSize: 15,
+                  height: 1.45,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 26),
+              SizedBox(
+                width: double.infinity,
+                height: 54,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pop(dialogContext),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.brandRed,
+                    foregroundColor: AppColors.textOnRed,
+                    elevation: 8,
+                    shadowColor: AppColors.brandRed.withOpacity(0.28),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(17),
+                    ),
+                  ),
+                  child: Text(
+                    _getLocalizedText(
+                      'I understand',
+                      'Naiintindihan',
+                      context,
+                    ),
+                    style: const TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 15,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
-      content: Text(message),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text(_getLocalizedText('OK', 'Sige', context)),
-        ),
-      ],
-    ),
+      );
+    },
   );
 }
 
@@ -212,7 +329,7 @@ class PreAssessmentIntroPage2 extends StatelessWidget {
       bottomNavigationBar: SafeArea(
         minimum: const EdgeInsets.fromLTRB(20, 6, 20, 16),
         child: _SwipeStartButton(
-          label: isTl ? 'Simulan ang Pagsusulit' : 'Start Test',
+          label: isTl ? 'Simulan ang Paunang Pagsusulit' : 'Start Pre Test',
           onCompleted: () => _openPreAssessmentIfAllowed(context),
         ),
       ),
@@ -357,10 +474,10 @@ class _AssessmentIntroCardState extends State<_AssessmentIntroCard> {
                   ),
                   const SizedBox(width: 10),
                   Expanded(
-                    child: _MetricPill(
-                      icon: Icons.school_rounded,
-                      title: isTl ? 'Layunin' : 'Purpose',
-                      value: isTl ? 'Baseline' : 'Baseline',
+                  child: _MetricPill(
+                    icon: Icons.school_rounded,
+                    title: isTl ? 'Uri' : 'Type',
+                    value: isTl ? 'Paunang Pagsusulit' : 'Pre-Test',
                       compact: compact,
                       tight: tight,
                       veryTight: veryTight,

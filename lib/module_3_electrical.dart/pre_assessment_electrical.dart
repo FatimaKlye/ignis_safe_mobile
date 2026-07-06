@@ -187,21 +187,172 @@ class _PreAssessmentElectricalPageState
     if (!mounted) return;
     showDialog<void>(
       context: context,
-      barrierDismissible: true,
-      builder: (ctx) => AlertDialog(
-        title: Text(_txt('Time Warning', 'Babala sa Oras')),
-        content: Text(_txt(
-          'You only have 1 minute left. Please answer the remaining questions.',
-          'Mayroon ka na lamang 1 minuto. Sagutan na ang mga natitirang tanong.',
-        )),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: Text(_txt('OK', 'Sige')),
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        final isTl = Localizations.localeOf(dialogContext).languageCode == 'tl';
+        final title = isTl ? 'Babala sa Oras' : 'Time Warning';
+        final message = isTl
+            ? 'Mayroon ka na lamang 1 minuto. Sagutan na ang mga natitirang tanong.'
+            : 'You only have 1 minute left. Please answer the remaining questions.';
+        final badgeText = isTl ? 'ORAS NG PAGSUSULIT' : 'QUIZ TIME ALERT';
+        final buttonText = isTl ? 'Naiintindihan ko' : 'I understand';
+
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 28),
+          child: Container(
+            width: double.infinity,
+            clipBehavior: Clip.antiAlias,
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(28),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.shadow.withOpacity(0.85),
+                  blurRadius: 32,
+                  offset: const Offset(0, 18),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  height: 6,
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [AppColors.brandRed, AppColors.brandRedLight],
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 26, 24, 24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        height: 76,
+                        width: 76,
+                        decoration: BoxDecoration(
+                          color: AppColors.brandRedSoft,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: AppColors.brandRed.withOpacity(0.22),
+                            width: 3,
+                          ),
+                        ),
+                        child: const Icon(
+                          Icons.timer_rounded,
+                          color: AppColors.brandRed,
+                          size: 40,
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 5,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.brandRedSoft,
+                          borderRadius: BorderRadius.circular(99),
+                        ),
+                        child: Text(
+                          badgeText,
+                          style: const TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 11,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.brandRed,
+                            letterSpacing: 0.6,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+                      Text(
+                        title,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 23,
+                          fontWeight: FontWeight.w900,
+                          color: AppColors.textPrimary,
+                          height: 1.15,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        message,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.textSecondary,
+                          height: 1.5,
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 54,
+                        child: ElevatedButton(
+                          onPressed: () => Navigator.of(dialogContext).pop(),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primaryButton,
+                            elevation: 4,
+                            shadowColor: AppColors.primaryButton.withOpacity(0.35),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                buttonText,
+                                style: const TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontSize: 15.5,
+                                  fontWeight: FontWeight.w800,
+                                  color: AppColors.textOnRed,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              const Icon(
+                                Icons.check_rounded,
+                                color: AppColors.textOnRed,
+                                size: 20,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
-        ],
-      ),
+        );
+      },
     );
+  }
+
+  int _intFrom(dynamic value, [int fallback = 0]) {
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    return int.tryParse((value ?? '').toString()) ?? fallback;
+  }
+
+  List<_QuestionVm> _orderedQuestions(List<_QuestionVm> questions) {
+    final ordered = List<_QuestionVm>.from(questions)
+      ..sort((a, b) {
+        final byNumber = a.questionNo.compareTo(b.questionNo);
+        if (byNumber != 0) return byNumber;
+        return a.id.compareTo(b.id);
+      });
+    return ordered;
   }
 
   Future<void> _loadOrCreateAttempt({bool forceNewAttempt = false}) async {
@@ -321,6 +472,7 @@ class _PreAssessmentElectricalPageState
         final questionId = row['id'].toString();
         return _QuestionVm(
           id: questionId,
+          questionNo: _intFrom(row['question_no'], 999),
           prompt: LocalizedDbText.pick(
             context,
             row,
@@ -343,135 +495,17 @@ class _PreAssessmentElectricalPageState
         );
       }
 
-      String attemptId;
-      List<_QuestionVm> orderedQuestions;
-      List<String?> selectedOptionIds;
-      Set<int> flaggedIndexes;
-
-      if (!forceNewAttempt) {
-        final attemptRows = await _supabase
-            .from('assessment_attempts')
-            .select('id, started_at')
-            .eq('user_id', user.id)
-            .eq('assessment_id', assessmentId)
-            .eq('status', 'in_progress')
-            .order('started_at', ascending: false)
-            .limit(1);
-
-        if (attemptRows.isNotEmpty) {
-          attemptId = attemptRows.first['id'].toString();
-
-          final savedRows = await _supabase
-              .from('assessment_attempt_answers')
-              .select(
-                'question_id, selected_option_id, is_flagged, display_order',
-              )
-              .eq('attempt_id', attemptId)
-              .order('display_order');
-
-          if (savedRows.isEmpty) {
-            final created = await _createAnswerRowsForExistingAttempt(
-              attemptId: attemptId,
-              questions: baseQuestions,
-            );
-            orderedQuestions = created.questions;
-            selectedOptionIds =
-                List<String?>.filled(orderedQuestions.length, null);
-            flaggedIndexes = {};
-          } else {
-            final existingQuestionIds = savedRows
-                .map((row) => row['question_id'].toString())
-                .toSet();
-
-            final missingQuestions = baseQuestions
-                .where((q) => !existingQuestionIds.contains(q.id))
-                .toList();
-
-            if (missingQuestions.isNotEmpty) {
-              final startOrder = savedRows.length;
-
-              await _supabase.from('assessment_attempt_answers').insert(
-                List.generate(
-                  missingQuestions.length,
-                  (index) => {
-                    'attempt_id': attemptId,
-                    'question_id': missingQuestions[index].id,
-                    'display_order': startOrder + index,
-                    'is_flagged': false,
-                  },
-                ),
-              );
-            }
-
-            final refreshedSavedRows = await _supabase
-                .from('assessment_attempt_answers')
-                .select(
-                  'question_id, selected_option_id, is_flagged, display_order',
-                )
-                .eq('attempt_id', attemptId)
-                .order('display_order');
-
-            final questionMap = {
-              for (final q in baseQuestions) q.id: q,
-            };
-
-            orderedQuestions = [];
-            selectedOptionIds = [];
-            flaggedIndexes = {};
-
-            for (int i = 0; i < refreshedSavedRows.length; i++) {
-              final row = refreshedSavedRows[i];
-              final questionId = row['question_id'].toString();
-              final question = questionMap[questionId];
-              if (question == null) continue;
-
-              orderedQuestions.add(question);
-              selectedOptionIds.add(
-                row['selected_option_id']?.toString(),
-              );
-
-              if ((row['is_flagged'] ?? false) as bool) {
-                flaggedIndexes.add(i);
-              }
-            }
-
-            if (orderedQuestions.isEmpty) {
-              final created = await _createNewAttempt(
-                userId: user.id,
-                assessmentId: assessmentId,
-                questions: baseQuestions,
-              );
-              attemptId = created.attemptId;
-              orderedQuestions = created.questions;
-              selectedOptionIds =
-                  List<String?>.filled(orderedQuestions.length, null);
-              flaggedIndexes = {};
-            }
-          }
-        } else {
-          final created = await _createNewAttempt(
-            userId: user.id,
-            assessmentId: assessmentId,
-            questions: baseQuestions,
-          );
-          attemptId = created.attemptId;
-          orderedQuestions = created.questions;
-          selectedOptionIds =
-              List<String?>.filled(orderedQuestions.length, null);
-          flaggedIndexes = {};
-        }
-      } else {
-        final created = await _createNewAttempt(
-          userId: user.id,
-          assessmentId: assessmentId,
-          questions: baseQuestions,
-        );
-        attemptId = created.attemptId;
-        orderedQuestions = created.questions;
-        selectedOptionIds =
-            List<String?>.filled(orderedQuestions.length, null);
-        flaggedIndexes = {};
-      }
+      final created = await _createNewAttempt(
+        userId: user.id,
+        assessmentId: assessmentId,
+        moduleId: moduleId,
+        questions: baseQuestions,
+      );
+      final attemptId = created.attemptId;
+      final orderedQuestions = created.questions;
+      final selectedOptionIds =
+          List<String?>.filled(orderedQuestions.length, null);
+      final flaggedIndexes = <int>{};
 
       if (!mounted) return;
 
@@ -530,9 +564,10 @@ class _PreAssessmentElectricalPageState
   Future<_CreatedAttempt> _createNewAttempt({
     required String userId,
     required String assessmentId,
+    required String moduleId,
     required List<_QuestionVm> questions,
   }) async {
-    final shuffled = List<_QuestionVm>.from(questions)..shuffle();
+    final ordered = _orderedQuestions(questions);
     final now = DateTime.now().toUtc().toIso8601String();
 
     final existingAttempts = await _supabase
@@ -551,9 +586,10 @@ class _PreAssessmentElectricalPageState
 
       await _supabase.from('assessment_attempts').update({
         'started_at': now,
+        'module_id': moduleId,
         'submitted_at': null,
         'status': 'in_progress',
-        'total_questions': shuffled.length,
+        'total_questions': ordered.length,
         'correct_count': 0,
         'score': 0,
       }).eq('id', attemptId);
@@ -563,8 +599,9 @@ class _PreAssessmentElectricalPageState
           .insert({
             'user_id': userId,
             'assessment_id': assessmentId,
+            'module_id': moduleId,
             'status': 'in_progress',
-            'total_questions': shuffled.length,
+            'total_questions': ordered.length,
             'correct_count': 0,
             'score': 0,
           })
@@ -574,13 +611,22 @@ class _PreAssessmentElectricalPageState
       attemptId = insertedAttempt['id'].toString();
     }
 
-    if (shuffled.isNotEmpty) {
+    try {
+      await _supabase
+          .from('assessment_attempt_answers')
+          .delete()
+          .eq('attempt_id', attemptId);
+    } catch (e) {
+      debugPrint('CLEAR PRE-ASSESSMENT ANSWERS WARNING: $e');
+    }
+
+    if (ordered.isNotEmpty) {
       await _supabase.from('assessment_attempt_answers').upsert(
         List.generate(
-          shuffled.length,
+          ordered.length,
           (index) => {
             'attempt_id': attemptId,
-            'question_id': shuffled[index].id,
+            'question_id': ordered[index].id,
             'selected_option_id': null,
             'is_flagged': false,
             'display_order': index,
@@ -594,7 +640,7 @@ class _PreAssessmentElectricalPageState
 
     return _CreatedAttempt(
       attemptId: attemptId,
-      questions: shuffled,
+      questions: ordered,
     );
   }
 
@@ -602,17 +648,17 @@ class _PreAssessmentElectricalPageState
     required String attemptId,
     required List<_QuestionVm> questions,
   }) async {
-    final shuffled = List<_QuestionVm>.from(questions)..shuffle();
+    final ordered = _orderedQuestions(questions);
 
-    if (shuffled.isNotEmpty) {
+    if (ordered.isNotEmpty) {
       final now = DateTime.now().toUtc().toIso8601String();
 
       await _supabase.from('assessment_attempt_answers').upsert(
         List.generate(
-          shuffled.length,
+          ordered.length,
           (index) => {
             'attempt_id': attemptId,
-            'question_id': shuffled[index].id,
+            'question_id': ordered[index].id,
             'selected_option_id': null,
             'is_flagged': false,
             'display_order': index,
@@ -626,7 +672,7 @@ class _PreAssessmentElectricalPageState
 
     return _CreatedAttempt(
       attemptId: attemptId,
-      questions: shuffled,
+      questions: ordered,
     );
   }
 
@@ -1763,9 +1809,9 @@ class _PreAssessmentElectricalPageState
 
     final isLast = _currentIndex == _questions.length - 1;
     final nextLabel = _editingFromSummary
-        ? _txt('Review Summary', 'Suriin ang Buod')
+        ? _txt('Review Summary', 'Suriin')
         : (isLast
-            ? _txt('Review Summary', 'Suriin ang Buod')
+            ? _txt('Review Summary', 'Suriin')
             : _txt('Next Question', 'Susunod'));
 
     return SafeArea(
@@ -2167,12 +2213,14 @@ class _CreatedAttempt {
 
 class _QuestionVm {
   final String id;
+  final int questionNo;
   final String prompt;
   final String explanation;
   final List<_OptionVm> options;
 
   const _QuestionVm({
     required this.id,
+    required this.questionNo,
     required this.prompt,
     required this.explanation,
     required this.options,

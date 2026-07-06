@@ -168,20 +168,155 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
     if (!mounted) return;
     showDialog<void>(
       context: context,
-      barrierDismissible: true,
-      builder: (ctx) => AlertDialog(
-        title: Text(_txt('Time Warning', 'Babala sa Oras')),
-        content: Text(_txt(
-          'You only have 1 minute left. Please answer the remaining questions.',
-          'Mayroon ka na lamang 1 minuto. Sagutan na ang mga natitirang tanong.',
-        )),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: Text(_txt('OK', 'Sige')),
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        final isTl = Localizations.localeOf(dialogContext).languageCode == 'tl';
+        final title = isTl ? 'Babala sa Oras' : 'Time Warning';
+        final message = isTl
+            ? 'Mayroon ka na lamang 1 minuto. Sagutan na ang mga natitirang tanong.'
+            : 'You only have 1 minute left. Please answer the remaining questions.';
+        final badgeText = isTl ? 'ORAS NG PAGSUSULIT' : 'QUIZ TIME ALERT';
+        final buttonText = isTl ? 'Naiintindihan ko' : 'I understand';
+
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 28),
+          child: Container(
+            width: double.infinity,
+            clipBehavior: Clip.antiAlias,
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(28),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.shadow.withOpacity(0.85),
+                  blurRadius: 32,
+                  offset: const Offset(0, 18),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  height: 6,
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [AppColors.brandRed, AppColors.brandRedLight],
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 26, 24, 24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        height: 76,
+                        width: 76,
+                        decoration: BoxDecoration(
+                          color: AppColors.brandRedSoft,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: AppColors.brandRed.withOpacity(0.22),
+                            width: 3,
+                          ),
+                        ),
+                        child: const Icon(
+                          Icons.timer_rounded,
+                          color: AppColors.brandRed,
+                          size: 40,
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 5,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.brandRedSoft,
+                          borderRadius: BorderRadius.circular(99),
+                        ),
+                        child: Text(
+                          badgeText,
+                          style: const TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 11,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.brandRed,
+                            letterSpacing: 0.6,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+                      Text(
+                        title,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 23,
+                          fontWeight: FontWeight.w900,
+                          color: AppColors.textPrimary,
+                          height: 1.15,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        message,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.textSecondary,
+                          height: 1.5,
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 54,
+                        child: ElevatedButton(
+                          onPressed: () => Navigator.of(dialogContext).pop(),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primaryButton,
+                            elevation: 4,
+                            shadowColor: AppColors.primaryButton.withOpacity(0.35),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                buttonText,
+                                style: const TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontSize: 15.5,
+                                  fontWeight: FontWeight.w800,
+                                  color: AppColors.textOnRed,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              const Icon(
+                                Icons.check_rounded,
+                                color: AppColors.textOnRed,
+                                size: 20,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -872,15 +1007,16 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
 
     if (!forceSubmit) {
       final confirmed = await _showConfirmDialog(
-        title: _txt('Submit Post-Assessment', 'Ipasa ang Panghuling Pagsusulit'),
+        title: _txt('Submit Post-Assessment?', 'Ipasa ang Panghuling Pagsusulit?'),
         message: _txt(
           'Answered: $_answeredCount / ${_questions.length}\n\n'
-          'After submission, you will see your score for the multiple-choice questions and your written reflection.',
+          'Make sure your answers are final before submitting. After submission, you will go to the completion page and see your final score.',
           'Nasagutan: $_answeredCount / ${_questions.length}\n\n'
-          'Pagkatapos ipasa, makikita mo ang iyong marka para sa mga multiple-choice na tanong at ang iyong nakasulat na repleksyon.',
+          'Siguraduhin na final na ang iyong mga sagot bago ipasa. Pagkatapos ipasa, mapupunta ka sa completion page at makikita mo ang iyong huling marka.',
         ),
         confirmText: _txt('Submit', 'Ipasa'),
         cancelText: _txt('Review Again', 'Suriin Muli'),
+        icon: Icons.help_outline_rounded,
       );
 
       if (confirmed != true) return;
@@ -1055,6 +1191,7 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
     required String message,
     required String confirmText,
     required String cancelText,
+    IconData icon = Icons.error_outline_rounded,
   }) {
     return showDialog<bool>(
       context: context,
@@ -1107,8 +1244,8 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
                     color: AppColors.brandRedSoft,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
-                    Icons.error_outline_rounded,
+                  child: Icon(
+                    icon,
                     color: AppColors.brandRed,
                     size: 36,
                   ),
@@ -1818,10 +1955,10 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
 
     final isLast = _currentIndex == _questions.length - 1;
     final nextLabel = _editingFromSummary
-        ? _txt('Review Summary', 'Suriin ang Buod')
+        ? _txt('Review Summary', 'Suriin')
         : (isLast
-            ? _txt('Review Summary', 'Suriin ang Buod')
-            : _txt('Next Question', 'Susunod na Tanong'));
+            ? _txt('Review Summary', 'Suriin')
+            : _txt('Next Question', 'Susunod'));
 
     return SafeArea(
       top: false,

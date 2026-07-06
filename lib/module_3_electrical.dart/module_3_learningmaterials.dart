@@ -1135,23 +1135,17 @@ class _LearningMaterialElectricalPageState
           subtitle: _lmText(context, 'm3_lm_086_learn_the_safe_order_of_actions_during_an'),
         ),
         const SizedBox(height: 16),
-        const _VideoSourceCard(
-          platform: 'YouTube',
-          title: 'Copperfield Electric – Electrical Fire Safety Tips: What to Do & How to Prevent Fires at Home',
-          purpose: 'Supports Module 3 by showing basic electrical fire safety reminders, including prevention and safe response actions.',
+        _VideoSourceCard(
+          platform: _lmText(context, 'm3_lm_124_video_source_platform'),
+          title: _lmText(context, 'm3_lm_125_video_source_title'),
+          purpose: _lmText(context, 'm3_lm_126_video_source_purpose'),
         ),
         const SizedBox(height: 12),
         _ElectricalVideoCard(
-          title: Localizations.localeOf(context).languageCode == 'tl'
-              ? 'Video na Gabay'
-              : 'Guide Video',
-          subtitle: Localizations.localeOf(context).languageCode == 'tl'
-              ? 'Panoorin ang maikling video bilang karagdagang gabay bago tapusin ang bahaging ito.'
-              : 'Watch the short video as an additional guide before completing this section.',
-          helperText: Localizations.localeOf(context).languageCode == 'tl'
-              ? 'I-tap ang video para i-play o i-pause.'
-              : 'Tap the video to play or pause.',
-          videoAssetPath: 'assets/electrical_fire.mp4',
+          title: _lmText(context, 'm3_lm_127_guide_video_title'),
+          subtitle: _lmText(context, 'm3_lm_128_guide_video_subtitle'),
+          helperText: _lmText(context, 'm3_lm_129_guide_video_helper'),
+          videoAssetPath: _lmMediaPath(context, 'm3_media_electrical_fire_guide_video'),
         ),
         const SizedBox(height: 16),
         _ReferenceSourceCard(
@@ -2486,7 +2480,9 @@ class _M3VideoPlaceholder extends StatelessWidget {
               ),
             const SizedBox(height: 8),
             Text(
-              hasError ? 'Video unavailable' : 'Loading video...',
+              hasError
+                  ? _lmText(context, 'm3_lm_133_video_unavailable')
+                  : _lmText(context, 'm3_lm_134_video_loading'),
               textAlign: TextAlign.center,
               style: const TextStyle(
                 color: Colors.white70,
@@ -2621,9 +2617,6 @@ class _ElectricalVisualStack extends StatelessWidget {
             .clamp(560.0, 720.0)
             .toDouble();
         final modelPath = _resolveElectricalModelPath(assetPath);
-        final isTagalog = Localizations.localeOf(context).languageCode
-            .toLowerCase()
-            .startsWith('tl');
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -2662,7 +2655,7 @@ class _ElectricalVisualStack extends StatelessWidget {
                       left: 14,
                       child: _ElectricalViewerBadge(
                         icon: Icons.view_in_ar_rounded,
-                        label: '3D Preview',
+                        label: _lmText(context, 'm3_lm_130_3d_preview_badge'),
                         color: AppColors.brandRed,
                       ),
                     ),
@@ -2679,9 +2672,7 @@ class _ElectricalVisualStack extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             _ElectricalInteractionHint(
-              text: isTagalog
-                  ? 'I-drag para i-rotate. I-pinch para i-zoom.'
-                  : 'Drag to rotate. Pinch to zoom.',
+              text: _lmText(context, 'm3_lm_131_3d_interaction_hint'),
             ),
           ],
         );
@@ -2708,7 +2699,7 @@ class _AnimatedElectricalModelViewer extends StatelessWidget {
     return ModelViewer(
       key: ValueKey(modelPath),
       src: modelPath,
-      alt: '3D electrical fire model preview',
+      alt: _lmText(context, 'm3_lm_132_3d_model_alt_text'),
       autoRotate: true,
       cameraControls: true,
       disableZoom: false,

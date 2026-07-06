@@ -6,6 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'login.dart';
 import 'localization/app_text.dart';
+import 'widgets/app_notification.dart';
 
 import 'module_1_extinguisher.dart/pre_assess_instruction.dart' as pre1;
 import 'module_1_extinguisher.dart/module_1_learningmaterials.dart';
@@ -19,7 +20,7 @@ import 'module_2_house.dart/simulation_scene_house.dart' as house_sim;
 import 'module_3_electrical.dart/simulation_scene_electrical.dart' as electrical_sim;
 import 'module_4_kitchen.dart/simulation_scene.dart' as kitchen_sim;
 
-import 'module_2_house.dart/post_assess_instruction.dart' as house_post;
+import 'module_2_house.dart/post_assess_instruction_house.dart' as house_post;
 import 'module_3_electrical.dart/pre_assess_instruction.dart' as pre3;
 import 'module_4_kitchen.dart/pre_assess_instruction.dart' as pre4;
 import 'module_4_kitchen.dart/post_assessment_kitchen.dart' as kitchen_post;
@@ -272,9 +273,6 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
   }
 
   Future<void> _openModule(int moduleNo) async {
-    // TEMPORARILY UNLOCKED: learning-material access guard is commented out
-    // so every module can be opened while testing/fixing content and flow.
-    /*
     if (_isTrackedProgressModule(moduleNo)) {
       await _loadProgressForTrackedModule(moduleNo);
       if (!mounted) return;
@@ -283,7 +281,6 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
         return;
       }
     }
-    */
 
     Widget page;
 
@@ -442,11 +439,6 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
     return _progressFor(moduleNo).postTestCompleted;
   }
   bool _isModuleActionLocked(int moduleNo, String actionKey) {
-    // TEMPORARILY UNLOCKED: all module menu actions are accessible.
-    // Original locking mechanism is preserved below and can be restored later.
-    return false;
-
-    /*
     if (!_isTrackedProgressModule(moduleNo)) return false;
     if (actionKey == 'simulation') return false;
     if (actionKey != 'pre_test' &&
@@ -468,7 +460,6 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
       return !_canOpenPostTestFor(moduleNo);
     }
     return false;
-    */
   }
 
   String _lockedMessageFor(int moduleNo, String actionKey) {
@@ -485,26 +476,26 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
 
     if (actionKey == 'pre_test') {
       return _t(
-        ModuleProgressionService.preTestAlreadyTakenMessage,
-        'Isang beses lang pwedeng sagutan ang Paunang Pagsusulit. Subukan ang susunod na modyul.',
+        'The Pre-Assessment can only be taken once. You can now continue to the Learning Module.',
+        'Isang beses lang maaaring kunin ang Paunang Pagsusulit. Maaari ka nang magpatuloy sa Modyul sa Pag-aaral.',
       );
     }
     if (actionKey == 'learning_materials') {
       return _t(
-        'Finish the Paunang Pagsusulit / Pre-Assessment first before opening the Learning Module.',
-        'Tapusin muna ang Paunang Pagsusulit bago mabuksan ang Modyul sa Pag-aaral.',
+        'Complete the Pre-Assessment first to unlock it.',
+        'Tapusin muna ang Paunang Pagsusulit upang mabuksan ito.',
       );
     }
     if (actionKey == 'post_test') {
       if (_postTestCompletedFor(moduleNo)) {
         return _t(
-          ModuleProgressionService.postTestAlreadyTakenMessage,
-          'Isang beses lang pwedeng sagutan ang Panghuling Pagsusulit. Subukan ang susunod na modyul.',
+          'The Post-Assessment can only be taken once. You can review the Learning Module.',
+          'Isang beses lang maaaring kunin ang Panghuling Pagsusulit. Maaari mong balikan ang Modyul sa Pag-aaral.',
         );
       }
       return _t(
-        'Finish reading the Learning Module first before opening the Panghuling Pagsusulit / Post-Assessment.',
-        'Tapusin muna basahin ang Modyul sa Pag-aaral bago mabuksan ang Panghuling Pagsusulit.',
+        'Complete the Learning Module first to unlock it.',
+        'Tapusin muna ang Modyul sa Pag-aaral upang mabuksan ito.',
       );
     }
     return _t(
@@ -514,11 +505,6 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
   }
 
   String? _lockedSubtitleFor(int moduleNo, String actionKey) {
-    // TEMPORARILY UNLOCKED: hide locked subtitles while all modules/actions are open.
-    // Original locked-subtitle mechanism is preserved below and can be restored later.
-    return null;
-
-    /*
     if (!_isModuleActionLocked(moduleNo, actionKey)) return null;
 
     if (_isTrackedProgressModule(moduleNo) && _progressLoadingFor(moduleNo)) {
@@ -527,44 +513,43 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
 
     if (_isTrackedProgressModule(moduleNo) && actionKey == 'pre_test') {
       return _t(
-        'You can only take the pre-test once.',
-        'Isang beses lang pwedeng sagutan ang Paunang Pagsusulit.',
+        'You can only take the Pre-Assessment once.',
+        'Isang beses lang maaaring kunin ang Paunang Pagsusulit.',
       );
     }
 
     if (_isTrackedProgressModule(moduleNo) && actionKey == 'learning_materials') {
       return _t(
-        'Locked until the Pre-Assessment is completed.',
-        'Naka-lock hanggang matapos ang Paunang Pagsusulit.',
+        'Complete the Pre-Assessment first to unlock it.',
+        'Tapusin muna ang Paunang Pagsusulit upang mabuksan ito.',
       );
     }
 
     if (_isTrackedProgressModule(moduleNo) && actionKey == 'post_test') {
       if (_postTestCompletedFor(moduleNo)) {
         return _t(
-          'You can only take the post-test once.',
-          'Isang beses lang pwedeng sagutan ang Panghuling Pagsusulit.',
+          'You can only take the Post-Assessment once.',
+          'Isang beses lang maaaring kunin ang Panghuling Pagsusulit.',
         );
       }
       return _t(
-        'Locked until the Learning Module is completed.',
-        'Naka-lock hanggang matapos ang Modyul sa Pag-aaral.',
+        'Complete the Learning Module first to unlock it.',
+        'Tapusin muna ang Modyul sa Pag-aaral upang mabuksan ito.',
       );
     }
 
     return _t('Locked', 'Naka-lock');
-    */
   }
 
   String _lockedTitleFor(String actionKey) {
     if (actionKey == 'pre_test') {
-      return _t('Pre-Test Locked', 'Naka-lock ang Paunang Pagsusulit');
+      return _t('Pre-Assessment Locked', 'Naka-lock ang Paunang Pagsusulit');
     }
     if (actionKey == 'learning_materials') {
       return _t('Learning Module Locked', 'Naka-lock ang Modyul sa Pag-aaral');
     }
     if (actionKey == 'post_test') {
-      return _t('Post-Test Locked', 'Naka-lock ang Panghuling Pagsusulit');
+      return _t('Post-Assessment Locked', 'Naka-lock ang Panghuling Pagsusulit');
     }
     return _t('Locked', 'Naka-lock');
   }
@@ -687,9 +672,6 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
       _expandedModuleNo = moduleNo;
     });
 
-    // TEMPORARILY UNLOCKED: module action lock guard is commented out
-    // so Pre-Test, Learning Materials, Post-Test, and Simulation are all accessible.
-    /*
     if (_isTrackedProgressModule(moduleNo)) {
       await _loadProgressForTrackedModule(moduleNo);
       if (!mounted) return;
@@ -700,7 +682,6 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
         return;
       }
     }
-    */
 
     if (!mounted) return;
     setState(() {
@@ -934,8 +915,6 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
 
 
   Future<void> _openPreAssessment(int moduleNo) async {
-    // TEMPORARILY UNLOCKED: pre-test access guard is commented out.
-    /*
     if (_isTrackedProgressModule(moduleNo)) {
       await _loadProgressForTrackedModule(moduleNo);
       if (!mounted) return;
@@ -944,7 +923,6 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
         return;
       }
     }
-    */
 
     Widget page;
 
@@ -977,8 +955,6 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
   }
 
   Future<void> _openPostAssessment(int moduleNo) async {
-    // TEMPORARILY UNLOCKED: post-test access guard is commented out.
-    /*
     if (_isTrackedProgressModule(moduleNo)) {
       await _loadProgressForTrackedModule(moduleNo);
       if (!mounted) return;
@@ -987,7 +963,6 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
         return;
       }
     }
-    */
 
     Widget page;
 
@@ -1022,20 +997,14 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
   }
 
   void _showActionNotice(String sectionName) {
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: const Color(0xFF111827),
-          content: Text(
-            _t(
-              '$sectionName is shown here for the module menu. Connect its existing route when the page is ready.',
-              '$sectionName ay ipinapakita rito para sa module menu. Ikonekta ang existing route kapag handa na ang page.',
-            ),
-          ),
-        ),
-      );
+    showAppNotification(
+      context,
+      message: _t(
+        '$sectionName is shown here for the module menu. Connect its existing route when the page is ready.',
+        '$sectionName ay ipinapakita rito para sa module menu. Ikonekta ang existing route kapag handa na ang page.',
+      ),
+      type: AppNotificationType.info,
+    );
   }
 
   ImageProvider? _buildAvatarProvider() {
@@ -1367,16 +1336,10 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
               isTl: _isTl,
               isExpanded: _expandedModuleNo == m.moduleNo,
               selectedActionKey: _selectedModuleActionKey,
-              // TEMPORARILY UNLOCKED: show every action as available in the UI.
-              // Original lock callbacks are preserved below for easy restore.
-              isActionLocked: (_) => false,
-              lockedSubtitle: (_) => null,
-              /*
               isActionLocked: (actionKey) =>
                   _isModuleActionLocked(m.moduleNo, actionKey),
               lockedSubtitle: (actionKey) =>
                   _lockedSubtitleFor(m.moduleNo, actionKey),
-              */
               onHeaderTap: () => _toggleModule(m.moduleNo),
               onChildTap: (actionKey) {
                 _handleModuleAction(m.moduleNo, actionKey);
@@ -1645,20 +1608,14 @@ class _DatabaseLearningMaterialPageState
   }
 
   void _showReadRequiredSnack() {
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: const Color(0xFF111827),
-          content: Text(
-            _t(
-              'Please scroll to the bottom of this section before continuing.',
-              'Paki-scroll muna hanggang dulo ng seksyong ito bago magpatuloy.',
-            ),
-          ),
-        ),
-      );
+    showAppNotification(
+      context,
+      message: _t(
+        'Please scroll to the bottom of this section before continuing.',
+        'Paki-scroll muna hanggang dulo ng seksyong ito bago magpatuloy.',
+      ),
+      type: AppNotificationType.warning,
+    );
   }
 
   void _resetScroll() {
@@ -1702,8 +1659,7 @@ class _DatabaseLearningMaterialPageState
     try {
       final progression = ModuleProgressionService(client: _client);
       await progression.markLearningMaterialCompleted(moduleNo: moduleNo);
-      // TEMPORARILY UNLOCKED: post-test start guard is commented out for open access.
-      // await progression.ensureCanStartPostTest(moduleNo: moduleNo);
+      await progression.ensureCanStartPostTest(moduleNo: moduleNo);
       if (!mounted) return;
 
       Widget page;
@@ -1741,7 +1697,7 @@ class _DatabaseLearningMaterialPageState
       if (!mounted) return;
       await _showLearningDialog(
         icon: Icons.lock_outline_rounded,
-        title: _t('Post-Test Locked', 'Naka-lock ang Panghuling Pagsusulit'),
+        title: _t('Post-Assessment Locked', 'Naka-lock ang Panghuling Pagsusulit'),
         message: e.message,
         buttonText: _t('OK', 'Sige'),
       );

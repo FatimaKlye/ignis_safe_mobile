@@ -3,7 +3,7 @@ import 'package:model_viewer_plus/model_viewer_plus.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:video_player/video_player.dart';
 import 'module_progression_service.dart';
-import 'post_assess_instruction.dart';
+import 'post_assess_instruction_house.dart';
 
 // =============================================================================
 // MODULE 2 HOUSE FIRE COLORS
@@ -412,8 +412,8 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
           _postTestAlreadyCompleted = postTestCompleted;
           _isLoading = false;
           _loadError = _isTl
-              ? 'Naka-lock ang Modyul sa Pag-aaral hanggang makumpleto at ma-save ang Paunang Pagsusulit.'
-              : 'Learning Module is locked until the Pre-Assessment is completed and saved.';
+              ? 'Naka-lock ang Modyul sa Pag-aaral hanggang matapos at maitala ang Paunang Pagsusulit.'
+              : 'The Learning Module is locked until the Pre-Assessment is completed and saved.';
         });
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) _showLearningLockedAccessAndClose();
@@ -729,19 +729,20 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
     await showDialog<void>(
       context: context,
       barrierDismissible: false,
-      builder: (_) => _StyledDialog(
+      builder: (dialogContext) => _StyledDialog(
         icon: Icons.lock_rounded,
         iconColor: AppColors.brandRed,
         title: _isTl ? 'Naka-lock ang Modyul sa Pag-aaral' : 'Learning Module Locked',
         body: _isTl
-            ? 'Kumpletuhin muna ang Paunang Pagsusulit. Magbubukas lang ang modyul kapag may score ka na sa pre-assessment.'
-            : 'Complete the Pre-Assessment first. The Learning Module will only open once you have a score from the pre-assessment.',
-        buttonLabel: _isTl ? 'Sige' : 'OK',
-        onPressed: () => Navigator.pop(context),
+            ? 'Tapusin muna ang Paunang Pagsusulit. Magbubukas lang ang Modyul sa Pag-aaral kapag tapos na ang Paunang Pagsusulit.'
+            : 'Complete the Pre-Assessment first. The Learning Module will open only after the Pre-Assessment is completed.',
+        buttonLabel: _isTl ? 'Naiintindihan' : 'I understand',
+        onPressed: () => Navigator.pop(dialogContext),
       ),
     );
 
-    if (mounted) Navigator.of(context).maybePop();
+    // After the dialog closes, return to the previous screen: learning_materials.dart.
+    if (mounted) Navigator.pop(context);
   }
 
   void _showPostTestAlreadyCompletedDialog() {
@@ -1537,12 +1538,13 @@ class _LoadingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isTl = Localizations.localeOf(context).languageCode == 'tl';
     return Container(
       margin: const EdgeInsets.all(24),
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 22),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(22),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.10),
@@ -1551,10 +1553,23 @@ class _LoadingCard extends StatelessWidget {
           ),
         ],
       ),
-      child: const SizedBox(
-        width: 22,
-        height: 22,
-        child: CircularProgressIndicator(strokeWidth: 2.4),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const CircularProgressIndicator(color: AppColors.brandRed),
+          const SizedBox(height: 14),
+          Text(
+            isTl
+                ? 'Nilo-load ang mga materyales sa pag-aaral...'
+                : 'Loading learning materials...',
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: AppColors.textPrimary,
+              fontWeight: FontWeight.w900,
+              fontSize: 15,
+            ),
+          ),
+        ],
       ),
     );
   }

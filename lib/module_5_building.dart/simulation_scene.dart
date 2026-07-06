@@ -6,6 +6,7 @@ import '../unity_launcher.dart';
 import '../profile_progress_sync.dart';
 import '../simulation_history_service.dart';
 import '../module_progress_db.dart';
+import '../widgets/app_notification.dart';
 
 class SimulationScene5 extends StatefulWidget {
   const SimulationScene5({super.key});
@@ -102,14 +103,12 @@ class _SimulationScene5State extends State<SimulationScene5> {
     final unitySceneName = _unitySceneNameFor(picked);
 
     if (unitySceneName == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            _isTl
-                ? 'Ang Scene 5 ay hindi pa available sa Unity.'
-                : 'Scene 5 is not yet available in Unity.',
-          ),
-        ),
+      showAppNotification(
+        context,
+        message: _isTl
+            ? 'Ang Scene 5 ay hindi pa available sa Unity.'
+            : 'Scene 5 is not yet available in Unity.',
+        type: AppNotificationType.warning,
       );
       return;
     }
@@ -142,25 +141,21 @@ class _SimulationScene5State extends State<SimulationScene5> {
       }
     } on PlatformException catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            _isTl
-                ? 'Hindi mabuksan ang Unity: ${e.message ?? e.code}'
-                : 'Failed to open Unity: ${e.message ?? e.code}',
-          ),
-        ),
+      showAppNotification(
+        context,
+        message: _isTl
+            ? 'Hindi mabuksan ang Unity: ${e.message ?? e.code}'
+            : 'Failed to open Unity: ${e.message ?? e.code}',
+        type: AppNotificationType.error,
       );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            _isTl
-                ? 'Hindi ma-save ang progreso ng simulasyon: $e'
-                : 'Failed to save simulation progress: $e',
-          ),
-        ),
+      showAppNotification(
+        context,
+        message: _isTl
+            ? 'Hindi ma-save ang progreso ng simulasyon: $e'
+            : 'Failed to save simulation progress: $e',
+        type: AppNotificationType.error,
       );
     } finally {
       // FIX: Reset flag after Unity returns

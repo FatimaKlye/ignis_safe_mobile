@@ -4,6 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'login.dart';
 import 'localization/language_controller.dart';
 import 'network_error_helper.dart';
+import 'widgets/app_notification.dart';
 
 class ForgotPassPage extends StatefulWidget {
   const ForgotPassPage({super.key});
@@ -222,9 +223,11 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
   Future<void> _sendOtp() async {
     final emailError = _validateEmail(_emailCtrl.text);
     if (emailError != null) {
-      ScaffoldMessenger.of(
+      showAppNotification(
         context,
-      ).showSnackBar(SnackBar(content: Text(emailError)));
+        message: emailError,
+        type: AppNotificationType.error,
+      );
       return;
     }
 
@@ -248,37 +251,35 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
 
       setState(() => _stage = _ForgotStage.otp);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            t(
-              context,
-              'OTP sent to your email. Please check your inbox.',
-              'Naipadala ang OTP sa iyong email. Pakitingnan ang iyong inbox.',
-            ),
-          ),
+      showAppNotification(
+        context,
+        message: t(
+          context,
+          'OTP sent to your email. Please check your inbox.',
+          'Naipadala ang OTP sa iyong email. Pakitingnan ang iyong inbox.',
         ),
+        type: AppNotificationType.success,
       );
     } on AuthException catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
+      showAppNotification(
         context,
-      ).showSnackBar(SnackBar(content: Text(_authErrorMessage(e.message))));
+        message: _authErrorMessage(e.message),
+        type: AppNotificationType.error,
+      );
     } catch (e) {
       if (!mounted) return;
       if (isNetworkError(e)) {
         await showNoInternetDialog(context);
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              t(
-                context,
-                'Failed to send OTP. Please try again.',
-                'Hindi naipadala ang OTP. Pakisubukang muli.',
-              ),
-            ),
+        showAppNotification(
+          context,
+          message: t(
+            context,
+            'Failed to send OTP. Please try again.',
+            'Hindi naipadala ang OTP. Pakisubukang muli.',
           ),
+          type: AppNotificationType.error,
         );
       }
     } finally {
@@ -289,9 +290,11 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
   Future<void> _verifyOtp() async {
     final otpError = _validateOtp(_otpCtrl.text);
     if (otpError != null) {
-      ScaffoldMessenger.of(
+      showAppNotification(
         context,
-      ).showSnackBar(SnackBar(content: Text(otpError)));
+        message: otpError,
+        type: AppNotificationType.error,
+      );
       return;
     }
 
@@ -321,37 +324,35 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
 
       setState(() => _stage = _ForgotStage.password);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            t(
-              context,
-              'OTP verified. You can now set a new password.',
-              'Naverify na ang OTP. Maaari ka nang magtakda ng bagong password.',
-            ),
-          ),
+      showAppNotification(
+        context,
+        message: t(
+          context,
+          'OTP verified. You can now set a new password.',
+          'Naverify na ang OTP. Maaari ka nang magtakda ng bagong password.',
         ),
+        type: AppNotificationType.success,
       );
     } on AuthException catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
+      showAppNotification(
         context,
-      ).showSnackBar(SnackBar(content: Text(_authErrorMessage(e.message))));
+        message: _authErrorMessage(e.message),
+        type: AppNotificationType.error,
+      );
     } catch (e) {
       if (!mounted) return;
       if (isNetworkError(e)) {
         await showNoInternetDialog(context);
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              t(
-                context,
-                'Invalid or expired OTP.',
-                'Hindi wasto o paso na ang OTP.',
-              ),
-            ),
+        showAppNotification(
+          context,
+          message: t(
+            context,
+            'Invalid or expired OTP.',
+            'Hindi wasto o paso na ang OTP.',
           ),
+          type: AppNotificationType.error,
         );
       }
     } finally {
@@ -362,38 +363,36 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
   Future<void> _updatePassword() async {
     final passwordError = _validatePassword(_newPasswordCtrl.text);
     if (passwordError != null) {
-      ScaffoldMessenger.of(
+      showAppNotification(
         context,
-      ).showSnackBar(SnackBar(content: Text(passwordError)));
+        message: passwordError,
+        type: AppNotificationType.error,
+      );
       return;
     }
 
     if (_confirmPasswordCtrl.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            t(
-              context,
-              'Please confirm your password.',
-              'Mangyaring kumpirmahin ang iyong password.',
-            ),
-          ),
+      showAppNotification(
+        context,
+        message: t(
+          context,
+          'Please confirm your password.',
+          'Mangyaring kumpirmahin ang iyong password.',
         ),
+        type: AppNotificationType.error,
       );
       return;
     }
 
     if (_newPasswordCtrl.text.trim() != _confirmPasswordCtrl.text.trim()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            t(
-              context,
-              'Passwords do not match.',
-              'Hindi magkatugma ang mga password.',
-            ),
-          ),
+      showAppNotification(
+        context,
+        message: t(
+          context,
+          'Passwords do not match.',
+          'Hindi magkatugma ang mga password.',
         ),
+        type: AppNotificationType.error,
       );
       return;
     }
@@ -409,16 +408,14 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
 
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            t(
-              context,
-              'Password updated successfully.',
-              'Matagumpay na na-update ang password.',
-            ),
-          ),
+      showAppNotification(
+        context,
+        message: t(
+          context,
+          'Password updated successfully.',
+          'Matagumpay na na-update ang password.',
         ),
+        type: AppNotificationType.success,
       );
 
       Navigator.pushAndRemoveUntil(
@@ -428,24 +425,24 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
       );
     } on AuthException catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
+      showAppNotification(
         context,
-      ).showSnackBar(SnackBar(content: Text(_authErrorMessage(e.message))));
+        message: _authErrorMessage(e.message),
+        type: AppNotificationType.error,
+      );
     } catch (e) {
       if (!mounted) return;
       if (isNetworkError(e)) {
         await showNoInternetDialog(context);
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              t(
-                context,
-                'Unable to update password.',
-                'Hindi ma-update ang password.',
-              ),
-            ),
+        showAppNotification(
+          context,
+          message: t(
+            context,
+            'Unable to update password.',
+            'Hindi ma-update ang password.',
           ),
+          type: AppNotificationType.error,
         );
       }
     } finally {

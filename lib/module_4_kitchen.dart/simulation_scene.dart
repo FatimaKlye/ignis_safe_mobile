@@ -5,6 +5,7 @@ import '../unity_launcher.dart';
 import '../profile_progress_sync.dart';
 import '../simulation_history_service.dart';
 import '../module_progress_db.dart';
+import '../widgets/app_notification.dart';
 
 class SimulationScene4 extends StatefulWidget {
   const SimulationScene4({super.key});
@@ -105,8 +106,10 @@ class _SimulationScene4State extends State<SimulationScene4> {
 
       setState(() => _launchError = message);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message)),
+      showAppNotification(
+        context,
+        message: message,
+        type: AppNotificationType.error,
       );
     } catch (e) {
       if (!mounted) return;
@@ -117,8 +120,10 @@ class _SimulationScene4State extends State<SimulationScene4> {
 
       setState(() => _launchError = message);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message)),
+      showAppNotification(
+        context,
+        message: message,
+        type: AppNotificationType.error,
       );
     } finally {
       if (mounted) {

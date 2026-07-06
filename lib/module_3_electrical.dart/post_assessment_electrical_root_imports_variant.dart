@@ -850,15 +850,16 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
 
     if (!forceSubmit) {
       final confirmed = await _showConfirmDialog(
-        title: _txt('Submit Post-Assessment', 'Ipasa ang Panghuling Pagsusulit'),
+        title: _txt('Submit Post-Assessment?', 'Ipasa ang Panghuling Pagsusulit?'),
         message: _txt(
           'Answered: $_answeredCount / ${_questions.length}\n\n'
-          'After submission, you will see your score for the multiple-choice questions and your written reflection.',
+          'Make sure your answers are final before submitting. After submission, you will go to the completion page and see your final score.',
           'Nasagutan: $_answeredCount / ${_questions.length}\n\n'
-          'Pagkatapos ipasa, makikita mo ang iyong marka para sa mga multiple-choice na tanong at ang iyong nakasulat na repleksyon.',
+          'Siguraduhin na final na ang iyong mga sagot bago ipasa. Pagkatapos ipasa, mapupunta ka sa completion page at makikita mo ang iyong huling marka.',
         ),
         confirmText: _txt('Submit', 'Ipasa'),
         cancelText: _txt('Review Again', 'Suriin Muli'),
+        icon: Icons.help_outline_rounded,
       );
 
       if (confirmed != true) return;
@@ -1033,6 +1034,7 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
     required String message,
     required String confirmText,
     required String cancelText,
+    IconData icon = Icons.error_outline_rounded,
   }) {
     return showDialog<bool>(
       context: context,
@@ -1085,8 +1087,8 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
                     color: AppColors.brandRedSoft,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
-                    Icons.error_outline_rounded,
+                  child: Icon(
+                    icon,
                     color: AppColors.brandRed,
                     size: 36,
                   ),
@@ -1796,10 +1798,10 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
 
     final isLast = _currentIndex == _questions.length - 1;
     final nextLabel = _editingFromSummary
-        ? _txt('Review Summary', 'Suriin ang Buod')
+        ? _txt('Review Summary', 'Suriin')
         : (isLast
-            ? _txt('Review Summary', 'Suriin ang Buod')
-            : _txt('Next Question', 'Susunod na Tanong'));
+            ? _txt('Review Summary', 'Suriin')
+            : _txt('Next Question', 'Susunod'));
 
     return SafeArea(
       top: false,

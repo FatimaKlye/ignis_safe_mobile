@@ -2,20 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'localization/language_controller.dart';
-import 'passwordvalidation.dart';
 import 'login.dart';
 import 'network_error_helper.dart';
+import 'widgets/app_notification.dart';
 
 class VerifyEmailPage extends StatefulWidget {
   final String email;
   final String firstName;
   final String lastName;
+  final String password;
 
   const VerifyEmailPage({
     super.key,
     required this.email,
     required this.firstName,
     required this.lastName,
+    required this.password,
   });
 
   @override
@@ -26,44 +28,28 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   static const Color brandRed = Color(0xFFB71C1C);
 
   final SupabaseClient supabase = Supabase.instance.client;
-
-  // ── Single controller + focus for the card-style OTP input ───────────────
   final TextEditingController _otpCtrl = TextEditingController();
   final FocusNode _otpFocus = FocusNode();
 
   bool _isSending = false;
   bool _isVerifying = false;
+  bool _signupStarted = false;
+  bool _completed = false;
 
-  Future<void> _cleanupPendingByEmail() async {
-    final email = widget.email.trim().toLowerCase();
-    if (email.isEmpty) return;
-
-    try {
-      await supabase.functions.invoke(
-        'cancel_pending_signup_email',
-        body: {'email': email},
-      );
-    } catch (_) {
-      // Best-effort cleanup.
-    }
-
-    try {
-      await supabase.auth.signOut();
-    } catch (_) {
-      // ignore
-    }
-  }
+  String get _email => widget.email.trim().toLowerCase();
+  String get _code => _otpCtrl.text.trim();
+  bool get _codeComplete => RegExp(r'^\d{6}$').hasMatch(_code);
 
   @override
   void initState() {
     super.initState();
     _otpCtrl.addListener(() => setState(() {}));
-    _otpFocus.addListener(() => setState(() {})); // rebuild on focus change
+    _otpFocus.addListener(() => setState(() {}));
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
       _otpFocus.requestFocus();
-      if (widget.email.trim().isNotEmpty) {
+      if (_email.isNotEmpty) {
         await _sendOtp(showToast: false);
       }
     });
@@ -76,73 +62,229 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     super.dispose();
   }
 
-  String get _code => _otpCtrl.text.trim();
-  bool get _codeComplete => RegExp(r'^\d{6}$').hasMatch(_code);
-
   void _clearOtp() {
     _otpCtrl.clear();
     _otpFocus.requestFocus();
   }
 
-  // ── Send OTP ──────────────────────────────────────────────────────────────
-  Future<void> _sendOtp({bool showToast = true}) async {
-    if (_isSending) return;
+  Future<void> _cleanupPendingByEmail() async {
+    if (_completed || _email.isEmpty) return;
 
-    final email = widget.email.trim().toLowerCase();
-    if (email.isEmpty) return;
+    try {
+      await supabase.functions.invoke(
+        'cancel_pending_signup_email',
+        body: {'email': _email},
+      );
+    } catch (_) {
+      // Best-effort cleanup only. The Edge Function should delete only
+      // incomplete signups and must not delete completed accounts.
+    }
+
+    try {
+      await supabase.auth.signOut();
+    } catch (_) {
+      // ignore
+    }
+  }
+
+  Future<void> _showNoticeDialog({
+    required String title,
+    required String message,
+    IconData icon = Icons.error_outline_rounded,
+  }) async {
+    if (!mounted) return;
+
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      builder: (dialogContext) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.fromLTRB(22, 22, 22, 18),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.18),
+                  blurRadius: 30,
+                  offset: const Offset(0, 16),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(99),
+                    onTap: () => Navigator.pop(dialogContext),
+                    child: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF5F5F5),
+                        borderRadius: BorderRadius.circular(99),
+                      ),
+                      child: const Icon(
+                        Icons.close_rounded,
+                        size: 20,
+                        color: Colors.black54,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Container(
+                  height: 68,
+                  width: 68,
+                  decoration: BoxDecoration(
+                    color: brandRed.withOpacity(0.10),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(icon, color: brandRed, size: 36),
+                ),
+                const SizedBox(height: 18),
+                Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 22,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.black87,
+                    height: 1.18,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  height: 2,
+                  width: 90,
+                  decoration: BoxDecoration(
+                    color: brandRed,
+                    borderRadius: BorderRadius.circular(99),
+                  ),
+                ),
+                const SizedBox(height: 18),
+                Text(
+                  message,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black.withOpacity(0.60),
+                    height: 1.45,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.pop(dialogContext),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: brandRed,
+                      elevation: 4,
+                      shadowColor: brandRed.withOpacity(0.35),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    child: Text(
+                      t(context, 'OK', 'Sige'),
+                      style: const TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _sendOtp({bool showToast = true}) async {
+    if (_isSending || _email.isEmpty) return;
 
     setState(() => _isSending = true);
 
     try {
-      await supabase.auth.signInWithOtp(
-        email: email,
-        shouldCreateUser: true,
-        data: {
-          'first_name': widget.firstName,
-          'last_name': widget.lastName,
-          // Mark this user as created via the multi-step signup flow.
-          // We only flip this to true on the final submit step.
-          'registration_completed': false,
-          'app_language_code':
-              Localizations.localeOf(context).languageCode == 'tl'
-                  ? 'tl'
-                  : 'en',
-        },
-      );
+      if (_signupStarted) {
+        await supabase.auth.resend(
+          type: OtpType.signup,
+          email: _email,
+        );
+      } else {
+        await supabase.auth.signOut();
+        await supabase.auth.signUp(
+          email: _email,
+          password: widget.password,
+          data: {
+            'first_name': widget.firstName.trim(),
+            'last_name': widget.lastName.trim(),
+            'registration_completed': false,
+            'app_language_code':
+                Localizations.localeOf(context).languageCode == 'tl' ? 'tl' : 'en',
+          },
+        );
+        _signupStarted = true;
+      }
 
       if (!mounted) return;
 
       if (showToast) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              t(
-                context,
-                'Verification code sent. Check your email inbox/spam.',
-                'Naipadala ang verification code. Tingnan ang iyong email inbox/spam.',
-              ),
-            ),
+        showAppNotification(
+          context,
+          message: t(
+            context,
+            'Verification code sent. Check your email inbox/spam.',
+            'Naipadala ang verification code. Tingnan ang iyong email inbox/spam.',
           ),
+          type: AppNotificationType.success,
         );
       }
     } on AuthException catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(e.message)));
+      final message = e.message.toLowerCase();
+
+      if (message.contains('already registered') ||
+          message.contains('already exists') ||
+          message.contains('user already')) {
+        await _showNoticeDialog(
+          title: t(context, 'Email Already Registered', 'May Account na ang Email'),
+          message: t(
+            context,
+            'This email already has an account. Please login instead, or use Forgot Password if needed.',
+            'May account na ang email na ito. Mag-login na lang, o gamitin ang Nakalimutan ang Password kung kailangan.',
+          ),
+        );
+      } else {
+        await _showNoticeDialog(
+          title: t(context, 'Could Not Send Code', 'Hindi Maipadala ang Code'),
+          message: e.message,
+        );
+      }
     } catch (e) {
       if (!mounted) return;
       if (isNetworkError(e)) {
         await showNoInternetDialog(context);
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              t(
-                context,
-                'Error sending code. Please try again.',
-                'May error sa pagpapadala ng code. Subukang muli.',
-              ),
-            ),
+        await _showNoticeDialog(
+          title: t(context, 'Could Not Send Code', 'Hindi Maipadala ang Code'),
+          message: t(
+            context,
+            'Error sending code. Please try again.',
+            'May error sa pagpapadala ng code. Subukang muli.',
           ),
         );
       }
@@ -151,24 +293,18 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     }
   }
 
-  // ── Verify OTP ────────────────────────────────────────────────────────────
   Future<void> _verifyOtp() async {
-    if (_isVerifying) return;
-
-    final email = widget.email.trim().toLowerCase();
-    if (email.isEmpty) return;
+    if (_isVerifying || _email.isEmpty) return;
 
     if (!_codeComplete) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            t(
-              context,
-              'Enter a valid 6-digit numeric code.',
-              'Maglagay ng wastong 6-digit na numeric code.',
-            ),
-          ),
+      showAppNotification(
+        context,
+        message: t(
+          context,
+          'Enter a valid 6-digit numeric code.',
+          'Maglagay ng wastong 6-digit na numeric code.',
         ),
+        type: AppNotificationType.error,
       );
       return;
     }
@@ -176,42 +312,64 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     setState(() => _isVerifying = true);
 
     try {
-      await supabase.auth.verifyOTP(
-        type: OtpType.email,
-        email: email,
+      final response = await supabase.auth.verifyOTP(
+        type: OtpType.signup,
+        email: _email,
         token: _code,
       );
 
-      if (!mounted) return;
+      final user = response.user ?? supabase.auth.currentUser;
+      if (user == null) {
+        throw const AuthException(
+          'Unable to complete account setup. Please verify your email again.',
+        );
+      }
 
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => CreatePasswordPage(
-            email: widget.email.trim().toLowerCase(),
-            firstName: widget.firstName,
-            lastName: widget.lastName,
-          ),
+      await supabase.from('profiles').upsert({
+        'id': user.id,
+        'first_name': widget.firstName.trim(),
+        'last_name': widget.lastName.trim(),
+        'email': _email,
+        'registration_status': 'completed',
+        'app_language_code':
+            Localizations.localeOf(context).languageCode == 'tl' ? 'tl' : 'en',
+        'updated_at': DateTime.now().toUtc().toIso8601String(),
+      });
+
+      await supabase.auth.updateUser(
+        UserAttributes(
+          data: {
+            'first_name': widget.firstName.trim(),
+            'last_name': widget.lastName.trim(),
+            'registration_completed': true,
+            'app_language_code':
+                Localizations.localeOf(context).languageCode == 'tl' ? 'tl' : 'en',
+          },
         ),
       );
+
+      _completed = true;
+
+      if (!mounted) return;
+
+      await _showAccountCreatedDialog();
     } on AuthException catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(e.message)));
+      await _showNoticeDialog(
+        title: t(context, 'Invalid Code', 'Maling Code'),
+        message: e.message,
+      );
     } catch (e) {
       if (!mounted) return;
       if (isNetworkError(e)) {
         await showNoInternetDialog(context);
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              t(
-                context,
-                'Error verifying code. Please try again.',
-                'May error sa pag-verify ng code. Subukang muli.',
-              ),
-            ),
+        await _showNoticeDialog(
+          title: t(context, 'Verification Failed', 'Hindi Na-verify'),
+          message: t(
+            context,
+            'Error verifying code. Please try again.',
+            'May error sa pag-verify ng code. Subukang muli.',
           ),
         );
       }
@@ -220,7 +378,113 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     }
   }
 
-  // ── OTP Card Widget ───────────────────────────────────────────────────────
+  Future<void> _showAccountCreatedDialog() async {
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.fromLTRB(22, 26, 22, 20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.18),
+                  blurRadius: 30,
+                  offset: const Offset(0, 16),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  height: 72,
+                  width: 72,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF2E7D32).withOpacity(0.10),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.check_circle_rounded,
+                    color: Color(0xFF2E7D32),
+                    size: 42,
+                  ),
+                ),
+                const SizedBox(height: 18),
+                Text(
+                  t(context, 'Account Created!', 'Nagawa na ang Account!'),
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 22,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.black87,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  t(
+                    context,
+                    'Your email has been verified and your account is ready.',
+                    'Na-verify na ang iyong email at handa na ang iyong account.',
+                  ),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black.withOpacity(0.60),
+                    height: 1.45,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      LoginPage.skipAutoRoute = false;
+                      await supabase.auth.signOut();
+                      if (!context.mounted) return;
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (_) => const LoginPage()),
+                        (route) => false,
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: brandRed,
+                      elevation: 4,
+                      shadowColor: brandRed.withOpacity(0.35),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    child: Text(
+                      t(context, 'Go to Login', 'Pumunta sa Login'),
+                      style: const TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   Widget _buildOtpCard() {
     final typed = _otpCtrl.text;
     final focused = _otpFocus.hasFocus;
@@ -230,7 +494,6 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          // ── Card border ─────────────────────────────────────────────────
           AnimatedContainer(
             duration: const Duration(milliseconds: 150),
             height: 72,
@@ -245,7 +508,6 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
             ),
             child: Stack(
               children: [
-                // Hidden TextField — absorbs keyboard input
                 Positioned.fill(
                   child: Opacity(
                     opacity: 0,
@@ -265,8 +527,6 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                     ),
                   ),
                 ),
-
-                // ── Digit / dash slots ────────────────────────────────────
                 Center(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -279,11 +539,8 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                           style: TextStyle(
                             fontFamily: 'Poppins',
                             fontSize: isFilled ? 22 : 20,
-                            fontWeight: isFilled
-                                ? FontWeight.w700
-                                : FontWeight.w400,
-                            color:
-                                isFilled ? Colors.black87 : Colors.black26,
+                            fontWeight: isFilled ? FontWeight.w700 : FontWeight.w400,
+                            color: isFilled ? Colors.black87 : Colors.black26,
                           ),
                           child: Text(isFilled ? typed[i] : '–'),
                         ),
@@ -294,8 +551,6 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
               ],
             ),
           ),
-
-          // ── Floating "OTP Code" label ────────────────────────────────────
           Positioned(
             top: -10,
             left: 14,
@@ -318,50 +573,89 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     );
   }
 
+  Widget _buildFooter() => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            children: [
+              const Expanded(child: Divider(thickness: 1)),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: Text(
+                  t(context, 'OR', 'O'),
+                  style: const TextStyle(
+                    fontFamily: 'Poppins',
+                    color: Colors.grey,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              const Expanded(child: Divider(thickness: 1)),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Wrap(
+            alignment: WrapAlignment.center,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              Text(
+                "${t(context, 'Already have an account?', 'Mayroon ka nang account?')} ",
+                style: const TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 13,
+                  color: Colors.grey,
+                ),
+              ),
+              TextButton(
+                onPressed: (_isSending || _isVerifying)
+                    ? null
+                    : () async {
+                        await _cleanupPendingByEmail();
+                        LoginPage.skipAutoRoute = false;
+                        if (!context.mounted) return;
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(builder: (_) => const LoginPage()),
+                          (route) => false,
+                        );
+                      },
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: Text(
+                  t(context, 'Login', 'Mag-login'),
+                  style: const TextStyle(
+                    fontFamily: 'Poppins',
+                    color: brandRed,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      );
+
   @override
   Widget build(BuildContext context) {
-    final email = widget.email.trim();
-
-    if (email.isEmpty) {
+    if (_email.isEmpty) {
       return Scaffold(
+        resizeToAvoidBottomInset: false,
         backgroundColor: Colors.white,
-        body: SafeArea(
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(22),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text(
-                    'Email is required before verification.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontFamily: 'Poppins',
-                      fontSize: 13,
-                      color: Colors.black54,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: brandRed,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text(
-                      'Go back',
-                      style: TextStyle(
-                        fontFamily: 'Poppins',
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ],
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Text(
+              t(
+                context,
+                'Missing email. Please go back to sign up.',
+                'Walang email. Bumalik sa sign up.',
               ),
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontFamily: 'Poppins'),
             ),
           ),
         ),
@@ -370,267 +664,246 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
 
     return WillPopScope(
       onWillPop: () async {
-        if (_isSending || _isVerifying) return false;
+        if (_isSending || _isVerifying || _completed) return !_isSending && !_isVerifying;
         await _cleanupPendingByEmail();
         return true;
       },
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         backgroundColor: Colors.white,
         body: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30.0),
+            padding: const EdgeInsets.symmetric(horizontal: 35.0),
             child: LayoutBuilder(
               builder: (context, constraints) {
-                return SingleChildScrollView(
-                  child: ConstrainedBox(
-                    constraints:
-                        BoxConstraints(minHeight: constraints.maxHeight),
-                    child: Align(
+                return ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
                       alignment: Alignment.topCenter,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                        Padding(
-                          padding:
-                              const EdgeInsets.only(top: 70, bottom: 30),
-                          child: SizedBox(
-                            height: 120,
-                            child: FittedBox(
-                              fit: BoxFit.contain,
-                              child: Image.asset('assets/logo.png'),
-                            ),
-                          ),
-                        ),
-                        const Text(
-                          'Verify Email Address',
-                          style: TextStyle(
-                            fontFamily: 'Poppins',
-                            fontSize: 28,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.black87,
-                            height: 1.0,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Container(
-                          height: 2,
-                          width: 150,
-                          decoration: BoxDecoration(
-                            color: brandRed,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        const Text(
-                          'Welcome to, IGNIS SAFE',
-                          style: TextStyle(
-                            fontFamily: 'Poppins',
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black38,
-                            height: 1.1,
-                          ),
-                        ),
-                        const SizedBox(height: 80),
-                        Row(
+                      child: SizedBox(
+                        width: constraints.maxWidth,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            IconButton(
-                              onPressed: (_isSending || _isVerifying)
-                                  ? null
-                                  : () async {
-                                      await _cleanupPendingByEmail();
-                                      if (!context.mounted) return;
-                                      Navigator.pop(context);
-                                    },
-                              icon: const Icon(
-                                Icons.arrow_back_ios_new,
-                                size: 18,
+                            Padding(
+                              padding: const EdgeInsets.only(top: 70, bottom: 30),
+                              child: SizedBox(
+                                height: 120,
+                                child: FittedBox(
+                                  fit: BoxFit.contain,
+                                  child: Image.asset('assets/logo.png'),
+                                ),
                               ),
                             ),
-                            const SizedBox(width: 4),
-                            const Text(
-                              'Verify your email',
-                              style: TextStyle(
+                            Text(
+                              t(
+                                context,
+                                'Verify Email Address',
+                                'I-verify ang Email Address',
+                              ),
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
                                 fontFamily: 'Poppins',
-                                fontSize: 16,
+                                fontSize: 28,
                                 fontWeight: FontWeight.w700,
                                 color: Colors.black87,
+                                height: 1.0,
                               ),
                             ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        // Step indicator
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
+                            const SizedBox(height: 6),
                             Container(
-                              width: 18,
-                              height: 3,
+                              height: 2,
+                              width: 150,
                               decoration: BoxDecoration(
                                 color: brandRed,
                                 borderRadius: BorderRadius.circular(8),
                               ),
                             ),
-                            const SizedBox(width: 18),
-                            Container(
-                              width: 18,
-                              height: 3,
-                              decoration: BoxDecoration(
-                                color: Colors.black26,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                            const SizedBox(width: 18),
-                            Container(
-                              width: 18,
-                              height: 3,
-                              decoration: BoxDecoration(
-                                color: Colors.black26,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 18),
-                        Padding(
-                          padding:
-                              const EdgeInsets.symmetric(horizontal: 4),
-                          child: Text(
-                            t(
-                              context,
-                              'We just sent a 6-digit code to\n$email\nEnter it below:',
-                              'Nagpadala kami ng 6-digit OTP sa\n$email\nIlagay ito sa ibaba:',
-                            ),
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontFamily: 'Poppins',
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.black54,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 28),
-
-                        // ── Card-style OTP input ──────────────────────────
-                        _buildOtpCard(),
-
-                        const SizedBox(height: 14),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            TextButton(
-                              onPressed: (_isVerifying || _isSending)
-                                  ? null
-                                  : _clearOtp,
-                              child: Text(
-                                t(context, 'Clear', 'Burahin'),
-                                style: const TextStyle(
-                                  fontFamily: 'Poppins',
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.black54,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            TextButton(
-                              onPressed: (_isVerifying || _isSending)
-                                  ? null
-                                  : () => _sendOtp(showToast: true),
-                              child: Text(
-                                t(context, 'Resend code', 'Magpadala ulit'),
-                                style: const TextStyle(
-                                  fontFamily: 'Poppins',
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w700,
-                                  color: brandRed,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        SizedBox(
-                          width: double.infinity,
-                          height: 54,
-                          child: ElevatedButton(
-                            onPressed: (_isVerifying || _isSending)
-                                ? null
-                                : _verifyOtp,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: brandRed,
-                              elevation: 0,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            child: _isVerifying
-                                ? const SizedBox(
-                                    width: 20,
-                                    height: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      color: Colors.white,
-                                    ),
-                                  )
-                                : Text(
-                                    _codeComplete
-                                        ? t(context, 'Verify email',
-                                            'I-verify ang email')
-                                        : t(context, 'Enter code',
-                                            'Ilagay ang code'),
-                                    style: const TextStyle(
-                                      fontFamily: 'Poppins',
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                          ),
-                        ),
-                        const SizedBox(height: 18),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
+                            const SizedBox(height: 8),
                             Text(
-                              t(
-                                context,
-                                'Already have an account? ',
-                                'Mayroon ka nang account? ',
-                              ),
+                              _email,
+                              textAlign: TextAlign.center,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
                                 fontFamily: 'Poppins',
                                 fontSize: 12,
-                                color: Colors.black38,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black54,
+                                height: 1.2,
                               ),
                             ),
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.pushAndRemoveUntil(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => const LoginPage(),
+                            const SizedBox(height: 24),
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.fromLTRB(18, 18, 18, 16),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(20),
+                                boxShadow: const [
+                                  BoxShadow(
+                                    color: Colors.black12,
+                                    blurRadius: 10,
+                                    offset: Offset(0, 5),
                                   ),
-                                  (route) => false,
-                                );
-                              },
-                              child: Text(
-                                t(context, 'Log in', 'Mag-login'),
-                                style: const TextStyle(
-                                  fontFamily: 'Poppins',
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w700,
-                                  color: brandRed,
+                                ],
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    height: 58,
+                                    width: 58,
+                                    decoration: BoxDecoration(
+                                      color: brandRed.withOpacity(0.10),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Icon(
+                                      Icons.lock_clock_rounded,
+                                      color: brandRed,
+                                      size: 30,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 14),
+                                  Text(
+                                    t(
+                                      context,
+                                      'Enter the 6-digit code sent to your email.',
+                                      'Ilagay ang 6-digit code na ipinadala sa iyong email.',
+                                    ),
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                      fontFamily: 'Poppins',
+                                      fontSize: 13.5,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.black87,
+                                      height: 1.35,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 18),
+                                  _buildOtpCard(),
+                                  const SizedBox(height: 10),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      TextButton(
+                                        onPressed: _otpCtrl.text.isEmpty ? null : _clearOtp,
+                                        style: TextButton.styleFrom(
+                                          padding: const EdgeInsets.symmetric(horizontal: 6),
+                                          minimumSize: Size.zero,
+                                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                        ),
+                                        child: Text(
+                                          t(context, 'Clear', 'Burahin'),
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins',
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w700,
+                                            color: _otpCtrl.text.isEmpty
+                                                ? Colors.black26
+                                                : brandRed,
+                                          ),
+                                        ),
+                                      ),
+                                      TextButton(
+                                        onPressed: (_isVerifying || _isSending)
+                                            ? null
+                                            : () => _sendOtp(showToast: true),
+                                        style: TextButton.styleFrom(
+                                          padding: const EdgeInsets.symmetric(horizontal: 6),
+                                          minimumSize: Size.zero,
+                                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                        ),
+                                        child: Text(
+                                          _isSending
+                                              ? t(context, 'Sending...', 'Ipinapadala...')
+                                              : t(context, 'Resend code', 'Magpadala ulit'),
+                                          style: const TextStyle(
+                                            fontFamily: 'Poppins',
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w700,
+                                            color: brandRed,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            SizedBox(
+                              width: double.infinity,
+                              height: 50,
+                              child: ElevatedButton(
+                                onPressed: (_isVerifying || _isSending) ? null : _verifyOtp,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: brandRed,
+                                  disabledBackgroundColor: brandRed.withOpacity(0.55),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                                child: _isVerifying
+                                    ? const SizedBox(
+                                        width: 20,
+                                        height: 20,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: Colors.white,
+                                        ),
+                                      )
+                                    : Text(
+                                        _codeComplete
+                                            ? t(
+                                                context,
+                                                'Verify Email Address',
+                                                'I-verify ang Email Address',
+                                              )
+                                            : t(context, 'Enter Code', 'Ilagay ang Code'),
+                                        textAlign: TextAlign.center,
+                                        style: const TextStyle(
+                                          fontFamily: 'Poppins',
+                                          color: Colors.white,
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            ExcludeSemantics(
+                              child: IgnorePointer(
+                                child: Opacity(
+                                  opacity: 0,
+                                  child: Text(
+                                    t(
+                                      context,
+                                      'Terms and Privacy Policy',
+                                      'Mga Tuntunin at Patakaran sa Privacy',
+                                    ),
+                                    textAlign: TextAlign.center,
+                                    softWrap: true,
+                                    style: const TextStyle(
+                                      fontFamily: 'Poppins',
+                                      color: brandRed,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12,
+                                      height: 1.25,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
+                            const SizedBox(height: 18),
+                            _buildFooter(),
+                            const SizedBox(height: 20),
                           ],
                         ),
-                        const SizedBox(height: 20),
-                      ],
                       ),
                     ),
                   ),

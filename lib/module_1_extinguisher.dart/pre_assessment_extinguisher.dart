@@ -73,6 +73,7 @@ class _PreAssessmentExtinguisherPageState
   bool _editingFromSummary = false;
   bool _timeExpired = false;
   bool _oneMinuteWarningShown = false;
+  bool _oneMinuteWarningDialogOpen = false;
 
   String? _moduleId;
   String? _assessmentId;
@@ -172,6 +173,14 @@ class _PreAssessmentExtinguisherPageState
       _editingFromSummary = false;
     });
 
+    if (_oneMinuteWarningDialogOpen) {
+      final navigator = Navigator.of(context, rootNavigator: true);
+      if (navigator.canPop()) {
+        navigator.pop();
+      }
+      _oneMinuteWarningDialogOpen = false;
+    }
+
     await _showAutoCloseInfoDialog(
       title: _txt('Time is up', 'Tapos na ang oras'),
       message: _txt(
@@ -184,24 +193,164 @@ class _PreAssessmentExtinguisherPageState
   }
 
   void _showOneMinuteWarning() {
-    if (!mounted) return;
+    if (!mounted || _oneMinuteWarningDialogOpen) return;
+
+    _oneMinuteWarningDialogOpen = true;
+
     showDialog<void>(
       context: context,
-      barrierDismissible: true,
-      builder: (ctx) => AlertDialog(
-        title: Text(_txt('Time Warning', 'Babala sa Oras')),
-        content: Text(_txt(
-          'You only have 1 minute left. Please answer the remaining questions.',
-          'Mayroon ka na lamang 1 minuto. Sagutan na ang mga natitirang tanong.',
-        )),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: Text(_txt('OK', 'Sige')),
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        final isTl = Localizations.localeOf(dialogContext).languageCode == 'tl';
+        final title = isTl ? 'Babala sa Oras' : 'Time Warning';
+        final message = isTl
+            ? 'Mayroon ka na lamang 1 minuto. Sagutan na ang mga natitirang tanong.'
+            : 'You only have 1 minute left. Please answer the remaining questions.';
+        final badgeText = isTl ? 'ORAS NG PAGSUSULIT' : 'QUIZ TIME ALERT';
+        final buttonText = isTl ? 'Naiintindihan ko' : 'I understand';
+
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 28),
+          child: Container(
+            width: double.infinity,
+            clipBehavior: Clip.antiAlias,
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(28),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.shadow.withOpacity(0.85),
+                  blurRadius: 32,
+                  offset: const Offset(0, 18),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  height: 6,
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [AppColors.brandRed, AppColors.brandRedLight],
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 26, 24, 24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        height: 76,
+                        width: 76,
+                        decoration: BoxDecoration(
+                          color: AppColors.brandRedSoft,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: AppColors.brandRed.withOpacity(0.22),
+                            width: 3,
+                          ),
+                        ),
+                        child: const Icon(
+                          Icons.timer_rounded,
+                          color: AppColors.brandRed,
+                          size: 40,
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 5,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.brandRedSoft,
+                          borderRadius: BorderRadius.circular(99),
+                        ),
+                        child: Text(
+                          badgeText,
+                          style: const TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 11,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.brandRed,
+                            letterSpacing: 0.6,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+                      Text(
+                        title,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 23,
+                          fontWeight: FontWeight.w900,
+                          color: AppColors.textPrimary,
+                          height: 1.15,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        message,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.textSecondary,
+                          height: 1.5,
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 54,
+                        child: ElevatedButton(
+                          onPressed: () => Navigator.of(dialogContext).pop(),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primaryButton,
+                            elevation: 4,
+                            shadowColor: AppColors.primaryButton.withOpacity(0.35),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                buttonText,
+                                style: const TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontSize: 15.5,
+                                  fontWeight: FontWeight.w800,
+                                  color: AppColors.textOnRed,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              const Icon(
+                                Icons.check_rounded,
+                                color: AppColors.textOnRed,
+                                size: 20,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
-        ],
-      ),
-    );
+        );
+      },
+    ).whenComplete(() {
+      _oneMinuteWarningDialogOpen = false;
+    });
   }
 
   int _intFrom(dynamic value, [int fallback = 0]) {
@@ -1790,9 +1939,9 @@ class _PreAssessmentExtinguisherPageState
 
     final isLast = _currentIndex == _questions.length - 1;
     final nextLabel = _editingFromSummary
-        ? _txt('Review Summary', 'Suriin ang Buod')
+        ? _txt('Review Summary', 'Suriin')
         : (isLast
-            ? _txt('Review Summary', 'Suriin ang Buod')
+            ? _txt('Review Summary', 'Suriin')
             : _txt('Next Question', 'Susunod'));
 
     return SafeArea(
@@ -1847,7 +1996,6 @@ class _PreAssessmentExtinguisherPageState
                           moduleLabel: context.tr('module_1'),
                           moduleTitle: context.tr('module_1_full_header'),
                           onClose: () => Navigator.pop(context),
-                          onRefresh: _handleRefresh,
                         ),
                       ),
                       const SizedBox(height: 14),
@@ -1973,14 +2121,12 @@ class _TopAssessmentBar extends StatelessWidget {
     required this.moduleLabel,
     required this.moduleTitle,
     required this.onClose,
-    required this.onRefresh,
   });
 
   final String title;
   final String moduleLabel;
   final String moduleTitle;
   final VoidCallback onClose;
-  final Future<void> Function() onRefresh;
 
   @override
   Widget build(BuildContext context) {
@@ -1994,12 +2140,7 @@ class _TopAssessmentBar extends StatelessWidget {
               onTap: onClose,
             ),
             const Spacer(),
-            _TopIconButton(
-              icon: Icons.refresh_rounded,
-              onTap: () {
-                onRefresh();
-              },
-            ),
+            const SizedBox(width: 40),
           ],
         ),
         const SizedBox(height: 14),

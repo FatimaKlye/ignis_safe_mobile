@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -10,7 +11,8 @@ import 'onboarding1.dart';
 import 'localization/language_controller.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   await Supabase.initialize(
     url: 'https://mvgpeiejwstrxjmfslke.supabase.co',
@@ -46,11 +48,7 @@ class MyApp extends StatelessWidget {
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            home: languageController.isReady
-                ? const AppStartPage()
-                : const Scaffold(
-                    body: Center(child: CircularProgressIndicator()),
-                  ),
+            home: const AppStartPage(),
             routes: {
               '/login': (_) => const LoginPage(),
               '/home': (_) => const IgnisHomePage(),
@@ -80,32 +78,40 @@ class _AppStartPageState extends State<AppStartPage> {
   }
 
   Future<void> _checkStartPage() async {
-    final prefs = await SharedPreferences.getInstance();
-    final onboardingDone = prefs.getBool('onboarding_done') ?? false;
-    final session = Supabase.instance.client.auth.currentSession;
+    final results = await Future.wait([
+      _resolveTargetPage(),
+      Future.delayed(const Duration(seconds: 2)),
+    ]);
+    final targetPage = results[0] as Widget;
 
     if (!mounted) return;
 
     setState(() {
-      if (!onboardingDone) {
-        _targetPage = const OnboardingOnePage();
-      } else if (session != null) {
-        _targetPage = const IgnisHomePage();
-      } else {
-        _targetPage = const LoginPage();
-      }
+      _targetPage = targetPage;
     });
+
+    FlutterNativeSplash.remove();
+  }
+
+  Future<Widget> _resolveTargetPage() async {
+    final prefs = await SharedPreferences.getInstance();
+    final onboardingDone = prefs.getBool('onboarding_done') ?? false;
+    final session = Supabase.instance.client.auth.currentSession;
+
+    if (!onboardingDone) {
+      return const OnboardingOnePage();
+    } else if (session != null) {
+      return const IgnisHomePage();
+    } else {
+      return const LoginPage();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_targetPage == null) {
-      return const Scaffold(
-        backgroundColor: Colors.white,
-        body: Center(child: CircularProgressIndicator()),
-      );
-    }
-
-    return _targetPage!;
+    // The Android native splash screen (preserved in main()) stays on
+    // screen until FlutterNativeSplash.remove() is called above, so
+    // nothing extra needs to be rendered here while we wait.
+    return _targetPage ?? const SizedBox.shrink();
   }
 }

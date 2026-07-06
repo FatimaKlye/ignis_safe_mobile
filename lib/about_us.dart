@@ -378,6 +378,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
                         child: _buildAboutContent(
                           visible: visible,
                           horizontalPadding: 0,
+                          searchActive: q.isNotEmpty,
                         ),
                       ),
                     ],
@@ -396,6 +397,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
   Widget _buildAboutContent({
     required List<_AboutSection> visible,
     required double horizontalPadding,
+    required bool searchActive,
   }) {
     return ScrollConfiguration(
       behavior: const _NoOverscrollScrollBehavior(),
@@ -425,7 +427,14 @@ class _AboutUsPageState extends State<AboutUsPage> {
                   padding: EdgeInsets.only(
                     bottom: index == visible.length - 1 ? 0 : 14,
                   ),
-                  child: visible[index].builder(context),
+                  child: _ExpandableSectionCard(
+                    key: ValueKey(visible[index].title),
+                    icon: visible[index].icon,
+                    title: visible[index].title,
+                    subtitle: visible[index].subtitle,
+                    initiallyExpanded: searchActive || index == 0,
+                    child: visible[index].builder(context),
+                  ),
                 ),
           ],
         ),
@@ -440,20 +449,38 @@ class _AboutUsPageState extends State<AboutUsPage> {
         title: "IGNIS SAFE",
         searchText:
             "Ignis Safe interactive 3D fire safety simulation mission",
+        icon: Icons.local_fire_department_rounded,
+        subtitle: t(
+          context,
+          "Our mission and what the app offers",
+          "Ang aming misyon at inaalok ng app",
+        ),
         builder: (context) => const _ModernAboutCard(),
       ),
       _AboutSection(
         type: _AboutSectionType.about,
-        title: "Logo Meaning",
+        title: t(context, "Logo Meaning", "Kahulugan ng Logo"),
         searchText:
             "logo shield fire truck hose flame water spray ignis latin fire safe protected secure mission prevention preparedness",
+        icon: Icons.shield_rounded,
+        subtitle: t(
+          context,
+          "The story behind our shield and flame",
+          "Ang kuwento sa likod ng aming kalasag at apoy",
+        ),
         builder: (context) => const _LogoMeaningCard(),
       ),
       _AboutSection(
         type: _AboutSectionType.team,
-        title: "Meet the Developers",
+        title: t(context, "Meet the Developers", "Kilalanin ang mga Developer"),
         searchText:
             "Fatima Klye M Sierra fatimaklyesierra081005@gmail.com Andrei C Quias Rave Paulo Sierra Sarah Flor Macandile Maricis Punzalan Adviser",
+        icon: Icons.groups_rounded,
+        subtitle: t(
+          context,
+          "The team behind Ignis Safe",
+          "Ang koponan sa likod ng Ignis Safe",
+        ),
         builder: (context) => const _TeamCard(),
       ),
       _AboutSection(
@@ -461,20 +488,42 @@ class _AboutUsPageState extends State<AboutUsPage> {
         title: "BFP R4A Dasmariñas City Fire Station",
         searchText:
             "Bureau of Fire Protection Philippines fire safety education",
+        icon: Icons.local_fire_department_outlined,
+        subtitle: t(
+          context,
+          "Our partner fire station",
+          "Aming kasosyong istasyon ng bumbero",
+        ),
         builder: (context) => const _PartnerCard(),
       ),
       _AboutSection(
         type: _AboutSectionType.contact,
-        title: "Emergency Contact Information",
+        title: t(
+          context,
+          "Emergency Contact Information",
+          "Impormasyon sa Emergency",
+        ),
         searchText:
             "hotline emergency 046 884 6131 416 0875 0995 336 9534",
+        icon: Icons.phone_in_talk_rounded,
+        subtitle: t(
+          context,
+          "Hotlines you can call anytime",
+          "Mga hotline na maaari mong tawagan",
+        ),
         builder: (context) => const _ContactCard(),
       ),
       _AboutSection(
         type: _AboutSectionType.contact,
-        title: "Cavite BFP Directory",
+        title: t(context, "Cavite BFP Directory", "Direktoryo ng Cavite BFP"),
         searchText:
             "Office of the Provincial Fire Director Cavite City Kawit Noveleta Rosario Bacoor Imus Dasmarinas Carmona GMA Silang General Trias Amadeo Indang Tanza Trece Martires Alfonso Aguinaldo Magallanes Maragondon Mendez Naic Tagaytay Ternate",
+        icon: Icons.apartment_rounded,
+        subtitle: t(
+          context,
+          "Fire stations across Cavite by district",
+          "Mga istasyon ng bumbero sa Cavite ayon sa distrito",
+        ),
         builder: (context) => _CaviteBfpDirectoryCard(query: _searchQuery),
       ),
     ];
@@ -491,14 +540,159 @@ class _AboutSection {
   final _AboutSectionType type;
   final String title;
   final String searchText;
+  final IconData icon;
+  final String subtitle;
   final Widget Function(BuildContext) builder;
 
   _AboutSection({
     required this.type,
     required this.title,
     required this.searchText,
+    required this.icon,
+    required this.subtitle,
     required this.builder,
   });
+}
+
+class _ExpandableSectionCard extends StatefulWidget {
+  static const Color brandRed = Color(0xFFB11217);
+
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final Widget child;
+  final bool initiallyExpanded;
+
+  const _ExpandableSectionCard({
+    super.key,
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.child,
+    this.initiallyExpanded = false,
+  });
+
+  @override
+  State<_ExpandableSectionCard> createState() =>
+      _ExpandableSectionCardState();
+}
+
+class _ExpandableSectionCardState extends State<_ExpandableSectionCard> {
+  late bool _expanded = widget.initiallyExpanded;
+
+  void _toggle() => setState(() => _expanded = !_expanded);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        InkWell(
+          borderRadius: BorderRadius.circular(18),
+          onTap: _toggle,
+          child: Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(
+                color: _expanded
+                    ? _ExpandableSectionCard.brandRed.withOpacity(0.35)
+                    : const Color(0xFFF0F0F0),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.08),
+                  blurRadius: 14,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 220),
+                  width: 42,
+                  height: 42,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(13),
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: _expanded
+                          ? const [
+                              _ExpandableSectionCard.brandRed,
+                              Color(0xFFE65A5F),
+                            ]
+                          : const [Color(0xFFF3F3F3), Color(0xFFECECEC)],
+                    ),
+                  ),
+                  child: Icon(
+                    widget.icon,
+                    color: _expanded
+                        ? Colors.white
+                        : _ExpandableSectionCard.brandRed,
+                    size: 21,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.title,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 14.5,
+                          fontWeight: FontWeight.w800,
+                          color: Color(0xFF1E1E1E),
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        widget.subtitle,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xFF8A8A8A),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                AnimatedRotation(
+                  turns: _expanded ? 0.5 : 0,
+                  duration: const Duration(milliseconds: 220),
+                  child: Icon(
+                    Icons.keyboard_arrow_down_rounded,
+                    color: _expanded
+                        ? _ExpandableSectionCard.brandRed
+                        : const Color(0xFF9E9E9E),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        AnimatedSize(
+          duration: const Duration(milliseconds: 220),
+          curve: Curves.easeInOut,
+          alignment: Alignment.topCenter,
+          child: _expanded
+              ? Padding(
+                  padding: const EdgeInsets.only(top: 12),
+                  child: widget.child,
+                )
+              : const SizedBox.shrink(),
+        ),
+      ],
+    );
+  }
 }
 
 class _ModernAboutCard extends StatelessWidget {
