@@ -7,6 +7,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'login.dart';
 import 'localization/app_text.dart';
 import 'widgets/app_notification.dart';
+import 'widgets/account_menu.dart';
 
 import 'module_1_extinguisher.dart/pre_assess_instruction.dart' as pre1;
 import 'module_1_extinguisher.dart/module_1_learningmaterials.dart';
@@ -32,6 +33,10 @@ import 'module_3_electrical.dart/post_assess_instruction.dart' as post3;
 import 'module_4_kitchen.dart/post_assess_instruction.dart' as post4;
 import 'module_5_building.dart/post_assess_instruction.dart' as post5;
 
+
+/// Index of the Profile tab within [IgnisHomePage]'s tab list
+/// (Module = 0, About Us = 1, Profile = 2).
+const int _profileTabIndex = 2;
 
 class _NoOverscrollScrollBehavior extends ScrollBehavior {
   const _NoOverscrollScrollBehavior();
@@ -1004,6 +1009,7 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
         '$sectionName ay ipinapakita rito para sa module menu. Ikonekta ang existing route kapag handa na ang page.',
       ),
       type: AppNotificationType.info,
+      accentColor: const Color(0xFFB11217),
     );
   }
 
@@ -1162,12 +1168,15 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
                           PopupMenuButton<String>(
                             tooltip: '',
                             offset: const Offset(0, 55),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14),
-                            ),
+                            elevation: 8,
+                            color: Colors.white,
+                            surfaceTintColor: Colors.white,
+                            shadowColor: Colors.black.withOpacity(0.18),
+                            shape: accountMenuShape(),
+                            constraints: const BoxConstraints(minWidth: 180),
                             onSelected: (value) async {
                               if (value == 'profile') {
-                                widget.onRequestTabChange?.call(1);
+                                widget.onRequestTabChange?.call(_profileTabIndex);
                                 return;
                               }
                               if (value == 'logout') {
@@ -1175,28 +1184,11 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
                                 return;
                               }
                             },
-                            itemBuilder: (context) => [
-                              PopupMenuItem(
-                                value: 'profile',
-                                child: Row(
-                                  children: [
-                                    const Icon(Icons.person_outline_rounded),
-                                    const SizedBox(width: 8),
-                                    Flexible(child: Text(context.tr('profile'))),
-                                  ],
-                                ),
-                              ),
-                              PopupMenuItem(
-                                value: 'logout',
-                                child: Row(
-                                  children: [
-                                    const Icon(Icons.logout_rounded),
-                                    const SizedBox(width: 8),
-                                    Flexible(child: Text(context.tr('log_out'))),
-                                  ],
-                                ),
-                              ),
-                            ],
+                            itemBuilder: (context) => buildAccountMenuItems(
+                              context,
+                              profileLabel: context.tr('profile'),
+                              logoutLabel: context.tr('log_out'),
+                            ),
                             child: CircleAvatar(
                               radius: avatarRadius,
                               backgroundColor: Colors.grey.shade400,
@@ -1615,6 +1607,7 @@ class _DatabaseLearningMaterialPageState
         'Paki-scroll muna hanggang dulo ng seksyong ito bago magpatuloy.',
       ),
       type: AppNotificationType.warning,
+      accentColor: _accent,
     );
   }
 

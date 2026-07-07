@@ -26,6 +26,7 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
   bool _scrolledToBottom = false;
   bool _checked = false;
   bool _saving = false;
+  bool _returningToLogin = false;
 
   static const Color brandRed = Color(0xFFB71C1C);
   static const Color background = Colors.white;
@@ -49,6 +50,21 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
     super.dispose();
   }
 
+  void _notify(
+    BuildContext context, {
+    String? title,
+    required String message,
+    AppNotificationType type = AppNotificationType.info,
+  }) {
+    showAppNotification(
+      context,
+      title: title,
+      message: message,
+      type: type,
+      accentColor: brandRed,
+    );
+  }
+
   void _handleScroll() {
     if (!_scrollController.hasClients) return;
 
@@ -63,6 +79,21 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
     if (!_scrolledToBottom && value >= 0.99) {
       setState(() => _scrolledToBottom = true);
     }
+
+    // Guest (read-only) viewers reach the bottom with nothing left to do
+    // here, since there's no "I Agree" action in this mode — so once they
+    // finish reading, send them back to Login automatically. Guarded by
+    // _returningToLogin so this can only fire once per page instance.
+    if (widget.readOnly && !_returningToLogin && value >= 0.99) {
+      setState(() => _returningToLogin = true);
+      _scheduleReturnToLogin();
+    }
+  }
+
+  Future<void> _scheduleReturnToLogin() async {
+    await Future.delayed(const Duration(milliseconds: 1200));
+    if (!mounted) return;
+    Navigator.pop(context);
   }
 
   Future<void> _onAgree() async {
@@ -84,7 +115,7 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
       Navigator.pop(context, true);
     } catch (e) {
       if (!mounted) return;
-      showAppNotification(
+      _notify(
         context,
         message: t(context, 'Could not save agreement: $e',
             'Hindi ma-save ang kasunduan: $e'),
@@ -126,8 +157,10 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
         ),
         iconTheme: const IconThemeData(color: brandRed),
       ),
-      body: Column(
+      body: Stack(
         children: [
+          Column(
+            children: [
           // Progress card
           Container(
             margin: EdgeInsets.fromLTRB(
@@ -508,7 +541,63 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
               ),
             ),
           ),
+            ],
+          ),
+          if (_returningToLogin) _buildReturningOverlay(),
         ],
+      ),
+    );
+  }
+
+  Widget _buildReturningOverlay() {
+    return Positioned.fill(
+      child: Container(
+        color: Colors.black.withOpacity(0.45),
+        child: Center(
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 32),
+            padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 26),
+            decoration: BoxDecoration(
+              color: cardBackground,
+              borderRadius: BorderRadius.circular(18),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.18),
+                  blurRadius: 18,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(
+                  width: 32,
+                  height: 32,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 3,
+                    valueColor: AlwaysStoppedAnimation<Color>(brandRed),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  t(
+                    context,
+                    'Returning to login page...',
+                    'Bumabalik sa login page...',
+                  ),
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontFamily: 'Poppins',
+                    color: Colors.black87,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13.5,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

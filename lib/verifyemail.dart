@@ -62,6 +62,21 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     super.dispose();
   }
 
+  void _notify(
+    BuildContext context, {
+    String? title,
+    required String message,
+    AppNotificationType type = AppNotificationType.info,
+  }) {
+    showAppNotification(
+      context,
+      title: title,
+      message: message,
+      type: type,
+      accentColor: brandRed,
+    );
+  }
+
   void _clearOtp() {
     _otpCtrl.clear();
     _otpFocus.requestFocus();
@@ -243,7 +258,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       if (!mounted) return;
 
       if (showToast) {
-        showAppNotification(
+        _notify(
           context,
           message: t(
             context,
@@ -297,7 +312,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     if (_isVerifying || _email.isEmpty) return;
 
     if (!_codeComplete) {
-      showAppNotification(
+      _notify(
         context,
         message: t(
           context,

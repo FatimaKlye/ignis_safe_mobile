@@ -8,7 +8,7 @@
         <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
     </style>
     <style name="NormalTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="android:windowBackground">#C61818</item>
+        <item name="android:windowBackground">#FFFFFF</item>
     </style>
     <style name="BaseUnityTheme" parent="android:Theme.Holo.Light.NoActionBar.Fullscreen"/>
     <style name="UnityThemeSelector" parent="BaseUnityTheme">

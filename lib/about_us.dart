@@ -4,8 +4,15 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'localization/language_controller.dart';
 import 'login.dart';
+import 'widgets/account_menu.dart';
 
 enum AboutFilter { all, about, team, bfpDasmarinas, contacts }
+
+/// Index of the Profile tab within [IgnisHomePage]'s tab list
+/// (Module = 0, About Us = 1, Profile = 2). Kept as a local constant
+/// because importing `home.dart`'s `HomeTab` enum here would create a
+/// circular import (home.dart already imports this file).
+const int _profileTabIndex = 2;
 
 class _NoOverscrollScrollBehavior extends ScrollBehavior {
   const _NoOverscrollScrollBehavior();
@@ -88,7 +95,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
   }
 
   Future<void> _goToProfile() async {
-    widget.onRequestTabChange?.call(1);
+    widget.onRequestTabChange?.call(_profileTabIndex);
   }
 
   void _onSearchChanged(String v) => setState(() => _searchQuery = v);
@@ -216,9 +223,12 @@ class _AboutUsPageState extends State<AboutUsPage> {
                           PopupMenuButton<String>(
                             tooltip: '',
                             offset: const Offset(0, 55),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14),
-                            ),
+                            elevation: 8,
+                            color: Colors.white,
+                            surfaceTintColor: Colors.white,
+                            shadowColor: Colors.black.withOpacity(0.18),
+                            shape: accountMenuShape(),
+                            constraints: const BoxConstraints(minWidth: 180),
                             onSelected: (value) async {
                               if (value == 'profile') {
                                 await _goToProfile();
@@ -229,38 +239,11 @@ class _AboutUsPageState extends State<AboutUsPage> {
                                 return;
                               }
                             },
-                            itemBuilder: (context) => [
-                              PopupMenuItem(
-                                value: 'profile',
-                                child: Row(
-                                  children: [
-                                    const Icon(Icons.person_outline_rounded),
-                                    const SizedBox(width: 8),
-                                    Flexible(
-                                      child: Text(
-                                        t(context, 'Profile', 'Profile'),
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              PopupMenuItem(
-                                value: 'logout',
-                                child: Row(
-                                  children: [
-                                    const Icon(Icons.logout_rounded),
-                                    const SizedBox(width: 8),
-                                    Flexible(
-                                      child: Text(
-                                        t(context, 'Log Out', 'Mag-logout'),
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
+                            itemBuilder: (context) => buildAccountMenuItems(
+                              context,
+                              profileLabel: t(context, 'Profile', 'Profile'),
+                              logoutLabel: t(context, 'Log Out', 'Mag-logout'),
+                            ),
                             child: CircleAvatar(
                               radius: avatarRadius,
                               backgroundColor: Colors.grey.shade400,

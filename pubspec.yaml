@@ -82,7 +82,7 @@ flutter:
     - assets/electrical_fire.mp4
     - assets/kitchen_fire.mp4
     - assets/module5.mp4
-    
+    - assets/videos/splash_screen.mp4
 
   fonts:
     - family: Poppins
@@ -97,15 +97,13 @@ flutter:
           weight: 700
 
 flutter_native_splash:
-  color: "#FF7A1014"
-  image: assets/splash_logo.png
+  color: "#FFFFFF"
   android: true
   ios: false
   web: false
 
   android_12:
-    color: "#FF7A1014"
-    image: assets/splash_logo.png
+    color: "#FFFFFF"
 
 flutter_launcher_icons:
   android: true

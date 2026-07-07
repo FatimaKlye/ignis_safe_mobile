@@ -41,6 +41,21 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
     super.dispose();
   }
 
+  void _notify(
+    BuildContext context, {
+    String? title,
+    required String message,
+    AppNotificationType type = AppNotificationType.info,
+  }) {
+    showAppNotification(
+      context,
+      title: title,
+      message: message,
+      type: type,
+      accentColor: brandRed,
+    );
+  }
+
   String _authErrorMessage(String message) {
     final isTl = Localizations.localeOf(context).languageCode == 'tl';
     if (!isTl) return message;
@@ -223,7 +238,7 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
   Future<void> _sendOtp() async {
     final emailError = _validateEmail(_emailCtrl.text);
     if (emailError != null) {
-      showAppNotification(
+      _notify(
         context,
         message: emailError,
         type: AppNotificationType.error,
@@ -251,7 +266,7 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
 
       setState(() => _stage = _ForgotStage.otp);
 
-      showAppNotification(
+      _notify(
         context,
         message: t(
           context,
@@ -262,7 +277,7 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
       );
     } on AuthException catch (e) {
       if (!mounted) return;
-      showAppNotification(
+      _notify(
         context,
         message: _authErrorMessage(e.message),
         type: AppNotificationType.error,
@@ -272,7 +287,7 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
       if (isNetworkError(e)) {
         await showNoInternetDialog(context);
       } else {
-        showAppNotification(
+        _notify(
           context,
           message: t(
             context,
@@ -290,7 +305,7 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
   Future<void> _verifyOtp() async {
     final otpError = _validateOtp(_otpCtrl.text);
     if (otpError != null) {
-      showAppNotification(
+      _notify(
         context,
         message: otpError,
         type: AppNotificationType.error,
@@ -324,7 +339,7 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
 
       setState(() => _stage = _ForgotStage.password);
 
-      showAppNotification(
+      _notify(
         context,
         message: t(
           context,
@@ -335,7 +350,7 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
       );
     } on AuthException catch (e) {
       if (!mounted) return;
-      showAppNotification(
+      _notify(
         context,
         message: _authErrorMessage(e.message),
         type: AppNotificationType.error,
@@ -345,7 +360,7 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
       if (isNetworkError(e)) {
         await showNoInternetDialog(context);
       } else {
-        showAppNotification(
+        _notify(
           context,
           message: t(
             context,
@@ -363,7 +378,7 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
   Future<void> _updatePassword() async {
     final passwordError = _validatePassword(_newPasswordCtrl.text);
     if (passwordError != null) {
-      showAppNotification(
+      _notify(
         context,
         message: passwordError,
         type: AppNotificationType.error,
@@ -372,7 +387,7 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
     }
 
     if (_confirmPasswordCtrl.text.trim().isEmpty) {
-      showAppNotification(
+      _notify(
         context,
         message: t(
           context,
@@ -385,7 +400,7 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
     }
 
     if (_newPasswordCtrl.text.trim() != _confirmPasswordCtrl.text.trim()) {
-      showAppNotification(
+      _notify(
         context,
         message: t(
           context,
@@ -408,7 +423,7 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
 
       if (!mounted) return;
 
-      showAppNotification(
+      _notify(
         context,
         message: t(
           context,
@@ -425,7 +440,7 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
       );
     } on AuthException catch (e) {
       if (!mounted) return;
-      showAppNotification(
+      _notify(
         context,
         message: _authErrorMessage(e.message),
         type: AppNotificationType.error,
@@ -435,7 +450,7 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
       if (isNetworkError(e)) {
         await showNoInternetDialog(context);
       } else {
-        showAppNotification(
+        _notify(
           context,
           message: t(
             context,

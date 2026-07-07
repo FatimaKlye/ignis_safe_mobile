@@ -109,6 +109,7 @@ class _SimulationScene5State extends State<SimulationScene5> {
             ? 'Ang Scene 5 ay hindi pa available sa Unity.'
             : 'Scene 5 is not yet available in Unity.',
         type: AppNotificationType.warning,
+        accentColor: accent,
       );
       return;
     }
@@ -147,6 +148,7 @@ class _SimulationScene5State extends State<SimulationScene5> {
             ? 'Hindi mabuksan ang Unity: ${e.message ?? e.code}'
             : 'Failed to open Unity: ${e.message ?? e.code}',
         type: AppNotificationType.error,
+        accentColor: accent,
       );
     } catch (e) {
       if (!mounted) return;
@@ -156,6 +158,7 @@ class _SimulationScene5State extends State<SimulationScene5> {
             ? 'Hindi ma-save ang progreso ng simulasyon: $e'
             : 'Failed to save simulation progress: $e',
         type: AppNotificationType.error,
+        accentColor: accent,
       );
     } finally {
       // FIX: Reset flag after Unity returns

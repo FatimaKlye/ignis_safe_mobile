@@ -61,6 +61,36 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
+  void _notify(
+    BuildContext context, {
+    String? title,
+    required String message,
+    AppNotificationType type = AppNotificationType.info,
+  }) {
+    showAppNotification(
+      context,
+      title: title,
+      message: message,
+      type: type,
+      accentColor: brandRed,
+    );
+  }
+
+  Future<void> _notifyDialog(
+    BuildContext context, {
+    String? title,
+    required String message,
+    AppNotificationType type = AppNotificationType.warning,
+  }) {
+    return showAppDialog(
+      context,
+      title: title,
+      message: message,
+      type: type,
+      accentColor: brandRed,
+    );
+  }
+
   void _goNext() {
     Navigator.pushAndRemoveUntil(
       context,
@@ -173,7 +203,7 @@ class _LoginPageState extends State<LoginPage> {
           debugPrint('Error signing out: $e');
         }
         if (!mounted) return;
-        await showAppDialog(
+        await _notifyDialog(
           context,
           message: context.tr('must_accept_terms'),
           type: AppNotificationType.warning,
@@ -204,7 +234,7 @@ class _LoginPageState extends State<LoginPage> {
 
       final user = res.user;
       if (user == null) {
-        showAppNotification(
+        _notify(
           context,
           message: context.tr('login_failed'),
           type: AppNotificationType.error,
@@ -212,7 +242,7 @@ class _LoginPageState extends State<LoginPage> {
         return;
       }
 
-      showAppNotification(
+      _notify(
         context,
         message: context.tr('login_success'),
         type: AppNotificationType.success,
@@ -221,7 +251,7 @@ class _LoginPageState extends State<LoginPage> {
       await _handlePostLogin(user);
     } on AuthException catch (e) {
       if (!mounted) return;
-      showAppNotification(
+      _notify(
         context,
         message: e.message,
         type: AppNotificationType.error,
@@ -232,7 +262,7 @@ class _LoginPageState extends State<LoginPage> {
         await showNoInternetDialog(context);
         return;
       } else {
-        showAppNotification(
+        _notify(
           context,
           message: context.tr('unexpected_error'),
           type: AppNotificationType.error,
@@ -252,7 +282,7 @@ class _LoginPageState extends State<LoginPage> {
       );
     } on AuthException catch (e) {
       if (!mounted) return;
-      showAppNotification(
+      _notify(
         context,
         message: e.message,
         type: AppNotificationType.error,
@@ -263,7 +293,7 @@ class _LoginPageState extends State<LoginPage> {
         await showNoInternetDialog(context);
         return;
       } else {
-        showAppNotification(
+        _notify(
           context,
           message: context.tr('google_signin_failed'),
           type: AppNotificationType.error,
@@ -527,7 +557,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
           );
           if (agreed == true && mounted && user != null) {
-            showAppNotification(
+            _notify(
               context,
               message: context.tr('terms_accepted'),
               type: AppNotificationType.success,

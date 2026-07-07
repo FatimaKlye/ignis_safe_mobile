@@ -6,6 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'localization/language_controller.dart';
 import 'login.dart';
 import 'faq_page.dart';
+import 'widgets/account_menu.dart';
 
 part 'edit_profile_page.dart';
 
@@ -327,11 +328,15 @@ class _ProfilePageState extends State<ProfilePage> {
                           PopupMenuButton<String>(
                             tooltip: '',
                             offset: const Offset(0, 55),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14),
-                            ),
+                            elevation: 8,
+                            color: Colors.white,
+                            surfaceTintColor: Colors.white,
+                            shadowColor: Colors.black.withOpacity(0.18),
+                            shape: accountMenuShape(),
+                            constraints: const BoxConstraints(minWidth: 180),
                             onSelected: (value) async {
                               if (value == 'profile') {
+                                // Already on the Profile screen; nothing to do.
                                 return;
                               }
                               if (value == 'logout') {
@@ -339,38 +344,11 @@ class _ProfilePageState extends State<ProfilePage> {
                                 return;
                               }
                             },
-                            itemBuilder: (context) => [
-                              PopupMenuItem(
-                                value: 'profile',
-                                child: Row(
-                                  children: [
-                                    const Icon(Icons.person_outline_rounded),
-                                    const SizedBox(width: 8),
-                                    Flexible(
-                                      child: Text(
-                                        _t(context, 'Profile', 'Profile'),
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              PopupMenuItem(
-                                value: 'logout',
-                                child: Row(
-                                  children: [
-                                    const Icon(Icons.logout_rounded),
-                                    const SizedBox(width: 8),
-                                    Flexible(
-                                      child: Text(
-                                        _t(context, 'Log Out', 'Mag-logout'),
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
+                            itemBuilder: (context) => buildAccountMenuItems(
+                              context,
+                              profileLabel: _t(context, 'Profile', 'Profile'),
+                              logoutLabel: _t(context, 'Log Out', 'Mag-logout'),
+                            ),
                             child: CircleAvatar(
                               radius: avatarRadius,
                               backgroundColor: Colors.grey.shade400,

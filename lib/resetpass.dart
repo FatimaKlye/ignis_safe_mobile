@@ -51,6 +51,36 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
     super.dispose();
   }
 
+  void _notify(
+    BuildContext context, {
+    String? title,
+    required String message,
+    AppNotificationType type = AppNotificationType.info,
+  }) {
+    showAppNotification(
+      context,
+      title: title,
+      message: message,
+      type: type,
+      accentColor: brandRed,
+    );
+  }
+
+  Future<void> _notifyDialog(
+    BuildContext context, {
+    String? title,
+    required String message,
+    AppNotificationType type = AppNotificationType.warning,
+  }) {
+    return showAppDialog(
+      context,
+      title: title,
+      message: message,
+      type: type,
+      accentColor: brandRed,
+    );
+  }
+
   Future<void> _goToLogin() async {
     try {
       await supabase.auth.signOut();
@@ -73,7 +103,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
     final currentSession = supabase.auth.currentSession;
     if (currentSession == null) {
       if (!mounted) return;
-      await showAppDialog(
+      await _notifyDialog(
         context,
         message: _t(
           context,
@@ -96,7 +126,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
 
       if (!mounted) return;
 
-      showAppNotification(
+      _notify(
         context,
         message: _t(
           context,
@@ -113,14 +143,14 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
       );
     } on AuthException catch (e) {
       if (!mounted) return;
-      showAppNotification(
+      _notify(
         context,
         message: _authErrorMessage(e.message),
         type: AppNotificationType.error,
       );
     } catch (_) {
       if (!mounted) return;
-      showAppNotification(
+      _notify(
         context,
         message: _t(
           context,

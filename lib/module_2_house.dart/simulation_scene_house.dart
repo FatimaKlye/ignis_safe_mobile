@@ -111,6 +111,7 @@ class _SimulationScene2State extends State<SimulationScene2> {
         context,
         message: message,
         type: AppNotificationType.error,
+        accentColor: kHouseOrange,
       );
     } catch (e) {
       if (!mounted) return;
@@ -125,6 +126,7 @@ class _SimulationScene2State extends State<SimulationScene2> {
         context,
         message: message,
         type: AppNotificationType.error,
+        accentColor: kHouseOrange,
       );
     } finally {
       if (mounted) {
