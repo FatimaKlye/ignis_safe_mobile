@@ -7,6 +7,7 @@ import '../localization/language_controller.dart';
 import '../localization/localized_db_text.dart';
 import '../profile_progress_sync.dart';
 import 'post_assess_completion.dart';
+import 'module_progression_service.dart';
 
 class AppColors {
   // Purple / Violet Palette based on #7C3AED
@@ -108,6 +109,7 @@ class _PostAssessmentBuildingPageState extends State<PostAssessmentBuildingPage>
   bool _editingFromSummary = false;
   bool _timeExpired = false;
   bool _oneMinuteWarningShown = false;
+  bool _oneMinuteWarningDialogOpen = false;
 
   String? _moduleId;
   String? _assessmentId;
@@ -193,24 +195,164 @@ class _PostAssessmentBuildingPageState extends State<PostAssessmentBuildingPage>
   }
 
   void _showOneMinuteWarning() {
-    if (!mounted) return;
+    if (!mounted || _oneMinuteWarningDialogOpen) return;
+
+    _oneMinuteWarningDialogOpen = true;
+
     showDialog<void>(
       context: context,
-      barrierDismissible: true,
-      builder: (ctx) => AlertDialog(
-        title: Text(_txt('Time Warning', 'Babala sa Oras')),
-        content: Text(_txt(
-          'You only have 1 minute left. Please answer the remaining questions.',
-          'Mayroon ka na lamang 1 minuto. Sagutan na ang mga natitirang tanong.',
-        )),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: Text(_txt('OK', 'Sige')),
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        final isTl = Localizations.localeOf(dialogContext).languageCode == 'tl';
+        final title = isTl ? 'Babala sa Oras' : 'Time Warning';
+        final message = isTl
+            ? 'Mayroon ka na lamang 1 minuto. Sagutan na ang mga natitirang tanong.'
+            : 'You only have 1 minute left. Please answer the remaining questions.';
+        final badgeText = isTl ? 'ORAS NG PAGSUSULIT' : 'QUIZ TIME ALERT';
+        final buttonText = isTl ? 'Naiintindihan ko' : 'I understand';
+
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 28),
+          child: Container(
+            width: double.infinity,
+            clipBehavior: Clip.antiAlias,
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(28),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.shadow.withOpacity(0.85),
+                  blurRadius: 32,
+                  offset: const Offset(0, 18),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  height: 6,
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [AppColors.brandRed, AppColors.brandRedLight],
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 26, 24, 24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        height: 76,
+                        width: 76,
+                        decoration: BoxDecoration(
+                          color: AppColors.brandRedSoft,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: AppColors.brandRed.withOpacity(0.22),
+                            width: 3,
+                          ),
+                        ),
+                        child: const Icon(
+                          Icons.timer_rounded,
+                          color: AppColors.brandRed,
+                          size: 40,
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 5,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.brandRedSoft,
+                          borderRadius: BorderRadius.circular(99),
+                        ),
+                        child: Text(
+                          badgeText,
+                          style: const TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 11,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.brandRed,
+                            letterSpacing: 0.6,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+                      Text(
+                        title,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 23,
+                          fontWeight: FontWeight.w900,
+                          color: AppColors.textPrimary,
+                          height: 1.15,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        message,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.textSecondary,
+                          height: 1.5,
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 54,
+                        child: ElevatedButton(
+                          onPressed: () => Navigator.of(dialogContext).pop(),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primaryButton,
+                            elevation: 4,
+                            shadowColor: AppColors.primaryButton.withOpacity(0.35),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                buttonText,
+                                style: const TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontSize: 15.5,
+                                  fontWeight: FontWeight.w800,
+                                  color: AppColors.textOnRed,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              const Icon(
+                                Icons.check_rounded,
+                                color: AppColors.textOnRed,
+                                size: 20,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
-        ],
-      ),
-    );
+        );
+      },
+    ).whenComplete(() {
+      _oneMinuteWarningDialogOpen = false;
+    });
   }
 
   @override
@@ -277,9 +419,19 @@ class _PostAssessmentBuildingPageState extends State<PostAssessmentBuildingPage>
   }
 
   List<_QuestionVm> _orderedQuestions(List<_QuestionVm> questions) {
-    final mcq = questions.where(_isMcq).toList()..shuffle();
-    final essay = questions.where(_isEssay).toList();
-    return [...mcq, ...essay];
+    final ordered = List<_QuestionVm>.from(questions)
+      ..sort((a, b) {
+        final byNumber = a.questionNo.compareTo(b.questionNo);
+        if (byNumber != 0) return byNumber;
+        return a.id.compareTo(b.id);
+      });
+    return ordered;
+  }
+
+  int _intFrom(dynamic value, [int fallback = 0]) {
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    return int.tryParse((value ?? '').toString()) ?? fallback;
   }
 
   Future<void> _loadOrCreateAttempt({bool forceNewAttempt = false}) async {
@@ -292,6 +444,11 @@ class _PostAssessmentBuildingPageState extends State<PostAssessmentBuildingPage>
         _remainingSeconds = _quizDurationSeconds;
         _oneMinuteWarningShown = false;
       });
+
+      forceNewAttempt = false;
+
+      await ModuleProgressionService(client: _supabase)
+          .ensureCanStartPostTest(moduleNo: _moduleNo);
 
       final user = _user;
 
@@ -354,6 +511,7 @@ class _PostAssessmentBuildingPageState extends State<PostAssessmentBuildingPage>
           .select(
               'id, question_id, option_key, option_text, option_text_tl, is_correct, display_order')
           .inFilter('question_id', questionIds)
+          .eq('is_active', true)
           .order('question_id')
           .order('display_order');
 
@@ -387,6 +545,7 @@ class _PostAssessmentBuildingPageState extends State<PostAssessmentBuildingPage>
         final questionId = row['id'].toString();
         return _QuestionVm(
           id: questionId,
+          questionNo: _intFrom(row['question_no'], 999),
           prompt: LocalizedDbText.pick(context, row, 'prompt', 'prompt_tl'),
           explanation: LocalizedDbText.pick(
               context, row, 'explanation', 'explanation_tl'),
@@ -400,138 +559,18 @@ class _PostAssessmentBuildingPageState extends State<PostAssessmentBuildingPage>
             'One or more multiple-choice questions do not have options.');
       }
 
-      String attemptId;
-      List<_QuestionVm> orderedQuestions;
-      List<String?> selectedOptionIds;
-      List<String?> writtenAnswers;
-      Set<int> flaggedIndexes;
-
-      if (!forceNewAttempt) {
-        final attemptRows = await _supabase
-            .from('assessment_attempts')
-            .select('id, started_at')
-            .eq('user_id', user.id)
-            .eq('assessment_id', assessmentId)
-            .eq('status', 'in_progress')
-            .order('started_at', ascending: false)
-            .limit(1);
-
-        if (attemptRows.isNotEmpty) {
-          attemptId = attemptRows.first['id'].toString();
-
-          final savedRows = await _supabase
-              .from('assessment_attempt_answers')
-              .select(
-                  'question_id, selected_option_id, answer_text, is_flagged, display_order')
-              .eq('attempt_id', attemptId)
-              .order('display_order');
-
-          if (savedRows.isEmpty) {
-            final created = await _createAnswerRowsForExistingAttempt(
-              attemptId: attemptId,
-              questions: baseQuestions,
-            );
-            orderedQuestions = created.questions;
-            selectedOptionIds =
-                List<String?>.filled(orderedQuestions.length, null);
-            writtenAnswers =
-                List<String?>.filled(orderedQuestions.length, null);
-            flaggedIndexes = {};
-          } else {
-            final existingQuestionIds = savedRows
-                .map((row) => row['question_id'].toString())
-                .toSet();
-
-            final missingQuestions = baseQuestions
-                .where((q) => !existingQuestionIds.contains(q.id))
-                .toList();
-
-            if (missingQuestions.isNotEmpty) {
-              final startOrder = savedRows.length;
-              final orderedMissing = _orderedQuestions(missingQuestions);
-
-              await _supabase.from('assessment_attempt_answers').insert(
-                    List.generate(
-                      orderedMissing.length,
-                      (index) => {
-                        'attempt_id': attemptId,
-                        'question_id': orderedMissing[index].id,
-                        'display_order': startOrder + index,
-                        'is_flagged': false,
-                      },
-                    ),
-                  );
-            }
-
-            final refreshedSavedRows = await _supabase
-                .from('assessment_attempt_answers')
-                .select(
-                    'question_id, selected_option_id, answer_text, is_flagged, display_order')
-                .eq('attempt_id', attemptId)
-                .order('display_order');
-
-            final questionMap = {for (final q in baseQuestions) q.id: q};
-
-            orderedQuestions = [];
-            selectedOptionIds = [];
-            writtenAnswers = [];
-            flaggedIndexes = {};
-
-            for (int i = 0; i < refreshedSavedRows.length; i++) {
-              final row = refreshedSavedRows[i];
-              final questionId = row['question_id'].toString();
-              final question = questionMap[questionId];
-              if (question == null) continue;
-
-              orderedQuestions.add(question);
-              selectedOptionIds.add(row['selected_option_id']?.toString());
-              writtenAnswers.add(row['answer_text']?.toString());
-
-              if ((row['is_flagged'] ?? false) as bool) {
-                flaggedIndexes.add(i);
-              }
-            }
-
-            if (orderedQuestions.isEmpty) {
-              final created = await _createNewAttempt(
-                userId: user.id,
-                assessmentId: assessmentId,
-                questions: baseQuestions,
-              );
-              attemptId = created.attemptId;
-              orderedQuestions = created.questions;
-              selectedOptionIds =
-                  List<String?>.filled(orderedQuestions.length, null);
-              writtenAnswers =
-                  List<String?>.filled(orderedQuestions.length, null);
-              flaggedIndexes = {};
-            }
-          }
-        } else {
-          final created = await _createNewAttempt(
-            userId: user.id,
-            assessmentId: assessmentId,
-            questions: baseQuestions,
-          );
-          attemptId = created.attemptId;
-          orderedQuestions = created.questions;
-          selectedOptionIds =
-              List<String?>.filled(orderedQuestions.length, null);
-          writtenAnswers = List<String?>.filled(orderedQuestions.length, null);
-          flaggedIndexes = {};
-        }
-      } else {
-        final created = await _createNewAttempt(
-          userId: user.id,
-          assessmentId: assessmentId,
-          questions: baseQuestions,
-        );
-        attemptId = created.attemptId;
-        orderedQuestions = created.questions;
-        selectedOptionIds = List<String?>.filled(orderedQuestions.length, null);
-        writtenAnswers = List<String?>.filled(orderedQuestions.length, null);
-        flaggedIndexes = {};
-      }
+      final created = await _createNewAttempt(
+        userId: user.id,
+        assessmentId: assessmentId,
+        moduleId: moduleId,
+        questions: baseQuestions,
+      );
+      final attemptId = created.attemptId;
+      final orderedQuestions = created.questions;
+      final selectedOptionIds =
+          List<String?>.filled(orderedQuestions.length, null);
+      final writtenAnswers = List<String?>.filled(orderedQuestions.length, null);
+      final flaggedIndexes = <int>{};
 
       _rebuildEssayControllers(orderedQuestions, writtenAnswers);
 
@@ -563,6 +602,20 @@ class _PostAssessmentBuildingPageState extends State<PostAssessmentBuildingPage>
         if (_pageCtrl.hasClients) _pageCtrl.jumpToPage(0);
         _startQuizTimer();
       });
+    } on ProgressionAccessDenied catch (e) {
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+      await _showInfoDialog(
+        title: _txt('Post-Assessment Locked', 'Naka-lock ang Panghuling Pagsusulit'),
+        message: _txt(
+          e.message,
+          e.message == ModuleProgressionService.postTestAlreadyTakenMessage
+              ? 'Isang beses lang pwedeng sagutan ang Panghuling Pagsusulit. Magpatuloy sa susunod na modyul.'
+              : e.message,
+        ),
+        buttonText: _txt('OK', 'Sige'),
+      );
+      if (mounted) Navigator.pop(context);
     } catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);
@@ -580,57 +633,80 @@ class _PostAssessmentBuildingPageState extends State<PostAssessmentBuildingPage>
   Future<_CreatedAttempt> _createNewAttempt({
     required String userId,
     required String assessmentId,
+    required String moduleId,
     required List<_QuestionVm> questions,
   }) async {
     final ordered = _orderedQuestions(questions);
+    final now = DateTime.now().toUtc().toIso8601String();
 
-    final insertedAttempt = await _supabase
+    final existingAttempts = await _supabase
         .from('assessment_attempts')
-        .insert({
-          'user_id': userId,
-          'assessment_id': assessmentId,
-          'status': 'in_progress',
-          'total_questions': ordered.length,
-          'correct_count': 0,
-          'score': 0,
-        })
         .select('id')
-        .single();
+        .eq('user_id', userId)
+        .eq('assessment_id', assessmentId)
+        .eq('status', 'in_progress')
+        .order('started_at', ascending: false)
+        .limit(1);
 
-    final attemptId = insertedAttempt['id'].toString();
+    final String attemptId;
 
-    await _supabase.from('assessment_attempt_answers').insert(
-          List.generate(
-            ordered.length,
-            (index) => {
-              'attempt_id': attemptId,
-              'question_id': ordered[index].id,
-              'display_order': index,
-              'is_flagged': false,
-            },
-          ),
-        );
+    if ((existingAttempts as List).isNotEmpty) {
+      attemptId = existingAttempts.first['id'].toString();
 
-    return _CreatedAttempt(attemptId: attemptId, questions: ordered);
-  }
+      await _supabase.from('assessment_attempts').update({
+        'module_id': moduleId,
+        'started_at': now,
+        'submitted_at': null,
+        'status': 'in_progress',
+        'total_questions': ordered.length,
+        'correct_count': 0,
+        'score': 0,
+      }).eq('id', attemptId);
+    } else {
+      final insertedAttempt = await _supabase
+          .from('assessment_attempts')
+          .insert({
+            'user_id': userId,
+            'assessment_id': assessmentId,
+            'module_id': moduleId,
+            'status': 'in_progress',
+            'total_questions': ordered.length,
+            'correct_count': 0,
+            'score': 0,
+          })
+          .select('id')
+          .single();
 
-  Future<_CreatedAttempt> _createAnswerRowsForExistingAttempt({
-    required String attemptId,
-    required List<_QuestionVm> questions,
-  }) async {
-    final ordered = _orderedQuestions(questions);
+      attemptId = insertedAttempt['id'].toString();
+    }
 
-    await _supabase.from('assessment_attempt_answers').insert(
-          List.generate(
-            ordered.length,
-            (index) => {
-              'attempt_id': attemptId,
-              'question_id': ordered[index].id,
-              'display_order': index,
-              'is_flagged': false,
-            },
-          ),
-        );
+    try {
+      await _supabase
+          .from('assessment_attempt_answers')
+          .delete()
+          .eq('attempt_id', attemptId);
+    } catch (e) {
+      debugPrint('CLEAR POST-ASSESSMENT ANSWERS WARNING: $e');
+    }
+
+    if (ordered.isNotEmpty) {
+      await _supabase.from('assessment_attempt_answers').upsert(
+        List.generate(
+          ordered.length,
+          (index) => {
+            'attempt_id': attemptId,
+            'question_id': ordered[index].id,
+            'selected_option_id': null,
+            'answer_text': null,
+            'is_flagged': false,
+            'display_order': index,
+            'is_correct': null,
+            'updated_at': now,
+          },
+        ),
+        onConflict: 'attempt_id,question_id',
+      );
+    }
 
     return _CreatedAttempt(attemptId: attemptId, questions: ordered);
   }
@@ -639,19 +715,14 @@ class _PostAssessmentBuildingPageState extends State<PostAssessmentBuildingPage>
     if (_timeExpired || _isSubmitting) return;
 
     if (_showReview) {
-      final confirmed = await _showConfirmDialog(
-        title: _txt('Start new attempt?', 'Magsimula ng bagong subok?'),
+      await _showInfoDialog(
+        title: _txt('Post-Assessment Locked', 'Naka-lock ang Panghuling Pagsusulit'),
         message: _txt(
-          'You already finished this post-assessment. Starting again will generate a new attempt.',
-          'Natapos mo na ang panghuling pagsusulit na ito. Ang pagsisimula ulit ay lilikha ng bagong subok.',
+          ModuleProgressionService.postTestAlreadyTakenMessage,
+          'Isang beses lang pwedeng sagutan ang Panghuling Pagsusulit. Subukan ang susunod na modyul.',
         ),
-        confirmText: _txt('New Attempt', 'Bagong Subok'),
-        cancelText: _txt('Cancel', 'Kanselahin'),
+        buttonText: _txt('OK', 'Sige'),
       );
-
-      if (confirmed == true) {
-        await _loadOrCreateAttempt(forceNewAttempt: true);
-      }
       return;
     }
 
@@ -933,15 +1004,16 @@ class _PostAssessmentBuildingPageState extends State<PostAssessmentBuildingPage>
 
     if (!forceSubmit) {
       final confirmed = await _showConfirmDialog(
-        title: _txt('Submit Post-Assessment', 'Ipasa ang Panghuling Pagsusulit'),
+        title: _txt('Submit Post-Assessment?', 'Ipasa ang Panghuling Pagsusulit?'),
         message: _txt(
           'Answered: $_answeredCount / ${_questions.length}\n\n'
-          'After submission, you will see your score for the multiple-choice questions and your written reflection.',
+          'Make sure your answers are final before submitting. After submission, you will go to the completion page and see your final score.',
           'Nasagutan: $_answeredCount / ${_questions.length}\n\n'
-          'Pagkatapos ipasa, makikita mo ang iyong marka para sa mga multiple-choice na tanong at ang iyong nakasulat na repleksyon.',
+          'Siguraduhin na final na ang iyong mga sagot bago ipasa. Pagkatapos ipasa, mapupunta ka sa completion page at makikita mo ang iyong huling marka.',
         ),
         confirmText: _txt('Submit', 'Ipasa'),
         cancelText: _txt('Review Again', 'Suriin Muli'),
+        icon: Icons.help_outline_rounded,
       );
 
       if (confirmed != true) return;
@@ -1076,6 +1148,7 @@ class _PostAssessmentBuildingPageState extends State<PostAssessmentBuildingPage>
     required String message,
     required String confirmText,
     required String cancelText,
+    IconData icon = Icons.error_outline_rounded,
   }) {
     return showDialog<bool>(
       context: context,
@@ -1128,8 +1201,8 @@ class _PostAssessmentBuildingPageState extends State<PostAssessmentBuildingPage>
                     color: AppColors.brandRedSoft,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
-                    Icons.error_outline_rounded,
+                  child: Icon(
+                    icon,
                     color: AppColors.brandRed,
                     size: 36,
                   ),
@@ -1536,7 +1609,6 @@ class _PostAssessmentBuildingPageState extends State<PostAssessmentBuildingPage>
                                         ? null
                                         : () => _selectAnswer(index, option.id),
                                     compact: compact,
-                                    maxTextLines: compact ? 2 : 3,
                                   ),
                                 );
                               }).toList(),
@@ -1789,11 +1861,15 @@ class _PostAssessmentBuildingPageState extends State<PostAssessmentBuildingPage>
             const SizedBox(width: 10),
             Expanded(
               child: primaryButton(
-                label: _txt('New Attempt', 'Bagong Subok'),
-                icon: Icons.replay_rounded,
+                label: _txt('Completed', 'Tapos Na'),
+                icon: Icons.lock_rounded,
                 onPressed: _isSubmitting
                     ? null
-                    : () => _loadOrCreateAttempt(forceNewAttempt: true),
+                    : () => _showInfoDialog(
+                              title: _txt('Post-Assessment Locked', 'Naka-lock ang Panghuling Pagsusulit'),
+                              message: ModuleProgressionService.postTestAlreadyTakenMessage,
+                              buttonText: _txt('OK', 'Sige'),
+                            ),
               ),
             ),
           ],
@@ -1843,10 +1919,10 @@ class _PostAssessmentBuildingPageState extends State<PostAssessmentBuildingPage>
 
     final isLast = _currentIndex == _questions.length - 1;
     final nextLabel = _editingFromSummary
-        ? _txt('Review Summary', 'Suriin ang Buod')
+        ? _txt('Review Summary', 'Suriin')
         : (isLast
-            ? _txt('Review Summary', 'Suriin ang Buod')
-            : _txt('Next Question', 'Susunod na Tanong'));
+            ? _txt('Review Summary', 'Suriin')
+            : _txt('Next Question', 'Susunod'));
 
     return SafeArea(
       top: false,
@@ -1941,12 +2017,14 @@ class _CreatedAttempt {
 
 class _QuestionVm {
   final String id;
+  final int questionNo;
   final String prompt;
   final String explanation;
   final String type;
   final List<_OptionVm> options;
   const _QuestionVm({
     required this.id,
+    required this.questionNo,
     required this.prompt,
     required this.explanation,
     required this.type,
@@ -2605,7 +2683,6 @@ class _OptionCard extends StatelessWidget {
     required this.enabled,
     required this.onTap,
     required this.compact,
-    required this.maxTextLines,
   });
 
   final String label;
@@ -2614,7 +2691,6 @@ class _OptionCard extends StatelessWidget {
   final bool enabled;
   final VoidCallback? onTap;
   final bool compact;
-  final int maxTextLines;
 
   @override
   Widget build(BuildContext context) {
@@ -2680,8 +2756,7 @@ class _OptionCard extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 1),
                   child: Text(
                     text,
-                    maxLines: maxTextLines,
-                    overflow: TextOverflow.ellipsis,
+                    softWrap: true,
                     style: TextStyle(
                       fontFamily: 'Poppins',
                       fontSize: compact ? 13.2 : 15,

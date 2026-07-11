@@ -80,11 +80,6 @@ public class UnityPlayerGameActivity extends GameActivity implements IUnityPlaye
 
     @Override
     public void onUnityPlayerUnloaded() {
-        // Embedded in Flutter: avoid moveTaskToBack while finishing from Activity.finish()
-        // (Unity return scripts), which can break window focus / touch delivery to Flutter.
-        if (isFinishing()) {
-            return;
-        }
         moveTaskToBack(true);
     }
 

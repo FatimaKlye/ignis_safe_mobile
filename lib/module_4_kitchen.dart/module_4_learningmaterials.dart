@@ -219,6 +219,11 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
     return raw;
   }
 
+  String _mediaPathWithFallback(String key, String fallback) {
+    final resolved = _mediaPath(key);
+    return resolved.isEmpty || resolved == key ? fallback : resolved;
+  }
+
   void _onScroll() {
     if (!_scrollCtrl.hasClients || _isSwitchingPage) return;
 
@@ -852,23 +857,23 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
 
   Widget _page3VideoCard() {
     return _LearningMaterialVideoCard(
-      videoAssetPath: _module4Page3VideoAsset,
-      title: _isTl ? 'Video na Gabay' : 'Video Guide',
-      description: _isTl
-          ? 'Panoorin ang maikling video bilang karagdagang gabay bago tapusin ang bahaging ito.'
-          : 'Watch the short video as an additional guide before completing this section.',
-      helperText: _isTl
-          ? 'I-tap ang video para i-play o i-pause.'
-          : 'Tap the video to play or pause.',
+      videoAssetPath: _mediaPathWithFallback(
+        'm4_media_kitchen_fire_guide_video',
+        _module4Page3VideoAsset,
+      ),
+      title: _uiText('page3_video_title'),
+      description: _uiText('page3_video_description'),
+      helperText: _uiText('page3_video_helper'),
+      loadingText: _uiText('video_loading_text'),
+      errorText: _uiText('video_error_text'),
     );
   }
 
   Widget _page3VideoSourceCard() {
-    return const _KitchenVideoSourceCard(
-      platform: 'YouTube',
-      title: 'San José Fire Department – Fire Safety in the Kitchen',
-      purpose:
-          'Supports the kitchen fire safety lesson by showing basic fire prevention reminders and safe response actions during a kitchen fire.',
+    return _KitchenVideoSourceCard(
+      platform: _uiText('page3_video_source_platform'),
+      title: _uiText('page3_video_source_title'),
+      purpose: _uiText('page3_video_source_purpose'),
     );
   }
 
@@ -877,7 +882,13 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
     if (block == null) return const SizedBox.shrink();
 
     return _KitchenFire3DCardHolder(
-      assetPath: _module4KitchenModelAsset,
+      assetPath: _mediaPathWithFallback(
+        'm4_media_kitchen_model_3d',
+        _module4KitchenModelAsset,
+      ),
+      badgeLabel: _uiText('hero_3d_preview_badge'),
+      interactionHint: _uiText('hero_3d_interaction_hint'),
+      modelAlt: _uiText('hero_3d_model_alt_text'),
       title: block.value(_isTl),
       subtitle: block.metaText('subtitle', _isTl),
       chipLabel: _uiText('hero_chip_label'),
@@ -1912,12 +1923,18 @@ class _KitchenFire3DCardHolder extends StatelessWidget {
   final String title;
   final String subtitle;
   final String chipLabel;
+  final String badgeLabel;
+  final String interactionHint;
+  final String modelAlt;
 
   const _KitchenFire3DCardHolder({
     required this.assetPath,
     required this.title,
     required this.subtitle,
     required this.chipLabel,
+    required this.badgeLabel,
+    required this.interactionHint,
+    required this.modelAlt,
   });
 
   @override
@@ -2047,7 +2064,12 @@ class _KitchenFire3DCardHolder extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 24),
-              _PageOneKitchenFire3DPreview(assetPath: assetPath),
+              _PageOneKitchenFire3DPreview(
+                assetPath: assetPath,
+                badgeLabel: badgeLabel,
+                interactionHint: interactionHint,
+                modelAlt: modelAlt,
+              ),
             ],
           ),
         ],
@@ -2058,8 +2080,16 @@ class _KitchenFire3DCardHolder extends StatelessWidget {
 
 class _PageOneKitchenFire3DPreview extends StatelessWidget {
   final String assetPath;
+  final String badgeLabel;
+  final String interactionHint;
+  final String modelAlt;
 
-  const _PageOneKitchenFire3DPreview({required this.assetPath});
+  const _PageOneKitchenFire3DPreview({
+    required this.assetPath,
+    required this.badgeLabel,
+    required this.interactionHint,
+    required this.modelAlt,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -2069,9 +2099,6 @@ class _PageOneKitchenFire3DPreview extends StatelessWidget {
             .clamp(560.0, 720.0)
             .toDouble();
         final modelPath = _resolveKitchenModelPath(assetPath);
-        final isTl = Localizations.localeOf(context).languageCode
-            .toLowerCase()
-            .startsWith('tl');
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -2110,14 +2137,17 @@ class _PageOneKitchenFire3DPreview extends StatelessWidget {
                       left: 14,
                       child: _KitchenFireViewerBadge(
                         icon: Icons.view_in_ar_rounded,
-                        label: '3D Preview',
+                        label: badgeLabel,
                         color: AppColors.brandRed,
                       ),
                     ),
                     Positioned.fill(
                       top: 24,
                       bottom: 8,
-                      child: _AnimatedKitchenFireModelViewer(modelPath: modelPath),
+                      child: _AnimatedKitchenFireModelViewer(
+                        modelPath: modelPath,
+                        alt: modelAlt,
+                      ),
                     ),
                   ],
                 ),
@@ -2143,9 +2173,7 @@ class _PageOneKitchenFire3DPreview extends StatelessWidget {
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      isTl
-                          ? 'I-drag para i-rotate. I-pinch para i-zoom.'
-                          : 'Drag to rotate. Pinch to zoom.',
+                      interactionHint,
                       style: const TextStyle(
                         color: AppColors.brandRedDark,
                         fontSize: 12.5,
@@ -2174,15 +2202,19 @@ class _PageOneKitchenFire3DPreview extends StatelessWidget {
 
 class _AnimatedKitchenFireModelViewer extends StatelessWidget {
   final String modelPath;
+  final String alt;
 
-  const _AnimatedKitchenFireModelViewer({required this.modelPath});
+  const _AnimatedKitchenFireModelViewer({
+    required this.modelPath,
+    required this.alt,
+  });
 
   @override
   Widget build(BuildContext context) {
     return ModelViewer(
       key: ValueKey(modelPath),
       src: modelPath,
-      alt: 'Kitchen fire 3D model preview',
+      alt: alt,
       autoRotate: true,
       cameraControls: true,
       disableZoom: false,
@@ -2343,12 +2375,16 @@ class _LearningMaterialVideoCard extends StatelessWidget {
   final String title;
   final String description;
   final String helperText;
+  final String loadingText;
+  final String errorText;
 
   const _LearningMaterialVideoCard({
     required this.videoAssetPath,
     required this.title,
     required this.description,
     required this.helperText,
+    required this.loadingText,
+    required this.errorText,
   });
 
   @override
@@ -2435,7 +2471,11 @@ class _LearningMaterialVideoCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
             child: AspectRatio(
               aspectRatio: 16 / 9,
-              child: _InlineAssetVideoPlayer(source: videoAssetPath),
+              child: _InlineAssetVideoPlayer(
+                source: videoAssetPath,
+                loadingText: loadingText,
+                errorText: errorText,
+              ),
             ),
           ),
           const SizedBox(height: 10),
@@ -2478,8 +2518,14 @@ class _LearningMaterialVideoCard extends StatelessWidget {
 
 class _InlineAssetVideoPlayer extends StatefulWidget {
   final String source;
+  final String loadingText;
+  final String errorText;
 
-  const _InlineAssetVideoPlayer({required this.source});
+  const _InlineAssetVideoPlayer({
+    required this.source,
+    required this.loadingText,
+    required this.errorText,
+  });
 
   @override
   State<_InlineAssetVideoPlayer> createState() => _InlineAssetVideoPlayerState();
@@ -2534,12 +2580,20 @@ class _InlineAssetVideoPlayerState extends State<_InlineAssetVideoPlayer> {
   @override
   Widget build(BuildContext context) {
     if (_initializing) {
-      return const _VideoPreviewFallback(isLoading: true);
+      return _VideoPreviewFallback(
+        isLoading: true,
+        loadingText: widget.loadingText,
+        errorText: widget.errorText,
+      );
     }
 
     final controller = _controller;
     if (_hasError || controller == null || !controller.value.isInitialized) {
-      return const _VideoPreviewFallback(hasError: true);
+      return _VideoPreviewFallback(
+        hasError: true,
+        loadingText: widget.loadingText,
+        errorText: widget.errorText,
+      );
     }
 
     return Stack(
@@ -2604,18 +2658,18 @@ class _InlineAssetVideoPlayerState extends State<_InlineAssetVideoPlayer> {
 class _VideoPreviewFallback extends StatelessWidget {
   final bool isLoading;
   final bool hasError;
+  final String loadingText;
+  final String errorText;
 
   const _VideoPreviewFallback({
     this.isLoading = false,
     this.hasError = false,
+    required this.loadingText,
+    required this.errorText,
   });
 
   @override
   Widget build(BuildContext context) {
-    final isTl = Localizations.localeOf(context).languageCode
-        .toLowerCase()
-        .startsWith('tl');
-
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -2652,9 +2706,7 @@ class _VideoPreviewFallback extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 14),
               child: Text(
-                hasError
-                    ? (isTl ? 'Hindi ma-load ang video.' : 'Video could not be loaded.')
-                    : (isTl ? 'Naglo-load ang video...' : 'Loading video...'),
+                hasError ? errorText : loadingText,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   color: AppColors.textSecondary,

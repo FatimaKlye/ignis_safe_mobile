@@ -5,7 +5,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'localization/language_controller.dart';
 import 'login.dart';
-import 'module_history_page.dart';
+import 'faq_page.dart';
+import 'widgets/account_menu.dart';
 
 part 'edit_profile_page.dart';
 
@@ -198,132 +199,6 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  void _showFAQ() {
-    showDialog(
-      context: context,
-      builder: (dialogContext) {
-        final size = MediaQuery.of(dialogContext).size;
-
-        return AlertDialog(
-          insetPadding: const EdgeInsets.symmetric(
-            horizontal: 20,
-            vertical: 24,
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          title: Text(
-            _t(context, "FAQ", "Mga Madalas Itanong"),
-            style: const TextStyle(fontWeight: FontWeight.w900),
-          ),
-          content: ConstrainedBox(
-            constraints: BoxConstraints(
-              maxWidth: size.width - 40,
-              maxHeight: size.height * 0.68,
-            ),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-              Text(
-                _t(
-                  context,
-                  "1. What does IGNIS SAFE do?",
-                  "1. Ano ang ginagawa ng IGNIS SAFE?",
-                ),
-                style: const TextStyle(
-                  fontWeight: FontWeight.w900,
-                  fontSize: 15,
-                ),
-              ),
-              SizedBox(height: 6),
-              Text(
-                _t(
-                  context,
-                  "IGNIS SAFE helps users learn fire safety through learning materials, assessments, and interactive fire scenario simulations. It is designed to improve awareness, preparedness, and proper response during fire emergencies.",
-                  "Tinutulungan ng IGNIS SAFE ang mga gumagamit na matuto tungkol sa kaligtasan sa sunog sa pamamagitan ng mga materyales sa pagkatuto, pagsusulit, at interaktibong simulation ng sitwasyon ng sunog. Layunin nitong mapabuti ang kamalayan, paghahanda, at tamang pagtugon sa mga emerhensiyang sunog.",
-                ),
-                style: const TextStyle(
-                  height: 1.4,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              SizedBox(height: 16),
-              Text(
-                _t(
-                  context,
-                  "2. Why do we need to learn fire scenarios?",
-                  "2. Bakit kailangan nating pag-aralan ang mga sitwasyon ng sunog?",
-                ),
-                style: const TextStyle(
-                  fontWeight: FontWeight.w900,
-                  fontSize: 15,
-                ),
-              ),
-              SizedBox(height: 6),
-              Text(
-                _t(
-                  context,
-                  "Learning fire scenarios helps people understand what to do in real emergency situations. It builds correct decision-making, reduces panic, and teaches safe actions that can help protect lives and property.",
-                  "Ang pag-aaral ng mga sitwasyon ng sunog ay tumutulong sa mga tao na malaman ang dapat gawin sa totoong emerhensiya. Pinahuhusay nito ang tamang pagpapasya, binabawasan ang panic, at nagtuturo ng ligtas na mga kilos na makatutulong protektahan ang buhay at ari-arian.",
-                ),
-                style: const TextStyle(
-                  height: 1.4,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              SizedBox(height: 16),
-              Text(
-                _t(
-                  context,
-                  "3. What is the purpose of this app?",
-                  "3. Ano ang layunin ng app na ito?",
-                ),
-                style: const TextStyle(
-                  fontWeight: FontWeight.w900,
-                  fontSize: 15,
-                ),
-              ),
-              SizedBox(height: 6),
-              Text(
-                _t(
-                  context,
-                  "The purpose of this app is to provide an engaging and practical way to learn fire safety. It combines education and simulation so users can gain knowledge and apply it in realistic fire emergency situations.",
-                  "Layunin ng app na ito na magbigay ng kaakit-akit at praktikal na paraan para matuto ng kaligtasan sa sunog. Pinagsasama nito ang edukasyon at simulation upang makakuha ng kaalaman ang mga gumagamit at mailapat ito sa makatotohanang sitwasyon ng emerhensiyang sunog.",
-                ),
-                style: const TextStyle(
-                  height: 1.4,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-                ],
-              ),
-            ),
-          ),
-          actions: [
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: brandRed,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              onPressed: () => Navigator.pop(context),
-              child: const Text(
-                "OK",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w900,
-                ),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   void _showDialogBox({required String title, required String message}) {
     showDialog(
       context: context,
@@ -437,7 +312,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 final listGap = compactHeight ? 16.0 : 24.0;
                 final avatarRadius = compactWidth ? 20.0 : 22.0;
                 final titleSize = (width * 0.075).clamp(20.0, 30.0).toDouble();
-                final avatarSize = (width * 0.48).clamp(140.0, 180.0).toDouble();
+                final avatarSize = (width * 0.42).clamp(132.0, 168.0).toDouble();
 
                 return Padding(
                   padding: EdgeInsets.symmetric(
@@ -453,11 +328,15 @@ class _ProfilePageState extends State<ProfilePage> {
                           PopupMenuButton<String>(
                             tooltip: '',
                             offset: const Offset(0, 55),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14),
-                            ),
+                            elevation: 8,
+                            color: Colors.white,
+                            surfaceTintColor: Colors.white,
+                            shadowColor: Colors.black.withOpacity(0.18),
+                            shape: accountMenuShape(),
+                            constraints: const BoxConstraints(minWidth: 180),
                             onSelected: (value) async {
                               if (value == 'profile') {
+                                // Already on the Profile screen; nothing to do.
                                 return;
                               }
                               if (value == 'logout') {
@@ -465,38 +344,11 @@ class _ProfilePageState extends State<ProfilePage> {
                                 return;
                               }
                             },
-                            itemBuilder: (context) => [
-                              PopupMenuItem(
-                                value: 'profile',
-                                child: Row(
-                                  children: [
-                                    const Icon(Icons.person_outline_rounded),
-                                    const SizedBox(width: 8),
-                                    Flexible(
-                                      child: Text(
-                                        _t(context, 'Profile', 'Profile'),
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              PopupMenuItem(
-                                value: 'logout',
-                                child: Row(
-                                  children: [
-                                    const Icon(Icons.logout_rounded),
-                                    const SizedBox(width: 8),
-                                    Flexible(
-                                      child: Text(
-                                        _t(context, 'Log Out', 'Mag-logout'),
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
+                            itemBuilder: (context) => buildAccountMenuItems(
+                              context,
+                              profileLabel: _t(context, 'Profile', 'Profile'),
+                              logoutLabel: _t(context, 'Log Out', 'Mag-logout'),
+                            ),
                             child: CircleAvatar(
                               radius: avatarRadius,
                               backgroundColor: Colors.grey.shade400,
@@ -579,30 +431,37 @@ class _ProfilePageState extends State<ProfilePage> {
                                   Container(
                                     width: avatarSize,
                                     height: avatarSize,
+                                    padding: const EdgeInsets.all(4),
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
-                                      color: Colors.grey.shade200,
-                                      image: avatarImage != null
-                                          ? DecorationImage(
-                                              image: avatarImage,
-                                              fit: BoxFit.cover,
-                                            )
-                                          : null,
+                                      color: Colors.white,
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Colors.black.withOpacity(0.15),
-                                          blurRadius: 18,
-                                          offset: const Offset(0, 10),
+                                          color: Colors.black.withOpacity(0.16),
+                                          blurRadius: 22,
+                                          offset: const Offset(0, 12),
                                         ),
                                       ],
                                     ),
-                                    child: avatarImage == null
-                                        ? Icon(
-                                            Icons.person,
-                                            size: avatarSize * 0.39,
-                                            color: Colors.grey.shade500,
-                                          )
-                                        : null,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Colors.grey.shade100,
+                                        image: avatarImage != null
+                                            ? DecorationImage(
+                                                image: avatarImage,
+                                                fit: BoxFit.cover,
+                                              )
+                                            : null,
+                                      ),
+                                      child: avatarImage == null
+                                          ? Icon(
+                                              Icons.person,
+                                              size: avatarSize * 0.38,
+                                              color: Colors.grey.shade400,
+                                            )
+                                          : null,
+                                    ),
                                   ),
                                   const SizedBox(height: 18),
                                   _isLoadingProfile
@@ -636,19 +495,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                             ),
                                           ],
                                         ),
-                                  const SizedBox(height: 22),
-                                  _InfoTile(
-                                    icon: Icons.check_box_outlined,
-                                    text:
-                                        "${_t(context, "Completed Modules", "Natapos na Module")}: $_completedSimulations",
-                                  ),
-                                  const SizedBox(height: 12),
-                                  _InfoTile(
-                                    icon: Icons.local_fire_department_outlined,
-                                    text:
-                                        "${_t(context, "Last Simulation", "Huling Simulation")}: $_lastSimulation",
-                                  ),
-                                  const SizedBox(height: 26),
+                                  const SizedBox(height: 24),
                                   _BigButton(
                                     icon: Icons.edit,
                                     label: _t(
@@ -673,23 +520,6 @@ class _ProfilePageState extends State<ProfilePage> {
                                     },
                                   ),
                                   const SizedBox(height: 14),
-                                  _BigButton(
-                                    icon: Icons.history,
-                                    label: _t(
-                                      context,
-                                      "Module History",
-                                      "Kasaysayan ng Modyul",
-                                    ),
-                                    onTap: () async {
-                                      await Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (_) => const ModuleHistoryPage(),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                  const SizedBox(height: 14),
                                   // _LanguageSelector(
                                   //   selected: _language,
                                   //   onChanged: _changeLanguage,
@@ -702,7 +532,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                       "FAQ",
                                       "Mga Madalas Itanong",
                                     ),
-                                    onTap: _showFAQ,
+                                    onTap: () => showFAQDialog(context),
                                   ),
                                   const SizedBox(height: 14),
                                   _BigButton(
@@ -737,37 +567,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
 }
 
-class _InfoTile extends StatelessWidget {
-  const _InfoTile({required this.icon, required this.text});
-
-  final IconData icon;
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-      decoration: BoxDecoration(
-        color: Colors.grey.shade200,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: Colors.grey.shade600),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              text,
-              softWrap: true,
-              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class _BigButton extends StatelessWidget {
   const _BigButton({
     required this.icon,
@@ -786,34 +585,42 @@ class _BigButton extends StatelessWidget {
     final btnColor = color ?? Colors.black;
 
     return Container(
-      height: 60,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.10),
+            color: Colors.black.withOpacity(0.06),
             blurRadius: 16,
-            offset: const Offset(0, 10),
+            offset: const Offset(0, 8),
           ),
         ],
       ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 18),
-          child: Row(
-            children: [
-              Icon(icon, color: btnColor),
-              const SizedBox(width: 12),
-              Expanded(
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerLeft,
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(16),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+            child: Row(
+              children: [
+                Container(
+                  width: 38,
+                  height: 38,
+                  decoration: BoxDecoration(
+                    color: btnColor.withOpacity(0.08),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(icon, size: 19, color: btnColor),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
                   child: Text(
                     label,
                     maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w900,
@@ -821,8 +628,12 @@ class _BigButton extends StatelessWidget {
                     ),
                   ),
                 ),
-              ),
-            ],
+                Icon(
+                  Icons.chevron_right_rounded,
+                  color: Colors.grey.shade400,
+                ),
+              ],
+            ),
           ),
         ),
       ),

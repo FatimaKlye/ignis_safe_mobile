@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-
-import 'forgotpass.dart';
 import 'login.dart';
-import 'network_error_helper.dart';
+import 'signup.dart';
 
 String _t(BuildContext context, String en, String tl) {
   return Localizations.localeOf(context).languageCode == 'tl' ? tl : en;
 }
 
-class CreatePasswordPage extends StatefulWidget {
+/// Compatibility page only.
+///
+/// The password setup step is now merged into RegisterPage. This file remains
+/// so older imports/routes do not break, but it no longer creates or updates a
+/// Supabase account on its own.
+class CreatePasswordPage extends StatelessWidget {
   final String email;
   final String firstName;
   final String lastName;
@@ -21,198 +23,82 @@ class CreatePasswordPage extends StatefulWidget {
     required this.lastName,
   });
 
-  @override
-  State<CreatePasswordPage> createState() => _CreatePasswordPageState();
-}
-
-class _CreatePasswordPageState extends State<CreatePasswordPage> {
   static const Color brandRed = Color(0xFFB71C1C);
 
-  final SupabaseClient supabase = Supabase.instance.client;
-
-  final TextEditingController passCtrl = TextEditingController();
-  final TextEditingController confirmPassCtrl = TextEditingController();
-
-  bool _showPassword = false;
-  bool _showConfirmPassword = false;
-  bool _isLoading = false;
-
-  bool _min8 = false;
-  bool _hasNumber = false;
-  bool _hasSymbol = false;
-  bool _hasUpper = false;
-  bool _matches = false;
-  bool _completed = false;
-
   @override
-  void initState() {
-    super.initState();
-    passCtrl.addListener(_recalc);
-    confirmPassCtrl.addListener(_recalc);
-  }
+  Widget build(BuildContext context) {
+    final displayEmail = email.trim().toLowerCase();
 
-  @override
-  void dispose() {
-    passCtrl.removeListener(_recalc);
-    confirmPassCtrl.removeListener(_recalc);
-    passCtrl.dispose();
-    confirmPassCtrl.dispose();
-    super.dispose();
-  }
-
-  void _recalc() {
-    final password = passCtrl.text;
-    final confirm = confirmPassCtrl.text;
-
-    final min8 = password.length >= 8;
-    final hasNumber = RegExp(r'\d').hasMatch(password);
-    final hasSymbol = RegExp(
-      r'[!@#$%^&*(),.?":{}|<>_\-\[\]\\/~`+=;]',
-    ).hasMatch(password);
-    final hasUpper = RegExp(r'[A-Z]').hasMatch(password);
-    final matches = confirm.isNotEmpty && password == confirm;
-
-    if (_min8 != min8 ||
-        _hasNumber != hasNumber ||
-        _hasSymbol != hasSymbol ||
-        _hasUpper != hasUpper ||
-        _matches != matches) {
-      setState(() {
-        _min8 = min8;
-        _hasNumber = hasNumber;
-        _hasSymbol = hasSymbol;
-        _hasUpper = hasUpper;
-        _matches = matches;
-      });
-    }
-  }
-
-  int get _passedRules {
-    int count = 0;
-    if (_min8) count++;
-    if (_hasNumber) count++;
-    if (_hasSymbol) count++;
-    if (_hasUpper) count++;
-    return count;
-  }
-
-  bool get _isEmpty => passCtrl.text.trim().isEmpty;
-
-  double get _progress {
-    if (_isEmpty) return 0.0;
-    return _passedRules / 4.0;
-  }
-
-  Color get _barColor {
-    if (_isEmpty) return const Color(0xFFD32F2F);
-    if (_passedRules < 3) return const Color(0xFFF9A825);
-    return const Color(0xFF2E7D32);
-  }
-
-  String get _strengthText {
-    if (_isEmpty) return _t(context, 'Password is weak', 'Mahina ang password');
-    if (_passedRules <= 1) {
-      return _t(context, 'Password is weak', 'Mahina ang password');
-    }
-    if (_passedRules <= 3) {
-      return _t(context, 'Password is medium', 'Katamtaman ang password');
-    }
-    return _t(context, 'Password is strong', 'Malakas ang password');
-  }
-
-  Color get _strengthColor {
-    if (_isEmpty) return const Color(0xFFD32F2F);
-    if (_passedRules <= 1) return const Color(0xFFD32F2F);
-    if (_passedRules <= 3) return const Color(0xFFF9A825);
-    return const Color(0xFF2E7D32);
-  }
-
-  bool get _allOk => _passedRules == 4 && _matches;
-
-  Future<void> _showPopup(String message, {String? title}) async {
-    if (!mounted) return;
-
-    await showDialog<void>(
-      context: context,
-      barrierDismissible: true,
-      builder: (dialogContext) {
-        return Dialog(
-          backgroundColor: Colors.transparent,
-          insetPadding: const EdgeInsets.symmetric(horizontal: 28),
-          child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.fromLTRB(22, 22, 22, 20),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(24),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.18),
-                  blurRadius: 30,
-                  offset: const Offset(0, 16),
-                ),
-              ],
-            ),
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 35.0),
+          child: Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(99),
-                    onTap: () => Navigator.pop(dialogContext),
-                    child: Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF5F5F5),
-                        borderRadius: BorderRadius.circular(99),
-                      ),
-                      child: const Icon(
-                        Icons.close_rounded,
-                        size: 20,
-                        color: Colors.black54,
-                      ),
-                    ),
+                SizedBox(
+                  height: 120,
+                  child: FittedBox(
+                    fit: BoxFit.contain,
+                    child: Image.asset('assets/logo.png'),
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 26),
                 Container(
-                  height: 68,
-                  width: 68,
+                  height: 72,
+                  width: 72,
                   decoration: BoxDecoration(
                     color: brandRed.withOpacity(0.10),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
-                    Icons.error_outline_rounded,
+                    Icons.password_rounded,
                     color: brandRed,
-                    size: 36,
+                    size: 38,
                   ),
                 ),
-                const SizedBox(height: 18),
+                const SizedBox(height: 20),
                 Text(
-                  title ?? _t(context, 'Notice', 'Paalala'),
+                  _t(
+                    context,
+                    'Password Step Moved',
+                    'Nalipat na ang Password Step',
+                  ),
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     fontFamily: 'Poppins',
-                    fontSize: 22,
+                    fontSize: 24,
                     fontWeight: FontWeight.w800,
                     color: Colors.black87,
-                    height: 1.18,
+                    height: 1.15,
                   ),
                 ),
                 const SizedBox(height: 8),
                 Container(
                   height: 2,
-                  width: 90,
+                  width: 120,
                   decoration: BoxDecoration(
                     color: brandRed,
-                    borderRadius: BorderRadius.circular(99),
+                    borderRadius: BorderRadius.circular(8),
                   ),
                 ),
                 const SizedBox(height: 18),
                 Text(
-                  message,
+                  displayEmail.isEmpty
+                      ? _t(
+                          context,
+                          'Password validation is now completed directly on the Sign Up page before email verification.',
+                          'Ginagawa na ngayon ang password validation sa Sign Up page bago ang email verification.',
+                        )
+                      : _t(
+                          context,
+                          'Password validation is now completed directly on the Sign Up page before email verification for $displayEmail.',
+                          'Ginagawa na ngayon ang password validation sa Sign Up page bago ang email verification para sa $displayEmail.',
+                        ),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontFamily: 'Poppins',
@@ -222,247 +108,40 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                     height: 1.45,
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 26),
                 SizedBox(
                   width: double.infinity,
                   height: 50,
                   child: ElevatedButton(
-                    onPressed: () => Navigator.pop(dialogContext),
+                    onPressed: () {
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (_) => const RegisterPage()),
+                        (route) => false,
+                      );
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: brandRed,
-                      elevation: 4,
-                      shadowColor: brandRed.withOpacity(0.35),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                     child: Text(
-                      _t(context, 'OK', 'Sige'),
+                      _t(context, 'Back to Sign Up', 'Bumalik sa Sign Up'),
+                      textAlign: TextAlign.center,
                       style: const TextStyle(
                         fontFamily: 'Poppins',
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
                         color: Colors.white,
+                        fontSize: 17,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ),
                 ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  void _showExistingAccountDialog(String email) {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(
-          _t(
-            context,
-            'This email already has an account',
-            'Mayroon nang account ang email na ito',
-          ),
-          style: const TextStyle(fontWeight: FontWeight.w900),
-        ),
-        content: Text(
-          _t(
-            context,
-            '$email already has an account.\n\nWould you like to reset your password or go to login?',
-            '$email ay mayroon nang account.\n\nNais mo bang i-reset ang iyong password o mag-login?',
-          ),
-          style: const TextStyle(fontWeight: FontWeight.w600, height: 1.4),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(_t(context, 'Cancel', 'Kanselahin')),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const ForgotPassPage()),
-              );
-            },
-            child: Text(
-              _t(context, 'Forgot Password', 'Nakalimutan ang Password'),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              LoginPage.skipAutoRoute = false;
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (_) => const LoginPage()),
-                (route) => false,
-              );
-            },
-            child: Text(_t(context, 'Login', 'Mag-login')),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future<void> _cleanupAbandonedSignup() async {
-    final email = widget.email.trim().toLowerCase();
-    if (email.isEmpty) return;
-
-    try {
-      await supabase.functions.invoke(
-        'cancel_pending_signup_email',
-        body: {'email': email},
-      );
-    } catch (_) {
-      // Best-effort cleanup; ignore failures so back navigation still works.
-    }
-
-    try {
-      await supabase.auth.signOut();
-    } catch (_) {
-      // ignore
-    }
-  }
-
-  // ── Create account ────────────────────────────────────────────────────────
-  Future<void> _continueWithSupabase() async {
-    if (_isLoading) return;
-
-    if (!_matches) {
-      await _showPopup(
-        _t(
-          context,
-          'Passwords do not match.',
-          'Hindi magkatugma ang mga password.',
-        ),
-        title: _t(context, 'Invalid Password', 'Hindi Wastong Password'),
-      );
-      return;
-    }
-
-    if (!_allOk) {
-      await _showPopup(
-        _t(
-          context,
-          'Password does not meet all requirements.',
-          'Hindi natutugunan ng password ang lahat ng kinakailangan.',
-        ),
-        title: _t(context, 'Invalid Password', 'Hindi Wastong Password'),
-      );
-      return;
-    }
-
-    setState(() => _isLoading = true);
-
-    try {
-      final password = passCtrl.text;
-
-      final currentUser = supabase.auth.currentUser;
-
-      if (currentUser == null) {
-        throw const AuthException(
-          'No active session found. Please verify your email again.',
-        );
-      }
-
-      final updateResponse = await supabase.auth.updateUser(
-        UserAttributes(password: password),
-      );
-
-      final user = updateResponse.user ?? supabase.auth.currentUser;
-      if (user == null) {
-        throw const AuthException(
-          'Unable to complete account setup. Please verify your email again.',
-        );
-      }
-
-      // ── UPDATED: upsert profile and mark registration as COMPLETED ───────
-      // This is the ONLY place where registration_status becomes 'completed'.
-      // Until this point, the profile was 'pending_password_setup'.
-      await supabase.from('profiles').upsert({
-        'id': user.id,
-        'first_name': widget.firstName.trim(),
-        'last_name': widget.lastName.trim(),
-        'email': widget.email.trim().toLowerCase(),
-        'registration_status': 'completed', // ← marks registration as done
-        'app_language_code':
-            Localizations.localeOf(context).languageCode == 'tl' ? 'tl' : 'en',
-        'updated_at': DateTime.now().toUtc().toIso8601String(),
-      });
-
-      // Mark the auth user as fully registered so cleanup won't delete it.
-      await supabase.auth.updateUser(
-        UserAttributes(
-          data: {'registration_completed': true},
-        ),
-      );
-
-      if (!mounted) return;
-
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (_) => AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(18),
-          ),
-          contentPadding: const EdgeInsets.fromLTRB(24, 28, 24, 20),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(
-                Icons.check_circle_rounded,
-                color: Color(0xFF2E7D32),
-                size: 64,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                _t(context, 'Account Created!', 'Nagawa na ang Account!'),
-                style: const TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.black87,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                _t(
-                  context,
-                  'Your account has been successfully created.',
-                  'Matagumpay na nagawa ang iyong account.',
-                ),
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 12,
-                  color: Colors.black54,
-                ),
-              ),
-              const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: brandRed,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  onPressed: () async {
+                const SizedBox(height: 14),
+                TextButton(
+                  onPressed: () {
                     LoginPage.skipAutoRoute = false;
-                    await supabase.auth.signOut();
-
-                    if (!context.mounted) return;
-
                     Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(builder: (_) => const LoginPage()),
@@ -473,530 +152,12 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                     _t(context, 'Go to Login', 'Pumunta sa Login'),
                     style: const TextStyle(
                       fontFamily: 'Poppins',
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
+                      color: brandRed,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        ),
-      );
-      _completed = true;
-    } on AuthException catch (e) {
-      final msg = e.message.toLowerCase();
-
-      if (msg.contains('already registered') ||
-          msg.contains('already exists')) {
-        if (mounted) {
-          _showExistingAccountDialog(widget.email.trim().toLowerCase());
-        }
-      } else {
-        await _showPopup(
-          e.message,
-          title: _t(
-            context,
-            'Account Setup Failed',
-            'Hindi Natapos ang Pag-set up ng Account',
-          ),
-        );
-      }
-    } catch (e) {
-      if (isNetworkError(e)) {
-        if (mounted) await showNoInternetDialog(context);
-      } else {
-        await _showPopup(
-          _t(
-            context,
-            'Something went wrong while creating your account. Please try again.',
-            'May nangyaring mali habang ginagawa ang iyong account. Subukang muli.',
-          ),
-          title: _t(
-            context,
-            'Account Setup Failed',
-            'Hindi Natapos ang Pag-set up ng Account',
-          ),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
-    }
-  }
-
-  Widget _ruleItem(String text, bool passed) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(
-          passed ? Icons.check_circle : Icons.radio_button_unchecked,
-          size: 18,
-          color: passed ? const Color(0xFF2E7D32) : Colors.black38,
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Text(
-            text,
-            style: TextStyle(
-              fontFamily: 'Poppins',
-              fontSize: 12,
-              color: passed ? const Color(0xFF2E7D32) : Colors.black54,
-              fontWeight: passed ? FontWeight.w600 : FontWeight.w500,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _passwordField({
-    required String hint,
-    required TextEditingController controller,
-    required bool obscureText,
-    required String suffixText,
-    required VoidCallback onSuffixTap,
-    TextInputAction? textInputAction,
-    ValueChanged<String>? onSubmitted,
-  }) {
-    return Container(
-      margin: const EdgeInsets.only(top: 8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: const [
-          BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 4)),
-        ],
-      ),
-      child: TextField(
-        controller: controller,
-        obscureText: obscureText,
-        textInputAction: textInputAction,
-        onSubmitted: onSubmitted,
-        style: const TextStyle(fontFamily: 'Poppins'),
-        decoration: InputDecoration(
-          hintText: hint,
-          hintStyle: const TextStyle(fontFamily: 'Poppins'),
-          border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 20,
-            vertical: 18,
-          ),
-          suffixIcon: InkWell(
-            onTap: onSuffixTap,
-            child: Padding(
-              padding: const EdgeInsets.all(15),
-              child: Text(
-                suffixText,
-                style: const TextStyle(
-                  fontFamily: 'Poppins',
-                  color: brandRed,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _inputLabel(String label) {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: Text(
-        label,
-        style: const TextStyle(
-          fontFamily: 'Poppins',
-          color: brandRed,
-          fontWeight: FontWeight.bold,
-          fontSize: 13,
-        ),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final email = widget.email.trim().toLowerCase();
-
-    return WillPopScope(
-      onWillPop: () async {
-        if (_isLoading || _completed) return !_isLoading;
-        await _cleanupAbandonedSignup();
-        return true;
-      },
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 35.0),
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                return SingleChildScrollView(
-                  child: ConstrainedBox(
-                    constraints:
-                        BoxConstraints(minHeight: constraints.maxHeight),
-                    child: Align(
-                      alignment: Alignment.topCenter,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                        Padding(
-                          padding: const EdgeInsets.only(top: 70, bottom: 30),
-                          child: SizedBox(
-                            height: 120,
-                            child: FittedBox(
-                              fit: BoxFit.contain,
-                              child: Image.asset('assets/logo.png'),
-                            ),
-                          ),
-                        ),
-                        Text(
-                          _t(context, 'Create Password', 'Gumawa ng Password'),
-                          style: const TextStyle(
-                            fontFamily: 'Poppins',
-                            fontSize: 28,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.black87,
-                            height: 1.0,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Container(
-                          height: 2,
-                          width: 150,
-                          decoration: BoxDecoration(
-                            color: brandRed,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          _t(
-                            context,
-                            'Welcome to, IGNIS SAFE',
-                            'Maligayang pagdating sa IGNIS SAFE',
-                          ),
-                          style: const TextStyle(
-                            fontFamily: 'Poppins',
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black38,
-                            height: 1.1,
-                          ),
-                        ),
-                        const SizedBox(height: 60),
-                        Row(
-                          children: [
-                            IconButton(
-                              onPressed: _isLoading
-                                  ? null
-                                  : () async {
-                                      if (!_completed) {
-                                        await _cleanupAbandonedSignup();
-                                      }
-                                      if (!context.mounted) return;
-                                      Navigator.pop(context);
-                                    },
-                              icon: const Icon(
-                                Icons.arrow_back_ios_new,
-                                size: 18,
-                              ),
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              _t(
-                                context,
-                                'Set your password',
-                                'I-set ang iyong password',
-                              ),
-                              style: const TextStyle(
-                                fontFamily: 'Poppins',
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.black87,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              width: 18,
-                              height: 3,
-                              decoration: BoxDecoration(
-                                color: brandRed,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                            const SizedBox(width: 18),
-                            Container(
-                              width: 18,
-                              height: 3,
-                              decoration: BoxDecoration(
-                                color: brandRed,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                            const SizedBox(width: 18),
-                            Container(
-                              width: 18,
-                              height: 3,
-                              decoration: BoxDecoration(
-                                color: Colors.black26,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 18),
-                        Text(
-                          email,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontFamily: 'Poppins',
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black54,
-                          ),
-                        ),
-                        const SizedBox(height: 28),
-                        _inputLabel(_t(context, 'PASSWORD:', 'PASSWORD:')),
-                        _passwordField(
-                          hint: _t(
-                            context,
-                            'Enter your password',
-                            'Ilagay ang iyong password',
-                          ),
-                          controller: passCtrl,
-                          obscureText: !_showPassword,
-                          suffixText: _showPassword
-                              ? _t(context, 'HIDE', 'ITAGO')
-                              : _t(context, 'SHOW', 'IPAKITA'),
-                          onSuffixTap: () {
-                            setState(() => _showPassword = !_showPassword);
-                          },
-                          textInputAction: TextInputAction.next,
-                        ),
-                        const SizedBox(height: 20),
-                        _inputLabel(
-                          _t(
-                            context,
-                            'CONFIRM PASSWORD:',
-                            'KUMPIRMAHIN ANG PASSWORD:',
-                          ),
-                        ),
-                        _passwordField(
-                          hint: _t(
-                            context,
-                            'Confirm your password',
-                            'Kumpirmahin ang iyong password',
-                          ),
-                          controller: confirmPassCtrl,
-                          obscureText: !_showConfirmPassword,
-                          suffixText: _showConfirmPassword
-                              ? _t(context, 'HIDE', 'ITAGO')
-                              : _t(context, 'SHOW', 'IPAKITA'),
-                          onSuffixTap: () {
-                            setState(() {
-                              _showConfirmPassword = !_showConfirmPassword;
-                            });
-                          },
-                          textInputAction: TextInputAction.done,
-                          onSubmitted: (_) {
-                            if (!_isLoading) {
-                              _continueWithSupabase();
-                            }
-                          },
-                        ),
-                        const SizedBox(height: 22),
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFF8F8F8),
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: const Color(0xFFEAEAEA)),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                _t(
-                                  context,
-                                  'Password strength',
-                                  'Lakas ng password',
-                                ),
-                                style: const TextStyle(
-                                  fontFamily: 'Poppins',
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.black87,
-                                ),
-                              ),
-                              const SizedBox(height: 10),
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(999),
-                                child: LinearProgressIndicator(
-                                  value: _progress,
-                                  minHeight: 8,
-                                  backgroundColor: const Color(0xFFE6E6E6),
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    _barColor,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                _strengthText,
-                                style: TextStyle(
-                                  fontFamily: 'Poppins',
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w700,
-                                  color: _strengthColor,
-                                ),
-                              ),
-                              const SizedBox(height: 14),
-                              _ruleItem(
-                                _t(
-                                  context,
-                                  'At least 8 characters',
-                                  'Hindi bababa sa 8 character',
-                                ),
-                                _min8,
-                              ),
-                              const SizedBox(height: 8),
-                              _ruleItem(
-                                _t(
-                                  context,
-                                  'At least 1 number',
-                                  'Hindi bababa sa 1 numero',
-                                ),
-                                _hasNumber,
-                              ),
-                              const SizedBox(height: 8),
-                              _ruleItem(
-                                _t(
-                                  context,
-                                  'At least 1 symbol',
-                                  'Hindi bababa sa 1 simbolo',
-                                ),
-                                _hasSymbol,
-                              ),
-                              const SizedBox(height: 8),
-                              _ruleItem(
-                                _t(
-                                  context,
-                                  'At least 1 uppercase letter',
-                                  'Hindi bababa sa 1 malaking titik',
-                                ),
-                                _hasUpper,
-                              ),
-                              const SizedBox(height: 8),
-                              _ruleItem(
-                                _t(
-                                  context,
-                                  'Passwords match',
-                                  'Magkatugma ang mga password',
-                                ),
-                                _matches,
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 28),
-                        SizedBox(
-                          width: double.infinity,
-                          height: 50,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: brandRed,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                            onPressed: _isLoading
-                                ? null
-                                : _continueWithSupabase,
-                            child: _isLoading
-                                ? const SizedBox(
-                                    width: 20,
-                                    height: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      color: Colors.white,
-                                    ),
-                                  )
-                                : Text(
-                                    _t(
-                                      context,
-                                      'Create Account',
-                                      'Gumawa ng Account',
-                                    ),
-                                    style: const TextStyle(
-                                      fontFamily: 'Poppins',
-                                      color: Colors.white,
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                          ),
-                        ),
-                        const SizedBox(height: 18),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              _t(
-                                context,
-                                'Already have an account? ',
-                                'Mayroon ka nang account? ',
-                              ),
-                              style: const TextStyle(
-                                fontFamily: 'Poppins',
-                                fontSize: 12,
-                                color: Colors.black38,
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: () async {
-                                if (!_completed) {
-                                  await _cleanupAbandonedSignup();
-                                }
-                                LoginPage.skipAutoRoute = false;
-                                if (!context.mounted) return;
-                                Navigator.pushAndRemoveUntil(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => const LoginPage(),
-                                  ),
-                                  (route) => false,
-                                );
-                              },
-                              child: Text(
-                                _t(context, 'Log in', 'Mag-login'),
-                                style: const TextStyle(
-                                  fontFamily: 'Poppins',
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w700,
-                                  color: brandRed,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 20),
-                      ],
-                      ),
-                    ),
-                  ),
-                );
-              },
+              ],
             ),
           ),
         ),

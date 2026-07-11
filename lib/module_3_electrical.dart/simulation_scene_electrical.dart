@@ -5,6 +5,7 @@ import '../module_progress_db.dart';
 import '../profile_progress_sync.dart';
 import '../simulation_history_service.dart';
 import '../unity_launcher.dart';
+import '../widgets/app_notification.dart';
 
 const Color kBrandBlue = Color(0xFF2563EB);
 const Color kBrandBlueDark = Color(0xFF1D4ED8);
@@ -113,8 +114,11 @@ class _SimulationScene3State extends State<SimulationScene3> {
 
       setState(() => _launchError = message);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message)),
+      showAppNotification(
+        context,
+        message: message,
+        type: AppNotificationType.error,
+        accentColor: kBrandBlue,
       );
     } catch (e) {
       if (!mounted) return;
@@ -125,8 +129,11 @@ class _SimulationScene3State extends State<SimulationScene3> {
 
       setState(() => _launchError = message);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message)),
+      showAppNotification(
+        context,
+        message: message,
+        type: AppNotificationType.error,
+        accentColor: kBrandBlue,
       );
     } finally {
       if (mounted) {

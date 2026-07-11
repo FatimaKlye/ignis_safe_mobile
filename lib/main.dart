@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'login.dart';
 import 'home.dart';
 import 'onboarding1.dart';
+import 'splash_video_page.dart';
 import 'localization/language_controller.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   await Supabase.initialize(
     url: 'https://mvgpeiejwstrxjmfslke.supabase.co',
@@ -46,11 +48,7 @@ class MyApp extends StatelessWidget {
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            home: languageController.isReady
-                ? const AppStartPage()
-                : const Scaffold(
-                    body: Center(child: CircularProgressIndicator()),
-                  ),
+            home: const SplashVideoPage(),
             routes: {
               '/login': (_) => const LoginPage(),
               '/home': (_) => const IgnisHomePage(),
@@ -60,52 +58,5 @@ class MyApp extends StatelessWidget {
         },
       ),
     );
-  }
-}
-
-class AppStartPage extends StatefulWidget {
-  const AppStartPage({super.key});
-
-  @override
-  State<AppStartPage> createState() => _AppStartPageState();
-}
-
-class _AppStartPageState extends State<AppStartPage> {
-  Widget? _targetPage;
-
-  @override
-  void initState() {
-    super.initState();
-    _checkStartPage();
-  }
-
-  Future<void> _checkStartPage() async {
-    final prefs = await SharedPreferences.getInstance();
-    final onboardingDone = prefs.getBool('onboarding_done') ?? false;
-    final session = Supabase.instance.client.auth.currentSession;
-
-    if (!mounted) return;
-
-    setState(() {
-      if (!onboardingDone) {
-        _targetPage = const OnboardingOnePage();
-      } else if (session != null) {
-        _targetPage = const IgnisHomePage();
-      } else {
-        _targetPage = const LoginPage();
-      }
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (_targetPage == null) {
-      return const Scaffold(
-        backgroundColor: Colors.white,
-        body: Center(child: CircularProgressIndicator()),
-      );
-    }
-
-    return _targetPage!;
   }
 }

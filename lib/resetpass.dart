@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'login.dart';
+import 'widgets/app_notification.dart';
 
 String _t(BuildContext context, String en, String tl) {
   return Localizations.localeOf(context).languageCode == 'tl' ? tl : en;
@@ -50,6 +51,36 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
     super.dispose();
   }
 
+  void _notify(
+    BuildContext context, {
+    String? title,
+    required String message,
+    AppNotificationType type = AppNotificationType.info,
+  }) {
+    showAppNotification(
+      context,
+      title: title,
+      message: message,
+      type: type,
+      accentColor: brandRed,
+    );
+  }
+
+  Future<void> _notifyDialog(
+    BuildContext context, {
+    String? title,
+    required String message,
+    AppNotificationType type = AppNotificationType.warning,
+  }) {
+    return showAppDialog(
+      context,
+      title: title,
+      message: message,
+      type: type,
+      accentColor: brandRed,
+    );
+  }
+
   Future<void> _goToLogin() async {
     try {
       await supabase.auth.signOut();
@@ -72,16 +103,14 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
     final currentSession = supabase.auth.currentSession;
     if (currentSession == null) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            _t(
-              context,
-              'Your reset session is missing or expired. Please request a new OTP.',
-              'Wala o paso na ang iyong reset session. Humingi muli ng bagong OTP.',
-            ),
-          ),
+      await _notifyDialog(
+        context,
+        message: _t(
+          context,
+          'Your reset session is missing or expired. Please request a new OTP.',
+          'Wala o paso na ang iyong reset session. Humingi muli ng bagong OTP.',
         ),
+        type: AppNotificationType.warning,
       );
       return;
     }
@@ -97,16 +126,14 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
 
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            _t(
-              context,
-              'Password updated successfully. Please log in again.',
-              'Matagumpay na na-update ang password. Mag-login muli.',
-            ),
-          ),
+      _notify(
+        context,
+        message: _t(
+          context,
+          'Password updated successfully. Please log in again.',
+          'Matagumpay na na-update ang password. Mag-login muli.',
         ),
+        type: AppNotificationType.success,
       );
 
       Navigator.pushAndRemoveUntil(
@@ -116,21 +143,21 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
       );
     } on AuthException catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
+      _notify(
         context,
-      ).showSnackBar(SnackBar(content: Text(_authErrorMessage(e.message))));
+        message: _authErrorMessage(e.message),
+        type: AppNotificationType.error,
+      );
     } catch (_) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            _t(
-              context,
-              'Unable to update password.',
-              'Hindi ma-update ang password.',
-            ),
-          ),
+      _notify(
+        context,
+        message: _t(
+          context,
+          'Unable to update password.',
+          'Hindi ma-update ang password.',
         ),
+        type: AppNotificationType.error,
       );
     } finally {
       if (mounted) setState(() => _isSaving = false);

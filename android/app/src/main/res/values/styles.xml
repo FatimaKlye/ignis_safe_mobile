@@ -1,32 +1,28 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <style name="LaunchTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowBackground">@drawable/launch_background</item>
+        <item name="android:forceDarkAllowed">false</item>
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">false</item>
+        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
     </style>
-
     <style name="NormalTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="android:windowBackground">?android:colorBackground</item>
+        <item name="android:windowBackground">#FFFFFF</item>
     </style>
-
-    <style name="BaseUnityTheme" parent="android:Theme.Holo.Light.NoActionBar.Fullscreen" />
-
+    <style name="BaseUnityTheme" parent="android:Theme.Holo.Light.NoActionBar.Fullscreen"/>
     <style name="UnityThemeSelector" parent="BaseUnityTheme">
         <item name="android:windowBackground">@android:color/black</item>
     </style>
-
     <style name="UnityThemeSelector.Translucent" parent="@style/UnityThemeSelector">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>
     </style>
-
     <style name="BaseUnityGameActivityTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowBackground">@android:color/black</item>
     </style>
-
     <style name="BaseUnityGameActivityTheme.Translucent" parent="@style/BaseUnityGameActivityTheme">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>
     </style>
-
 </resources>

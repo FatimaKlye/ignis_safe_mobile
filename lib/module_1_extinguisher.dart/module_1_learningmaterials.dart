@@ -469,10 +469,9 @@ class _LearningMaterialExtinguisherPageState extends State<LearningMaterialExtin
           _readSections = List.generate(data.pages.length, (_) => <int>{});
           _loading = false;
           _postTestAlreadyCompleted = postTestCompleted;
-          _error = _bootstrapCopy(
-            'learning_locked_error',
-            fallback: 'Learning Module is locked until the Pre-Assessment is completed and saved.',
-          );
+          _error = _isTagalog
+              ? 'Naka-lock ang Modyul sa Pag-aaral hanggang matapos at ma-save ang Paunang Pagsusulit.'
+              : 'The Learning Module is locked until the Pre-Assessment is completed and saved.';
         });
         WidgetsBinding.instance.addPostFrameCallback((_) => _showLockedAccessAndClose());
         return;
@@ -539,22 +538,21 @@ class _LearningMaterialExtinguisherPageState extends State<LearningMaterialExtin
     await showDialog<void>(
       context: context,
       barrierDismissible: false,
-      builder: (_) => _ContentDialog(
+      builder: (dialogContext) => _ContentDialog(
         icon: Icons.lock_outline_rounded,
         color: AppColors.brandRed,
-        title: _bootstrapCopy(
-          'learning_locked_title',
-          fallback: 'Learning Module Locked',
-        ),
-        body: _bootstrapCopy(
-          'learning_locked_body',
-          fallback: 'Complete the Paunang Pagsusulit first. The Learning Module opens only after Supabase confirms your completed pre-test and saved score.',
-        ),
-        button: _bootstrapCopy('dialog_button_got_it', fallback: 'Got it'),
-        onPressed: () => Navigator.pop(context),
+        title: _isTagalog
+            ? 'Naka-lock ang Modyul sa Pag-aaral'
+            : 'Learning Module Locked',
+        body: _isTagalog
+            ? 'Tapusin muna ang Paunang Pagsusulit. Magbubukas lang ang Modyul sa Pag-aaral kapag tapos na ang Paunang Pagsusulit.'
+            : 'Complete the Pre-Assessment first. The Learning Module will open only after the Pre-Assessment is completed.',
+        button: _isTagalog ? 'Naiintindihan' : 'I understand',
+        onPressed: () => Navigator.pop(dialogContext),
       ),
     );
 
+    // After the dialog closes, return to the previous screen: learning_materials.dart.
     if (mounted) Navigator.pop(context);
   }
 
@@ -758,12 +756,12 @@ class _LearningMaterialExtinguisherPageState extends State<LearningMaterialExtin
     final hasPreTest = await _hasConfirmedPreTest(data.moduleId);
     if (!hasPreTest) {
       _showInfo(
-        data.copy(context, 'learning_locked_title', fallback: 'Learning Module Locked'),
-        data.copy(
-          context,
-          'learning_locked_body',
-          fallback: 'Complete the Paunang Pagsusulit first. The module cannot be marked completed without a saved pre-test score.',
-        ),
+        _isTagalog
+            ? 'Naka-lock ang Modyul sa Pag-aaral'
+            : 'Learning Module Locked',
+        _isTagalog
+            ? 'Tapusin muna ang Paunang Pagsusulit. Hindi maaaring i-save ang completion ng modyul hangga’t walang naka-save na pre-assessment score.'
+            : 'Complete the Pre-Assessment first. The module cannot be marked completed without a saved pre-assessment score.',
         Icons.lock_outline_rounded,
         AppColors.brandRed,
       );
@@ -927,7 +925,7 @@ class _LearningMaterialExtinguisherPageState extends State<LearningMaterialExtin
 
   @override
   Widget build(BuildContext context) {
-    if (_loading) return const _ScreenShell(child: Center(child: CircularProgressIndicator(color: AppColors.brandRed)));
+    if (_loading) return const _ScreenShell(child: Center(child: _LoadingContentCard()));
     if (_error != null || _data == null) {
       return _ScreenShell(
         child: Center(
@@ -1111,6 +1109,48 @@ class _ScreenShell extends StatelessWidget {
   const _ScreenShell({required this.child});
   @override
   Widget build(BuildContext context) => Scaffold(backgroundColor: AppColors.background, body: Stack(children: [const _LMGradientBackdrop(), SafeArea(child: child)]));
+}
+
+class _LoadingContentCard extends StatelessWidget {
+  const _LoadingContentCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final isTl = Localizations.localeOf(context).languageCode == 'tl';
+    return Container(
+      margin: const EdgeInsets.all(22),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 22),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.10),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const CircularProgressIndicator(color: AppColors.brandRed),
+          const SizedBox(height: 14),
+          Text(
+            isTl
+                ? 'Nilo-load ang mga materyales sa pag-aaral...'
+                : 'Loading learning materials...',
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: AppColors.textPrimary,
+              fontWeight: FontWeight.w900,
+              fontSize: 15,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _ErrorCard extends StatelessWidget {

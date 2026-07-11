@@ -20,12 +20,12 @@ dependencies:
   provider: ^6.1.1
   video_player: ^2.9.2
   model_viewer_plus: ^1.9.3
+  flutter_native_splash: ^2.4.6
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
-  flutter_native_splash: ^2.4.6
   flutter_launcher_icons: ^0.14.4
 
 flutter:
@@ -33,6 +33,7 @@ flutter:
 
   assets:
     - assets/logo.png
+    - assets/splash_logo.png
     - assets/avatar.png
     - assets/google.jpg
     - assets/fire_onboard1.png
@@ -80,7 +81,8 @@ flutter:
     - assets/get_out_stay_out.mp4
     - assets/electrical_fire.mp4
     - assets/kitchen_fire.mp4
-    
+    - assets/module5.mp4
+    - assets/videos/splash_screen.mp4
 
   fonts:
     - family: Poppins
@@ -96,14 +98,12 @@ flutter:
 
 flutter_native_splash:
   color: "#FFFFFF"
-  image: assets/logo.png
   android: true
   ios: false
   web: false
 
   android_12:
     color: "#FFFFFF"
-    image: assets/logo.png
 
 flutter_launcher_icons:
   android: true

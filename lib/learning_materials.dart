@@ -6,6 +6,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'login.dart';
 import 'localization/app_text.dart';
+import 'widgets/app_notification.dart';
+import 'widgets/account_menu.dart';
 
 import 'module_1_extinguisher.dart/pre_assess_instruction.dart' as pre1;
 import 'module_1_extinguisher.dart/module_1_learningmaterials.dart';
@@ -18,8 +20,9 @@ import 'module_3_electrical.dart/module_3_learningmaterials.dart' as electrical_
 import 'module_2_house.dart/simulation_scene_house.dart' as house_sim;
 import 'module_3_electrical.dart/simulation_scene_electrical.dart' as electrical_sim;
 import 'module_4_kitchen.dart/simulation_scene.dart' as kitchen_sim;
+import 'module_5_building.dart/simulation_scene.dart' as building_sim;
 
-import 'module_2_house.dart/post_assess_instruction.dart' as house_post;
+import 'module_2_house.dart/post_assess_instruction_house.dart' as house_post;
 import 'module_3_electrical.dart/pre_assess_instruction.dart' as pre3;
 import 'module_4_kitchen.dart/pre_assess_instruction.dart' as pre4;
 import 'module_4_kitchen.dart/post_assessment_kitchen.dart' as kitchen_post;
@@ -31,6 +34,10 @@ import 'module_3_electrical.dart/post_assess_instruction.dart' as post3;
 import 'module_4_kitchen.dart/post_assess_instruction.dart' as post4;
 import 'module_5_building.dart/post_assess_instruction.dart' as post5;
 
+
+/// Index of the Profile tab within [IgnisHomePage]'s tab list
+/// (Module = 0, About Us = 1, Profile = 2).
+const int _profileTabIndex = 2;
 
 class _NoOverscrollScrollBehavior extends ScrollBehavior {
   const _NoOverscrollScrollBehavior();
@@ -132,6 +139,7 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
   bool _openingModuleTwoSimulation = false;
   bool _openingModuleThreeSimulation = false;
   bool _openingModuleFourSimulation = false;
+  bool _openingModuleFiveSimulation = false;
 
   final Set<int> _trackedProgressModules = const <int>{1, 2, 3, 4, 5};
   final Map<int, _ModuleProgressSnapshot> _progressByModule = {
@@ -272,9 +280,6 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
   }
 
   Future<void> _openModule(int moduleNo) async {
-    // TEMPORARILY UNLOCKED: learning-material access guard is commented out
-    // so every module can be opened while testing/fixing content and flow.
-    /*
     if (_isTrackedProgressModule(moduleNo)) {
       await _loadProgressForTrackedModule(moduleNo);
       if (!mounted) return;
@@ -283,7 +288,6 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
         return;
       }
     }
-    */
 
     Widget page;
 
@@ -442,11 +446,6 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
     return _progressFor(moduleNo).postTestCompleted;
   }
   bool _isModuleActionLocked(int moduleNo, String actionKey) {
-    // TEMPORARILY UNLOCKED: all module menu actions are accessible.
-    // Original locking mechanism is preserved below and can be restored later.
-    return false;
-
-    /*
     if (!_isTrackedProgressModule(moduleNo)) return false;
     if (actionKey == 'simulation') return false;
     if (actionKey != 'pre_test' &&
@@ -468,7 +467,6 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
       return !_canOpenPostTestFor(moduleNo);
     }
     return false;
-    */
   }
 
   String _lockedMessageFor(int moduleNo, String actionKey) {
@@ -485,26 +483,26 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
 
     if (actionKey == 'pre_test') {
       return _t(
-        ModuleProgressionService.preTestAlreadyTakenMessage,
-        'Isang beses lang pwedeng sagutan ang Paunang Pagsusulit. Subukan ang susunod na modyul.',
+        'The Pre-Assessment can only be taken once. You can now continue to the Learning Module.',
+        'Isang beses lang maaaring kunin ang Paunang Pagsusulit. Maaari ka nang magpatuloy sa Modyul sa Pag-aaral.',
       );
     }
     if (actionKey == 'learning_materials') {
       return _t(
-        'Finish the Paunang Pagsusulit / Pre-Assessment first before opening the Learning Module.',
-        'Tapusin muna ang Paunang Pagsusulit bago mabuksan ang Modyul sa Pag-aaral.',
+        'Complete the Pre-Assessment first to unlock it.',
+        'Tapusin muna ang Paunang Pagsusulit upang mabuksan ito.',
       );
     }
     if (actionKey == 'post_test') {
       if (_postTestCompletedFor(moduleNo)) {
         return _t(
-          ModuleProgressionService.postTestAlreadyTakenMessage,
-          'Isang beses lang pwedeng sagutan ang Panghuling Pagsusulit. Subukan ang susunod na modyul.',
+          'The Post-Assessment can only be taken once. You can review the Learning Module.',
+          'Isang beses lang maaaring kunin ang Panghuling Pagsusulit. Maaari mong balikan ang Modyul sa Pag-aaral.',
         );
       }
       return _t(
-        'Finish reading the Learning Module first before opening the Panghuling Pagsusulit / Post-Assessment.',
-        'Tapusin muna basahin ang Modyul sa Pag-aaral bago mabuksan ang Panghuling Pagsusulit.',
+        'Complete the Learning Module first to unlock it.',
+        'Tapusin muna ang Modyul sa Pag-aaral upang mabuksan ito.',
       );
     }
     return _t(
@@ -514,11 +512,6 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
   }
 
   String? _lockedSubtitleFor(int moduleNo, String actionKey) {
-    // TEMPORARILY UNLOCKED: hide locked subtitles while all modules/actions are open.
-    // Original locked-subtitle mechanism is preserved below and can be restored later.
-    return null;
-
-    /*
     if (!_isModuleActionLocked(moduleNo, actionKey)) return null;
 
     if (_isTrackedProgressModule(moduleNo) && _progressLoadingFor(moduleNo)) {
@@ -527,44 +520,43 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
 
     if (_isTrackedProgressModule(moduleNo) && actionKey == 'pre_test') {
       return _t(
-        'You can only take the pre-test once.',
-        'Isang beses lang pwedeng sagutan ang Paunang Pagsusulit.',
+        'You can only take the Pre-Assessment once.',
+        'Isang beses lang maaaring kunin ang Paunang Pagsusulit.',
       );
     }
 
     if (_isTrackedProgressModule(moduleNo) && actionKey == 'learning_materials') {
       return _t(
-        'Locked until the Pre-Assessment is completed.',
-        'Naka-lock hanggang matapos ang Paunang Pagsusulit.',
+        'Complete the Pre-Assessment first to unlock it.',
+        'Tapusin muna ang Paunang Pagsusulit upang mabuksan ito.',
       );
     }
 
     if (_isTrackedProgressModule(moduleNo) && actionKey == 'post_test') {
       if (_postTestCompletedFor(moduleNo)) {
         return _t(
-          'You can only take the post-test once.',
-          'Isang beses lang pwedeng sagutan ang Panghuling Pagsusulit.',
+          'You can only take the Post-Assessment once.',
+          'Isang beses lang maaaring kunin ang Panghuling Pagsusulit.',
         );
       }
       return _t(
-        'Locked until the Learning Module is completed.',
-        'Naka-lock hanggang matapos ang Modyul sa Pag-aaral.',
+        'Complete the Learning Module first to unlock it.',
+        'Tapusin muna ang Modyul sa Pag-aaral upang mabuksan ito.',
       );
     }
 
     return _t('Locked', 'Naka-lock');
-    */
   }
 
   String _lockedTitleFor(String actionKey) {
     if (actionKey == 'pre_test') {
-      return _t('Pre-Test Locked', 'Naka-lock ang Paunang Pagsusulit');
+      return _t('Pre-Assessment Locked', 'Naka-lock ang Paunang Pagsusulit');
     }
     if (actionKey == 'learning_materials') {
       return _t('Learning Module Locked', 'Naka-lock ang Modyul sa Pag-aaral');
     }
     if (actionKey == 'post_test') {
-      return _t('Post-Test Locked', 'Naka-lock ang Panghuling Pagsusulit');
+      return _t('Post-Assessment Locked', 'Naka-lock ang Panghuling Pagsusulit');
     }
     return _t('Locked', 'Naka-lock');
   }
@@ -687,9 +679,6 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
       _expandedModuleNo = moduleNo;
     });
 
-    // TEMPORARILY UNLOCKED: module action lock guard is commented out
-    // so Pre-Test, Learning Materials, Post-Test, and Simulation are all accessible.
-    /*
     if (_isTrackedProgressModule(moduleNo)) {
       await _loadProgressForTrackedModule(moduleNo);
       if (!mounted) return;
@@ -700,7 +689,6 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
         return;
       }
     }
-    */
 
     if (!mounted) return;
     setState(() {
@@ -726,128 +714,153 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
   }
 
   Future<void> _showModuleSimulationDialog(int moduleNo) async {
-    if (moduleNo != 1 && moduleNo != 2 && moduleNo != 3 && moduleNo != 4) {
-      _showActionNotice(
-        _t(
-          '3D Simulation',
-          '3D Simulasyon',
-        ),
-      );
-      return;
-    }
-
-    if (!mounted) return;
-
-    String barrierLabel;
-    Widget Function(BuildContext dialogContext) dialogBuilder;
-
-    switch (moduleNo) {
-      case 2:
-        barrierLabel = 'house_fire_escape_tutorial';
-        dialogBuilder = (dialogContext) => _HouseFireEscapeSimulationDialog(
-              isTl: _isTl,
-              accent: _moduleAccent(2),
-              accent2: _moduleAccent2(2),
-              onClose: () => Navigator.pop(dialogContext),
-              onStart: () {
-                Navigator.pop(dialogContext);
-                Future.microtask(() {
-                  if (mounted) {
-                    _openModuleTwoSimulation();
-                  }
-                });
-              },
-            );
-        break;
-      case 3:
-        barrierLabel = 'electrical_fire_safety_tutorial';
-        dialogBuilder = (dialogContext) => _ElectricalFireSimulationDialog(
-              isTl: _isTl,
-              accent: _moduleAccent(3),
-              accent2: _moduleAccent2(3),
-              onClose: () => Navigator.pop(dialogContext),
-              onStart: () {
-                Navigator.pop(dialogContext);
-                Future.microtask(() {
-                  if (mounted) {
-                    _openModuleThreeSimulation();
-                  }
-                });
-              },
-            );
-        break;
-      case 4:
-        barrierLabel = 'kitchen_fire_safety_tutorial';
-        dialogBuilder = (dialogContext) => _KitchenFireSimulationDialog(
-              isTl: _isTl,
-              accent: _moduleAccent(4),
-              accent2: _moduleAccent2(4),
-              onClose: () => Navigator.pop(dialogContext),
-              onStart: () {
-                Navigator.pop(dialogContext);
-                Future.microtask(() {
-                  if (mounted) {
-                    _openModuleFourSimulation();
-                  }
-                });
-              },
-            );
-        break;
-      default:
-        barrierLabel = 'pass_method_tutorial';
-        dialogBuilder = (dialogContext) => _PassMethodSimulationDialog(
-              isTl: _isTl,
-              accent: _moduleAccent(1),
-              accent2: _moduleAccent2(1),
-              onClose: () => Navigator.pop(dialogContext),
-              onStart: () {
-                Navigator.pop(dialogContext);
-                Future.microtask(() {
-                  if (mounted) {
-                    _openModuleOneSimulation();
-                  }
-                });
-              },
-            );
-    }
-
-    await showGeneralDialog<void>(
-      context: context,
-      barrierLabel: barrierLabel,
-      barrierDismissible: true,
-      barrierColor: Colors.black.withOpacity(0.42),
-      transitionDuration: const Duration(milliseconds: 220),
-      pageBuilder: (dialogContext, _, __) {
-        return SafeArea(
-          child: Stack(
-            children: [
-              BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-                child: Container(color: Colors.transparent),
-              ),
-              Center(
-                child: dialogBuilder(dialogContext),
-              ),
-            ],
-          ),
-        );
-      },
-      transitionBuilder: (_, animation, __, child) {
-        final curved = CurvedAnimation(
-          parent: animation,
-          curve: Curves.easeOutCubic,
-        );
-        return FadeTransition(
-          opacity: curved,
-          child: ScaleTransition(
-            scale: Tween<double>(begin: 0.96, end: 1.0).animate(curved),
-            child: child,
-          ),
-        );
-      },
+  if (moduleNo != 1 &&
+      moduleNo != 2 &&
+      moduleNo != 3 &&
+      moduleNo != 4 &&
+      moduleNo != 5) {
+    _showActionNotice(
+      _t(
+        '3D Simulation',
+        '3D Simulasyon',
+      ),
     );
+    return;
   }
 
+  if (!mounted) return;
+
+  String barrierLabel;
+  Widget Function(BuildContext dialogContext) dialogBuilder;
+
+  switch (moduleNo) {
+    case 2:
+      barrierLabel = 'house_fire_escape_tutorial';
+      dialogBuilder = (dialogContext) => _HouseFireEscapeSimulationDialog(
+            isTl: _isTl,
+            accent: _moduleAccent(2),
+            accent2: _moduleAccent2(2),
+            onClose: () => Navigator.pop(dialogContext),
+            onStart: () {
+              Navigator.pop(dialogContext);
+              Future.microtask(() {
+                if (mounted) {
+                  _openModuleTwoSimulation();
+                }
+              });
+            },
+          );
+      break;
+
+    case 3:
+      barrierLabel = 'electrical_fire_safety_tutorial';
+      dialogBuilder = (dialogContext) => _ElectricalFireSimulationDialog(
+            isTl: _isTl,
+            accent: _moduleAccent(3),
+            accent2: _moduleAccent2(3),
+            onClose: () => Navigator.pop(dialogContext),
+            onStart: () {
+              Navigator.pop(dialogContext);
+              Future.microtask(() {
+                if (mounted) {
+                  _openModuleThreeSimulation();
+                }
+              });
+            },
+          );
+      break;
+
+    case 4:
+      barrierLabel = 'kitchen_fire_safety_tutorial';
+      dialogBuilder = (dialogContext) => _KitchenFireSimulationDialog(
+            isTl: _isTl,
+            accent: _moduleAccent(4),
+            accent2: _moduleAccent2(4),
+            onClose: () => Navigator.pop(dialogContext),
+            onStart: () {
+              Navigator.pop(dialogContext);
+              Future.microtask(() {
+                if (mounted) {
+                  _openModuleFourSimulation();
+                }
+              });
+            },
+          );
+      break;
+
+    case 5:
+      barrierLabel = 'tenement_fire_evacuation_tutorial';
+      dialogBuilder = (dialogContext) => _TenementFireSimulationDialog(
+            isTl: _isTl,
+            accent: _moduleAccent(5),
+            accent2: _moduleAccent2(5),
+            onClose: () => Navigator.pop(dialogContext),
+            onStart: () {
+              Navigator.pop(dialogContext);
+              Future.microtask(() {
+                if (mounted) {
+                  _openModuleFiveSimulation();
+                }
+              });
+            },
+          );
+      break;
+
+    default:
+      barrierLabel = 'pass_method_tutorial';
+      dialogBuilder = (dialogContext) => _PassMethodSimulationDialog(
+            isTl: _isTl,
+            accent: _moduleAccent(1),
+            accent2: _moduleAccent2(1),
+            onClose: () => Navigator.pop(dialogContext),
+            onStart: () {
+              Navigator.pop(dialogContext);
+              Future.microtask(() {
+                if (mounted) {
+                  _openModuleOneSimulation();
+                }
+              });
+            },
+          );
+  }
+
+  await showGeneralDialog<void>(
+    context: context,
+    barrierLabel: barrierLabel,
+    barrierDismissible: true,
+    barrierColor: Colors.black.withOpacity(0.42),
+    transitionDuration: const Duration(milliseconds: 220),
+    pageBuilder: (dialogContext, _, __) {
+      return SafeArea(
+        child: Stack(
+          children: [
+            BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+              child: Container(color: Colors.transparent),
+            ),
+            Center(
+              child: dialogBuilder(dialogContext),
+            ),
+          ],
+        ),
+      );
+    },
+    transitionBuilder: (_, animation, __, child) {
+      final curved = CurvedAnimation(
+        parent: animation,
+        curve: Curves.easeOutCubic,
+      );
+
+      return FadeTransition(
+        opacity: curved,
+        child: ScaleTransition(
+          scale: Tween<double>(begin: 0.96, end: 1.0).animate(curved),
+          child: child,
+        ),
+      );
+    },
+  );
+}
   Future<void> _openModuleOneSimulation() async {
     if (!mounted || _openingModuleOneSimulation) return;
 
@@ -932,10 +945,28 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
     }
   }
 
+  Future<void> _openModuleFiveSimulation() async {
+    if (!mounted || _openingModuleFiveSimulation) return;
+
+    setState(() => _openingModuleFiveSimulation = true);
+
+    try {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const building_sim.SimulationScene5(),
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _openingModuleFiveSimulation = false);
+      } else {
+        _openingModuleFiveSimulation = false;
+      }
+    }
+  }
 
   Future<void> _openPreAssessment(int moduleNo) async {
-    // TEMPORARILY UNLOCKED: pre-test access guard is commented out.
-    /*
     if (_isTrackedProgressModule(moduleNo)) {
       await _loadProgressForTrackedModule(moduleNo);
       if (!mounted) return;
@@ -944,7 +975,6 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
         return;
       }
     }
-    */
 
     Widget page;
 
@@ -977,8 +1007,6 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
   }
 
   Future<void> _openPostAssessment(int moduleNo) async {
-    // TEMPORARILY UNLOCKED: post-test access guard is commented out.
-    /*
     if (_isTrackedProgressModule(moduleNo)) {
       await _loadProgressForTrackedModule(moduleNo);
       if (!mounted) return;
@@ -987,7 +1015,6 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
         return;
       }
     }
-    */
 
     Widget page;
 
@@ -1022,20 +1049,15 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
   }
 
   void _showActionNotice(String sectionName) {
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: const Color(0xFF111827),
-          content: Text(
-            _t(
-              '$sectionName is shown here for the module menu. Connect its existing route when the page is ready.',
-              '$sectionName ay ipinapakita rito para sa module menu. Ikonekta ang existing route kapag handa na ang page.',
-            ),
-          ),
-        ),
-      );
+    showAppNotification(
+      context,
+      message: _t(
+        '$sectionName is shown here for the module menu. Connect its existing route when the page is ready.',
+        '$sectionName ay ipinapakita rito para sa module menu. Ikonekta ang existing route kapag handa na ang page.',
+      ),
+      type: AppNotificationType.info,
+      accentColor: const Color(0xFFB11217),
+    );
   }
 
   ImageProvider? _buildAvatarProvider() {
@@ -1193,12 +1215,15 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
                           PopupMenuButton<String>(
                             tooltip: '',
                             offset: const Offset(0, 55),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14),
-                            ),
+                            elevation: 8,
+                            color: Colors.white,
+                            surfaceTintColor: Colors.white,
+                            shadowColor: Colors.black.withOpacity(0.18),
+                            shape: accountMenuShape(),
+                            constraints: const BoxConstraints(minWidth: 180),
                             onSelected: (value) async {
                               if (value == 'profile') {
-                                widget.onRequestTabChange?.call(1);
+                                widget.onRequestTabChange?.call(_profileTabIndex);
                                 return;
                               }
                               if (value == 'logout') {
@@ -1206,28 +1231,11 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
                                 return;
                               }
                             },
-                            itemBuilder: (context) => [
-                              PopupMenuItem(
-                                value: 'profile',
-                                child: Row(
-                                  children: [
-                                    const Icon(Icons.person_outline_rounded),
-                                    const SizedBox(width: 8),
-                                    Flexible(child: Text(context.tr('profile'))),
-                                  ],
-                                ),
-                              ),
-                              PopupMenuItem(
-                                value: 'logout',
-                                child: Row(
-                                  children: [
-                                    const Icon(Icons.logout_rounded),
-                                    const SizedBox(width: 8),
-                                    Flexible(child: Text(context.tr('log_out'))),
-                                  ],
-                                ),
-                              ),
-                            ],
+                            itemBuilder: (context) => buildAccountMenuItems(
+                              context,
+                              profileLabel: context.tr('profile'),
+                              logoutLabel: context.tr('log_out'),
+                            ),
                             child: CircleAvatar(
                               radius: avatarRadius,
                               backgroundColor: Colors.grey.shade400,
@@ -1367,16 +1375,10 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
               isTl: _isTl,
               isExpanded: _expandedModuleNo == m.moduleNo,
               selectedActionKey: _selectedModuleActionKey,
-              // TEMPORARILY UNLOCKED: show every action as available in the UI.
-              // Original lock callbacks are preserved below for easy restore.
-              isActionLocked: (_) => false,
-              lockedSubtitle: (_) => null,
-              /*
               isActionLocked: (actionKey) =>
                   _isModuleActionLocked(m.moduleNo, actionKey),
               lockedSubtitle: (actionKey) =>
                   _lockedSubtitleFor(m.moduleNo, actionKey),
-              */
               onHeaderTap: () => _toggleModule(m.moduleNo),
               onChildTap: (actionKey) {
                 _handleModuleAction(m.moduleNo, actionKey);
@@ -1645,20 +1647,15 @@ class _DatabaseLearningMaterialPageState
   }
 
   void _showReadRequiredSnack() {
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: const Color(0xFF111827),
-          content: Text(
-            _t(
-              'Please scroll to the bottom of this section before continuing.',
-              'Paki-scroll muna hanggang dulo ng seksyong ito bago magpatuloy.',
-            ),
-          ),
-        ),
-      );
+    showAppNotification(
+      context,
+      message: _t(
+        'Please scroll to the bottom of this section before continuing.',
+        'Paki-scroll muna hanggang dulo ng seksyong ito bago magpatuloy.',
+      ),
+      type: AppNotificationType.warning,
+      accentColor: _accent,
+    );
   }
 
   void _resetScroll() {
@@ -1702,8 +1699,7 @@ class _DatabaseLearningMaterialPageState
     try {
       final progression = ModuleProgressionService(client: _client);
       await progression.markLearningMaterialCompleted(moduleNo: moduleNo);
-      // TEMPORARILY UNLOCKED: post-test start guard is commented out for open access.
-      // await progression.ensureCanStartPostTest(moduleNo: moduleNo);
+      await progression.ensureCanStartPostTest(moduleNo: moduleNo);
       if (!mounted) return;
 
       Widget page;
@@ -1741,7 +1737,7 @@ class _DatabaseLearningMaterialPageState
       if (!mounted) return;
       await _showLearningDialog(
         icon: Icons.lock_outline_rounded,
-        title: _t('Post-Test Locked', 'Naka-lock ang Panghuling Pagsusulit'),
+        title: _t('Post-Assessment Locked', 'Naka-lock ang Panghuling Pagsusulit'),
         message: e.message,
         buttonText: _t('OK', 'Sige'),
       );
@@ -4291,6 +4287,291 @@ class _KitchenFireSimulationDialog extends StatelessWidget {
                               ),
                               onPressed: onStart,
                               icon: const Icon(Icons.play_arrow_rounded, size: 24),
+                              label: Text(
+                                buttonText,
+                                textAlign: TextAlign.center,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w900,
+                                  letterSpacing: 0.2,
+                                  fontFamily: 'Poppins',
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Icon(
+                              Icons.info_outline_rounded,
+                              color: accent,
+                              size: 17,
+                            ),
+                            const SizedBox(width: 7),
+                            Expanded(
+                              child: Text(
+                                helperText,
+                                softWrap: true,
+                                style: const TextStyle(
+                                  color: Color(0xFF6B7280),
+                                  fontSize: 11.5,
+                                  height: 1.35,
+                                  fontWeight: FontWeight.w600,
+                                  fontFamily: 'Poppins',
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _TenementFireSimulationDialog extends StatelessWidget {
+  final bool isTl;
+  final Color accent;
+  final Color accent2;
+  final VoidCallback onClose;
+  final VoidCallback onStart;
+
+  const _TenementFireSimulationDialog({
+    required this.isTl,
+    required this.accent,
+    required this.accent2,
+    required this.onClose,
+    required this.onStart,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final title = isTl
+        ? 'Eksena 5: Tutorial sa Paglikas sa Sunog sa Tenement'
+        : 'Scene 5: Tenement Fire Evacuation Tutorial';
+
+    final description = isTl
+        ? 'Sa eksenang ito, matututunan mo ang tamang hakbang kapag may sunog sa tenement:'
+        : 'In this scene, you will learn the correct steps to respond safely during a tenement fire:';
+
+    final bullets = isTl
+        ? const [
+            'I-alert agad ang mga tao sa paligid',
+            'Yumuko at manatiling mababa kapag may usok',
+            'Iwasang gumamit ng elevator',
+            'Gamitin ang ligtas na labasan at pumunta sa assembly area',
+          ]
+        : const [
+            'Alert occupants immediately',
+            'Stay low when moving through smoke',
+            'Avoid elevators',
+            'Use safe exits and go to the assembly area',
+          ];
+
+    final buttonText = isTl ? 'SIMULAN ANG SIMULASYON' : 'START SIMULATION';
+
+    final helperText = isTl
+        ? 'Ang button na ito ay magdadala sa iyo sa Unity simulation.'
+        : 'This button will redirect you to the Unity simulation.';
+
+    return Material(
+      color: Colors.transparent,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final width = MediaQuery.of(context).size.width;
+          final height = MediaQuery.of(context).size.height;
+          final compact = width < 360;
+          final horizontalMargin = compact ? 16.0 : 22.0;
+
+          return Container(
+            width: double.infinity,
+            margin: EdgeInsets.symmetric(horizontal: horizontalMargin),
+            constraints: BoxConstraints(
+              maxWidth: 430,
+              maxHeight: height * 0.82,
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(24),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.24),
+                      blurRadius: 24,
+                      offset: const Offset(0, 12),
+                    ),
+                  ],
+                ),
+                child: SingleChildScrollView(
+                  physics: const ClampingScrollPhysics(),
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(
+                      compact ? 18 : 22,
+                      compact ? 16 : 20,
+                      compact ? 18 : 22,
+                      compact ? 18 : 22,
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              width: compact ? 46 : 52,
+                              height: compact ? 46 : 52,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: [accent, accent2],
+                                ),
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: const Icon(
+                                Icons.apartment_rounded,
+                                color: Colors.white,
+                                size: 26,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 5,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: accent.withOpacity(0.10),
+                                      borderRadius: BorderRadius.circular(999),
+                                    ),
+                                    child: Text(
+                                      isTl ? 'MODYUL 5' : 'MODULE 5',
+                                      style: TextStyle(
+                                        color: accent,
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w900,
+                                        fontFamily: 'Poppins',
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 7),
+                                  Text(
+                                    title,
+                                    softWrap: true,
+                                    style: TextStyle(
+                                      color: const Color(0xFF111827),
+                                      fontSize: compact ? 17 : 19,
+                                      fontWeight: FontWeight.w900,
+                                      height: 1.20,
+                                      fontFamily: 'Poppins',
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            IconButton(
+                              visualDensity: VisualDensity.compact,
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(
+                                minWidth: 36,
+                                minHeight: 36,
+                              ),
+                              onPressed: onClose,
+                              icon: const Icon(
+                                Icons.close_rounded,
+                                color: Color(0xFF4B5563),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 18),
+                        Container(
+                          width: double.infinity,
+                          padding: EdgeInsets.all(compact ? 13 : 15),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF5F3FF),
+                            borderRadius: BorderRadius.circular(18),
+                            border: Border.all(color: accent.withOpacity(0.15)),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                description,
+                                softWrap: true,
+                                style: const TextStyle(
+                                  color: Color(0xFF374151),
+                                  fontSize: 13,
+                                  height: 1.45,
+                                  fontWeight: FontWeight.w600,
+                                  fontFamily: 'Poppins',
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              ...bullets.map(
+                                (item) => _PassMethodBullet(
+                                  text: item,
+                                  accent: accent,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 18),
+                        SizedBox(
+                          width: double.infinity,
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [accent, accent2],
+                              ),
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: accent.withOpacity(0.26),
+                                  blurRadius: 16,
+                                  offset: const Offset(0, 8),
+                                ),
+                              ],
+                            ),
+                            child: ElevatedButton.icon(
+                              style: ElevatedButton.styleFrom(
+                                elevation: 0,
+                                shadowColor: Colors.transparent,
+                                backgroundColor: Colors.transparent,
+                                foregroundColor: Colors.white,
+                                padding: EdgeInsets.symmetric(
+                                  vertical: compact ? 13 : 15,
+                                  horizontal: 12,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                              ),
+                              onPressed: onStart,
+                              icon: const Icon(
+                                Icons.play_arrow_rounded,
+                                size: 24,
+                              ),
                               label: Text(
                                 buttonText,
                                 textAlign: TextAlign.center,

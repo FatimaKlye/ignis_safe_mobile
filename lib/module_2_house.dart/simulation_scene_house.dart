@@ -4,6 +4,7 @@ import '../unity_launcher.dart';
 import '../profile_progress_sync.dart';
 import '../simulation_history_service.dart';
 import '../module_progress_db.dart';
+import '../widgets/app_notification.dart';
 
 const Color kHouseOrange = Color(0xFFF97316);
 const Color kHouseAmber = Color(0xFFF59E0B);
@@ -106,8 +107,11 @@ class _SimulationScene2State extends State<SimulationScene2> {
 
       setState(() => _launchError = message);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message)),
+      showAppNotification(
+        context,
+        message: message,
+        type: AppNotificationType.error,
+        accentColor: kHouseOrange,
       );
     } catch (e) {
       if (!mounted) return;
@@ -118,8 +122,11 @@ class _SimulationScene2State extends State<SimulationScene2> {
 
       setState(() => _launchError = message);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message)),
+      showAppNotification(
+        context,
+        message: message,
+        type: AppNotificationType.error,
+        accentColor: kHouseOrange,
       );
     } finally {
       if (mounted) {

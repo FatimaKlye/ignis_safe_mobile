@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
+import 'package:video_player/video_player.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'module_progression_service.dart';
 import 'post_assess_instruction.dart';
 
 // ============================================================================
@@ -60,6 +62,8 @@ class AppColors {
 const int _moduleNo = 5;
 const String _learningMaterialsBucketName = 'Learning Materials';
 const String _module5BuildingModelAsset = 'assets/models/buildingfinal.glb';
+const String _module5GuideVideoAsset = 'assets/module5.mp4';
+const String _module5GuideVideoSourceUrl = 'https://www.youtube.com/watch?v=AtDQB2UsbLc';
 
 class _SourceReference {
   const _SourceReference({
@@ -77,17 +81,20 @@ class _Module5LearningMaterialStore {
   static Map<String, _SourceReference> sources =
       <String, _SourceReference>{};
   static String previewImagePath = '';
+  static String guideVideoPath = '';
 
   static void update({
     required Map<String, String> en,
     required Map<String, String> tl,
     required Map<String, _SourceReference> sourceRefs,
     required String previewPath,
+    required String guideVideoAssetPath,
   }) {
     textEn = Map<String, String>.unmodifiable(en);
     textTl = Map<String, String>.unmodifiable(tl);
     sources = Map<String, _SourceReference>.unmodifiable(sourceRefs);
     previewImagePath = previewPath;
+    guideVideoPath = guideVideoAssetPath;
   }
 }
 
@@ -115,6 +122,35 @@ String _dbText(
   return value!;
 }
 
+
+String _dbTextOr(
+  BuildContext context,
+  String key, {
+  required String enFallback,
+  required String tlFallback,
+  Map<String, String>? params,
+}) {
+  final isTl = Localizations.localeOf(context).languageCode == 'tl';
+  var value = isTl
+      ? (_Module5LearningMaterialStore.textTl[key] ??
+          _Module5LearningMaterialStore.textEn[key])
+      : _Module5LearningMaterialStore.textEn[key];
+
+  if (value == null || value.trim().isEmpty || value.trim() == key) {
+    value = isTl ? tlFallback : enFallback;
+  }
+
+  if (params != null) {
+    params.forEach((placeholder, replacement) {
+      value = value!
+          .replaceAll('{$placeholder}', replacement)
+          .replaceAll('\$$placeholder', replacement);
+    });
+  }
+
+  return value!;
+}
+
 String _sourceOrganization(String sourceKey) {
   return _Module5LearningMaterialStore.sources[sourceKey]?.organization ?? '';
 }
@@ -125,6 +161,11 @@ String _sourceUrl(String sourceKey) {
 
 String _previewImagePath() {
   return _Module5LearningMaterialStore.previewImagePath;
+}
+
+String _guideVideoPath() {
+  final path = _Module5LearningMaterialStore.guideVideoPath;
+  return path.isNotEmpty ? path : _module5GuideVideoAsset;
 }
 
 // ============================================================================
@@ -182,6 +223,28 @@ class _LearningMaterialTenementPageState
     });
 
     try {
+      final progressionState =
+          await ModuleProgressionService().getState(moduleNo: _moduleNo);
+
+      if (!progressionState.hasValidPreTest) {
+        if (!mounted) return;
+        setState(() {
+          _isLoadingContent = false;
+          _contentError = _dbTextOr(
+            context,
+            'progression.locked_content_error',
+            enFallback:
+                'The Learning Module is locked until the Pre-Assessment is completed and saved.',
+            tlFallback:
+                'Naka-lock ang Modyul sa Pag-aaral hanggang matapos at ma-save ang Paunang Pagsusulit.',
+          );
+        });
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) _showLearningLockedAccessAndClose();
+        });
+        return;
+      }
+
       final materialRaw = await _supabase
           .from('learning_materials')
           .select('id,title,title_tl,subtitle,subtitle_tl,hero_asset')
@@ -283,14 +346,16 @@ class _LearningMaterialTenementPageState
       }
 
       var previewPath = (material['hero_asset'] ?? '').toString().trim();
+      var guideVideoPath = '';
       for (final raw in mediaRaw) {
         final row = Map<String, dynamic>.from(raw as Map);
         final assetKey = (row['asset_key'] ?? '').toString().trim();
+        final publicUrl = (row['public_url'] ?? '').toString().trim();
+        final assetPath = (row['asset_path'] ?? '').toString().trim();
         if (assetKey == 'module5_tenement_fire_preview_image') {
-          final publicUrl = (row['public_url'] ?? '').toString().trim();
-          final assetPath = (row['asset_path'] ?? '').toString().trim();
           previewPath = publicUrl.isNotEmpty ? publicUrl : assetPath;
-          break;
+        } else if (assetKey == 'module5_guide_video') {
+          guideVideoPath = publicUrl.isNotEmpty ? publicUrl : assetPath;
         }
       }
 
@@ -299,6 +364,7 @@ class _LearningMaterialTenementPageState
         tl: tl,
         sourceRefs: sources,
         previewPath: previewPath,
+        guideVideoAssetPath: guideVideoPath,
       );
 
       if (!mounted) return;
@@ -326,6 +392,45 @@ class _LearningMaterialTenementPageState
     Future.delayed(const Duration(milliseconds: 400), () {
       if (mounted) _showIntroPopup();
     });
+  }
+
+  bool get _isTl => Localizations.localeOf(context).languageCode == 'tl';
+
+  Future<void> _showLearningLockedAccessAndClose() async {
+    if (!mounted) return;
+
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => _StyledDialog(
+        icon: Icons.lock_rounded,
+        iconColor: AppColors.brandRed,
+        title: _dbTextOr(
+          context,
+          'popup.locked_access.title',
+          enFallback: 'Learning Module Locked',
+          tlFallback: 'Naka-lock ang Modyul sa Pag-aaral',
+        ),
+        body: _dbTextOr(
+          context,
+          'popup.locked_access.body',
+          enFallback:
+              'Complete the Pre-Assessment first. The Learning Module will open only after the Pre-Assessment is completed.',
+          tlFallback:
+              'Tapusin muna ang Paunang Pagsusulit. Magbubukas lang ang Modyul sa Pag-aaral kapag tapos na ang Paunang Pagsusulit.',
+        ),
+        buttonLabel: _dbTextOr(
+          context,
+          'popup.locked_access.button',
+          enFallback: 'I understand',
+          tlFallback: 'Naiintindihan',
+        ),
+        onPressed: () => Navigator.pop(dialogContext),
+      ),
+    );
+
+    // After the dialog closes, return to the previous screen: learning_materials.dart.
+    if (mounted) Navigator.pop(context);
   }
 
 
@@ -534,8 +639,10 @@ class _LearningMaterialTenementPageState
         body: Stack(
           children: [
             _LMGradientBackdrop(),
-            Center(
-              child: CircularProgressIndicator(color: AppColors.brandRed),
+            SafeArea(
+              child: Center(
+                child: _LoadingContentCard(),
+              ),
             ),
           ],
         ),
@@ -561,8 +668,13 @@ class _LearningMaterialTenementPageState
                         size: 42,
                       ),
                       const SizedBox(height: 12),
-                      const Text(
-                        'Error loading content',
+                      Text(
+                        _dbTextOr(
+                          context,
+                          'state.error_loading_title',
+                          enFallback: 'Error loading content',
+                          tlFallback: 'Error loading content',
+                        ),
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: AppColors.textPrimary,
@@ -589,9 +701,14 @@ class _LearningMaterialTenementPageState
                             borderRadius: BorderRadius.circular(16),
                           ),
                         ),
-                        child: const Text(
-                          'Retry',
-                          style: TextStyle(
+                        child: Text(
+                          _dbTextOr(
+                            context,
+                            'state.retry_button',
+                            enFallback: 'Retry',
+                            tlFallback: 'Retry',
+                          ),
+                          style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.w900,
                           ),
@@ -936,6 +1053,69 @@ class _LearningMaterialTenementPageState
           compact: true,
         ),
         const SizedBox(height: 14),
+        _Module5VideoSourceCard(
+          label: _dbTextOr(
+            context,
+            'page3.video.source_label',
+            enFallback: 'Source: YouTube',
+            tlFallback: 'Source: YouTube',
+          ),
+          title: _dbTextOr(
+            context,
+            'page3.video.source_title',
+            enFallback:
+                "USA TODAY – Apartment fires: Here's why they keep happening and how to stay safe | JUST THE FAQS",
+            tlFallback:
+                "USA TODAY – Apartment fires: Here's why they keep happening and how to stay safe | JUST THE FAQS",
+          ),
+          body: _dbTextOr(
+            context,
+            'page3.video.source_body',
+            enFallback:
+                'Supports the apartment fire safety lesson by showing why apartment fires happen and how residents can plan a safer escape.',
+            tlFallback:
+                'Dagdag-gabay ito sa aralin tungkol sa sunog sa apartment: bakit ito nangyayari at paano mas ligtas na makalikas.',
+          ),
+          sourceUrl: _dbTextOr(
+            context,
+            'page3.video.source_url',
+            enFallback: _module5GuideVideoSourceUrl,
+            tlFallback: _module5GuideVideoSourceUrl,
+          ),
+        ),
+        const SizedBox(height: 12),
+        _Module5GuideVideoCard(
+          assetPath: _guideVideoPath(),
+          title: _dbTextOr(
+            context,
+            'page3.video.card_title',
+            enFallback: 'Guide Video',
+            tlFallback: 'Video na Gabay',
+          ),
+          subtitle: _dbTextOr(
+            context,
+            'page3.video.card_subtitle',
+            enFallback:
+                'Watch this short video as an additional guide before finishing this section.',
+            tlFallback:
+                'Panoorin ang maikling video bilang karagdagang gabay bago tapusin ang bahaging ito.',
+          ),
+          tapHint: _dbTextOr(
+            context,
+            'page3.video.tap_hint',
+            enFallback: 'Tap the video to play or pause.',
+            tlFallback: 'I-tap ang video para i-play o i-pause.',
+          ),
+          unavailableMessage: _dbTextOr(
+            context,
+            'page3.video.unavailable',
+            enFallback:
+                'Video could not load. Make sure module5.mp4 is added to assets/videos and declared in pubspec.yaml.',
+            tlFallback:
+                'Hindi ma-load ang video. Siguraduhing nasa assets/videos ang module5.mp4 at naka-declare sa pubspec.yaml.',
+          ),
+        ),
+        const SizedBox(height: 14),
         _ExpandableLesson(
           sectionIndex: 0,
           pageIndex:    2,
@@ -1006,6 +1186,53 @@ class _LearningMaterialTenementPageState
           context:    context,
         ),
       ],
+    );
+  }
+}
+
+// ============================================================================
+// LOADING CARD
+// ============================================================================
+class _LoadingContentCard extends StatelessWidget {
+  const _LoadingContentCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.all(22),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 22),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.10),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const CircularProgressIndicator(color: AppColors.brandRed),
+          const SizedBox(height: 14),
+          Text(
+            _dbTextOr(
+              context,
+              'state.loading_materials',
+              enFallback: 'Loading learning materials...',
+              tlFallback: 'Nilo-load ang mga materyales sa pag-aaral...',
+            ),
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: AppColors.textPrimary,
+              fontWeight: FontWeight.w900,
+              fontSize: 15,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -1999,6 +2226,403 @@ class _ReferenceSourceCard extends StatelessWidget {
   }
 }
 
+
+// ============================================================================
+// PAGE 3 GUIDE VIDEO — Module 5 apartment fire YouTube source
+// ============================================================================
+class _Module5VideoSourceCard extends StatelessWidget {
+  const _Module5VideoSourceCard({
+    required this.label,
+    required this.title,
+    required this.body,
+    required this.sourceUrl,
+  });
+
+  final String label;
+  final String title;
+  final String body;
+  final String sourceUrl;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(14, 13, 14, 13),
+      decoration: BoxDecoration(
+        color: AppColors.brandRedSoft.withOpacity(0.46),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppColors.brandRed.withOpacity(0.13)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              color: AppColors.brandRed.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(
+              Icons.play_circle_fill_rounded,
+              color: AppColors.brandRed,
+              size: 21,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: const TextStyle(
+                    color: AppColors.brandRed,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w900,
+                    height: 1.2,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 12.8,
+                    fontWeight: FontWeight.w900,
+                    height: 1.25,
+                  ),
+                ),
+                const SizedBox(height: 7),
+                Text(
+                  body,
+                  style: const TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    height: 1.35,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  sourceUrl,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: AppColors.textMuted,
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.w600,
+                    height: 1.2,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _Module5GuideVideoCard extends StatefulWidget {
+  const _Module5GuideVideoCard({
+    required this.assetPath,
+    required this.title,
+    required this.subtitle,
+    required this.tapHint,
+    required this.unavailableMessage,
+  });
+
+  final String assetPath;
+  final String title;
+  final String subtitle;
+  final String tapHint;
+  final String unavailableMessage;
+
+  @override
+  State<_Module5GuideVideoCard> createState() => _Module5GuideVideoCardState();
+}
+
+class _Module5GuideVideoCardState extends State<_Module5GuideVideoCard> {
+  late final VideoPlayerController _videoController;
+  late final Future<void> _initializeVideoFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _videoController = VideoPlayerController.asset(widget.assetPath);
+    _initializeVideoFuture = _initializeVideoController();
+  }
+
+  Future<void> _initializeVideoController() async {
+    await _videoController.initialize();
+    await _videoController.setLooping(false);
+  }
+
+  @override
+  void dispose() {
+    _videoController.dispose();
+    super.dispose();
+  }
+
+  void _togglePlayPause() {
+    if (!_videoController.value.isInitialized) return;
+
+    if (_videoController.value.isPlaying) {
+      _videoController.pause();
+    } else {
+      _videoController.play();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 18),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.brandRed.withOpacity(0.09)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  gradient: AppColors.module5Gradient,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.brandRed.withOpacity(0.20),
+                      blurRadius: 12,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
+                ),
+                child: const Icon(
+                  Icons.play_arrow_rounded,
+                  color: Colors.white,
+                  size: 30,
+                ),
+              ),
+              const SizedBox(width: 13),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.title,
+                      style: const TextStyle(
+                        color: AppColors.textPrimary,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w900,
+                        height: 1.15,
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    Text(
+                      widget.subtitle,
+                      style: const TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        height: 1.35,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 15),
+          FutureBuilder<void>(
+            future: _initializeVideoFuture,
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                return _Module5VideoUnavailableBox(
+                  message: widget.unavailableMessage,
+                );
+              }
+
+              if (snapshot.connectionState != ConnectionState.done ||
+                  !_videoController.value.isInitialized) {
+                return const _Module5VideoLoadingBox();
+              }
+
+              return ValueListenableBuilder<VideoPlayerValue>(
+                valueListenable: _videoController,
+                builder: (context, value, child) {
+                  final aspectRatio = value.aspectRatio <= 0
+                      ? 16 / 9
+                      : value.aspectRatio;
+
+                  return ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: GestureDetector(
+                      onTap: _togglePlayPause,
+                      child: Container(
+                        color: Colors.black,
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            AspectRatio(
+                              aspectRatio: aspectRatio,
+                              child: VideoPlayer(_videoController),
+                            ),
+                            AnimatedOpacity(
+                              opacity: value.isPlaying ? 0.0 : 1.0,
+                              duration: const Duration(milliseconds: 160),
+                              child: Container(
+                                width: 70,
+                                height: 70,
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withOpacity(0.48),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.play_arrow_rounded,
+                                  color: Colors.white,
+                                  size: 42,
+                                ),
+                              ),
+                            ),
+                            Positioned(
+                              left: 0,
+                              right: 0,
+                              bottom: 0,
+                              child: VideoProgressIndicator(
+                                _videoController,
+                                allowScrubbing: true,
+                                padding: EdgeInsets.zero,
+                                colors: VideoProgressColors(
+                                  playedColor: AppColors.brandRed,
+                                  bufferedColor: Colors.white.withOpacity(0.40),
+                                  backgroundColor: Colors.white.withOpacity(0.18),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+          const SizedBox(height: 12),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            decoration: BoxDecoration(
+              color: AppColors.brandRedSoft.withOpacity(0.48),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: AppColors.brandRed.withOpacity(0.12)),
+            ),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.touch_app_rounded,
+                  color: AppColors.brandRed,
+                  size: 20,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    widget.tapHint,
+                    style: const TextStyle(
+                      color: AppColors.brandRedDark,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w900,
+                      height: 1.25,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _Module5VideoLoadingBox extends StatelessWidget {
+  const _Module5VideoLoadingBox();
+
+  @override
+  Widget build(BuildContext context) {
+    return AspectRatio(
+      aspectRatio: 16 / 9,
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColors.brandRedSoft.withOpacity(0.55),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: AppColors.brandRed.withOpacity(0.12)),
+        ),
+        child: const Center(
+          child: CircularProgressIndicator(color: AppColors.brandRed),
+        ),
+      ),
+    );
+  }
+}
+
+class _Module5VideoUnavailableBox extends StatelessWidget {
+  const _Module5VideoUnavailableBox({required this.message});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    return AspectRatio(
+      aspectRatio: 16 / 9,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppColors.brandRedSoft.withOpacity(0.55),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: AppColors.brandRed.withOpacity(0.12)),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.video_file_rounded,
+              color: AppColors.brandRed,
+              size: 34,
+            ),
+            const SizedBox(height: 10),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: AppColors.textSecondary,
+                fontSize: 12.5,
+                fontWeight: FontWeight.w700,
+                height: 1.35,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 // ============================================================================
 // TENEMENT 3D MODEL PREVIEW CARD — Page 1 only
 // ============================================================================
@@ -2144,9 +2768,6 @@ class _PageOneBuilding3DPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final modelPath = _resolveBuildingModelPath(assetPath);
-    final isTl = Localizations.localeOf(context).languageCode
-        .toLowerCase()
-        .startsWith('tl');
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -2158,7 +2779,12 @@ class _PageOneBuilding3DPreview extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              isTl ? '3D Model Preview' : '3D Model Preview',
+              _dbTextOr(
+                context,
+                'preview.3d_model_title',
+                enFallback: '3D Model Preview',
+                tlFallback: '3D Model Preview',
+              ),
               style: const TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.w900,
@@ -2208,12 +2834,17 @@ class _PageOneBuilding3DPreview extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const Positioned(
+                    Positioned(
                       top: 14,
                       left: 14,
                       child: _BuildingViewerBadge(
                         icon: Icons.view_in_ar_rounded,
-                        label: '3D Preview',
+                        label: _dbTextOr(
+                          context,
+                          'preview.3d_badge',
+                          enFallback: '3D Preview',
+                          tlFallback: '3D Preview',
+                        ),
                       ),
                     ),
                     Positioned.fill(
@@ -2245,9 +2876,12 @@ class _PageOneBuilding3DPreview extends StatelessWidget {
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      isTl
-                          ? 'I-drag para i-rotate. I-pinch para i-zoom.'
-                          : 'Drag to rotate. Pinch to zoom.',
+                      _dbTextOr(
+                        context,
+                        'preview.3d_interaction_hint',
+                        enFallback: 'Drag to rotate. Pinch to zoom.',
+                        tlFallback: 'I-drag para i-rotate. I-pinch para i-zoom.',
+                      ),
                       style: const TextStyle(
                         color: AppColors.brandRedDark,
                         fontSize: 12.5,
@@ -2284,7 +2918,12 @@ class _AnimatedBuildingModelViewer extends StatelessWidget {
   Widget build(BuildContext context) {
     return ModelViewer(
       src: modelPath,
-      alt: 'Building fire 3D model preview',
+      alt: _dbTextOr(
+        context,
+        'preview.3d_model_alt',
+        enFallback: 'Building fire 3D model preview',
+        tlFallback: 'Building fire 3D model preview',
+      ),
       autoRotate: true,
       cameraControls: true,
       disableZoom: false,

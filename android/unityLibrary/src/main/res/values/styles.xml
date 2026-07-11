@@ -1,41 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <!-- ================= FLUTTER THEMES ================= -->
-
-    <style name="LaunchTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="android:windowBackground">@drawable/launch_background</item>
-    </style>
-
-    <style name="NormalTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="android:windowBackground">?android:colorBackground</item>
-    </style>
-
-
-    <!-- ================= UNITY THEMES ================= -->
-
-    <!-- Base Unity Theme -->
-    <style name="BaseUnityTheme" parent="android:Theme.Holo.Light.NoActionBar.Fullscreen" />
-
-    <!-- Unity Player Activity Theme -->
-    <style name="UnityThemeSelector" parent="BaseUnityTheme">
-        <item name="android:windowBackground">@android:color/black</item>
-    </style>
-
-    <!-- Translucent version (optional but keep for safety) -->
-    <style name="UnityThemeSelector.Translucent" parent="@style/UnityThemeSelector">
-        <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
-    </style>
-
-    <!-- GameActivity themes (not used now but safe to keep) -->
-    <style name="BaseUnityGameActivityTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="android:windowBackground">@android:color/black</item>
-    </style>
-
-    <style name="BaseUnityGameActivityTheme.Translucent" parent="@style/BaseUnityGameActivityTheme">
-        <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
-    </style>
-
+  <style name="UnityThemeSelector" parent="BaseUnityTheme">
+    <item name="android:windowBackground">@android:color/black</item>
+  </style>
+  <style name="BaseUnityTheme" parent="android:Theme.Holo.Light.NoActionBar.Fullscreen" />
+  <style name="UnityThemeSelector.Translucent" parent="@style/UnityThemeSelector">
+    <item name="android:windowIsTranslucent">true</item>
+    <item name="android:windowBackground">@android:color/transparent</item>
+  </style>
+  <style name="BaseUnityGameActivityTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <item name="android:windowBackground">@android:color/black</item>
+  </style>
+  <style name="BaseUnityGameActivityTheme.Translucent" parent="@style/BaseUnityGameActivityTheme">
+    <item name="android:windowIsTranslucent">true</item>
+    <item name="android:windowBackground">@android:color/transparent</item>
+  </style>
 </resources>

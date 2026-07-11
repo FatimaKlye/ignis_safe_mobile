@@ -11,6 +11,7 @@ import 'forgotpass.dart';
 import 'localization/app_text.dart';
 import 'localization/language_controller.dart';
 import 'network_error_helper.dart';
+import 'widgets/app_notification.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -60,6 +61,36 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
+  void _notify(
+    BuildContext context, {
+    String? title,
+    required String message,
+    AppNotificationType type = AppNotificationType.info,
+  }) {
+    showAppNotification(
+      context,
+      title: title,
+      message: message,
+      type: type,
+      accentColor: brandRed,
+    );
+  }
+
+  Future<void> _notifyDialog(
+    BuildContext context, {
+    String? title,
+    required String message,
+    AppNotificationType type = AppNotificationType.warning,
+  }) {
+    return showAppDialog(
+      context,
+      title: title,
+      message: message,
+      type: type,
+      accentColor: brandRed,
+    );
+  }
+
   void _goNext() {
     Navigator.pushAndRemoveUntil(
       context,
@@ -90,16 +121,42 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _ensureProfile(User user) async {
     final email = (user.email ?? '').trim().toLowerCase();
     final languageCode = context.read<LanguageController>().locale.languageCode;
+    final now = DateTime.now().toUtc().toIso8601String();
 
     try {
-      await supabase.from('profiles').upsert({
-        'id': user.id,
-        'email': email.isEmpty ? null : email,
-        'first_name': user.userMetadata?['first_name'],
-        'last_name': user.userMetadata?['last_name'],
+      final existingProfile = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('id', user.id)
+          .maybeSingle();
+
+      if (existingProfile == null) {
+        final metadata = user.userMetadata ?? {};
+
+        await supabase.from('profiles').insert({
+          'id': user.id,
+          'email': email.isEmpty ? null : email,
+          'first_name': (metadata['first_name'] ?? '').toString().trim(),
+          'last_name': (metadata['last_name'] ?? '').toString().trim(),
+          'app_language_code': languageCode == 'tl' ? 'tl' : 'en',
+          'updated_at': now,
+        });
+        return;
+      }
+
+      final updates = <String, dynamic>{
         'app_language_code': languageCode == 'tl' ? 'tl' : 'en',
-        'updated_at': DateTime.now().toUtc().toIso8601String(),
-      });
+        'updated_at': now,
+      };
+
+      if (email.isNotEmpty) {
+        updates['email'] = email;
+      }
+
+      await supabase
+          .from('profiles')
+          .update(updates)
+          .eq('id', user.id);
     } catch (e) {
       debugPrint('Error ensuring profile: $e');
     }
@@ -146,9 +203,11 @@ class _LoginPageState extends State<LoginPage> {
           debugPrint('Error signing out: $e');
         }
         if (!mounted) return;
-        ScaffoldMessenger.of(
+        await _notifyDialog(
           context,
-        ).showSnackBar(SnackBar(content: Text(context.tr('must_accept_terms'))));
+          message: context.tr('must_accept_terms'),
+          type: AppNotificationType.warning,
+        );
       }
       return;
     }
@@ -175,21 +234,27 @@ class _LoginPageState extends State<LoginPage> {
 
       final user = res.user;
       if (user == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.tr('login_failed'))),
+        _notify(
+          context,
+          message: context.tr('login_failed'),
+          type: AppNotificationType.error,
         );
         return;
       }
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.tr('login_success'))),
+      _notify(
+        context,
+        message: context.tr('login_success'),
+        type: AppNotificationType.success,
       );
 
       await _handlePostLogin(user);
     } on AuthException catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.message)),
+      _notify(
+        context,
+        message: e.message,
+        type: AppNotificationType.error,
       );
     } catch (e) {
       if (!mounted) return;
@@ -197,8 +262,10 @@ class _LoginPageState extends State<LoginPage> {
         await showNoInternetDialog(context);
         return;
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.tr('unexpected_error'))),
+        _notify(
+          context,
+          message: context.tr('unexpected_error'),
+          type: AppNotificationType.error,
         );
       }
     } finally {
@@ -215,8 +282,10 @@ class _LoginPageState extends State<LoginPage> {
       );
     } on AuthException catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.message)),
+      _notify(
+        context,
+        message: e.message,
+        type: AppNotificationType.error,
       );
     } catch (e) {
       if (!mounted) return;
@@ -224,8 +293,10 @@ class _LoginPageState extends State<LoginPage> {
         await showNoInternetDialog(context);
         return;
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.tr('google_signin_failed'))),
+        _notify(
+          context,
+          message: context.tr('google_signin_failed'),
+          type: AppNotificationType.error,
         );
       }
     }
@@ -486,8 +557,10 @@ class _LoginPageState extends State<LoginPage> {
             ),
           );
           if (agreed == true && mounted && user != null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(context.tr('terms_accepted'))),
+            _notify(
+              context,
+              message: context.tr('terms_accepted'),
+              type: AppNotificationType.success,
             );
           }
         },

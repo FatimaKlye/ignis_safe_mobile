@@ -1,3 +1,4 @@
+
 pluginManagement {
     val flutterSdkPath =
         run {
@@ -9,7 +10,7 @@ pluginManagement {
         }
 
     includeBuild("$flutterSdkPath/packages/flutter_tools/gradle")
-
+	
     repositories {
         google()
         mavenCentral()
@@ -25,5 +26,7 @@ plugins {
 
 include(":app")
 include(":unityLibrary")
+include(":unityLibrary:mobilenotifications.androidlib")
 
 project(":unityLibrary").projectDir = File(rootDir, "unityLibrary")
+project(":unityLibrary:mobilenotifications.androidlib").projectDir = File(rootDir, "unityLibrary/mobilenotifications.androidlib")
