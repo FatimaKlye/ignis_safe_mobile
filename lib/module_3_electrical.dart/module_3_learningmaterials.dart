@@ -731,8 +731,11 @@ class _LearningMaterialElectricalPageState
         !(isLast && _moduleThreePostTestCompleted);
 
     if (_isContentLoading || _checkingProgression) {
+      final isTl = Localizations.localeOf(context).languageCode == 'tl';
       return _ContentStateScaffold(
-        message: 'Loading learning materials...',
+        message: isTl
+            ? 'Nilo-load ang mga materyales sa pag-aaral...'
+            : 'Loading learning materials...',
         showRetry: false,
         onRetry: _loadContent,
       );
@@ -864,7 +867,7 @@ class _LearningMaterialElectricalPageState
         ),
         const SizedBox(height: 16),
         _ElectricalPreviewCard(
-          assetPath: _lmMediaPath(context, 'm3_media_electrical_preview_image'),
+          assetPath: _lmMediaPath(context, 'model_asset_key'),
           title: _lmText(context, 'm3_lm_026_3d_electrical_fire_preview'),
           subtitle: _lmText(context, 'm3_lm_027_preview_the_electrical_fire_safety_actions'),
           onTap: _showScenePreviewPopup,
@@ -2606,9 +2609,6 @@ class _ElectricalVisualStack extends StatelessWidget {
 
   const _ElectricalVisualStack({required this.assetPath});
 
-  static const String _module3ElectricalModelAsset =
-      'assets/models/Electricalfinal1.glb';
-
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
@@ -2616,7 +2616,7 @@ class _ElectricalVisualStack extends StatelessWidget {
         final previewHeight = (constraints.maxWidth * 1.75)
             .clamp(560.0, 720.0)
             .toDouble();
-        final modelPath = _resolveElectricalModelPath(assetPath);
+        final modelPath = assetPath.trim();
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -2662,9 +2662,15 @@ class _ElectricalVisualStack extends StatelessWidget {
                     Positioned.fill(
                       top: 24,
                       bottom: 8,
-                      child: _AnimatedElectricalModelViewer(
-                        modelPath: modelPath,
-                      ),
+                      child: modelPath.isNotEmpty
+                          ? _AnimatedElectricalModelViewer(
+                              modelPath: modelPath,
+                            )
+                          : const Center(
+                              child: CircularProgressIndicator(
+                                color: AppColors.brandRed,
+                              ),
+                            ),
                     ),
                   ],
                 ),
@@ -2678,14 +2684,6 @@ class _ElectricalVisualStack extends StatelessWidget {
         );
       },
     );
-  }
-
-  String _resolveElectricalModelPath(String rawPath) {
-    final path = rawPath.trim();
-    if (path.isNotEmpty && path.toLowerCase().endsWith('.glb')) {
-      return path;
-    }
-    return _module3ElectricalModelAsset;
   }
 }
 

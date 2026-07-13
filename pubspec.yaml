@@ -65,16 +65,11 @@ flutter:
     - assets/pass_aim_nozzle.mp4
     - assets/pass_squeeze_handle.mp4
     - assets/pass_sweep_side_to_side.mp4
-    - assets/models/fire_extinguisher.glb
-    - assets/models/old__house__wooden__enterable__rusty.glb
-    - assets/models/houseescape3d.glb
     - assets/models/Electricalfinal1.glb
     - assets/models/buildingfinal.glb
     - assets/models/Kitchennglb.glb
-    - assets/models/FireExtinguisher3D.glb
-    - assets/models/fuseboxa.glb
-    - assets/models/procedural_hong_kong_building.glb
     - assets/models/fireex3dFinal.glb
+    - assets/models/houseescape3d.glb
     - assets/react_immediately.mp4
     - assets/check_doors.mp4
     - assets/crawl_low.mp4

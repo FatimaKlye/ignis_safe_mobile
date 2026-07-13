@@ -264,6 +264,19 @@ class _MaterialData {
   }
 
   String mediaUrl(String? assetKeyOrPath) => mediaSource(assetKeyOrPath);
+
+  String modelSource(String? assetKeyOrPath) {
+    if (assetKeyOrPath == null || assetKeyOrPath.trim().isEmpty) return '';
+    final asset = media[assetKeyOrPath];
+    final raw = (asset != null && asset.path.trim().isNotEmpty ? asset.path : assetKeyOrPath).trim();
+    if (asset == null && raw.startsWith('assets/')) return raw;
+    final uri = Uri.tryParse(raw);
+    if (uri != null && uri.hasScheme) return raw;
+    return Supabase.instance.client.storage
+        .from(_Repository.storageBucket)
+        .getPublicUrl(raw)
+        .replaceAll(' ', '%20');
+  }
 }
 
 class _Repository {
@@ -1772,7 +1785,7 @@ class _PageOne3DPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final modelSrc = material.mediaSource(block.metaString('model_asset_key')).trim();
+    final modelSrc = material.modelSource(block.metaString('model_asset_key')).trim();
     final viewerTitle = block.metaText(context, material, 'viewer_title').trim();
     final viewerSubtitle = block.metaText(context, material, 'viewer_subtitle').trim();
     final modelBadge = block.metaText(context, material, 'model_badge').trim();

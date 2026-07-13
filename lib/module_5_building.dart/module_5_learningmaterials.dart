@@ -61,6 +61,7 @@ class AppColors {
 // ============================================================================
 const int _moduleNo = 5;
 const String _learningMaterialsBucketName = 'Learning Materials';
+const String _module5BuildingModelAssetKey = 'model_asset_key';
 const String _module5BuildingModelAsset = 'assets/models/buildingfinal.glb';
 const String _module5GuideVideoAsset = 'assets/module5.mp4';
 const String _module5GuideVideoSourceUrl = 'https://www.youtube.com/watch?v=AtDQB2UsbLc';
@@ -80,21 +81,21 @@ class _Module5LearningMaterialStore {
   static Map<String, String> textTl = <String, String>{};
   static Map<String, _SourceReference> sources =
       <String, _SourceReference>{};
-  static String previewImagePath = '';
   static String guideVideoPath = '';
+  static String buildingModelPath = '';
 
   static void update({
     required Map<String, String> en,
     required Map<String, String> tl,
     required Map<String, _SourceReference> sourceRefs,
-    required String previewPath,
     required String guideVideoAssetPath,
+    required String buildingModelAssetPath,
   }) {
     textEn = Map<String, String>.unmodifiable(en);
     textTl = Map<String, String>.unmodifiable(tl);
     sources = Map<String, _SourceReference>.unmodifiable(sourceRefs);
-    previewImagePath = previewPath;
     guideVideoPath = guideVideoAssetPath;
+    buildingModelPath = buildingModelAssetPath;
   }
 }
 
@@ -159,13 +160,30 @@ String _sourceUrl(String sourceKey) {
   return _Module5LearningMaterialStore.sources[sourceKey]?.url ?? '';
 }
 
-String _previewImagePath() {
-  return _Module5LearningMaterialStore.previewImagePath;
-}
-
 String _guideVideoPath() {
   final path = _Module5LearningMaterialStore.guideVideoPath;
   return path.isNotEmpty ? path : _module5GuideVideoAsset;
+}
+
+String _buildingModelPath() {
+  final path = _Module5LearningMaterialStore.buildingModelPath;
+  return path.isNotEmpty ? path : _module5BuildingModelAsset;
+}
+
+/// Converts a stored `model_asset_key` filename or storage path into a
+/// playable source: bundled asset paths and already-absolute URLs are
+/// returned as-is, anything else is resolved to a Supabase public URL.
+String _resolveModelStorageUrl(String rawPath) {
+  final path = rawPath.trim();
+  if (path.isEmpty) return '';
+  if (path.startsWith('assets/')) return path;
+
+  final uri = Uri.tryParse(path);
+  if (uri != null && uri.hasScheme) return path;
+
+  return Supabase.instance.client.storage
+      .from(_learningMaterialsBucketName)
+      .getPublicUrl(path);
 }
 
 // ============================================================================
@@ -345,17 +363,17 @@ class _LearningMaterialTenementPageState
         putText(row['text_key'].toString(), row['text_en'], row['text_tl']);
       }
 
-      var previewPath = (material['hero_asset'] ?? '').toString().trim();
       var guideVideoPath = '';
+      var buildingModelPath = '';
       for (final raw in mediaRaw) {
         final row = Map<String, dynamic>.from(raw as Map);
         final assetKey = (row['asset_key'] ?? '').toString().trim();
         final publicUrl = (row['public_url'] ?? '').toString().trim();
         final assetPath = (row['asset_path'] ?? '').toString().trim();
-        if (assetKey == 'module5_tenement_fire_preview_image') {
-          previewPath = publicUrl.isNotEmpty ? publicUrl : assetPath;
-        } else if (assetKey == 'module5_guide_video') {
+        if (assetKey == 'module5_guide_video') {
           guideVideoPath = publicUrl.isNotEmpty ? publicUrl : assetPath;
+        } else if (assetKey == _module5BuildingModelAssetKey) {
+          buildingModelPath = _resolveModelStorageUrl(assetPath);
         }
       }
 
@@ -363,8 +381,8 @@ class _LearningMaterialTenementPageState
         en: en,
         tl: tl,
         sourceRefs: sources,
-        previewPath: previewPath,
         guideVideoAssetPath: guideVideoPath,
+        buildingModelAssetPath: buildingModelPath,
       );
 
       if (!mounted) return;
@@ -831,7 +849,7 @@ class _LearningMaterialTenementPageState
         const SizedBox(height: 16),
         
         _Tenement3DPhotoCard(
-          assetPath: _previewImagePath(),
+          assetPath: _buildingModelPath(),
           title: _dbText(context, 'page1.preview.title'),
           subtitle: _dbText(context, 'page1.preview.subtitle'),
         ),

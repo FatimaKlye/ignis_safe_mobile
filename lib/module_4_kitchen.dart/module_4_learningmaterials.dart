@@ -881,9 +881,13 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
     final block = _block(blockKey);
     if (block == null) return const SizedBox.shrink();
 
+    final modelAssetKey = block.metaString('model_asset_key').isNotEmpty
+        ? block.metaString('model_asset_key')
+        : 'm4_media_kitchen_model_3d';
+
     return _KitchenFire3DCardHolder(
       assetPath: _mediaPathWithFallback(
-        'm4_media_kitchen_model_3d',
+        modelAssetKey,
         _module4KitchenModelAsset,
       ),
       badgeLabel: _uiText('hero_3d_preview_badge'),
@@ -1167,7 +1171,19 @@ class _LearningMediaAssetData {
     required this.publicUrl,
   });
 
-  String get resolvedPath => publicUrl.trim().isNotEmpty ? publicUrl.trim() : assetPath.trim();
+  String get resolvedPath {
+    final path = assetPath.trim();
+    if (path.isEmpty) return publicUrl.trim();
+    if (path.startsWith('http://') ||
+        path.startsWith('https://') ||
+        path.startsWith('assets/')) {
+      return path;
+    }
+    final storagePath = path.startsWith('/') ? path.substring(1) : path;
+    return Supabase.instance.client.storage
+        .from(_learningMaterialsBucket)
+        .getPublicUrl(storagePath);
+  }
 
   factory _LearningMediaAssetData.fromRow(Map<String, dynamic> row) {
     return _LearningMediaAssetData(
@@ -1183,6 +1199,7 @@ class _LoadingContentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isTl = Localizations.localeOf(context).languageCode == 'tl';
     return Container(
       margin: const EdgeInsets.all(22),
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 22),
@@ -1197,15 +1214,17 @@ class _LoadingContentCard extends StatelessWidget {
           ),
         ],
       ),
-      child: const Column(
+      child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          CircularProgressIndicator(color: AppColors.brandRed),
-          SizedBox(height: 14),
+          const CircularProgressIndicator(color: AppColors.brandRed),
+          const SizedBox(height: 14),
           Text(
-            'Loading learning materials...',
+            isTl
+                ? 'Nilo-load ang mga materyales sa pag-aaral...'
+                : 'Loading learning materials...',
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               color: AppColors.textPrimary,
               fontWeight: FontWeight.w900,
               fontSize: 15,

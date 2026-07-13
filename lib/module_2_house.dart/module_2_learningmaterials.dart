@@ -144,7 +144,8 @@ String _resolveLearningMaterialStoragePath(String path) {
   if (trimmed.startsWith('assets/')) return trimmed;
   return Supabase.instance.client.storage
       .from(_learningMaterialsBucket)
-      .getPublicUrl(trimmed);
+      .getPublicUrl(trimmed)
+      .replaceAll(' ', '%20');
 }
 
 const List<String> _requiredLearningMaterialKeys = <String>[
