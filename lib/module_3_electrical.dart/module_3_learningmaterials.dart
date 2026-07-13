@@ -538,8 +538,9 @@ class _LearningMaterialElectricalPageState
   void _showIntroPopup() {
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (_) => _StyledDialog(
-        icon: Icons.bolt_rounded,
+        icon: Icons.auto_stories_rounded,
         iconColor: AppColors.brandRed,
         title: _lmText(context, 'm3_lm_004_module_3_electrical_fire'),
         body: _lmText(context, 'm3_lm_005_read_each_card_carefully_open_every_sectio'),

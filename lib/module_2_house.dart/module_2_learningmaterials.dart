@@ -868,12 +868,12 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (_) => _StyledDialog(
-        icon: Icons.home_rounded,
-        iconColor: accent,
+      builder: (_) => _WelcomeDialog(
+        icon: Icons.auto_stories_rounded,
+        color: accent,
         title: _txt('dialog_intro_title'),
         body: _txt('dialog_intro_body'),
-        buttonLabel: _txt('dialog_intro_button'),
+        button: _txt('dialog_intro_button'),
         onPressed: () => Navigator.pop(context),
       ),
     );
@@ -3111,6 +3111,99 @@ class _SectionHeader extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+// Exact structural clone of Module 1's welcome-popup dialog (`_ContentDialog`),
+// used only for Module 2's welcome pop-up so it matches Modules 1/3/4/5 pixel-for-pixel.
+class _WelcomeDialog extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  final String title;
+  final String body;
+  final String button;
+  final VoidCallback onPressed;
+
+  const _WelcomeDialog({
+    required this.icon,
+    required this.color,
+    required this.title,
+    required this.body,
+    required this.button,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 28),
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Align(
+              alignment: Alignment.topRight,
+              child: SizedBox(
+                width: 34,
+                height: 34,
+                child: Material(
+                  color: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  child: IconButton(
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    icon: const Icon(Icons.close_rounded, size: 18),
+                    color: Colors.black54,
+                    onPressed: onPressed,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Container(
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(color: color.withOpacity(0.1), shape: BoxShape.circle),
+              child: Icon(icon, color: color, size: 32),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              softWrap: true,
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: color),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              body,
+              textAlign: TextAlign.center,
+              softWrap: true,
+              style: const TextStyle(fontSize: 14, height: 1.55, color: Color(0xFF374151)),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: color,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                ),
+                onPressed: onPressed,
+                child: Text(
+                  button,
+                  textAlign: TextAlign.center,
+                  softWrap: true,
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

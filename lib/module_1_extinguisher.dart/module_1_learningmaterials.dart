@@ -499,7 +499,7 @@ class _LearningMaterialExtinguisherPageState extends State<LearningMaterialExtin
       });
       if (!_introShown) {
         _introShown = true;
-        WidgetsBinding.instance.addPostFrameCallback((_) => _showDialogFromDb('intro', Icons.auto_stories_rounded, AppColors.brandRed, barrierDismissible: false));
+        WidgetsBinding.instance.addPostFrameCallback((_) => _showDialogFromDb('intro', Icons.auto_stories_rounded, AppColors.brandRed, barrierDismissible: false, showCloseButton: true));
       }
     } catch (e) {
       if (!mounted) return;
@@ -591,7 +591,7 @@ class _LearningMaterialExtinguisherPageState extends State<LearningMaterialExtin
     return data.textFrom(context, dialog, field);
   }
 
-  void _showDialogFromDb(String key, IconData icon, Color color, {bool barrierDismissible = true}) {
+  void _showDialogFromDb(String key, IconData icon, Color color, {bool barrierDismissible = true, bool showCloseButton = false}) {
     showDialog(
       context: context,
       barrierDismissible: barrierDismissible,
@@ -601,6 +601,7 @@ class _LearningMaterialExtinguisherPageState extends State<LearningMaterialExtin
         title: _dialogText(key, 'title'),
         body: _dialogText(key, 'body'),
         button: _dialogText(key, 'button'),
+        showCloseButton: showCloseButton,
         onPressed: () => Navigator.pop(context),
       ),
     );
@@ -1511,6 +1512,7 @@ class _ContentDialog extends StatelessWidget {
   final String body;
   final String button;
   final VoidCallback onPressed;
+  final bool showCloseButton;
 
   const _ContentDialog({
     required this.icon,
@@ -1519,6 +1521,7 @@ class _ContentDialog extends StatelessWidget {
     required this.body,
     required this.button,
     required this.onPressed,
+    this.showCloseButton = false,
   });
 
   @override
@@ -1531,6 +1534,26 @@ class _ContentDialog extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            if (showCloseButton)
+              Align(
+                alignment: Alignment.topRight,
+                child: SizedBox(
+                  width: 34,
+                  height: 34,
+                  child: Material(
+                    color: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    child: IconButton(
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                      icon: const Icon(Icons.close_rounded, size: 18),
+                      color: Colors.black54,
+                      onPressed: onPressed,
+                    ),
+                  ),
+                ),
+              ),
+            if (showCloseButton) const SizedBox(height: 8),
             Container(
               width: 64,
               height: 64,
