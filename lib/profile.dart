@@ -7,6 +7,7 @@ import 'localization/language_controller.dart';
 import 'login.dart';
 import 'faq_page.dart';
 import 'widgets/account_menu.dart';
+import 'profile_refresh_notifier.dart';
 
 part 'edit_profile_page.dart';
 

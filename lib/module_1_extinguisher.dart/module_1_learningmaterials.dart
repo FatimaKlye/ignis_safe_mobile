@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import '../widgets/reliable_video_player.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'post_assess_instruction.dart';
 import 'module_progression_service.dart';
@@ -2316,39 +2317,49 @@ class _PassStepState extends State<_PassStep> {
   Widget build(BuildContext context) => Container(decoration: BoxDecoration(color: const Color(0xFFFFF7F7), borderRadius: BorderRadius.circular(18), border: Border.all(color: widget.isRead ? AppColors.success.withOpacity(0.35) : AppColors.brandRed.withOpacity(0.12))), child: Column(children: [InkWell(onTap: () { setState(() => expanded = !expanded); if (expanded) widget.onOpen(); }, borderRadius: BorderRadius.circular(18), child: Padding(padding: const EdgeInsets.all(14), child: Row(children: [CircleAvatar(backgroundColor: widget.isRead ? AppColors.success : AppColors.brandRed, child: Text(widget.isRead ? widget.material.copy(context, 'completed_check_label') : (widget.block.metaString('letter') ?? ''), textAlign: TextAlign.center, softWrap: true, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900))), const SizedBox(width: 12), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(widget.block.text(context, widget.material), style: TextStyle(fontWeight: FontWeight.w900, color: widget.isRead ? AppColors.success : const Color(0xFF111827))), Text(widget.block.metaText(context, widget.material, 'desc'), style: const TextStyle(color: Color(0xFF6B7280), height: 1.35))])), Icon(expanded ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded, color: AppColors.brandRed)]))), if (expanded) Padding(padding: const EdgeInsets.fromLTRB(14, 0, 14, 14), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [const Divider(), const SizedBox(height: 12), _VideoCard(title: widget.block.metaText(context, widget.material, 'video_title'), url: widget.material.mediaUrl(widget.block.metaString('asset_key')), failureTitle: widget.material.copy(context, 'video_could_not_load'))]))]));
 }
 
-class _VideoCard extends StatefulWidget {
+class _VideoCard extends StatelessWidget {
   final String title;
   final String url;
   final String failureTitle;
   const _VideoCard({required this.title, required this.url, required this.failureTitle});
   @override
-  State<_VideoCard> createState() => _VideoCardState();
-}
-
-class _VideoCardState extends State<_VideoCard> {
-  VideoPlayerController? controller;
-  Future<void>? initFuture;
-  bool failed = false;
-  @override
-  void initState() {
-    super.initState();
-    final uri = Uri.tryParse(widget.url);
-    if (uri == null || !uri.hasScheme) {
-      failed = true;
-      return;
-    }
-    controller = VideoPlayerController.network(widget.url);
-    initFuture = controller!.initialize().then((_) { controller!.setLooping(false); if (mounted) setState(() {}); }).catchError((_) { if (mounted) setState(() => failed = true); });
-  }
-  @override
-  void dispose() { controller?.dispose(); super.dispose(); }
-  @override
   Widget build(BuildContext context) {
-    if (failed) return _VideoPlaceholder(title: widget.failureTitle, subtitle: widget.url);
-    final c = controller;
-    final f = initFuture;
-    if (c == null || f == null) return _VideoPlaceholder(title: widget.title, subtitle: widget.url);
-    return Container(padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(18), border: Border.all(color: AppColors.brandRed.withOpacity(0.12))), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Row(children: [const Icon(Icons.ondemand_video_rounded, color: AppColors.brandRed), const SizedBox(width: 8), Expanded(child: Text(widget.title, style: const TextStyle(fontWeight: FontWeight.w900)))]), const SizedBox(height: 12), ClipRRect(borderRadius: BorderRadius.circular(16), child: AspectRatio(aspectRatio: 16 / 9, child: FutureBuilder<void>(future: f, builder: (context, snapshot) { if (snapshot.connectionState != ConnectionState.done || !c.value.isInitialized) return const ColoredBox(color: Color(0xFF111827), child: Center(child: CircularProgressIndicator(color: Colors.white))); return GestureDetector(onTap: () async { c.value.isPlaying ? await c.pause() : await c.play(); if (mounted) setState(() {}); }, child: Stack(fit: StackFit.expand, children: [Container(color: const Color(0xFF111827)), Center(child: AspectRatio(aspectRatio: c.value.aspectRatio == 0 ? 16 / 9 : c.value.aspectRatio, child: VideoPlayer(c))), if (!c.value.isPlaying) const Center(child: CircleAvatar(radius: 30, backgroundColor: Colors.black54, child: Icon(Icons.play_arrow_rounded, color: Colors.white, size: 38))), Positioned(left: 0, right: 0, bottom: 0, child: VideoProgressIndicator(c, allowScrubbing: true, padding: EdgeInsets.zero))])); })))]) );
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppColors.brandRed.withOpacity(0.12)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.ondemand_video_rounded, color: AppColors.brandRed),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  title,
+                  style: const TextStyle(fontWeight: FontWeight.w900),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: AspectRatio(
+              aspectRatio: 16 / 9,
+              child: ReliableVideoPlayer(
+                source: url,
+                errorText: failureTitle,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 

@@ -385,6 +385,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
     if (!mounted) return;
 
+    notifyProfileChanged();
+
     setState(() {
       _originalFirstName = firstName;
       _originalLastName = lastName;

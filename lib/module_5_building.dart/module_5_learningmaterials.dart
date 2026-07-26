@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
 import 'package:video_player/video_player.dart';
+import '../widgets/reliable_video_player.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'module_progression_service.dart';
 import 'post_assess_instruction.dart';
@@ -163,6 +164,21 @@ String _sourceUrl(String sourceKey) {
 String _guideVideoPath() {
   final path = _Module5LearningMaterialStore.guideVideoPath;
   return path.isNotEmpty ? path : _module5GuideVideoAsset;
+}
+
+String _resolveGuideVideoSource(String assetPath, String publicUrl) {
+  final path = assetPath.trim();
+  if (path.startsWith('assets/')) return path;
+  if (path.startsWith('http://') || path.startsWith('https://')) return path;
+
+  final directUrl = publicUrl.trim();
+  if (directUrl.isNotEmpty) return directUrl;
+  if (path.isEmpty) return _module5GuideVideoAsset;
+
+  final storagePath = path.startsWith('/') ? path.substring(1) : path;
+  return Supabase.instance.client.storage
+      .from(_learningMaterialsBucketName)
+      .getPublicUrl(storagePath);
 }
 
 String _buildingModelPath() {
@@ -371,7 +387,7 @@ class _LearningMaterialTenementPageState
         final publicUrl = (row['public_url'] ?? '').toString().trim();
         final assetPath = (row['asset_path'] ?? '').toString().trim();
         if (assetKey == 'module5_guide_video') {
-          guideVideoPath = publicUrl.isNotEmpty ? publicUrl : assetPath;
+          guideVideoPath = _resolveGuideVideoSource(assetPath, publicUrl);
         } else if (assetKey == _module5BuildingModelAssetKey) {
           buildingModelPath = _resolveModelStorageUrl(assetPath);
         }
@@ -610,11 +626,35 @@ class _LearningMaterialTenementPageState
         buttonLabel: _dbText(context, 'common.start_post_test_arrow'),
         onPressed: () {
           Navigator.pop(context);
-          Navigator.push(context,
-              MaterialPageRoute(builder: (_) => const PostAssessmentIntroPage()));
+          _completeLearningAndOpenPostAssessment();
         },
       ),
     );
+  }
+
+  Future<void> _completeLearningAndOpenPostAssessment() async {
+    try {
+      final progression = ModuleProgressionService();
+      await progression.markLearningMaterialCompleted(moduleNo: _moduleNo);
+      await progression.ensureCanStartPostTest(moduleNo: _moduleNo);
+      if (!mounted) return;
+      await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const PostAssessmentIntroPage()),
+      );
+    } on ProgressionAccessDenied catch (error) {
+      if (!mounted) return;
+      _showInfoPopup(
+        title: _dbTextOr(
+          context,
+          'popup.locked_access.title',
+          enFallback: 'Post-Assessment Locked',
+          tlFallback: 'Naka-lock ang Panghuling Pagsusulit',
+        ),
+        message: error.message,
+        icon: Icons.lock_rounded,
+      );
+    }
   }
 
   void _showInfoPopup({
@@ -2362,37 +2402,6 @@ class _Module5GuideVideoCard extends StatefulWidget {
 }
 
 class _Module5GuideVideoCardState extends State<_Module5GuideVideoCard> {
-  late final VideoPlayerController _videoController;
-  late final Future<void> _initializeVideoFuture;
-
-  @override
-  void initState() {
-    super.initState();
-    _videoController = VideoPlayerController.asset(widget.assetPath);
-    _initializeVideoFuture = _initializeVideoController();
-  }
-
-  Future<void> _initializeVideoController() async {
-    await _videoController.initialize();
-    await _videoController.setLooping(false);
-  }
-
-  @override
-  void dispose() {
-    _videoController.dispose();
-    super.dispose();
-  }
-
-  void _togglePlayPause() {
-    if (!_videoController.value.isInitialized) return;
-
-    if (_videoController.value.isPlaying) {
-      _videoController.pause();
-    } else {
-      _videoController.play();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -2466,80 +2475,15 @@ class _Module5GuideVideoCardState extends State<_Module5GuideVideoCard> {
             ],
           ),
           const SizedBox(height: 15),
-          FutureBuilder<void>(
-            future: _initializeVideoFuture,
-            builder: (context, snapshot) {
-              if (snapshot.hasError) {
-                return _Module5VideoUnavailableBox(
-                  message: widget.unavailableMessage,
-                );
-              }
-
-              if (snapshot.connectionState != ConnectionState.done ||
-                  !_videoController.value.isInitialized) {
-                return const _Module5VideoLoadingBox();
-              }
-
-              return ValueListenableBuilder<VideoPlayerValue>(
-                valueListenable: _videoController,
-                builder: (context, value, child) {
-                  final aspectRatio = value.aspectRatio <= 0
-                      ? 16 / 9
-                      : value.aspectRatio;
-
-                  return ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
-                    child: GestureDetector(
-                      onTap: _togglePlayPause,
-                      child: Container(
-                        color: Colors.black,
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            AspectRatio(
-                              aspectRatio: aspectRatio,
-                              child: VideoPlayer(_videoController),
-                            ),
-                            AnimatedOpacity(
-                              opacity: value.isPlaying ? 0.0 : 1.0,
-                              duration: const Duration(milliseconds: 160),
-                              child: Container(
-                                width: 70,
-                                height: 70,
-                                decoration: BoxDecoration(
-                                  color: Colors.black.withOpacity(0.48),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: const Icon(
-                                  Icons.play_arrow_rounded,
-                                  color: Colors.white,
-                                  size: 42,
-                                ),
-                              ),
-                            ),
-                            Positioned(
-                              left: 0,
-                              right: 0,
-                              bottom: 0,
-                              child: VideoProgressIndicator(
-                                _videoController,
-                                allowScrubbing: true,
-                                padding: EdgeInsets.zero,
-                                colors: VideoProgressColors(
-                                  playedColor: AppColors.brandRed,
-                                  bufferedColor: Colors.white.withOpacity(0.40),
-                                  backgroundColor: Colors.white.withOpacity(0.18),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              );
-            },
+          ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: AspectRatio(
+              aspectRatio: 16 / 9,
+              child: ReliableVideoPlayer(
+                source: widget.assetPath,
+                errorText: widget.unavailableMessage,
+              ),
+            ),
           ),
           const SizedBox(height: 12),
           Container(

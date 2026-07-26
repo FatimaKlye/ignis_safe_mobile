@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
 import 'package:video_player/video_player.dart';
+import '../widgets/reliable_video_player.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'post_assess_instruction.dart';
@@ -2490,7 +2491,7 @@ class _LearningMaterialVideoCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
             child: AspectRatio(
               aspectRatio: 16 / 9,
-              child: _InlineAssetVideoPlayer(
+              child: ReliableVideoPlayer(
                 source: videoAssetPath,
                 loadingText: loadingText,
                 errorText: errorText,

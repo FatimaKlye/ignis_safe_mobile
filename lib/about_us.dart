@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'localization/language_controller.dart';
 import 'login.dart';
 import 'widgets/account_menu.dart';
+import 'profile_refresh_notifier.dart';
 
 enum AboutFilter { all, about, team, bfpDasmarinas, contacts }
 
@@ -56,7 +59,16 @@ class _AboutUsPageState extends State<AboutUsPage> {
   @override
   void initState() {
     super.initState();
+    profileRefreshNotifier.addListener(_handleProfileChanged);
     _loadProfile();
+  }
+
+  void _handleProfileChanged() => _loadProfile();
+
+  @override
+  void dispose() {
+    profileRefreshNotifier.removeListener(_handleProfileChanged);
+    super.dispose();
   }
 
   Future<void> _loadProfile() async {
@@ -2025,6 +2037,25 @@ class _DirectoryEntryTile extends StatelessWidget {
   final _DirectoryEntry entry;
   const _DirectoryEntryTile({required this.entry});
 
+  Future<void> _open(BuildContext context, Uri uri) async {
+    if (await launchUrl(uri, mode: LaunchMode.externalApplication)) return;
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('No compatible app is available.')),
+    );
+  }
+
+  Future<void> _copy(BuildContext context, String value) async {
+    await Clipboard.setData(ClipboardData(text: value));
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('$value copied')),
+    );
+  }
+
+  Uri _phoneUri(String value) =>
+      Uri(scheme: 'tel', path: value.replaceAll(RegExp(r'[^0-9+]'), ''));
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -2052,6 +2083,8 @@ class _DirectoryEntryTile extends StatelessWidget {
           // Email (tappable)
           InkWell(
             borderRadius: BorderRadius.circular(10),
+            onTap: () => _open(context, Uri(scheme: 'mailto', path: entry.email)),
+            onLongPress: () => _copy(context, entry.email),
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 6),
               child: Row(
@@ -2073,6 +2106,12 @@ class _DirectoryEntryTile extends StatelessWidget {
                       ),
                     ),
                   ),
+                  IconButton(
+                    tooltip: 'Copy email',
+                    visualDensity: VisualDensity.compact,
+                    onPressed: () => _copy(context, entry.email),
+                    icon: const Icon(Icons.copy_rounded, size: 17),
+                  ),
                 ],
               ),
             ),
@@ -2088,6 +2127,8 @@ class _DirectoryEntryTile extends StatelessWidget {
                 .map(
                   (c) => InkWell(
                     borderRadius: BorderRadius.circular(999),
+                    onTap: () => _open(context, _phoneUri(c)),
+                    onLongPress: () => _copy(context, c),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 10, vertical: 7),
@@ -2096,14 +2137,27 @@ class _DirectoryEntryTile extends StatelessWidget {
                         borderRadius: BorderRadius.circular(999),
                         border: Border.all(color: const Color(0xFFE6E6E6)),
                       ),
-                      child: Text(
-                        c,
-                        style: const TextStyle(
-                          fontSize: 12.2,
-                          fontWeight: FontWeight.w700,
-                          color: Color(0xFF2D2D2D),
-                          decoration: TextDecoration.underline,
-                        ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            c,
+                            style: const TextStyle(
+                              fontSize: 12.2,
+                              fontWeight: FontWeight.w700,
+                              color: Color(0xFF2D2D2D),
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          GestureDetector(
+                            onTap: () => _copy(context, c),
+                            child: const Tooltip(
+                              message: 'Copy phone number',
+                              child: Icon(Icons.copy_rounded, size: 15),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),

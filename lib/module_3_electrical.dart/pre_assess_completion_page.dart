@@ -254,10 +254,7 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
   }
 
   void _closeToLearningMaterials(BuildContext context) {
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => const LearningMaterialsTab()),
-      (route) => false,
-    );
+    Navigator.of(context).popUntil((route) => route.isFirst);
   }
 }
 

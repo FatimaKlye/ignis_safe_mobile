@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:video_player/video_player.dart';
+import '../widgets/reliable_video_player.dart';
 import 'post_assess_instruction.dart';
 import 'module_progression_service.dart';
 
@@ -113,14 +114,15 @@ class _LearningMediaAsset {
   }
 
   String resolvedPath() {
+    final path = assetPath.trim();
+    if (path.isEmpty) return '';
+    if (path.startsWith('assets/')) return path;
+
     final directUrl = publicUrl.trim();
     if (directUrl.isNotEmpty) return directUrl;
 
-    final path = assetPath.trim();
-    if (path.isEmpty) return '';
     if (path.startsWith('http://') ||
-        path.startsWith('https://') ||
-        path.startsWith('assets/')) {
+        path.startsWith('https://')) {
       return path;
     }
 
@@ -2279,7 +2281,7 @@ class _ElectricalVideoCard extends StatelessWidget {
             aspectRatio: 16 / 9,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(18),
-              child: _InlineAssetVideoPlayer(source: videoAssetPath),
+              child: ReliableVideoPlayer(source: videoAssetPath),
             ),
           ),
           const SizedBox(height: 10),

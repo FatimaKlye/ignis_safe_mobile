@@ -6,6 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'login.dart';
 import 'localization/app_text.dart';
+import 'profile_refresh_notifier.dart';
 
 import 'module_1_extinguisher.dart/pre_assess_instruction.dart' as pre1;
 import 'module_1_extinguisher.dart/post_assessment_extinguisher.dart';
@@ -105,8 +106,11 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
   @override
   void initState() {
     super.initState();
+    profileRefreshNotifier.addListener(_handleProfileChanged);
     _initializePage();
   }
+
+  void _handleProfileChanged() => _loadProfile();
 
   Future<void> _initializePage() async {
     await _loadProfile();
@@ -141,6 +145,7 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
 
   @override
   void dispose() {
+    profileRefreshNotifier.removeListener(_handleProfileChanged);
     _moduleProgressChannel?.unsubscribe();
     super.dispose();
   }

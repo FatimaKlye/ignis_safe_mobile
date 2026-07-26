@@ -8,6 +8,7 @@ import 'login.dart';
 import 'localization/app_text.dart';
 import 'widgets/app_notification.dart';
 import 'widgets/account_menu.dart';
+import 'profile_refresh_notifier.dart';
 
 import 'module_1_extinguisher.dart/pre_assess_instruction.dart' as pre1;
 import 'module_1_extinguisher.dart/module_1_learningmaterials.dart';
@@ -152,6 +153,7 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
   @override
   void initState() {
     super.initState();
+    profileRefreshNotifier.addListener(_handleProfileChanged);
     _loadProfile();
     _loadModules();
     _loadAllTrackedProgress();
@@ -160,11 +162,14 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
 
   @override
   void dispose() {
+    profileRefreshNotifier.removeListener(_handleProfileChanged);
     _searchController.dispose();
     final c = _channel;
     if (c != null) _client.removeChannel(c);
     super.dispose();
   }
+
+  void _handleProfileChanged() => _loadProfile();
 
   Future<void> _loadProfile() async {
     try {
