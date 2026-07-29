@@ -205,7 +205,7 @@ class PreAssessmentCompletionPage extends StatelessWidget {
                               child: Text(
                                 t(
                                   context,
-                                  'Start Module 2 Learning Materials',
+                                  'Proceed to Learning Materials',
                                   'Magpatuloy sa Modyul sa Pag-aaral',
                                 ),
                                 textAlign: TextAlign.center,
