@@ -1,5 +1,7 @@
 import 'dart:ui';
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -9,6 +11,7 @@ import 'localization/app_text.dart';
 import 'widgets/app_notification.dart';
 import 'widgets/account_menu.dart';
 import 'profile_refresh_notifier.dart';
+import 'module_progress_overview_service.dart';
 
 import 'module_1_extinguisher.dart/pre_assess_instruction.dart' as pre1;
 import 'module_1_extinguisher.dart/module_1_learningmaterials.dart';
@@ -134,6 +137,9 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
   String? _error;
   List<LearningMaterial> _modules = [];
   RealtimeChannel? _channel;
+  Timer? _progressRefreshDebounce;
+  Future<void>? _progressRefreshInFlight;
+  DateTime? _progressLoadedAt;
   int? _expandedModuleNo;
   String? _selectedModuleActionKey;
   bool _openingModuleOneSimulation = false;
@@ -163,6 +169,7 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
   @override
   void dispose() {
     profileRefreshNotifier.removeListener(_handleProfileChanged);
+    _progressRefreshDebounce?.cancel();
     _searchController.dispose();
     final c = _channel;
     if (c != null) _client.removeChannel(c);
@@ -262,9 +269,17 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
           event: PostgresChangeEvent.all,
           schema: 'public',
           table: 'module_progress',
-          callback: (_) => _loadAllTrackedProgress(),
+          callback: (_) => _scheduleProgressRefresh(),
         )
         .subscribe();
+  }
+
+  void _scheduleProgressRefresh() {
+    _progressRefreshDebounce?.cancel();
+    _progressRefreshDebounce = Timer(
+      const Duration(milliseconds: 350),
+      () => _loadAllTrackedProgress(),
+    );
   }
 
   Future<void> _logout() async {
@@ -335,83 +350,87 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
   }
 
   Future<void> _loadAllTrackedProgress() async {
-    await Future.wait(
-      _trackedProgressModules.map(_loadProgressForTrackedModule),
-    );
+    final activeRefresh = _progressRefreshInFlight;
+    if (activeRefresh != null) {
+      return activeRefresh;
+    }
+
+    final refresh = _performProgressRefresh();
+    _progressRefreshInFlight = refresh;
+    try {
+      await refresh;
+    } finally {
+      if (identical(_progressRefreshInFlight, refresh)) {
+        _progressRefreshInFlight = null;
+      }
+    }
   }
 
   Future<void> _loadProgressForTrackedModule(int moduleNo) async {
     if (!_isTrackedProgressModule(moduleNo)) return;
 
+    final loadedAt = _progressLoadedAt;
+    if (loadedAt != null &&
+        DateTime.now().difference(loadedAt) < const Duration(seconds: 20)) {
+      return;
+    }
+
+    await _loadAllTrackedProgress();
+  }
+
+  Future<void> _performProgressRefresh() async {
     final user = _client.auth.currentUser;
     if (user == null) {
       if (!mounted) return;
       setState(() {
-        _progressByModule[moduleNo] = _ModuleProgressSnapshot(
-          loading: false,
-          loaded: true,
-          preTestCompleted: false,
-          canOpenLearning: false,
-          learningCompleted: false,
-          canOpenPostTest: false,
-          postTestCompleted: false,
-          error: 'Please log in again to continue.',
-        );
+        for (final moduleNo in _trackedProgressModules) {
+          _progressByModule[moduleNo] = const _ModuleProgressSnapshot(
+            loading: false,
+            loaded: true,
+            preTestCompleted: false,
+            canOpenLearning: false,
+            learningCompleted: false,
+            canOpenPostTest: false,
+            postTestCompleted: false,
+            error: 'Please log in again to continue.',
+          );
+        }
       });
       return;
     }
 
-    if (mounted) {
-      final current = _progressFor(moduleNo);
-      setState(() {
-        _progressByModule[moduleNo] = current.copyWith(
-          loading: true,
-          clearError: true,
-        );
-      });
-    }
-
     try {
-      final state = await ModuleProgressionService(client: _client).getState(
-        moduleNo: moduleNo,
-      );
-
-      final preTestCompleted = state.hasValidPreTest ||
-          state.hasSubmittedPreTest ||
-          state.hasProgressPreTestCompletion;
-      final canOpenLearning = state.hasValidPreTest;
-      final learningCompleted = state.hasLearningModuleCompletion;
-      final postTestCompleted = state.hasValidPostTest;
-      final canOpenPostTest = state.hasValidPreTest &&
-          state.hasLearningModuleCompletion &&
-          !postTestCompleted;
+      final overview =
+          await ModuleProgressOverviewService(client: _client).load();
 
       if (!mounted) return;
       setState(() {
-        _progressByModule[moduleNo] = _ModuleProgressSnapshot(
-          loading: false,
-          loaded: true,
-          preTestCompleted: preTestCompleted,
-          canOpenLearning: canOpenLearning,
-          learningCompleted: learningCompleted,
-          canOpenPostTest: canOpenPostTest,
-          postTestCompleted: postTestCompleted,
-        );
+        for (final moduleNo in _trackedProgressModules) {
+          final progress = overview[moduleNo];
+          _progressByModule[moduleNo] = _ModuleProgressSnapshot(
+            loading: false,
+            loaded: true,
+            preTestCompleted: progress?.preTestCompleted ?? false,
+            canOpenLearning: progress?.canOpenLearning ?? false,
+            learningCompleted: progress?.learningCompleted ?? false,
+            canOpenPostTest: progress?.canOpenPostTest ?? false,
+            postTestCompleted: progress?.postTestCompleted ?? false,
+          );
+        }
+        _progressLoadedAt = DateTime.now();
       });
     } catch (e) {
-      debugPrint('LOAD MODULE $moduleNo PROGRESS ERROR: $e');
+      debugPrint('LOAD MODULE PROGRESS OVERVIEW ERROR: $e');
       if (!mounted) return;
       setState(() {
-        _progressByModule[moduleNo] = _ModuleProgressSnapshot(
-          loading: false,
-          loaded: true,
-          preTestCompleted: false,
-          canOpenLearning: false,
-          learningCompleted: false,
-          canOpenPostTest: false,
-          postTestCompleted: false,
-          error: e.toString().replaceFirst('Exception: ', ''),
-        );
+        for (final moduleNo in _trackedProgressModules) {
+          final current = _progressFor(moduleNo);
+          _progressByModule[moduleNo] = current.copyWith(
+            loading: false,
+            loaded: true,
+            error: e.toString().replaceFirst('Exception: ', ''),
+          );
+        }
       });
     }
   }

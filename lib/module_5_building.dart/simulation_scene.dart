@@ -1,4 +1,6 @@
 // simulation_scene.dart
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -76,10 +78,25 @@ class _SimulationScene5State extends State<SimulationScene5> {
     );
   }
 
+  Future<void> _persistUnityResult(
+    UnityLaunchResult unityResult,
+    Future<void> trackingFuture,
+  ) async {
+    try {
+      await trackingFuture;
+      await ProfileProgressSync.updateLastSimulation(_sceneLabel);
+
+      if (unityResult.completed) {
+        await _completeSimulationTracking();
+        await ProfileProgressSync.syncCompletedSimulations();
+      }
+    } catch (e) {
+      debugPrint('SIMULATION RESULT SAVE ERROR: $e');
+    }
+  }
+
   Future<void> _openSceneFlow() async {
     if (_isUnityLaunching) return;
-
-    var unityReturned = false;
 
     try {
       setState(() {
@@ -87,23 +104,17 @@ class _SimulationScene5State extends State<SimulationScene5> {
         _launchError = null;
       });
 
-      if (_moduleId == null || _simulationAttemptId == null) {
-        await _startSimulationTracking();
-      }
+      final trackingFuture =
+          _moduleId == null || _simulationAttemptId == null
+              ? _startSimulationTracking()
+              : Future<void>.value();
 
       final unityResult = await UnityLauncher.openScene(_unitySceneName);
-      unityReturned = true;
+      unawaited(_persistUnityResult(unityResult, trackingFuture));
 
       if (!mounted) return;
-
-      await ProfileProgressSync.updateLastSimulation(_sceneLabel);
-
-      if (unityResult.completed == true) {
-        await _completeSimulationTracking();
-        await ProfileProgressSync.syncCompletedSimulations();
-
-        if (!mounted) return;
-      }
+      setState(() => _isUnityLaunching = false);
+      Navigator.of(context).pop(unityResult.completed);
     } on PlatformException catch (e) {
       if (!mounted) return;
 
@@ -112,6 +123,7 @@ class _SimulationScene5State extends State<SimulationScene5> {
           : 'Failed to open Unity: ${e.message ?? e.code}';
 
       setState(() => _launchError = message);
+      setState(() => _isUnityLaunching = false);
 
       showAppNotification(
         context,
@@ -127,6 +139,7 @@ class _SimulationScene5State extends State<SimulationScene5> {
           : 'Failed to save simulation progress: $e';
 
       setState(() => _launchError = message);
+      setState(() => _isUnityLaunching = false);
 
       showAppNotification(
         context,
@@ -134,19 +147,6 @@ class _SimulationScene5State extends State<SimulationScene5> {
         type: AppNotificationType.error,
         accentColor: accent,
       );
-    } finally {
-      if (mounted) {
-        setState(() => _isUnityLaunching = false);
-      } else {
-        _isUnityLaunching = false;
-      }
-
-      if (unityReturned && mounted) {
-        final nav = Navigator.of(context);
-        if (nav.canPop()) {
-          nav.pop(true);
-        }
-      }
     }
   }
 

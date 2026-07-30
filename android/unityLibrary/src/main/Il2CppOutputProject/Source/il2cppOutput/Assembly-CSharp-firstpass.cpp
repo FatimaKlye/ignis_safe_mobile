@@ -2907,7 +2907,7 @@ IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR float Mathf_Max_mF5379E63D2BBAC76
 #pragma clang diagnostic ignored "-Winvalid-offsetof"
 #pragma clang diagnostic ignored "-Wunused-variable"
 #endif
-// Method Definition Index: 75348
+// Method Definition Index: 75351
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR MonoScriptData_t3405F29D573A6DFAAC547345A6BDBBE41CF54685 UnitySourceGeneratedAssemblyMonoScriptTypes_v1_Get_mC7CA174A23290C34424DF6D2733D5E64B92E5977 (const RuntimeMethod* method) 
 {
 	static bool s_Il2CppMethodInitialized;
@@ -2941,7 +2941,7 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR MonoScriptData_t3405F29D573A6DFAAC547345A6BDB
 		return L_6;
 	}
 }
-// Method Definition Index: 75349
+// Method Definition Index: 75352
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void UnitySourceGeneratedAssemblyMonoScriptTypes_v1__ctor_m3C9D09F94200334DD5FA29A465481C7848AF4549 (UnitySourceGeneratedAssemblyMonoScriptTypes_v1_tC4249931E82CEBAEC1968B680E9E9A0DF4A946C6* __this, const RuntimeMethod* method) 
 {
 	{
@@ -3027,7 +3027,7 @@ IL2CPP_EXTERN_C void MonoScriptData_t3405F29D573A6DFAAC547345A6BDBBE41CF54685_ma
 #pragma clang diagnostic ignored "-Winvalid-offsetof"
 #pragma clang diagnostic ignored "-Wunused-variable"
 #endif
-// Method Definition Index: 75350
+// Method Definition Index: 75353
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR bool OmniDoor3D_get_needClose_mA8C427131EBA052EE262833A830ECF878CE737C2 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
 {
 	{
@@ -3036,7 +3036,7 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR bool OmniDoor3D_get_needClose_mA8C427131EBA05
 		return L_0;
 	}
 }
-// Method Definition Index: 75351
+// Method Definition Index: 75354
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_set_needClose_mBDACD3FCE99D25E9508221B8EDC1A77593E44020 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, bool ___0_value, const RuntimeMethod* method) 
 {
 	{
@@ -3047,7 +3047,7 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_set_needClose_mBDACD3FCE99D25
 		return;
 	}
 }
-// Method Definition Index: 75352
+// Method Definition Index: 75355
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR int32_t OmniDoor3D_get_lastDoorKind_m51F4B3E7181D6BDE506A483FAE00E8E5B6936114 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
 {
 	{
@@ -3056,7 +3056,7 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR int32_t OmniDoor3D_get_lastDoorKind_m51F4B3E7
 		return L_0;
 	}
 }
-// Method Definition Index: 75353
+// Method Definition Index: 75356
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_set_lastDoorKind_m3FE6051176EAB143A57F9AE8AECEE33C2EE9F0F5 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, int32_t ___0_value, const RuntimeMethod* method) 
 {
 	{
@@ -3067,7 +3067,7 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_set_lastDoorKind_m3FE6051176E
 		return;
 	}
 }
-// Method Definition Index: 75354
+// Method Definition Index: 75357
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_Start_m3430AEA3F03DF5918402EDAC3DD7676A1FD5B88A (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
 {
 	static bool s_Il2CppMethodInitialized;
@@ -3228,7 +3228,7 @@ IL_00cc:
 		return;
 	}
 }
-// Method Definition Index: 75355
+// Method Definition Index: 75358
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_Cleanup_mC7A5ADA775F5215013B70E4A8B6786C50FA1D35D (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
 {
 	static bool s_Il2CppMethodInitialized;
@@ -3456,7 +3456,7 @@ IL_00e8:
 		return;
 	}
 }
-// Method Definition Index: 75356
+// Method Definition Index: 75359
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_UpdateDoorVisuals_mEBA99E72ACCAAAF610B9AF31DFBDAFAC9D3FD633 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
 {
 	static bool s_Il2CppMethodInitialized;
@@ -3969,7 +3969,7 @@ IL_03a8:
 		return;
 	}
 }
-// Method Definition Index: 75357
+// Method Definition Index: 75360
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_UpdateMeshLayers_m93DF5BE8E2B965ACE18F6A7BEE1FB9D9D164F494 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
 {
 	static bool s_Il2CppMethodInitialized;
@@ -4162,7 +4162,7 @@ IL_00c3:
 		return;
 	}
 }
-// Method Definition Index: 75358
+// Method Definition Index: 75361
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_UpdateTriggerShapeAndSize_m23401190A3A1C0F86E3953ED580E99BEE5726C9C (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
 {
 	static bool s_Il2CppMethodInitialized;
@@ -4326,7 +4326,7 @@ IL_00fa:
 		return;
 	}
 }
-// Method Definition Index: 75359
+// Method Definition Index: 75362
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_MakeFencePost_m2F573714C43AB5663E533421546EFF42BCFA1DA5 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___0_pos, const RuntimeMethod* method) 
 {
 	static bool s_Il2CppMethodInitialized;
@@ -4379,7 +4379,7 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_MakeFencePost_m2F573714C43AB5
 		return;
 	}
 }
-// Method Definition Index: 75360
+// Method Definition Index: 75363
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR MeshRenderer_t4B7747212F0B88244BB7790C61AE124BFC15BAAE* OmniDoor3D_MakeNewSection_mFEFB2A66DA1D55B4F9A61D7E28CC6DF1AC3C36DA (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, String_t* ___0_sPivot, String_t* ___1_sSection, Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___2_localPos, const RuntimeMethod* method) 
 {
 	static bool s_Il2CppMethodInitialized;
@@ -4616,7 +4616,7 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR MeshRenderer_t4B7747212F0B88244BB7790C61AE124
 		return L_71;
 	}
 }
-// Method Definition Index: 75361
+// Method Definition Index: 75364
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_OnWindowedChanged_mF58D06F8AE6654435C55694AF178FAA4AD133943 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
 {
 	static bool s_Il2CppMethodInitialized;
@@ -4649,7 +4649,7 @@ IL_000e:
 		return;
 	}
 }
-// Method Definition Index: 75362
+// Method Definition Index: 75365
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_OnDoorVisChanged_m7ADA369CF03B6D9B1ACC82900CB5129CC5AF70F1 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
 {
 	{
@@ -4659,7 +4659,7 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_OnDoorVisChanged_m7ADA369CF03
 		return;
 	}
 }
-// Method Definition Index: 75363
+// Method Definition Index: 75366
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_OnLayerChanged_mFC1F5FB36C578DC1C0DA5F93BB5511C9A5138C6A (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
 {
 	{
@@ -4669,7 +4669,7 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_OnLayerChanged_mFC1F5FB36C578
 		return;
 	}
 }
-// Method Definition Index: 75364
+// Method Definition Index: 75367
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_OnTriggerEnter_m29ABFDDE5DADF5BA40A319210F8FBB1B0C4AD25D (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, Collider_t1CC3163924FCD6C4CC2E816373A929C1E3D55E76* ___0_other, const RuntimeMethod* method) 
 {
 	static bool s_Il2CppMethodInitialized;
@@ -4729,7 +4729,7 @@ IL_0050:
 		return;
 	}
 }
-// Method Definition Index: 75365
+// Method Definition Index: 75368
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_OnTriggerExit_m752B29C38F12FD2280D025E74EF216BCF8621B64 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, Collider_t1CC3163924FCD6C4CC2E816373A929C1E3D55E76* ___0_other, const RuntimeMethod* method) 
 {
 	static bool s_Il2CppMethodInitialized;
@@ -4799,7 +4799,7 @@ IL_004c:
 		return;
 	}
 }
-// Method Definition Index: 75366
+// Method Definition Index: 75369
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_OnControllerToggle_mA63C59658D5ACC4C4BE1982D9B5A9E66C4EC115A (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
 {
 	{
@@ -4826,7 +4826,7 @@ IL_0017:
 		return;
 	}
 }
-// Method Definition Index: 75367
+// Method Definition Index: 75370
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_OnControllerOpen_mA1A637000670A15FAAB35E7E8BA72038C0FD9432 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
 {
 	{
@@ -4836,7 +4836,7 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_OnControllerOpen_mA1A63700067
 		return;
 	}
 }
-// Method Definition Index: 75368
+// Method Definition Index: 75371
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_OnControllerClose_m480918131D4363CF79EB2CA45E24517D9F319F6B (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
 {
 	{
@@ -4862,7 +4862,7 @@ IL_001c:
 		return;
 	}
 }
-// Method Definition Index: 75369
+// Method Definition Index: 75372
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_OnControllerLock_m97D4C8914E92DAC5F83BFD80292DE0DC8EFA8C44 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
 {
 	{
@@ -4874,7 +4874,7 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_OnControllerLock_m97D4C8914E9
 		return;
 	}
 }
-// Method Definition Index: 75370
+// Method Definition Index: 75373
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_TryLock_mD91BBAA1ABF2F7E9F8AD7DA670700178BAB97DB3 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
 {
 	static bool s_Il2CppMethodInitialized;
@@ -4977,7 +4977,7 @@ IL_005b:
 		return;
 	}
 }
-// Method Definition Index: 75371
+// Method Definition Index: 75374
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_OnControllerUnlock_m4D825D706D046AFA2A946466D937913C2C89DCFE (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
 {
 	{
@@ -4989,7 +4989,7 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_OnControllerUnlock_m4D825D706
 		return;
 	}
 }
-// Method Definition Index: 75372
+// Method Definition Index: 75375
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_TryUnlock_mCD6C6F3F02F034D30C1310EB37987E66C5FA67DE (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
 {
 	static bool s_Il2CppMethodInitialized;
@@ -5092,7 +5092,7 @@ IL_005b:
 		return;
 	}
 }
-// Method Definition Index: 75373
+// Method Definition Index: 75376
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* OmniDoor3D_Open_mCCEFA0F50C377A2CB50B3B1C519B6CE12F236819 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
 {
 	static bool s_Il2CppMethodInitialized;
@@ -5111,7 +5111,7 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* OmniDoor3D_Open_mCCEFA0F50C377
 		return L_1;
 	}
 }
-// Method Definition Index: 75374
+// Method Definition Index: 75377
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* OmniDoor3D_Close_m68052BB2E99899B1F23C5074200578D7AB862D48 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
 {
 	static bool s_Il2CppMethodInitialized;
@@ -5130,7 +5130,7 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* OmniDoor3D_Close_m68052BB2E998
 		return L_1;
 	}
 }
-// Method Definition Index: 75375
+// Method Definition Index: 75378
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR OmniDoor3DConfig_t190977036D4995316F7EBBC5305FE39D88914957* OmniDoor3D_GetConfig_mEA289FF8960B4B268671B5C8A87107C5A979982B (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
 {
 	static bool s_Il2CppMethodInitialized;
@@ -5167,7 +5167,7 @@ IL_001e:
 		return L_3;
 	}
 }
-// Method Definition Index: 75376
+// Method Definition Index: 75379
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_TryOpen_m0E0088365BF5206AC2C7525807DA3CBB4C3888EC (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
 {
 	static bool s_Il2CppMethodInitialized;
@@ -5447,7 +5447,7 @@ IL_0123:
 		return;
 	}
 }
-// Method Definition Index: 75377
+// Method Definition Index: 75380
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR bool OmniDoor3D_InOpeningLayers_m8936F6D9C0B8017700E33401BC44B7D807DFDF62 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* ___0_go, const RuntimeMethod* method) 
 {
 	{
@@ -5462,7 +5462,7 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR bool OmniDoor3D_InOpeningLayers_m8936F6D9C0B8
 		return (bool)((!(((uint32_t)((int32_t)(((int32_t)(1<<((int32_t)(L_1&((int32_t)31)))))&L_3))) <= ((uint32_t)0)))? 1 : 0);
 	}
 }
-// Method Definition Index: 75378
+// Method Definition Index: 75381
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_CloseLinkedDoors_mED6AD9FCD60C5242DA62085DCA76BB384409AED1 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
 {
 	static bool s_Il2CppMethodInitialized;
@@ -5534,7 +5534,7 @@ IL_002a:
 		return;
 	}
 }
-// Method Definition Index: 75379
+// Method Definition Index: 75382
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_LockLinkedDoors_m4FB164275A6B7528B42CB0B19351B89A5C621808 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
 {
 	static bool s_Il2CppMethodInitialized;
@@ -5602,7 +5602,7 @@ IL_0022:
 		return;
 	}
 }
-// Method Definition Index: 75380
+// Method Definition Index: 75383
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_UnlockLinkedDoors_m40A8D9BF50CF7407CCF29D4754E1DFDE261B53A5 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
 {
 	static bool s_Il2CppMethodInitialized;
@@ -5670,7 +5670,7 @@ IL_0022:
 		return;
 	}
 }
-// Method Definition Index: 75381
+// Method Definition Index: 75384
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_Update_m447FAE76F9C5D64223370B3F5577E94D4425FFFF (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
 {
 	static bool s_Il2CppMethodInitialized;
@@ -6332,7 +6332,7 @@ IL_043c:
 		return;
 	}
 }
-// Method Definition Index: 75382
+// Method Definition Index: 75385
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_ApplyGarageDoorWaypoint_m7BA4AB457647FCF366364E6E9A7F1EB25F6ACFC4 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, int32_t ___0_sectionIndex, int32_t ___1_waypointIndex, float ___2_lerpFactor, const RuntimeMethod* method) 
 {
 	static bool s_Il2CppMethodInitialized;
@@ -6519,7 +6519,7 @@ IL_00ba:
 		return;
 	}
 }
-// Method Definition Index: 75383
+// Method Definition Index: 75386
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_OnDoorOpened_m0B23CFFE2802695D62EC4DC06BB58333C12231BF (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method) 
 {
 	static bool s_Il2CppMethodInitialized;
@@ -6570,7 +6570,7 @@ IL_002a:
 		return;
 	}
 }
-// Method Definition Index: 75384
+// Method Definition Index: 75387
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* OmniDoor3D_CloseAfter_mBAED5404B74F32957AFFFB62B0BB65CF5FF685D0 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, float ___0_fSec, const RuntimeMethod* method) 
 {
 	static bool s_Il2CppMethodInitialized;
@@ -6593,7 +6593,7 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* OmniDoor3D_CloseAfter_mBAED540
 		return L_2;
 	}
 }
-// Method Definition Index: 75385
+// Method Definition Index: 75388
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D_OnDestroy_m7BDAF3FBB5897D3F6A9FF591E097AA79835660ED (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
 {
 	static bool s_Il2CppMethodInitialized;
@@ -6729,7 +6729,7 @@ IL_00d2:
 		return;
 	}
 }
-// Method Definition Index: 75386
+// Method Definition Index: 75389
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81 OmniDoor3D_GetDoorInfo_mFF70B2FB604F8340C486A06275694998B42FD654 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, int32_t ___0_doorKind, const RuntimeMethod* method) 
 {
 	OmniDoorDBU5BU5D_tF16DAEC8020B9DA8CD6C22B6CB4F6D60EE25D502* V_0 = NULL;
@@ -6831,7 +6831,7 @@ IL_0041:
 		return L_21;
 	}
 }
-// Method Definition Index: 75387
+// Method Definition Index: 75390
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* OmniDoor3D_GetHandlePrefab_m54B1EE39320C4B237AE0E08BB809FB76AC210176 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, int32_t ___0_handleKind, const RuntimeMethod* method) 
 {
 	OmniDoorDBU5BU5D_tF16DAEC8020B9DA8CD6C22B6CB4F6D60EE25D502* V_0 = NULL;
@@ -6930,7 +6930,7 @@ IL_0046:
 		return (GameObject_t76FEDD663AB33C991A9C9A23129337651094216F*)NULL;
 	}
 }
-// Method Definition Index: 75388
+// Method Definition Index: 75391
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* OmniDoor3D_GetPostPrefab_mCA6BD64DC4AF8EC77B370F5E0A7A16F014F55380 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, int32_t ___0_dk, const RuntimeMethod* method) 
 {
 	OmniDoorDBU5BU5D_tF16DAEC8020B9DA8CD6C22B6CB4F6D60EE25D502* V_0 = NULL;
@@ -7029,7 +7029,7 @@ IL_0046:
 		return (GameObject_t76FEDD663AB33C991A9C9A23129337651094216F*)NULL;
 	}
 }
-// Method Definition Index: 75389
+// Method Definition Index: 75392
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR bool OmniDoor3D_GetHandlePlacement_mBE88C2D24B123D0566FEF1E5658FDFCAAECA9012 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, DoorInfo_tEB1A6CA519CD4F2FC360E333DDB66365D018EF81 ___0_di, int32_t ___1_hk, HandlePlacement_t501AE58E56D7614CD5583DECA99405B710D41907* ___2_hpOut, const RuntimeMethod* method) 
 {
 	HandlePlacementU5BU5D_tDD9B6C149E365F0A8655F2F8FB0D1AE8693E362C* V_0 = NULL;
@@ -7097,7 +7097,7 @@ IL_0029:
 		return (bool)0;
 	}
 }
-// Method Definition Index: 75390
+// Method Definition Index: 75393
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D* OmniDoor3D_GetHandleMaterials_mB0B774D925ED6F8F3CFA1AA6B2B84828DAB7C6D2 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, int32_t ___0_hk, const RuntimeMethod* method) 
 {
 	static bool s_Il2CppMethodInitialized;
@@ -7208,7 +7208,7 @@ IL_0050:
 		return (MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D*)NULL;
 	}
 }
-// Method Definition Index: 75391
+// Method Definition Index: 75394
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D* OmniDoor3D_GetPostMaterials_m76B030C398B25123393DEECBAAD8F5A94361DA57 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, int32_t ___0_dk, const RuntimeMethod* method) 
 {
 	static bool s_Il2CppMethodInitialized;
@@ -7319,7 +7319,7 @@ IL_0050:
 		return (MaterialU5BU5D_t2B1D11C42DB07A4400C0535F92DBB87A2E346D3D*)NULL;
 	}
 }
-// Method Definition Index: 75392
+// Method Definition Index: 75395
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 OmniDoor3D_GetRightPostPos_mD9A808E1BEF9F19E1BEA091444B449840F3BD564 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, int32_t ___0_dk, const RuntimeMethod* method) 
 {
 	OmniDoorDBU5BU5D_tF16DAEC8020B9DA8CD6C22B6CB4F6D60EE25D502* V_0 = NULL;
@@ -7420,7 +7420,7 @@ IL_0046:
 		return L_22;
 	}
 }
-// Method Definition Index: 75393
+// Method Definition Index: 75396
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 OmniDoor3D_GetLeftPostPos_mB1C40BF2872290615E81173D11DE9B51E3A865C6 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, int32_t ___0_dk, const RuntimeMethod* method) 
 {
 	OmniDoorDBU5BU5D_tF16DAEC8020B9DA8CD6C22B6CB4F6D60EE25D502* V_0 = NULL;
@@ -7521,7 +7521,7 @@ IL_0046:
 		return L_22;
 	}
 }
-// Method Definition Index: 75394
+// Method Definition Index: 75397
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR bool OmniDoor3D_MotionAllowed_m41E628C2DF895BD00259EFC86D7197E1F5027F16 (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, int32_t ___0_mk, int32_t ___1_dk, const RuntimeMethod* method) 
 {
 	OmniDoorDBU5BU5D_tF16DAEC8020B9DA8CD6C22B6CB4F6D60EE25D502* V_0 = NULL;
@@ -7662,7 +7662,7 @@ IL_0064:
 		return (bool)0;
 	}
 }
-// Method Definition Index: 75395
+// Method Definition Index: 75398
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D__ctor_mE842D84C603F9BDB8B573CB2ED8E2BB3F4B5F60B (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
 {
 	static bool s_Il2CppMethodInitialized;
@@ -7744,7 +7744,7 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D__ctor_mE842D84C603F9BDB8B573C
 		return;
 	}
 }
-// Method Definition Index: 75396
+// Method Definition Index: 75399
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3D__cctor_m234A24377941710F2A6F51B90124D494124681F1 (const RuntimeMethod* method) 
 {
 	static bool s_Il2CppMethodInitialized;
@@ -8924,7 +8924,7 @@ void DoorOpenedEvt_Invoke_m25A787A473AE4D2FAA71159238C4E729C1AB59B5_OpenGenericI
 	NullCheck(___0_door);
 	GenericInterfaceActionInvoker0::Invoke(method, ___0_door);
 }
-// Method Definition Index: 75397
+// Method Definition Index: 75400
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorOpenedEvt__ctor_m9C9C2897DD8A03B93EED264776517091A4E0C2C1 (DoorOpenedEvt_t000102A9D09036B3D64BB710FE11FD7FE05AD585* __this, RuntimeObject* ___0_object, intptr_t ___1_method, const RuntimeMethod* method) 
 {
 	__this->___method_ptr = (intptr_t)il2cpp_codegen_get_method_pointer((RuntimeMethod*)___1_method);
@@ -8977,20 +8977,20 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorOpenedEvt__ctor_m9C9C2897DD8A03B93EE
 	}
 	__this->___extra_arg = (intptr_t)&DoorOpenedEvt_Invoke_m25A787A473AE4D2FAA71159238C4E729C1AB59B5_Multicast;
 }
-// Method Definition Index: 75398
+// Method Definition Index: 75401
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorOpenedEvt_Invoke_m25A787A473AE4D2FAA71159238C4E729C1AB59B5 (DoorOpenedEvt_t000102A9D09036B3D64BB710FE11FD7FE05AD585* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method) 
 {
 	typedef void (*FunctionPointerType) (RuntimeObject*, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC*, const RuntimeMethod*);
 	((FunctionPointerType)__this->___invoke_impl)((Il2CppObject*)__this->___method_code, ___0_door, reinterpret_cast<RuntimeMethod*>(__this->___method));
 }
-// Method Definition Index: 75399
+// Method Definition Index: 75402
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* DoorOpenedEvt_BeginInvoke_mCB7397DB2FA5FF638B38A52CAE28BC856AFB4A74 (DoorOpenedEvt_t000102A9D09036B3D64BB710FE11FD7FE05AD585* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, AsyncCallback_t7FEF460CBDCFB9C5FA2EF776984778B9A4145F4C* ___1_callback, RuntimeObject* ___2_object, const RuntimeMethod* method) 
 {
 	void *__d_args[2] = {0};
 	__d_args[0] = ___0_door;
 	return (RuntimeObject*)il2cpp_codegen_delegate_begin_invoke((RuntimeDelegate*)__this, __d_args, (RuntimeDelegate*)___1_callback, (RuntimeObject*)___2_object);
 }
-// Method Definition Index: 75400
+// Method Definition Index: 75403
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorOpenedEvt_EndInvoke_m587FC092307B208D212B25E29DEC93D8B44136D5 (DoorOpenedEvt_t000102A9D09036B3D64BB710FE11FD7FE05AD585* __this, RuntimeObject* ___0_result, const RuntimeMethod* method) 
 {
 	il2cpp_codegen_delegate_end_invoke((Il2CppAsyncResult*) ___0_result, 0);
@@ -9045,7 +9045,7 @@ void DoorOpenFailedEvt_Invoke_mEB611B296A59578C322CF8D16385203BB26E8BA4_OpenGene
 	NullCheck(___0_door);
 	GenericInterfaceActionInvoker0::Invoke(method, ___0_door);
 }
-// Method Definition Index: 75401
+// Method Definition Index: 75404
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorOpenFailedEvt__ctor_mEC8DDD242C47E1508C4DDFEC673B731F643D3E01 (DoorOpenFailedEvt_t1032FDEE75EB91423C95DF2155669047463F16C8* __this, RuntimeObject* ___0_object, intptr_t ___1_method, const RuntimeMethod* method) 
 {
 	__this->___method_ptr = (intptr_t)il2cpp_codegen_get_method_pointer((RuntimeMethod*)___1_method);
@@ -9098,20 +9098,20 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorOpenFailedEvt__ctor_mEC8DDD242C47E15
 	}
 	__this->___extra_arg = (intptr_t)&DoorOpenFailedEvt_Invoke_mEB611B296A59578C322CF8D16385203BB26E8BA4_Multicast;
 }
-// Method Definition Index: 75402
+// Method Definition Index: 75405
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorOpenFailedEvt_Invoke_mEB611B296A59578C322CF8D16385203BB26E8BA4 (DoorOpenFailedEvt_t1032FDEE75EB91423C95DF2155669047463F16C8* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method) 
 {
 	typedef void (*FunctionPointerType) (RuntimeObject*, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC*, const RuntimeMethod*);
 	((FunctionPointerType)__this->___invoke_impl)((Il2CppObject*)__this->___method_code, ___0_door, reinterpret_cast<RuntimeMethod*>(__this->___method));
 }
-// Method Definition Index: 75403
+// Method Definition Index: 75406
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* DoorOpenFailedEvt_BeginInvoke_mDB4BFBE6C9AD931333B2E180E3363650D9A700B0 (DoorOpenFailedEvt_t1032FDEE75EB91423C95DF2155669047463F16C8* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, AsyncCallback_t7FEF460CBDCFB9C5FA2EF776984778B9A4145F4C* ___1_callback, RuntimeObject* ___2_object, const RuntimeMethod* method) 
 {
 	void *__d_args[2] = {0};
 	__d_args[0] = ___0_door;
 	return (RuntimeObject*)il2cpp_codegen_delegate_begin_invoke((RuntimeDelegate*)__this, __d_args, (RuntimeDelegate*)___1_callback, (RuntimeObject*)___2_object);
 }
-// Method Definition Index: 75404
+// Method Definition Index: 75407
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorOpenFailedEvt_EndInvoke_m14B5B9DBC18BA7A21D401A762273D36D7BBBC550 (DoorOpenFailedEvt_t1032FDEE75EB91423C95DF2155669047463F16C8* __this, RuntimeObject* ___0_result, const RuntimeMethod* method) 
 {
 	il2cpp_codegen_delegate_end_invoke((Il2CppAsyncResult*) ___0_result, 0);
@@ -9166,7 +9166,7 @@ void DoorClosedEvt_Invoke_mB5F245C3A2B92B56DBB9B92FE3878F7FAB5353AA_OpenGenericI
 	NullCheck(___0_door);
 	GenericInterfaceActionInvoker0::Invoke(method, ___0_door);
 }
-// Method Definition Index: 75405
+// Method Definition Index: 75408
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorClosedEvt__ctor_mE8FE1B4B5A884191406A10D46660D01DFA7AA41B (DoorClosedEvt_t3512971C2165EA9C9D0F0A489E03B04EEE894C5C* __this, RuntimeObject* ___0_object, intptr_t ___1_method, const RuntimeMethod* method) 
 {
 	__this->___method_ptr = (intptr_t)il2cpp_codegen_get_method_pointer((RuntimeMethod*)___1_method);
@@ -9219,20 +9219,20 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorClosedEvt__ctor_mE8FE1B4B5A884191406
 	}
 	__this->___extra_arg = (intptr_t)&DoorClosedEvt_Invoke_mB5F245C3A2B92B56DBB9B92FE3878F7FAB5353AA_Multicast;
 }
-// Method Definition Index: 75406
+// Method Definition Index: 75409
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorClosedEvt_Invoke_mB5F245C3A2B92B56DBB9B92FE3878F7FAB5353AA (DoorClosedEvt_t3512971C2165EA9C9D0F0A489E03B04EEE894C5C* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method) 
 {
 	typedef void (*FunctionPointerType) (RuntimeObject*, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC*, const RuntimeMethod*);
 	((FunctionPointerType)__this->___invoke_impl)((Il2CppObject*)__this->___method_code, ___0_door, reinterpret_cast<RuntimeMethod*>(__this->___method));
 }
-// Method Definition Index: 75407
+// Method Definition Index: 75410
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* DoorClosedEvt_BeginInvoke_m622FAB3B42BE746F0E4ABB5A873571509CDFC1B3 (DoorClosedEvt_t3512971C2165EA9C9D0F0A489E03B04EEE894C5C* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, AsyncCallback_t7FEF460CBDCFB9C5FA2EF776984778B9A4145F4C* ___1_callback, RuntimeObject* ___2_object, const RuntimeMethod* method) 
 {
 	void *__d_args[2] = {0};
 	__d_args[0] = ___0_door;
 	return (RuntimeObject*)il2cpp_codegen_delegate_begin_invoke((RuntimeDelegate*)__this, __d_args, (RuntimeDelegate*)___1_callback, (RuntimeObject*)___2_object);
 }
-// Method Definition Index: 75408
+// Method Definition Index: 75411
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorClosedEvt_EndInvoke_m7AEB2130E03BA9C99A471BC1A2558DC9004FF271 (DoorClosedEvt_t3512971C2165EA9C9D0F0A489E03B04EEE894C5C* __this, RuntimeObject* ___0_result, const RuntimeMethod* method) 
 {
 	il2cpp_codegen_delegate_end_invoke((Il2CppAsyncResult*) ___0_result, 0);
@@ -9287,7 +9287,7 @@ void DoorWillOpenEvt_Invoke_mD170B0E6804066068C1825C3E35BBB31D6472AE5_OpenGeneri
 	NullCheck(___0_door);
 	GenericInterfaceActionInvoker0::Invoke(method, ___0_door);
 }
-// Method Definition Index: 75409
+// Method Definition Index: 75412
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorWillOpenEvt__ctor_m839A1C2F446F5EA89FE3110B07742CE7886BCE46 (DoorWillOpenEvt_t3A953E675BDD6E13F554E0BDDD07F831A039BE22* __this, RuntimeObject* ___0_object, intptr_t ___1_method, const RuntimeMethod* method) 
 {
 	__this->___method_ptr = (intptr_t)il2cpp_codegen_get_method_pointer((RuntimeMethod*)___1_method);
@@ -9340,20 +9340,20 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorWillOpenEvt__ctor_m839A1C2F446F5EA89
 	}
 	__this->___extra_arg = (intptr_t)&DoorWillOpenEvt_Invoke_mD170B0E6804066068C1825C3E35BBB31D6472AE5_Multicast;
 }
-// Method Definition Index: 75410
+// Method Definition Index: 75413
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorWillOpenEvt_Invoke_mD170B0E6804066068C1825C3E35BBB31D6472AE5 (DoorWillOpenEvt_t3A953E675BDD6E13F554E0BDDD07F831A039BE22* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method) 
 {
 	typedef void (*FunctionPointerType) (RuntimeObject*, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC*, const RuntimeMethod*);
 	((FunctionPointerType)__this->___invoke_impl)((Il2CppObject*)__this->___method_code, ___0_door, reinterpret_cast<RuntimeMethod*>(__this->___method));
 }
-// Method Definition Index: 75411
+// Method Definition Index: 75414
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* DoorWillOpenEvt_BeginInvoke_m6CA5B5E76EDBD8138984098715CC08F7B5950C1F (DoorWillOpenEvt_t3A953E675BDD6E13F554E0BDDD07F831A039BE22* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, AsyncCallback_t7FEF460CBDCFB9C5FA2EF776984778B9A4145F4C* ___1_callback, RuntimeObject* ___2_object, const RuntimeMethod* method) 
 {
 	void *__d_args[2] = {0};
 	__d_args[0] = ___0_door;
 	return (RuntimeObject*)il2cpp_codegen_delegate_begin_invoke((RuntimeDelegate*)__this, __d_args, (RuntimeDelegate*)___1_callback, (RuntimeObject*)___2_object);
 }
-// Method Definition Index: 75412
+// Method Definition Index: 75415
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorWillOpenEvt_EndInvoke_m27976DFA6C156D0EA3C7D9FE333B343BA3803E33 (DoorWillOpenEvt_t3A953E675BDD6E13F554E0BDDD07F831A039BE22* __this, RuntimeObject* ___0_result, const RuntimeMethod* method) 
 {
 	il2cpp_codegen_delegate_end_invoke((Il2CppAsyncResult*) ___0_result, 0);
@@ -9408,7 +9408,7 @@ void DoorWillCloseEvt_Invoke_m53BFA21E364CD48B295BC3ECAD5D32FAC66FCF4D_OpenGener
 	NullCheck(___0_door);
 	GenericInterfaceActionInvoker0::Invoke(method, ___0_door);
 }
-// Method Definition Index: 75413
+// Method Definition Index: 75416
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorWillCloseEvt__ctor_m67BC2C566C11C92D2A424336692E6082780A8E39 (DoorWillCloseEvt_tCF052CFCAD1F6F42971A6A7F50DB3F69766740B3* __this, RuntimeObject* ___0_object, intptr_t ___1_method, const RuntimeMethod* method) 
 {
 	__this->___method_ptr = (intptr_t)il2cpp_codegen_get_method_pointer((RuntimeMethod*)___1_method);
@@ -9461,20 +9461,20 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorWillCloseEvt__ctor_m67BC2C566C11C92D
 	}
 	__this->___extra_arg = (intptr_t)&DoorWillCloseEvt_Invoke_m53BFA21E364CD48B295BC3ECAD5D32FAC66FCF4D_Multicast;
 }
-// Method Definition Index: 75414
+// Method Definition Index: 75417
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorWillCloseEvt_Invoke_m53BFA21E364CD48B295BC3ECAD5D32FAC66FCF4D (DoorWillCloseEvt_tCF052CFCAD1F6F42971A6A7F50DB3F69766740B3* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method) 
 {
 	typedef void (*FunctionPointerType) (RuntimeObject*, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC*, const RuntimeMethod*);
 	((FunctionPointerType)__this->___invoke_impl)((Il2CppObject*)__this->___method_code, ___0_door, reinterpret_cast<RuntimeMethod*>(__this->___method));
 }
-// Method Definition Index: 75415
+// Method Definition Index: 75418
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* DoorWillCloseEvt_BeginInvoke_m43422BF79BDCD824BEA9F19D85912F5839B6590A (DoorWillCloseEvt_tCF052CFCAD1F6F42971A6A7F50DB3F69766740B3* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, AsyncCallback_t7FEF460CBDCFB9C5FA2EF776984778B9A4145F4C* ___1_callback, RuntimeObject* ___2_object, const RuntimeMethod* method) 
 {
 	void *__d_args[2] = {0};
 	__d_args[0] = ___0_door;
 	return (RuntimeObject*)il2cpp_codegen_delegate_begin_invoke((RuntimeDelegate*)__this, __d_args, (RuntimeDelegate*)___1_callback, (RuntimeObject*)___2_object);
 }
-// Method Definition Index: 75416
+// Method Definition Index: 75419
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorWillCloseEvt_EndInvoke_m8726AC20AB67765DB41C68EF1B3211287A14FA42 (DoorWillCloseEvt_tCF052CFCAD1F6F42971A6A7F50DB3F69766740B3* __this, RuntimeObject* ___0_result, const RuntimeMethod* method) 
 {
 	il2cpp_codegen_delegate_end_invoke((Il2CppAsyncResult*) ___0_result, 0);
@@ -9529,7 +9529,7 @@ void DoorLockedEvt_Invoke_m0336C43427A49DB8930EB24C0811C4F59FFAE7AD_OpenGenericI
 	NullCheck(___0_door);
 	GenericInterfaceActionInvoker0::Invoke(method, ___0_door);
 }
-// Method Definition Index: 75417
+// Method Definition Index: 75420
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorLockedEvt__ctor_mE632055FBA7400EFDF37EACF7E3E27157740A91C (DoorLockedEvt_t24FA80C7BCDB52586B684991ECB99317F4F4F8AA* __this, RuntimeObject* ___0_object, intptr_t ___1_method, const RuntimeMethod* method) 
 {
 	__this->___method_ptr = (intptr_t)il2cpp_codegen_get_method_pointer((RuntimeMethod*)___1_method);
@@ -9582,20 +9582,20 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorLockedEvt__ctor_mE632055FBA7400EFDF3
 	}
 	__this->___extra_arg = (intptr_t)&DoorLockedEvt_Invoke_m0336C43427A49DB8930EB24C0811C4F59FFAE7AD_Multicast;
 }
-// Method Definition Index: 75418
+// Method Definition Index: 75421
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorLockedEvt_Invoke_m0336C43427A49DB8930EB24C0811C4F59FFAE7AD (DoorLockedEvt_t24FA80C7BCDB52586B684991ECB99317F4F4F8AA* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method) 
 {
 	typedef void (*FunctionPointerType) (RuntimeObject*, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC*, const RuntimeMethod*);
 	((FunctionPointerType)__this->___invoke_impl)((Il2CppObject*)__this->___method_code, ___0_door, reinterpret_cast<RuntimeMethod*>(__this->___method));
 }
-// Method Definition Index: 75419
+// Method Definition Index: 75422
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* DoorLockedEvt_BeginInvoke_m1E166215513DF949B5C914878E9E59C7BC9B932A (DoorLockedEvt_t24FA80C7BCDB52586B684991ECB99317F4F4F8AA* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, AsyncCallback_t7FEF460CBDCFB9C5FA2EF776984778B9A4145F4C* ___1_callback, RuntimeObject* ___2_object, const RuntimeMethod* method) 
 {
 	void *__d_args[2] = {0};
 	__d_args[0] = ___0_door;
 	return (RuntimeObject*)il2cpp_codegen_delegate_begin_invoke((RuntimeDelegate*)__this, __d_args, (RuntimeDelegate*)___1_callback, (RuntimeObject*)___2_object);
 }
-// Method Definition Index: 75420
+// Method Definition Index: 75423
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorLockedEvt_EndInvoke_m98CB607D12544945FBB43489AEFC6E6889E40742 (DoorLockedEvt_t24FA80C7BCDB52586B684991ECB99317F4F4F8AA* __this, RuntimeObject* ___0_result, const RuntimeMethod* method) 
 {
 	il2cpp_codegen_delegate_end_invoke((Il2CppAsyncResult*) ___0_result, 0);
@@ -9650,7 +9650,7 @@ void DoorUnlockedEvt_Invoke_m0946810F4DE203283827D39345B8A3AA528B4E17_OpenGeneri
 	NullCheck(___0_door);
 	GenericInterfaceActionInvoker0::Invoke(method, ___0_door);
 }
-// Method Definition Index: 75421
+// Method Definition Index: 75424
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorUnlockedEvt__ctor_m9062CFC7708B5B7251AE49761432B38AD78A9DA2 (DoorUnlockedEvt_t1E6D58AC4C10BE4C2135F3580DBAEE0D87024854* __this, RuntimeObject* ___0_object, intptr_t ___1_method, const RuntimeMethod* method) 
 {
 	__this->___method_ptr = (intptr_t)il2cpp_codegen_get_method_pointer((RuntimeMethod*)___1_method);
@@ -9703,20 +9703,20 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorUnlockedEvt__ctor_m9062CFC7708B5B725
 	}
 	__this->___extra_arg = (intptr_t)&DoorUnlockedEvt_Invoke_m0946810F4DE203283827D39345B8A3AA528B4E17_Multicast;
 }
-// Method Definition Index: 75422
+// Method Definition Index: 75425
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorUnlockedEvt_Invoke_m0946810F4DE203283827D39345B8A3AA528B4E17 (DoorUnlockedEvt_t1E6D58AC4C10BE4C2135F3580DBAEE0D87024854* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method) 
 {
 	typedef void (*FunctionPointerType) (RuntimeObject*, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC*, const RuntimeMethod*);
 	((FunctionPointerType)__this->___invoke_impl)((Il2CppObject*)__this->___method_code, ___0_door, reinterpret_cast<RuntimeMethod*>(__this->___method));
 }
-// Method Definition Index: 75423
+// Method Definition Index: 75426
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* DoorUnlockedEvt_BeginInvoke_mFD27B1392CFF0B07F1E0D4DA240CDB40501762A9 (DoorUnlockedEvt_t1E6D58AC4C10BE4C2135F3580DBAEE0D87024854* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, AsyncCallback_t7FEF460CBDCFB9C5FA2EF776984778B9A4145F4C* ___1_callback, RuntimeObject* ___2_object, const RuntimeMethod* method) 
 {
 	void *__d_args[2] = {0};
 	__d_args[0] = ___0_door;
 	return (RuntimeObject*)il2cpp_codegen_delegate_begin_invoke((RuntimeDelegate*)__this, __d_args, (RuntimeDelegate*)___1_callback, (RuntimeObject*)___2_object);
 }
-// Method Definition Index: 75424
+// Method Definition Index: 75427
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorUnlockedEvt_EndInvoke_m5B5EA722C35AE246EAD987CE2628E6D32F521233 (DoorUnlockedEvt_t1E6D58AC4C10BE4C2135F3580DBAEE0D87024854* __this, RuntimeObject* ___0_result, const RuntimeMethod* method) 
 {
 	il2cpp_codegen_delegate_end_invoke((Il2CppAsyncResult*) ___0_result, 0);
@@ -9729,7 +9729,7 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorUnlockedEvt_EndInvoke_m5B5EA722C35AE
 #pragma clang diagnostic ignored "-Winvalid-offsetof"
 #pragma clang diagnostic ignored "-Wunused-variable"
 #endif
-// Method Definition Index: 75425
+// Method Definition Index: 75428
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void U3CCloseU3Ed__127__ctor_m77782AC05F4445B5BA758504B3A85CE4DA937B4F (U3CCloseU3Ed__127_tE6E46BD2B6269348B940DAB4E07CCD62BC6053BC* __this, int32_t ___0_U3CU3E1__state, const RuntimeMethod* method) 
 {
 	{
@@ -9739,14 +9739,14 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void U3CCloseU3Ed__127__ctor_m77782AC05F4445B
 		return;
 	}
 }
-// Method Definition Index: 75426
+// Method Definition Index: 75429
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void U3CCloseU3Ed__127_System_IDisposable_Dispose_mA1FFD7EC55389A0007E93C92F93AC8580E8E1494 (U3CCloseU3Ed__127_tE6E46BD2B6269348B940DAB4E07CCD62BC6053BC* __this, const RuntimeMethod* method) 
 {
 	{
 		return;
 	}
 }
-// Method Definition Index: 75427
+// Method Definition Index: 75430
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR bool U3CCloseU3Ed__127_MoveNext_m05140DB7D98C7C97CFA31395849C040BAE6046FF (U3CCloseU3Ed__127_tE6E46BD2B6269348B940DAB4E07CCD62BC6053BC* __this, const RuntimeMethod* method) 
 {
 	static bool s_Il2CppMethodInitialized;
@@ -10247,7 +10247,7 @@ IL_026e:
 		return (bool)0;
 	}
 }
-// Method Definition Index: 75428
+// Method Definition Index: 75431
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* U3CCloseU3Ed__127_System_Collections_Generic_IEnumeratorU3CSystem_ObjectU3E_get_Current_m52E8224D84220771CF4234C3A4CB31E8879FE2F4 (U3CCloseU3Ed__127_tE6E46BD2B6269348B940DAB4E07CCD62BC6053BC* __this, const RuntimeMethod* method) 
 {
 	{
@@ -10255,7 +10255,7 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* U3CCloseU3Ed__127_System_Colle
 		return L_0;
 	}
 }
-// Method Definition Index: 75429
+// Method Definition Index: 75432
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void U3CCloseU3Ed__127_System_Collections_IEnumerator_Reset_m40067C0200B0494DA7A83FE3649A06FBAF78A92B (U3CCloseU3Ed__127_tE6E46BD2B6269348B940DAB4E07CCD62BC6053BC* __this, const RuntimeMethod* method) 
 {
 	{
@@ -10264,7 +10264,7 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void U3CCloseU3Ed__127_System_Collections_IEn
 		IL2CPP_RAISE_MANAGED_EXCEPTION(L_0, ((RuntimeMethod*)il2cpp_codegen_initialize_runtime_metadata_inline((uintptr_t*)&U3CCloseU3Ed__127_System_Collections_IEnumerator_Reset_m40067C0200B0494DA7A83FE3649A06FBAF78A92B_RuntimeMethod_var)));
 	}
 }
-// Method Definition Index: 75430
+// Method Definition Index: 75433
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* U3CCloseU3Ed__127_System_Collections_IEnumerator_get_Current_mEFF92E4C4BAE691FCBB263BC292EDD4FBEC0367B (U3CCloseU3Ed__127_tE6E46BD2B6269348B940DAB4E07CCD62BC6053BC* __this, const RuntimeMethod* method) 
 {
 	{
@@ -10280,7 +10280,7 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* U3CCloseU3Ed__127_System_Colle
 #pragma clang diagnostic ignored "-Winvalid-offsetof"
 #pragma clang diagnostic ignored "-Wunused-variable"
 #endif
-// Method Definition Index: 75431
+// Method Definition Index: 75434
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void U3CCloseAfterU3Ed__137__ctor_m29F51D3EDB7FFB4140938C795D156C39718E0655 (U3CCloseAfterU3Ed__137_t584913F7212C26F25FC8D9229420A68194CB6B51* __this, int32_t ___0_U3CU3E1__state, const RuntimeMethod* method) 
 {
 	{
@@ -10290,14 +10290,14 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void U3CCloseAfterU3Ed__137__ctor_m29F51D3EDB
 		return;
 	}
 }
-// Method Definition Index: 75432
+// Method Definition Index: 75435
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void U3CCloseAfterU3Ed__137_System_IDisposable_Dispose_m21495A4B4CAFCDC7E67A10409D505F2B4B279AC4 (U3CCloseAfterU3Ed__137_t584913F7212C26F25FC8D9229420A68194CB6B51* __this, const RuntimeMethod* method) 
 {
 	{
 		return;
 	}
 }
-// Method Definition Index: 75433
+// Method Definition Index: 75436
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR bool U3CCloseAfterU3Ed__137_MoveNext_m1C6C32EB3818678B251B33EF16B2BEEC5087E86B (U3CCloseAfterU3Ed__137_t584913F7212C26F25FC8D9229420A68194CB6B51* __this, const RuntimeMethod* method) 
 {
 	static bool s_Il2CppMethodInitialized;
@@ -10376,7 +10376,7 @@ IL_005b:
 		return (bool)0;
 	}
 }
-// Method Definition Index: 75434
+// Method Definition Index: 75437
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* U3CCloseAfterU3Ed__137_System_Collections_Generic_IEnumeratorU3CSystem_ObjectU3E_get_Current_m80146C28984D4ACB09F4D2904D9C894528641DE8 (U3CCloseAfterU3Ed__137_t584913F7212C26F25FC8D9229420A68194CB6B51* __this, const RuntimeMethod* method) 
 {
 	{
@@ -10384,7 +10384,7 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* U3CCloseAfterU3Ed__137_System_
 		return L_0;
 	}
 }
-// Method Definition Index: 75435
+// Method Definition Index: 75438
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void U3CCloseAfterU3Ed__137_System_Collections_IEnumerator_Reset_m19E726A66915EA506F2EF61B55687365BF282BF4 (U3CCloseAfterU3Ed__137_t584913F7212C26F25FC8D9229420A68194CB6B51* __this, const RuntimeMethod* method) 
 {
 	{
@@ -10393,7 +10393,7 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void U3CCloseAfterU3Ed__137_System_Collection
 		IL2CPP_RAISE_MANAGED_EXCEPTION(L_0, ((RuntimeMethod*)il2cpp_codegen_initialize_runtime_metadata_inline((uintptr_t*)&U3CCloseAfterU3Ed__137_System_Collections_IEnumerator_Reset_m19E726A66915EA506F2EF61B55687365BF282BF4_RuntimeMethod_var)));
 	}
 }
-// Method Definition Index: 75436
+// Method Definition Index: 75439
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* U3CCloseAfterU3Ed__137_System_Collections_IEnumerator_get_Current_m56DE0FCEC9D2F5D130F294B63AEE57F244D71AE5 (U3CCloseAfterU3Ed__137_t584913F7212C26F25FC8D9229420A68194CB6B51* __this, const RuntimeMethod* method) 
 {
 	{
@@ -10409,7 +10409,7 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* U3CCloseAfterU3Ed__137_System_
 #pragma clang diagnostic ignored "-Winvalid-offsetof"
 #pragma clang diagnostic ignored "-Wunused-variable"
 #endif
-// Method Definition Index: 75437
+// Method Definition Index: 75440
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void U3COpenU3Ed__126__ctor_mD82276CE05291B1D8086F73DA5D162D2F9B56F42 (U3COpenU3Ed__126_t07F27A92AAC04A17C76494E8AEE7086DAEAD36F3* __this, int32_t ___0_U3CU3E1__state, const RuntimeMethod* method) 
 {
 	{
@@ -10419,14 +10419,14 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void U3COpenU3Ed__126__ctor_mD82276CE05291B1D
 		return;
 	}
 }
-// Method Definition Index: 75438
+// Method Definition Index: 75441
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void U3COpenU3Ed__126_System_IDisposable_Dispose_mACC2EC3453150281A88A281BC91443BA18BE4949 (U3COpenU3Ed__126_t07F27A92AAC04A17C76494E8AEE7086DAEAD36F3* __this, const RuntimeMethod* method) 
 {
 	{
 		return;
 	}
 }
-// Method Definition Index: 75439
+// Method Definition Index: 75442
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR bool U3COpenU3Ed__126_MoveNext_m34AB2CFB9FC3245BD4D8DD56EB78276C69A4C357 (U3COpenU3Ed__126_t07F27A92AAC04A17C76494E8AEE7086DAEAD36F3* __this, const RuntimeMethod* method) 
 {
 	static bool s_Il2CppMethodInitialized;
@@ -10923,7 +10923,7 @@ IL_0272:
 		return (bool)0;
 	}
 }
-// Method Definition Index: 75440
+// Method Definition Index: 75443
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* U3COpenU3Ed__126_System_Collections_Generic_IEnumeratorU3CSystem_ObjectU3E_get_Current_mC277B8AB9BA2726DC0D69AF3142E2FA95A212C86 (U3COpenU3Ed__126_t07F27A92AAC04A17C76494E8AEE7086DAEAD36F3* __this, const RuntimeMethod* method) 
 {
 	{
@@ -10931,7 +10931,7 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* U3COpenU3Ed__126_System_Collec
 		return L_0;
 	}
 }
-// Method Definition Index: 75441
+// Method Definition Index: 75444
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void U3COpenU3Ed__126_System_Collections_IEnumerator_Reset_m5EAF55F020E95431123EACD222EAF20CFDDB9447 (U3COpenU3Ed__126_t07F27A92AAC04A17C76494E8AEE7086DAEAD36F3* __this, const RuntimeMethod* method) 
 {
 	{
@@ -10940,7 +10940,7 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void U3COpenU3Ed__126_System_Collections_IEnu
 		IL2CPP_RAISE_MANAGED_EXCEPTION(L_0, ((RuntimeMethod*)il2cpp_codegen_initialize_runtime_metadata_inline((uintptr_t*)&U3COpenU3Ed__126_System_Collections_IEnumerator_Reset_m5EAF55F020E95431123EACD222EAF20CFDDB9447_RuntimeMethod_var)));
 	}
 }
-// Method Definition Index: 75442
+// Method Definition Index: 75445
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* U3COpenU3Ed__126_System_Collections_IEnumerator_get_Current_mE7C426B19A32C666C7E5FD140F17D07A94326E39 (U3COpenU3Ed__126_t07F27A92AAC04A17C76494E8AEE7086DAEAD36F3* __this, const RuntimeMethod* method) 
 {
 	{
@@ -11290,7 +11290,7 @@ IL2CPP_EXTERN_C void MotionInfo_tF0A4F63839720486FA5651B8A1CF8162CB22263C_marsha
 #pragma clang diagnostic ignored "-Winvalid-offsetof"
 #pragma clang diagnostic ignored "-Wunused-variable"
 #endif
-// Method Definition Index: 75443
+// Method Definition Index: 75446
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3DController__ctor_mDE16466B50AA26B6F7751331B570EF9E34FF24EA (OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* __this, const RuntimeMethod* method) 
 {
 	{
@@ -11334,7 +11334,7 @@ IL2CPP_EXTERN_C  void DelegatePInvokeWrapper_OpenDoorEvt_t53FDC500F958704C0041B9
 	il2cppPInvokeFunc();
 
 }
-// Method Definition Index: 75444
+// Method Definition Index: 75447
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OpenDoorEvt__ctor_m93EE2C0EAFD8330FB5935959ECA507EAACE67773 (OpenDoorEvt_t53FDC500F958704C0041B93E83B01FD1685D2A98* __this, RuntimeObject* ___0_object, intptr_t ___1_method, const RuntimeMethod* method) 
 {
 	__this->___method_ptr = (intptr_t)il2cpp_codegen_get_method_pointer((RuntimeMethod*)___1_method);
@@ -11363,19 +11363,19 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OpenDoorEvt__ctor_m93EE2C0EAFD8330FB5935
 	}
 	__this->___extra_arg = (intptr_t)&OpenDoorEvt_Invoke_mBC4CCF7F672C37BF8C2CC5556F906550F13F8DCC_Multicast;
 }
-// Method Definition Index: 75445
+// Method Definition Index: 75448
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OpenDoorEvt_Invoke_mBC4CCF7F672C37BF8C2CC5556F906550F13F8DCC (OpenDoorEvt_t53FDC500F958704C0041B93E83B01FD1685D2A98* __this, const RuntimeMethod* method) 
 {
 	typedef void (*FunctionPointerType) (RuntimeObject*, const RuntimeMethod*);
 	((FunctionPointerType)__this->___invoke_impl)((Il2CppObject*)__this->___method_code, reinterpret_cast<RuntimeMethod*>(__this->___method));
 }
-// Method Definition Index: 75446
+// Method Definition Index: 75449
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* OpenDoorEvt_BeginInvoke_mA1B55701155887DC352128727E33BD4CA49092D3 (OpenDoorEvt_t53FDC500F958704C0041B93E83B01FD1685D2A98* __this, AsyncCallback_t7FEF460CBDCFB9C5FA2EF776984778B9A4145F4C* ___0_callback, RuntimeObject* ___1_object, const RuntimeMethod* method) 
 {
 	void *__d_args[1] = {0};
 	return (RuntimeObject*)il2cpp_codegen_delegate_begin_invoke((RuntimeDelegate*)__this, __d_args, (RuntimeDelegate*)___0_callback, (RuntimeObject*)___1_object);
 }
-// Method Definition Index: 75447
+// Method Definition Index: 75450
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OpenDoorEvt_EndInvoke_mB1AD55D6BE69D1C2663E6012FAAF579F608C1AAE (OpenDoorEvt_t53FDC500F958704C0041B93E83B01FD1685D2A98* __this, RuntimeObject* ___0_result, const RuntimeMethod* method) 
 {
 	il2cpp_codegen_delegate_end_invoke((Il2CppAsyncResult*) ___0_result, 0);
@@ -11416,7 +11416,7 @@ IL2CPP_EXTERN_C  void DelegatePInvokeWrapper_CloseDoorEvt_t0FA9DD6BBFED77AF496D8
 	il2cppPInvokeFunc();
 
 }
-// Method Definition Index: 75448
+// Method Definition Index: 75451
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void CloseDoorEvt__ctor_m135334B7D8C2D13F0CA3CA1B302150B8F3EA5FB8 (CloseDoorEvt_t0FA9DD6BBFED77AF496D88825BE7100D2C05E507* __this, RuntimeObject* ___0_object, intptr_t ___1_method, const RuntimeMethod* method) 
 {
 	__this->___method_ptr = (intptr_t)il2cpp_codegen_get_method_pointer((RuntimeMethod*)___1_method);
@@ -11445,19 +11445,19 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void CloseDoorEvt__ctor_m135334B7D8C2D13F0CA3
 	}
 	__this->___extra_arg = (intptr_t)&CloseDoorEvt_Invoke_m3DF1BF5991F943417FB2FDAA0E63682AEF1CF612_Multicast;
 }
-// Method Definition Index: 75449
+// Method Definition Index: 75452
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void CloseDoorEvt_Invoke_m3DF1BF5991F943417FB2FDAA0E63682AEF1CF612 (CloseDoorEvt_t0FA9DD6BBFED77AF496D88825BE7100D2C05E507* __this, const RuntimeMethod* method) 
 {
 	typedef void (*FunctionPointerType) (RuntimeObject*, const RuntimeMethod*);
 	((FunctionPointerType)__this->___invoke_impl)((Il2CppObject*)__this->___method_code, reinterpret_cast<RuntimeMethod*>(__this->___method));
 }
-// Method Definition Index: 75450
+// Method Definition Index: 75453
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* CloseDoorEvt_BeginInvoke_m004E02C3C259E1EEB6497DC341681BBCEBAA5BD6 (CloseDoorEvt_t0FA9DD6BBFED77AF496D88825BE7100D2C05E507* __this, AsyncCallback_t7FEF460CBDCFB9C5FA2EF776984778B9A4145F4C* ___0_callback, RuntimeObject* ___1_object, const RuntimeMethod* method) 
 {
 	void *__d_args[1] = {0};
 	return (RuntimeObject*)il2cpp_codegen_delegate_begin_invoke((RuntimeDelegate*)__this, __d_args, (RuntimeDelegate*)___0_callback, (RuntimeObject*)___1_object);
 }
-// Method Definition Index: 75451
+// Method Definition Index: 75454
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void CloseDoorEvt_EndInvoke_m017EA13119E686BD3A94869EB5EBBC92A62D83CE (CloseDoorEvt_t0FA9DD6BBFED77AF496D88825BE7100D2C05E507* __this, RuntimeObject* ___0_result, const RuntimeMethod* method) 
 {
 	il2cpp_codegen_delegate_end_invoke((Il2CppAsyncResult*) ___0_result, 0);
@@ -11498,7 +11498,7 @@ IL2CPP_EXTERN_C  void DelegatePInvokeWrapper_ToggleDoorEvt_tFE20427E5BADD68E7E1B
 	il2cppPInvokeFunc();
 
 }
-// Method Definition Index: 75452
+// Method Definition Index: 75455
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void ToggleDoorEvt__ctor_mCE9D795B7E5C415C8FBBB9967D78D0AC9B890297 (ToggleDoorEvt_tFE20427E5BADD68E7E1BE9380F1D78CFC33DDA40* __this, RuntimeObject* ___0_object, intptr_t ___1_method, const RuntimeMethod* method) 
 {
 	__this->___method_ptr = (intptr_t)il2cpp_codegen_get_method_pointer((RuntimeMethod*)___1_method);
@@ -11527,19 +11527,19 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void ToggleDoorEvt__ctor_mCE9D795B7E5C415C8FB
 	}
 	__this->___extra_arg = (intptr_t)&ToggleDoorEvt_Invoke_mF81798196C518135B86C2FA02286952D3A20B36B_Multicast;
 }
-// Method Definition Index: 75453
+// Method Definition Index: 75456
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void ToggleDoorEvt_Invoke_mF81798196C518135B86C2FA02286952D3A20B36B (ToggleDoorEvt_tFE20427E5BADD68E7E1BE9380F1D78CFC33DDA40* __this, const RuntimeMethod* method) 
 {
 	typedef void (*FunctionPointerType) (RuntimeObject*, const RuntimeMethod*);
 	((FunctionPointerType)__this->___invoke_impl)((Il2CppObject*)__this->___method_code, reinterpret_cast<RuntimeMethod*>(__this->___method));
 }
-// Method Definition Index: 75454
+// Method Definition Index: 75457
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* ToggleDoorEvt_BeginInvoke_m1A4B1895E45C8EE165621F7C91482A15EDBBD9B4 (ToggleDoorEvt_tFE20427E5BADD68E7E1BE9380F1D78CFC33DDA40* __this, AsyncCallback_t7FEF460CBDCFB9C5FA2EF776984778B9A4145F4C* ___0_callback, RuntimeObject* ___1_object, const RuntimeMethod* method) 
 {
 	void *__d_args[1] = {0};
 	return (RuntimeObject*)il2cpp_codegen_delegate_begin_invoke((RuntimeDelegate*)__this, __d_args, (RuntimeDelegate*)___0_callback, (RuntimeObject*)___1_object);
 }
-// Method Definition Index: 75455
+// Method Definition Index: 75458
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void ToggleDoorEvt_EndInvoke_mEDFB4CEE880317FBE0576C8E9F912FFA0CB3E1E8 (ToggleDoorEvt_tFE20427E5BADD68E7E1BE9380F1D78CFC33DDA40* __this, RuntimeObject* ___0_result, const RuntimeMethod* method) 
 {
 	il2cpp_codegen_delegate_end_invoke((Il2CppAsyncResult*) ___0_result, 0);
@@ -11580,7 +11580,7 @@ IL2CPP_EXTERN_C  void DelegatePInvokeWrapper_UnlockDoorEvt_t6006D394CC44175581D7
 	il2cppPInvokeFunc();
 
 }
-// Method Definition Index: 75456
+// Method Definition Index: 75459
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void UnlockDoorEvt__ctor_mBED67DC21D06E11BB16218C6B27020F5DB951574 (UnlockDoorEvt_t6006D394CC44175581D7140CCCC65A71B68F20CF* __this, RuntimeObject* ___0_object, intptr_t ___1_method, const RuntimeMethod* method) 
 {
 	__this->___method_ptr = (intptr_t)il2cpp_codegen_get_method_pointer((RuntimeMethod*)___1_method);
@@ -11609,19 +11609,19 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void UnlockDoorEvt__ctor_mBED67DC21D06E11BB16
 	}
 	__this->___extra_arg = (intptr_t)&UnlockDoorEvt_Invoke_mE2370B6BA7803BA0199F438F608256535AAF7D07_Multicast;
 }
-// Method Definition Index: 75457
+// Method Definition Index: 75460
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void UnlockDoorEvt_Invoke_mE2370B6BA7803BA0199F438F608256535AAF7D07 (UnlockDoorEvt_t6006D394CC44175581D7140CCCC65A71B68F20CF* __this, const RuntimeMethod* method) 
 {
 	typedef void (*FunctionPointerType) (RuntimeObject*, const RuntimeMethod*);
 	((FunctionPointerType)__this->___invoke_impl)((Il2CppObject*)__this->___method_code, reinterpret_cast<RuntimeMethod*>(__this->___method));
 }
-// Method Definition Index: 75458
+// Method Definition Index: 75461
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* UnlockDoorEvt_BeginInvoke_mB6A354FEBB6FC370D7C8F0259451DE9A3782FE8A (UnlockDoorEvt_t6006D394CC44175581D7140CCCC65A71B68F20CF* __this, AsyncCallback_t7FEF460CBDCFB9C5FA2EF776984778B9A4145F4C* ___0_callback, RuntimeObject* ___1_object, const RuntimeMethod* method) 
 {
 	void *__d_args[1] = {0};
 	return (RuntimeObject*)il2cpp_codegen_delegate_begin_invoke((RuntimeDelegate*)__this, __d_args, (RuntimeDelegate*)___0_callback, (RuntimeObject*)___1_object);
 }
-// Method Definition Index: 75459
+// Method Definition Index: 75462
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void UnlockDoorEvt_EndInvoke_m1D6E32CBD17B617E50D8559C3235F8987715EB0C (UnlockDoorEvt_t6006D394CC44175581D7140CCCC65A71B68F20CF* __this, RuntimeObject* ___0_result, const RuntimeMethod* method) 
 {
 	il2cpp_codegen_delegate_end_invoke((Il2CppAsyncResult*) ___0_result, 0);
@@ -11662,7 +11662,7 @@ IL2CPP_EXTERN_C  void DelegatePInvokeWrapper_LockDoorEvt_t15338F49A7805255093B5E
 	il2cppPInvokeFunc();
 
 }
-// Method Definition Index: 75460
+// Method Definition Index: 75463
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void LockDoorEvt__ctor_mFEC79ED10859BA028795E11E320CE2F0B3AA762A (LockDoorEvt_t15338F49A7805255093B5E4DE5994C05EC2FEC84* __this, RuntimeObject* ___0_object, intptr_t ___1_method, const RuntimeMethod* method) 
 {
 	__this->___method_ptr = (intptr_t)il2cpp_codegen_get_method_pointer((RuntimeMethod*)___1_method);
@@ -11691,19 +11691,19 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void LockDoorEvt__ctor_mFEC79ED10859BA028795E
 	}
 	__this->___extra_arg = (intptr_t)&LockDoorEvt_Invoke_m0ED3A8C1C3B21230CB550F56580CE576CEA0A9B8_Multicast;
 }
-// Method Definition Index: 75461
+// Method Definition Index: 75464
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void LockDoorEvt_Invoke_m0ED3A8C1C3B21230CB550F56580CE576CEA0A9B8 (LockDoorEvt_t15338F49A7805255093B5E4DE5994C05EC2FEC84* __this, const RuntimeMethod* method) 
 {
 	typedef void (*FunctionPointerType) (RuntimeObject*, const RuntimeMethod*);
 	((FunctionPointerType)__this->___invoke_impl)((Il2CppObject*)__this->___method_code, reinterpret_cast<RuntimeMethod*>(__this->___method));
 }
-// Method Definition Index: 75462
+// Method Definition Index: 75465
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* LockDoorEvt_BeginInvoke_mF9AEC886049E608262B240FEEC64C6BBC5C6C173 (LockDoorEvt_t15338F49A7805255093B5E4DE5994C05EC2FEC84* __this, AsyncCallback_t7FEF460CBDCFB9C5FA2EF776984778B9A4145F4C* ___0_callback, RuntimeObject* ___1_object, const RuntimeMethod* method) 
 {
 	void *__d_args[1] = {0};
 	return (RuntimeObject*)il2cpp_codegen_delegate_begin_invoke((RuntimeDelegate*)__this, __d_args, (RuntimeDelegate*)___0_callback, (RuntimeObject*)___1_object);
 }
-// Method Definition Index: 75463
+// Method Definition Index: 75466
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void LockDoorEvt_EndInvoke_m263E5F85C2198E6F16F19323B6D0CC08251045B5 (LockDoorEvt_t15338F49A7805255093B5E4DE5994C05EC2FEC84* __this, RuntimeObject* ___0_result, const RuntimeMethod* method) 
 {
 	il2cpp_codegen_delegate_end_invoke((Il2CppAsyncResult*) ___0_result, 0);
@@ -11732,7 +11732,7 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void LockDoorEvt_EndInvoke_m263E5F85C2198E6F1
 #pragma clang diagnostic ignored "-Winvalid-offsetof"
 #pragma clang diagnostic ignored "-Wunused-variable"
 #endif
-// Method Definition Index: 75464
+// Method Definition Index: 75467
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR bool OmniDoor3DData_IsStandard_mAC537037B236421107762A3388E7DB74E127D43E (int32_t ___0_doorKind, const RuntimeMethod* method) 
 {
 	static bool s_Il2CppMethodInitialized;
@@ -11797,7 +11797,7 @@ IL_0018:
 		return (bool)0;
 	}
 }
-// Method Definition Index: 75465
+// Method Definition Index: 75468
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR bool OmniDoor3DData_IsFence_m01EF6BAA81A6E884FAF0C1778CF0870F67BB8B09 (int32_t ___0_doorKind, const RuntimeMethod* method) 
 {
 	static bool s_Il2CppMethodInitialized;
@@ -11862,7 +11862,7 @@ IL_0018:
 		return (bool)0;
 	}
 }
-// Method Definition Index: 75466
+// Method Definition Index: 75469
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3DData__cctor_mCC9C9DDBAC330A669897FBBB015A380C3C187A11 (const RuntimeMethod* method) 
 {
 	static bool s_Il2CppMethodInitialized;
@@ -11904,7 +11904,7 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3DData__cctor_mCC9C9DDBAC330A669
 #pragma clang diagnostic ignored "-Winvalid-offsetof"
 #pragma clang diagnostic ignored "-Wunused-variable"
 #endif
-// Method Definition Index: 75467
+// Method Definition Index: 75470
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3DConfig__ctor_m12DE4BE4DCB9E4C4A46249C49CB59F1CE87A685E (OmniDoor3DConfig_t190977036D4995316F7EBBC5305FE39D88914957* __this, const RuntimeMethod* method) 
 {
 	{
@@ -11922,7 +11922,7 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoor3DConfig__ctor_m12DE4BE4DCB9E4C4
 #pragma clang diagnostic ignored "-Winvalid-offsetof"
 #pragma clang diagnostic ignored "-Wunused-variable"
 #endif
-// Method Definition Index: 75468
+// Method Definition Index: 75471
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoorDB__ctor_mA833938070842C1D1351B6B84F3FB2FF87C11F63 (OmniDoorDB_t370225F36C9C4B0D70F59485EC3D8ABB4B1DCB46* __this, const RuntimeMethod* method) 
 {
 	{
@@ -11938,7 +11938,7 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void OmniDoorDB__ctor_mA833938070842C1D1351B6
 #pragma clang diagnostic ignored "-Winvalid-offsetof"
 #pragma clang diagnostic ignored "-Wunused-variable"
 #endif
-// Method Definition Index: 75469
+// Method Definition Index: 75472
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorControllerExample_Awake_m93C07A9DD85A000D10FD94C59911DF3312FECD0B (DoorControllerExample_t7764C4F0A254D914B8E378680A4F273D55FE0933* __this, const RuntimeMethod* method) 
 {
 	static bool s_Il2CppMethodInitialized;
@@ -11957,7 +11957,7 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorControllerExample_Awake_m93C07A9DD85
 		return;
 	}
 }
-// Method Definition Index: 75470
+// Method Definition Index: 75473
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorControllerExample_OpenDoor_m52C7C37D31ADF3CD90353865BC89DBAF95469123 (DoorControllerExample_t7764C4F0A254D914B8E378680A4F273D55FE0933* __this, const RuntimeMethod* method) 
 {
 	OpenDoorEvt_t53FDC500F958704C0041B93E83B01FD1685D2A98* G_B2_0 = NULL;
@@ -11987,7 +11987,7 @@ IL_0010:
 		return;
 	}
 }
-// Method Definition Index: 75471
+// Method Definition Index: 75474
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorControllerExample_CloseDoor_mD85BE538AA4D52F46A277F793D2456D0E8F92664 (DoorControllerExample_t7764C4F0A254D914B8E378680A4F273D55FE0933* __this, const RuntimeMethod* method) 
 {
 	CloseDoorEvt_t0FA9DD6BBFED77AF496D88825BE7100D2C05E507* G_B2_0 = NULL;
@@ -12017,7 +12017,7 @@ IL_0010:
 		return;
 	}
 }
-// Method Definition Index: 75472
+// Method Definition Index: 75475
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorControllerExample_LockDoor_mA3E2942ABC571D21C64ADEF29BA5B469CC75B8EE (DoorControllerExample_t7764C4F0A254D914B8E378680A4F273D55FE0933* __this, const RuntimeMethod* method) 
 {
 	LockDoorEvt_t15338F49A7805255093B5E4DE5994C05EC2FEC84* G_B2_0 = NULL;
@@ -12047,7 +12047,7 @@ IL_0010:
 		return;
 	}
 }
-// Method Definition Index: 75473
+// Method Definition Index: 75476
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorControllerExample_UnlockDoor_mA4003E94231AE1686DE8CDE5EBB88262E14A7563 (DoorControllerExample_t7764C4F0A254D914B8E378680A4F273D55FE0933* __this, const RuntimeMethod* method) 
 {
 	UnlockDoorEvt_t6006D394CC44175581D7140CCCC65A71B68F20CF* G_B2_0 = NULL;
@@ -12077,7 +12077,7 @@ IL_0010:
 		return;
 	}
 }
-// Method Definition Index: 75474
+// Method Definition Index: 75477
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorControllerExample_OnTriggerEnter_m13F102246A0C381214D25ED5FB596C092FAA35F0 (DoorControllerExample_t7764C4F0A254D914B8E378680A4F273D55FE0933* __this, Collider_t1CC3163924FCD6C4CC2E816373A929C1E3D55E76* ___0_other, const RuntimeMethod* method) 
 {
 	static bool s_Il2CppMethodInitialized;
@@ -12121,7 +12121,7 @@ IL_000e:
 		return;
 	}
 }
-// Method Definition Index: 75475
+// Method Definition Index: 75478
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorControllerExample_OnTriggerExit_m9924C3B1E037B4A8B43CDC4773C998FA2519CBBF (DoorControllerExample_t7764C4F0A254D914B8E378680A4F273D55FE0933* __this, Collider_t1CC3163924FCD6C4CC2E816373A929C1E3D55E76* ___0_other, const RuntimeMethod* method) 
 {
 	static bool s_Il2CppMethodInitialized;
@@ -12164,7 +12164,7 @@ IL_000e:
 		return;
 	}
 }
-// Method Definition Index: 75476
+// Method Definition Index: 75479
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorControllerExample__ctor_m824B7855C7409C2314F9821296951BE21A5C8BDC (DoorControllerExample_t7764C4F0A254D914B8E378680A4F273D55FE0933* __this, const RuntimeMethod* method) 
 {
 	{
@@ -12180,7 +12180,7 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void DoorControllerExample__ctor_m824B7855C74
 #pragma clang diagnostic ignored "-Winvalid-offsetof"
 #pragma clang diagnostic ignored "-Wunused-variable"
 #endif
-// Method Definition Index: 75477
+// Method Definition Index: 75480
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void ItsLocked_Start_mCC6475F66A8C40D1D3458BAD20D0EEA96849414D (ItsLocked_t28889B0EBCBE99A9D4F0B4824407D45791512669* __this, const RuntimeMethod* method) 
 {
 	static bool s_Il2CppMethodInitialized;
@@ -12213,7 +12213,7 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void ItsLocked_Start_mCC6475F66A8C40D1D3458BA
 		return;
 	}
 }
-// Method Definition Index: 75478
+// Method Definition Index: 75481
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void ItsLocked_OnDoorOpenFailed_m244494686A3F3F13419FE4706AEADB8C188C6FB0 (ItsLocked_t28889B0EBCBE99A9D4F0B4824407D45791512669* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_lockedDoor, const RuntimeMethod* method) 
 {
 	{
@@ -12238,7 +12238,7 @@ IL_0015:
 		return;
 	}
 }
-// Method Definition Index: 75479
+// Method Definition Index: 75482
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* ItsLocked_FlashLockedSprite_mE06B158999B225C006FB6E30CBA7633BD3F0AA15 (ItsLocked_t28889B0EBCBE99A9D4F0B4824407D45791512669* __this, const RuntimeMethod* method) 
 {
 	static bool s_Il2CppMethodInitialized;
@@ -12257,7 +12257,7 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* ItsLocked_FlashLockedSprite_mE
 		return L_1;
 	}
 }
-// Method Definition Index: 75480
+// Method Definition Index: 75483
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void ItsLocked__ctor_m17AE0BE3ECF0FFBCCBEC06457C13C71449C3C956 (ItsLocked_t28889B0EBCBE99A9D4F0B4824407D45791512669* __this, const RuntimeMethod* method) 
 {
 	{
@@ -12273,7 +12273,7 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void ItsLocked__ctor_m17AE0BE3ECF0FFBCCBEC064
 #pragma clang diagnostic ignored "-Winvalid-offsetof"
 #pragma clang diagnostic ignored "-Wunused-variable"
 #endif
-// Method Definition Index: 75481
+// Method Definition Index: 75484
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void U3CFlashLockedSpriteU3Ed__5__ctor_mF679643F0269634E8DB0BD7B84E1BD9A2A700AEA (U3CFlashLockedSpriteU3Ed__5_tA7E7D004963111EECBD0B36EFEE1989F1E951B65* __this, int32_t ___0_U3CU3E1__state, const RuntimeMethod* method) 
 {
 	{
@@ -12283,14 +12283,14 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void U3CFlashLockedSpriteU3Ed__5__ctor_mF6796
 		return;
 	}
 }
-// Method Definition Index: 75482
+// Method Definition Index: 75485
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void U3CFlashLockedSpriteU3Ed__5_System_IDisposable_Dispose_m7CA3DC86E4C85220CB60A056FF0C3DCCBED41A3B (U3CFlashLockedSpriteU3Ed__5_tA7E7D004963111EECBD0B36EFEE1989F1E951B65* __this, const RuntimeMethod* method) 
 {
 	{
 		return;
 	}
 }
-// Method Definition Index: 75483
+// Method Definition Index: 75486
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR bool U3CFlashLockedSpriteU3Ed__5_MoveNext_mD0056F4504487227F37158A17E4C27D8A43F1A5B (U3CFlashLockedSpriteU3Ed__5_tA7E7D004963111EECBD0B36EFEE1989F1E951B65* __this, const RuntimeMethod* method) 
 {
 	static bool s_Il2CppMethodInitialized;
@@ -12450,7 +12450,7 @@ IL_0111:
 		return (bool)0;
 	}
 }
-// Method Definition Index: 75484
+// Method Definition Index: 75487
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* U3CFlashLockedSpriteU3Ed__5_System_Collections_Generic_IEnumeratorU3CSystem_ObjectU3E_get_Current_m51C740F180147C16B0BB9B7766E61C9E7EBAFF43 (U3CFlashLockedSpriteU3Ed__5_tA7E7D004963111EECBD0B36EFEE1989F1E951B65* __this, const RuntimeMethod* method) 
 {
 	{
@@ -12458,7 +12458,7 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* U3CFlashLockedSpriteU3Ed__5_Sy
 		return L_0;
 	}
 }
-// Method Definition Index: 75485
+// Method Definition Index: 75488
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void U3CFlashLockedSpriteU3Ed__5_System_Collections_IEnumerator_Reset_m6F4D8025768F4D2D687674EBF9BE7F3EC412D8B6 (U3CFlashLockedSpriteU3Ed__5_tA7E7D004963111EECBD0B36EFEE1989F1E951B65* __this, const RuntimeMethod* method) 
 {
 	{
@@ -12467,7 +12467,7 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void U3CFlashLockedSpriteU3Ed__5_System_Colle
 		IL2CPP_RAISE_MANAGED_EXCEPTION(L_0, ((RuntimeMethod*)il2cpp_codegen_initialize_runtime_metadata_inline((uintptr_t*)&U3CFlashLockedSpriteU3Ed__5_System_Collections_IEnumerator_Reset_m6F4D8025768F4D2D687674EBF9BE7F3EC412D8B6_RuntimeMethod_var)));
 	}
 }
-// Method Definition Index: 75486
+// Method Definition Index: 75489
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* U3CFlashLockedSpriteU3Ed__5_System_Collections_IEnumerator_get_Current_m993D106184E094DFB36B620B9CF86C769DDDD0A3 (U3CFlashLockedSpriteU3Ed__5_tA7E7D004963111EECBD0B36EFEE1989F1E951B65* __this, const RuntimeMethod* method) 
 {
 	{
@@ -12483,7 +12483,7 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* U3CFlashLockedSpriteU3Ed__5_Sy
 #pragma clang diagnostic ignored "-Winvalid-offsetof"
 #pragma clang diagnostic ignored "-Wunused-variable"
 #endif
-// Method Definition Index: 75487
+// Method Definition Index: 75490
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* PlayerOrbital_get_doorController_mF3F41580BE53B0BEE70ACFD43FCFA5CC01392C63 (PlayerOrbital_tF69524049E80DB19D1E220115D3472F6614CCA7A* __this, const RuntimeMethod* method) 
 {
 	{
@@ -12492,7 +12492,7 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR OmniDoor3DController_tB8BD497B700BB2E62A9496E
 		return L_0;
 	}
 }
-// Method Definition Index: 75488
+// Method Definition Index: 75491
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void PlayerOrbital_set_doorController_m693A76ECD26EBA11E594BA3E3DB69F86865D2F43 (PlayerOrbital_tF69524049E80DB19D1E220115D3472F6614CCA7A* __this, OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* ___0_value, const RuntimeMethod* method) 
 {
 	{
@@ -12504,7 +12504,7 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void PlayerOrbital_set_doorController_m693A76
 		return;
 	}
 }
-// Method Definition Index: 75489
+// Method Definition Index: 75492
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void PlayerOrbital_Start_m02C7A04EF118894A33B0AA93B3E7BA90772E8BD6 (PlayerOrbital_tF69524049E80DB19D1E220115D3472F6614CCA7A* __this, const RuntimeMethod* method) 
 {
 	static bool s_Il2CppMethodInitialized;
@@ -12544,7 +12544,7 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void PlayerOrbital_Start_m02C7A04EF118894A33B
 		return;
 	}
 }
-// Method Definition Index: 75490
+// Method Definition Index: 75493
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void PlayerOrbital_OnMove_m53DCD2F7D055F76E43788DC51D85D63F94065D13 (PlayerOrbital_tF69524049E80DB19D1E220115D3472F6614CCA7A* __this, InputValue_t4F053958518BDF6FD85C55F31B0597C9521B4231* ___0_iv, const RuntimeMethod* method) 
 {
 	static bool s_Il2CppMethodInitialized;
@@ -12569,7 +12569,7 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void PlayerOrbital_OnMove_m53DCD2F7D055F76E43
 		return;
 	}
 }
-// Method Definition Index: 75491
+// Method Definition Index: 75494
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void PlayerOrbital_OnLook_mB81FB3447F6F524445EEB3905066E33DC2989D77 (PlayerOrbital_tF69524049E80DB19D1E220115D3472F6614CCA7A* __this, InputValue_t4F053958518BDF6FD85C55F31B0597C9521B4231* ___0_iv, const RuntimeMethod* method) 
 {
 	static bool s_Il2CppMethodInitialized;
@@ -12589,7 +12589,7 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void PlayerOrbital_OnLook_mB81FB3447F6F524445
 		return;
 	}
 }
-// Method Definition Index: 75492
+// Method Definition Index: 75495
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void PlayerOrbital_OnJump_m6E69D31B14F3CBA2984F00D88F51503C34E1A19F (PlayerOrbital_tF69524049E80DB19D1E220115D3472F6614CCA7A* __this, const RuntimeMethod* method) 
 {
 	static bool s_Il2CppMethodInitialized;
@@ -12640,7 +12640,7 @@ IL_0023:
 		return;
 	}
 }
-// Method Definition Index: 75493
+// Method Definition Index: 75496
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void PlayerOrbital_Update_m1ECBBA2AE563FDDB1CE26CA139E2204346E45718 (PlayerOrbital_tF69524049E80DB19D1E220115D3472F6614CCA7A* __this, const RuntimeMethod* method) 
 {
 	static bool s_Il2CppMethodInitialized;
@@ -12886,7 +12886,7 @@ IL_022c:
 		return;
 	}
 }
-// Method Definition Index: 75494
+// Method Definition Index: 75497
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void PlayerOrbital__ctor_m2CA30A9279CC09439B651D2C00A1D92B03A05372 (PlayerOrbital_tF69524049E80DB19D1E220115D3472F6614CCA7A* __this, const RuntimeMethod* method) 
 {
 	{
@@ -12918,7 +12918,7 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void PlayerOrbital__ctor_m2CA30A9279CC09439B6
 #pragma clang diagnostic ignored "-Winvalid-offsetof"
 #pragma clang diagnostic ignored "-Wunused-variable"
 #endif
-// Method Definition Index: 75495
+// Method Definition Index: 75498
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void PressureSwitch_Awake_mBAD2E7C8DA061091AF4F535E8471E6DEB5943209 (PressureSwitch_t69495303BB205C04B725F04CD3979A6CAF9CB6AC* __this, const RuntimeMethod* method) 
 {
 	static bool s_Il2CppMethodInitialized;
@@ -12937,7 +12937,7 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void PressureSwitch_Awake_mBAD2E7C8DA061091AF
 		return;
 	}
 }
-// Method Definition Index: 75496
+// Method Definition Index: 75499
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void PressureSwitch_OnTriggerEnter_mC640806D82A35FFA59030DF4F47E355ABB61A96A (PressureSwitch_t69495303BB205C04B725F04CD3979A6CAF9CB6AC* __this, Collider_t1CC3163924FCD6C4CC2E816373A929C1E3D55E76* ___0_other, const RuntimeMethod* method) 
 {
 	static bool s_Il2CppMethodInitialized;
@@ -12990,7 +12990,7 @@ IL_001e:
 		return;
 	}
 }
-// Method Definition Index: 75497
+// Method Definition Index: 75500
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void PressureSwitch_OnTriggerExit_m7D4CA9D231E10ECBAAB9ACAA0E9DD204241FA37E (PressureSwitch_t69495303BB205C04B725F04CD3979A6CAF9CB6AC* __this, Collider_t1CC3163924FCD6C4CC2E816373A929C1E3D55E76* ___0_other, const RuntimeMethod* method) 
 {
 	static bool s_Il2CppMethodInitialized;
@@ -13043,7 +13043,7 @@ IL_001e:
 		return;
 	}
 }
-// Method Definition Index: 75498
+// Method Definition Index: 75501
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void PressureSwitch__ctor_m07C7485E9558F549AC9813F52BABD05BDE4F2D85 (PressureSwitch_t69495303BB205C04B725F04CD3979A6CAF9CB6AC* __this, const RuntimeMethod* method) 
 {
 	{
@@ -13276,7 +13276,7 @@ IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D
 		return L_0;
 	}
 }
-// Method Definition Index: 75351
+// Method Definition Index: 75354
 IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void OmniDoor3D_set_needClose_mBDACD3FCE99D25E9508221B8EDC1A77593E44020_inline (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, bool ___0_value, const RuntimeMethod* method) 
 {
 	{
@@ -13287,19 +13287,19 @@ IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void OmniDoor3D_set_needClose_mBD
 		return;
 	}
 }
-// Method Definition Index: 75418
+// Method Definition Index: 75421
 IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void DoorLockedEvt_Invoke_m0336C43427A49DB8930EB24C0811C4F59FFAE7AD_inline (DoorLockedEvt_t24FA80C7BCDB52586B684991ECB99317F4F4F8AA* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method) 
 {
 	typedef void (*FunctionPointerType) (RuntimeObject*, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC*, const RuntimeMethod*);
 	((FunctionPointerType)__this->___invoke_impl)((Il2CppObject*)__this->___method_code, ___0_door, reinterpret_cast<RuntimeMethod*>(__this->___method));
 }
-// Method Definition Index: 75422
+// Method Definition Index: 75425
 IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void DoorUnlockedEvt_Invoke_m0946810F4DE203283827D39345B8A3AA528B4E17_inline (DoorUnlockedEvt_t1E6D58AC4C10BE4C2135F3580DBAEE0D87024854* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method) 
 {
 	typedef void (*FunctionPointerType) (RuntimeObject*, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC*, const RuntimeMethod*);
 	((FunctionPointerType)__this->___invoke_impl)((Il2CppObject*)__this->___method_code, ___0_door, reinterpret_cast<RuntimeMethod*>(__this->___method));
 }
-// Method Definition Index: 75402
+// Method Definition Index: 75405
 IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void DoorOpenFailedEvt_Invoke_mEB611B296A59578C322CF8D16385203BB26E8BA4_inline (DoorOpenFailedEvt_t1032FDEE75EB91423C95DF2155669047463F16C8* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method) 
 {
 	typedef void (*FunctionPointerType) (RuntimeObject*, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC*, const RuntimeMethod*);
@@ -13314,7 +13314,7 @@ IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR int32_t LayerMask_op_Implicit_m7F
 		return L_1;
 	}
 }
-// Method Definition Index: 75350
+// Method Definition Index: 75353
 IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR bool OmniDoor3D_get_needClose_mA8C427131EBA052EE262833A830ECF878CE737C2_inline (OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* __this, const RuntimeMethod* method) 
 {
 	{
@@ -13355,13 +13355,13 @@ IL_0018:
 		return (0.0f);
 	}
 }
-// Method Definition Index: 75398
+// Method Definition Index: 75401
 IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void DoorOpenedEvt_Invoke_m25A787A473AE4D2FAA71159238C4E729C1AB59B5_inline (DoorOpenedEvt_t000102A9D09036B3D64BB710FE11FD7FE05AD585* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method) 
 {
 	typedef void (*FunctionPointerType) (RuntimeObject*, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC*, const RuntimeMethod*);
 	((FunctionPointerType)__this->___invoke_impl)((Il2CppObject*)__this->___method_code, ___0_door, reinterpret_cast<RuntimeMethod*>(__this->___method));
 }
-// Method Definition Index: 75406
+// Method Definition Index: 75409
 IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void DoorClosedEvt_Invoke_mB5F245C3A2B92B56DBB9B92FE3878F7FAB5353AA_inline (DoorClosedEvt_t3512971C2165EA9C9D0F0A489E03B04EEE894C5C* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method) 
 {
 	typedef void (*FunctionPointerType) (RuntimeObject*, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC*, const RuntimeMethod*);
@@ -13509,7 +13509,7 @@ IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D
 		return L_9;
 	}
 }
-// Method Definition Index: 75414
+// Method Definition Index: 75417
 IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void DoorWillCloseEvt_Invoke_m53BFA21E364CD48B295BC3ECAD5D32FAC66FCF4D_inline (DoorWillCloseEvt_tCF052CFCAD1F6F42971A6A7F50DB3F69766740B3* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method) 
 {
 	typedef void (*FunctionPointerType) (RuntimeObject*, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC*, const RuntimeMethod*);
@@ -13537,37 +13537,37 @@ IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Vector3_t24C512C7B96BBABAD472002D
 		return L_0;
 	}
 }
-// Method Definition Index: 75410
+// Method Definition Index: 75413
 IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void DoorWillOpenEvt_Invoke_mD170B0E6804066068C1825C3E35BBB31D6472AE5_inline (DoorWillOpenEvt_t3A953E675BDD6E13F554E0BDDD07F831A039BE22* __this, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC* ___0_door, const RuntimeMethod* method) 
 {
 	typedef void (*FunctionPointerType) (RuntimeObject*, OmniDoor3D_tE8D69D723A5466A7DFEA7549C62C65DD5F19D6BC*, const RuntimeMethod*);
 	((FunctionPointerType)__this->___invoke_impl)((Il2CppObject*)__this->___method_code, ___0_door, reinterpret_cast<RuntimeMethod*>(__this->___method));
 }
-// Method Definition Index: 75445
+// Method Definition Index: 75448
 IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void OpenDoorEvt_Invoke_mBC4CCF7F672C37BF8C2CC5556F906550F13F8DCC_inline (OpenDoorEvt_t53FDC500F958704C0041B93E83B01FD1685D2A98* __this, const RuntimeMethod* method) 
 {
 	typedef void (*FunctionPointerType) (RuntimeObject*, const RuntimeMethod*);
 	((FunctionPointerType)__this->___invoke_impl)((Il2CppObject*)__this->___method_code, reinterpret_cast<RuntimeMethod*>(__this->___method));
 }
-// Method Definition Index: 75449
+// Method Definition Index: 75452
 IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void CloseDoorEvt_Invoke_m3DF1BF5991F943417FB2FDAA0E63682AEF1CF612_inline (CloseDoorEvt_t0FA9DD6BBFED77AF496D88825BE7100D2C05E507* __this, const RuntimeMethod* method) 
 {
 	typedef void (*FunctionPointerType) (RuntimeObject*, const RuntimeMethod*);
 	((FunctionPointerType)__this->___invoke_impl)((Il2CppObject*)__this->___method_code, reinterpret_cast<RuntimeMethod*>(__this->___method));
 }
-// Method Definition Index: 75461
+// Method Definition Index: 75464
 IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void LockDoorEvt_Invoke_m0ED3A8C1C3B21230CB550F56580CE576CEA0A9B8_inline (LockDoorEvt_t15338F49A7805255093B5E4DE5994C05EC2FEC84* __this, const RuntimeMethod* method) 
 {
 	typedef void (*FunctionPointerType) (RuntimeObject*, const RuntimeMethod*);
 	((FunctionPointerType)__this->___invoke_impl)((Il2CppObject*)__this->___method_code, reinterpret_cast<RuntimeMethod*>(__this->___method));
 }
-// Method Definition Index: 75457
+// Method Definition Index: 75460
 IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void UnlockDoorEvt_Invoke_mE2370B6BA7803BA0199F438F608256535AAF7D07_inline (UnlockDoorEvt_t6006D394CC44175581D7140CCCC65A71B68F20CF* __this, const RuntimeMethod* method) 
 {
 	typedef void (*FunctionPointerType) (RuntimeObject*, const RuntimeMethod*);
 	((FunctionPointerType)__this->___invoke_impl)((Il2CppObject*)__this->___method_code, reinterpret_cast<RuntimeMethod*>(__this->___method));
 }
-// Method Definition Index: 75488
+// Method Definition Index: 75491
 IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void PlayerOrbital_set_doorController_m693A76ECD26EBA11E594BA3E3DB69F86865D2F43_inline (PlayerOrbital_tF69524049E80DB19D1E220115D3472F6614CCA7A* __this, OmniDoor3DController_tB8BD497B700BB2E62A9496E8DADC0E2890C3F5E6* ___0_value, const RuntimeMethod* method) 
 {
 	{
@@ -13606,7 +13606,7 @@ IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR Vector2_t1FD6F485C871E832B347AB2D
 		return L_0;
 	}
 }
-// Method Definition Index: 75453
+// Method Definition Index: 75456
 IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void ToggleDoorEvt_Invoke_mF81798196C518135B86C2FA02286952D3A20B36B_inline (ToggleDoorEvt_tFE20427E5BADD68E7E1BE9380F1D78CFC33DDA40* __this, const RuntimeMethod* method) 
 {
 	typedef void (*FunctionPointerType) (RuntimeObject*, const RuntimeMethod*);

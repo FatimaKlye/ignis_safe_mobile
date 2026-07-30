@@ -1,13 +1,21 @@
 package com.unity3d.player;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
+import android.graphics.Color;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.core.view.ViewCompat;
 
@@ -31,6 +39,9 @@ public class UnityPlayerGameActivity extends GameActivity implements IUnityPlaye
     }
 
     protected UnityPlayerForGameActivity mUnityPlayer;
+    private final Handler ignisUiHandler = new Handler(Looper.getMainLooper());
+    private FrameLayout ignisLoadingOverlay;
+    private final Runnable ignisLoadingTimeout = this::hideIgnisLoadingOverlay;
     protected String updateUnityCommandLineArguments(String cmdLine)
     {
         return cmdLine;
@@ -44,6 +55,9 @@ public class UnityPlayerGameActivity extends GameActivity implements IUnityPlaye
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+        Intent result = new Intent();
+        result.putExtra("completed", false);
+        setResult(Activity.RESULT_CANCELED, result);
     }
 
     @Override
@@ -76,6 +90,68 @@ public class UnityPlayerGameActivity extends GameActivity implements IUnityPlaye
         // Note: we cannot initialize in onCreate (after super.onCreate), because game activity native thread would be already started and unity runtime initialized
         //       we also cannot initialize before super.onCreate since frameLayout is not yet available.
         mUnityPlayer = new UnityPlayerForGameActivity(this, frameLayout, mSurfaceView, this);
+        showIgnisLoadingOverlay(frameLayout);
+    }
+
+    private void showIgnisLoadingOverlay(FrameLayout root) {
+        if (ignisLoadingOverlay != null) return;
+
+        FrameLayout overlay = new FrameLayout(this);
+        overlay.setClickable(true);
+        overlay.setBackgroundColor(Color.rgb(177, 18, 23));
+
+        LinearLayout content = new LinearLayout(this);
+        content.setOrientation(LinearLayout.VERTICAL);
+        content.setGravity(Gravity.CENTER);
+
+        ProgressBar spinner = new ProgressBar(this);
+        content.addView(spinner);
+
+        TextView message = new TextView(this);
+        message.setText("Loading simulation…");
+        message.setTextColor(Color.WHITE);
+        message.setTextSize(18f);
+        message.setGravity(Gravity.CENTER);
+        message.setPadding(0, 28, 0, 0);
+        content.addView(message);
+
+        FrameLayout.LayoutParams contentParams = new FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.WRAP_CONTENT,
+            FrameLayout.LayoutParams.WRAP_CONTENT,
+            Gravity.CENTER
+        );
+        overlay.addView(content, contentParams);
+        root.addView(
+            overlay,
+            new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
+            )
+        );
+
+        ignisLoadingOverlay = overlay;
+        ignisUiHandler.postDelayed(ignisLoadingTimeout, 90000L);
+    }
+
+    private void hideIgnisLoadingOverlay() {
+        ignisUiHandler.removeCallbacks(ignisLoadingTimeout);
+        FrameLayout overlay = ignisLoadingOverlay;
+        if (overlay == null) return;
+        ignisLoadingOverlay = null;
+        if (overlay.getParent() instanceof FrameLayout) {
+            ((FrameLayout) overlay.getParent()).removeView(overlay);
+        }
+    }
+
+    public void notifyIgnisSceneReady() {
+        runOnUiThread(this::hideIgnisLoadingOverlay);
+    }
+
+    public void markIgnisSimulationCompleted() {
+        Intent result = new Intent();
+        result.putExtra("completed", true);
+        result.putExtra("sceneName", getIntent().getStringExtra("sceneName"));
+        setResult(Activity.RESULT_OK, result);
     }
 
     @Override
@@ -90,6 +166,8 @@ public class UnityPlayerGameActivity extends GameActivity implements IUnityPlaye
     // Quit Unity
     @Override protected void onDestroy ()
     {
+        ignisUiHandler.removeCallbacksAndMessages(null);
+        hideIgnisLoadingOverlay();
         mUnityPlayer.destroy();
         super.onDestroy();
     }

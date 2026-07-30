@@ -13,7 +13,8 @@ dependencies {
 
 android {
     namespace "com.unity3d.player"
-    // ndkPath "C:/Program Files/Unity/Hub/Editor/6000.4.1f1/Editor/Data/PlaybackEngines/AndroidPlayer/NDK" // hardcoded to a machine-specific Unity install that doesn't have this version/NDK; letting ndkVersion below resolve the NDK from the Android SDK instead (already installed at this exact version)
+    // Resolve this installed NDK through the Android SDK instead of hardcoding
+    // one developer machine's Unity installation path.
     ndkVersion "27.2.12479018"
     compileSdk 36
     buildToolsVersion = "36.0.0"
@@ -124,13 +125,6 @@ def getSdkDir() {
     return local.getProperty('sdk.dir')
 }
 
-def getGradleProperty(String propertyName) {
-    if (project.hasProperty(propertyName)) {
-        return project.properties[propertyName]
-    }
-    return ""
-}
-
 def getIl2CppOutputPath(String workingDir, String abi) {
     return "${workingDir}/src/main/jniLibs/${abi}/libil2cpp.so";
 }
@@ -157,7 +151,7 @@ def buildIl2CppImpl(String workingDir, String configuration, String architecture
     commandLineArgs.add("--data-folder=${workingDir}/src/main/Il2CppOutputProject/Source/il2cppOutput/data")
     commandLineArgs.add("--generatedcppdir=${workingDir}/src/main/Il2CppOutputProject/Source/il2cppOutput")
     commandLineArgs.add("--cachedirectory=${workingDir}/build/il2cpp_${abi}_${configuration}/il2cpp_cache")
-    commandLineArgs.add("--tool-chain-path=" + getGradleProperty("unity.androidNdkPath"))
+    commandLineArgs.add("--tool-chain-path=" + getProperty("unity.androidNdkPath"))
 
     staticLibraries.each { fileName ->
         commandLineArgs.add("--additional-libraries=${workingDir}/src/main/jniStaticLibs/${abi}/${fileName}")
@@ -171,10 +165,10 @@ def buildIl2CppImpl(String workingDir, String configuration, String architecture
 
     def command = "${workingDir}/src/main/Il2CppOutputProject/IL2CPP/build/deploy/il2cpp${executableExtension}";
     execCommand(workingDir, [command, *commandLineArgs], [
-        "ANDROID_SDK_ROOT": getGradleProperty("unity.androidSdkPath"),
-        "ANDROID_NDK_ROOT": getGradleProperty("unity.androidNdkPath"),
-        "NDK_ROOT": getGradleProperty("unity.androidNdkPath"),
-        "ANDROID_NDK_HOME": getGradleProperty("unity.androidNdkPath"),
+        "ANDROID_SDK_ROOT": getProperty("unity.androidSdkPath"),
+        "ANDROID_NDK_ROOT": getProperty("unity.androidNdkPath"),
+        "NDK_ROOT": getProperty("unity.androidNdkPath"),
+        "ANDROID_NDK_HOME": getProperty("unity.androidNdkPath"),
     ])
 
     def dbgLevel =  project.android.defaultConfig.ndk.debugSymbolLevel;

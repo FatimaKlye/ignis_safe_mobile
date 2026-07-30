@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'navbar.dart';
@@ -112,24 +113,33 @@ class _IgnisHomePageState extends State<IgnisHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBody: true,
-      backgroundColor: Colors.white,
-      body: _buildBody(),
-      bottomNavigationBar: FloatingNavBar(
-        selectedIndex: _selectedIndex,
-        onItemTapped: _onItemTapped,
-        icons: _icons,
-        activeIcons: _activeIcons,
-        labels: const ['Module', 'About', 'Profile'],
-        activeColor: const Color(0xFF111111),
-        inactiveColor: const Color(0xFF6F6F6F),
-        navBarColor: Colors.white.withOpacity(0.68),
-        borderColor: Colors.black.withOpacity(0.10),
-        navBarHeight: 62.0,
-        horizontalMargin: 28.0,
-        bottomPadding: 14.0,
-        blurSigma: 22.0,
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
+        systemStatusBarContrastEnforced: false,
+        systemNavigationBarIconBrightness: Brightness.dark,
+      ),
+      child: Scaffold(
+        extendBody: true,
+        backgroundColor: Colors.white,
+        body: _buildBody(),
+        bottomNavigationBar: FloatingNavBar(
+          selectedIndex: _selectedIndex,
+          onItemTapped: _onItemTapped,
+          icons: _icons,
+          activeIcons: _activeIcons,
+          labels: const ['Module', 'About', 'Profile'],
+          activeColor: const Color(0xFF111111),
+          inactiveColor: const Color(0xFF6F6F6F),
+          navBarColor: Colors.white.withOpacity(0.68),
+          borderColor: Colors.black.withOpacity(0.10),
+          navBarHeight: 62.0,
+          horizontalMargin: 28.0,
+          bottomPadding: 14.0,
+          blurSigma: 22.0,
+        ),
       ),
     );
   }

@@ -91,6 +91,9 @@ extern void PlayerMove_Awake_mBE20F01082B41ACB4325C49F9AD84F5149DB5DA7 (void);
 extern void PlayerMove_Update_m2D580181CA2970EE505CEA4D2E722DD2F72F2D29 (void);
 extern void PlayerMove_PlayerMovement_mB3CBE1BDD2C00E7AC6C3E26D2DD48B2E9E148458 (void);
 extern void PlayerMove__ctor_m259C024B72725E14EF78BC65889964013830B7B2 (void);
+extern void IgnisFlutterActivityBridge_MarkSimulationCompleted_m6C4601F9A9CF9D4A48F284701A01C063EEF58BAD (void);
+extern void IgnisFlutterActivityBridge_NotifySceneReady_m115B9686C25637ABF8DFD03DA99579098C0BEE9E (void);
+extern void IgnisFlutterActivityBridge_CallActivity_mF526D58442B74310D29FDF52DE8B5B07DF6B4310 (void);
 extern void CrateGridBuilder_Start_m401A5AD6DA3AC1A762C87EC82BBE0D989CAED9FB (void);
 extern void CrateGridBuilder__ctor_m53CC8D6CBA7CEA8B97A5622CC1C487091A24AF48 (void);
 extern void DestroyBelowY_Start_mB49BC3ABC13DC63919D929281DECC21217F39DB0 (void);
@@ -916,7 +919,7 @@ extern void nonMobileInput_Start_m5353FD4BE88AFF1F339E4C4104FF9AC6ED1AF32A (void
 extern void nonMobileInput_Update_m34ED63A2A5BCF9117505024E5F90F582FB806F2F (void);
 extern void nonMobileInput_OnValidate_m34F9CF56BF4444D8551EA27CE7CE7AEFB6B15ECC (void);
 extern void nonMobileInput__ctor_mBD63C58D118C02913BB5B4C863B05211E422C6E6 (void);
-static Il2CppMethodPointer s_methodPointers[909] = 
+static Il2CppMethodPointer s_methodPointers[912] = 
 {
 	Door_MoveMyDoor_mB9F437363DB157ADB8A5607F5D59FF648DC273B5,
 	Door_ActionDoor_mE43518F82CA2F0AEC532DBAF25886E068E8F6525,
@@ -1002,6 +1005,9 @@ static Il2CppMethodPointer s_methodPointers[909] =
 	PlayerMove_Update_m2D580181CA2970EE505CEA4D2E722DD2F72F2D29,
 	PlayerMove_PlayerMovement_mB3CBE1BDD2C00E7AC6C3E26D2DD48B2E9E148458,
 	PlayerMove__ctor_m259C024B72725E14EF78BC65889964013830B7B2,
+	IgnisFlutterActivityBridge_MarkSimulationCompleted_m6C4601F9A9CF9D4A48F284701A01C063EEF58BAD,
+	IgnisFlutterActivityBridge_NotifySceneReady_m115B9686C25637ABF8DFD03DA99579098C0BEE9E,
+	IgnisFlutterActivityBridge_CallActivity_mF526D58442B74310D29FDF52DE8B5B07DF6B4310,
 	CrateGridBuilder_Start_m401A5AD6DA3AC1A762C87EC82BBE0D989CAED9FB,
 	CrateGridBuilder__ctor_m53CC8D6CBA7CEA8B97A5622CC1C487091A24AF48,
 	DestroyBelowY_Start_mB49BC3ABC13DC63919D929281DECC21217F39DB0,
@@ -1828,7 +1834,7 @@ static Il2CppMethodPointer s_methodPointers[909] =
 	nonMobileInput_OnValidate_m34F9CF56BF4444D8551EA27CE7CE7AEFB6B15ECC,
 	nonMobileInput__ctor_mBD63C58D118C02913BB5B4C863B05211E422C6E6,
 };
-static const int32_t s_InvokerIndices[909] = 
+static const int32_t s_InvokerIndices[912] = 
 {
 	15749,
 	15749,
@@ -1914,6 +1920,9 @@ static const int32_t s_InvokerIndices[909] =
 	15749,
 	15749,
 	15749,
+	27316,
+	27316,
+	26023,
 	15749,
 	15749,
 	15749,
@@ -2744,7 +2753,7 @@ IL2CPP_EXTERN_C const Il2CppCodeGenModule g_AssemblyU2DCSharp_CodeGenModule;
 const Il2CppCodeGenModule g_AssemblyU2DCSharp_CodeGenModule = 
 {
 	"Assembly-CSharp.dll",
-	909,
+	912,
 	s_methodPointers,
 	0,
 	NULL,

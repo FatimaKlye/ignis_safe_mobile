@@ -130,8 +130,22 @@ public class SceneLoader : MonoBehaviour
         //        SceneSpecificStaticVar = defaultValue;
 
         _sceneLoadTriggered = true;
+        StartCoroutine(LoadSceneRoutine(sceneName));
+    }
+
+    private System.Collections.IEnumerator LoadSceneRoutine(string sceneName)
+    {
+        Debug.Log(TAG + " Loading Unity scene: " + sceneName);
+        AsyncOperation operation =
+            SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Single);
+
+        while (!operation.isDone)
+        {
+            yield return null;
+        }
+
         Debug.Log(TAG + " Unity loaded scene: " + sceneName);
-        SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
+        IgnisFlutterActivityBridge.NotifySceneReady();
     }
 
     // -------------------------------------------------------

@@ -1663,11 +1663,22 @@ class _DevTile extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CircleAvatar(
-              radius: 26,
-              backgroundColor: const Color(0xFFF2F2F2),
-              backgroundImage: AssetImage(m.asset),
-              onBackgroundImageError: (_, __) {},
+            ClipOval(
+              child: SizedBox.square(
+                dimension: 52,
+                child: Image.asset(
+                  m.asset,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => const ColoredBox(
+                    color: Color(0xFFF2F2F2),
+                    child: Icon(
+                      Icons.person_rounded,
+                      color: Color(0xFF8C8C8C),
+                      size: 30,
+                    ),
+                  ),
+                ),
+              ),
             ),
             const SizedBox(height: 8),
             Text(
