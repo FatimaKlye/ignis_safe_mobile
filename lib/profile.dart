@@ -325,6 +325,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     children: [
                       SizedBox(height: topGap),
                       Row(
+                        textDirection: TextDirection.rtl,
                         children: [
                           PopupMenuButton<String>(
                             tooltip: '',
@@ -366,7 +367,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           const SizedBox(width: 10),
                           Expanded(
                             child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
                                 Text(
                                   _displayName.trim().isEmpty
@@ -378,6 +379,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                         ),
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 1,
+                                  textAlign: TextAlign.right,
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 12,
@@ -393,6 +395,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 1,
+                                  textAlign: TextAlign.right,
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 14,

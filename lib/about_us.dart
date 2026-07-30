@@ -231,6 +231,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
                     children: [
                       SizedBox(height: topGap),
                       Row(
+                        textDirection: TextDirection.rtl,
                         children: [
                           PopupMenuButton<String>(
                             tooltip: '',
@@ -272,7 +273,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
                           const SizedBox(width: 10),
                           Expanded(
                             child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
                                 Text(
                                   _firstName.isEmpty && _lastName.isEmpty
@@ -284,6 +285,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
                                         ),
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 1,
+                                  textAlign: TextAlign.right,
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 12,
@@ -299,6 +301,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 1,
+                                  textAlign: TextAlign.right,
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 14,

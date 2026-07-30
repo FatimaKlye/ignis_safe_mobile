@@ -1235,6 +1235,7 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
                     children: [
                       SizedBox(height: topGap),
                       Row(
+                        textDirection: TextDirection.rtl,
                         children: [
                           PopupMenuButton<String>(
                             tooltip: '',
@@ -1276,7 +1277,7 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
                           const SizedBox(width: 10),
                           Expanded(
                             child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
                                 Text(
                                   _firstName.isEmpty && _lastName.isEmpty
@@ -1287,6 +1288,7 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
                                         ),
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 1,
+                                  textAlign: TextAlign.right,
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 12,
@@ -1298,6 +1300,7 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
                                   context.tr('welcome_to_ignis_safe_short'),
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 1,
+                                  textAlign: TextAlign.right,
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 14,

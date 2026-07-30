@@ -135,6 +135,19 @@ public class FlutterBridge : MonoBehaviour
         {
             yield return null;
         }
+
+        // The bootstrap scene and the previously opened simulation can leave
+        // textures, meshes, and other assets resident even after a Single-mode
+        // scene load. Release anything the newly loaded scene no longer uses
+        // before removing Flutter's loading screen.
+        yield return null;
+        AsyncOperation cleanup = Resources.UnloadUnusedAssets();
+        while (!cleanup.isDone)
+        {
+            yield return null;
+        }
+        System.GC.Collect();
+
         Debug.Log("[FlutterBridge] Scene loaded: " + sceneName);
         IgnisFlutterActivityBridge.NotifySceneReady();
     }

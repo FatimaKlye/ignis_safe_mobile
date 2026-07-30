@@ -596,6 +596,7 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
                 children: [
                   const SizedBox(height: 20),
                   Row(
+                    textDirection: TextDirection.rtl,
                     children: [
                       PopupMenuButton<String>(
                         tooltip: "",
@@ -651,7 +652,7 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
                       const SizedBox(width: 10),
                       Expanded(
                         child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text(
                             _firstName.isEmpty && _lastName.isEmpty
@@ -662,6 +663,7 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
                                   ),
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
+                            textAlign: TextAlign.right,
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 12,
@@ -671,6 +673,7 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
                           const SizedBox(height: 2),
                           Text(
                             context.tr('welcome_to_ignis_safe_short'),
+                            textAlign: TextAlign.right,
                             style: TextStyle(
                               color: Colors.black,
                               fontSize: 14,
