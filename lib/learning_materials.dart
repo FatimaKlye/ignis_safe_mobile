@@ -43,7 +43,7 @@ import 'module_5_building.dart/post_assess_instruction.dart' as post5;
 /// Index of the Profile tab within [IgnisHomePage]'s tab list
 /// (Module = 0, About Us = 1, Profile = 2).
 const int _profileTabIndex = 2;
-const double _learningHeaderExtent = 270;
+const double _learningHeaderExtent = 220;
 
 class _NoOverscrollScrollBehavior extends ScrollBehavior {
   const _NoOverscrollScrollBehavior();
@@ -129,9 +129,7 @@ class LearningMaterialsTab extends StatefulWidget {
 
 class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
   final _client = Supabase.instance.client;
-  final TextEditingController _searchController = TextEditingController();
 
-  String searchQuery = '';
   String _firstName = '';
   String _lastName = '';
   String? _avatarUrl;
@@ -172,7 +170,6 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
   void dispose() {
     profileRefreshNotifier.removeListener(_handleProfileChanged);
     _progressRefreshDebounce?.cancel();
-    _searchController.dispose();
     final c = _channel;
     if (c != null) _client.removeChannel(c);
     super.dispose();
@@ -1097,93 +1094,8 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
     return AssetImage(_avatarUrl!);
   }
 
-  String _normalizeSearch(String value) {
-    return value
-        .toLowerCase()
-        .replaceAll(RegExp(r'[-_/]'), ' ')
-        .replaceAll(RegExp(r'\s+'), ' ')
-        .trim();
-  }
-
-  bool _matchesModuleSearch(LearningMaterial module, String query) {
-    if (query.isEmpty) return true;
-
-    final moduleText = _normalizeSearch(
-      '${module.moduleLabel(false)} '
-      '${module.moduleLabel(true)} '
-      '${module.title(false)} '
-      '${module.title(true)} '
-      '${module.subtitle(false)} '
-      '${module.subtitle(true)}',
-    );
-
-    final actionText = _normalizeSearch(
-      _ModuleAction.items(false)
-              .map(
-                (action) => '${action.key} ${action.title} ${action.subtitle}',
-              )
-              .join(' ') +
-          ' ' +
-          _ModuleAction.items(true)
-              .map(
-                (action) => '${action.key} ${action.title} ${action.subtitle}',
-              )
-              .join(' ') +
-          ' pre test pre assessment preassessment pretest post test post assessment postassessment posttest practical application practical simulation 3d simulation learning material learning materials materyal pag aaral paunang pagsusulit panghuling pagsusulit simulasyon modyul module',
-    );
-
-    return moduleText.contains(query) || actionText.contains(query);
-  }
-
-  Widget _buildScrollableSearchBar() {
-    return Container(
-      height: 50,
-      padding: const EdgeInsets.symmetric(horizontal: 14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(26),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.12),
-            blurRadius: 12,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.search, color: Colors.grey),
-          const SizedBox(width: 10),
-          Expanded(
-            child: TextField(
-              controller: _searchController,
-              onChanged: (value) => setState(() => searchQuery = value),
-              decoration: InputDecoration(
-                hintText: context.tr('search'),
-                hintStyle: const TextStyle(color: Colors.grey),
-                border: InputBorder.none,
-                isDense: true,
-              ),
-            ),
-          ),
-          if (searchQuery.trim().isNotEmpty)
-            IconButton(
-              tooltip: _isTl ? 'I-clear' : 'Clear',
-              onPressed: () {
-                _searchController.clear();
-                setState(() => searchQuery = '');
-              },
-              icon: const Icon(Icons.close_rounded, color: Color(0xFF9E9E9E)),
-            ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    final q = _normalizeSearch(searchQuery);
-    final filtered = _modules.where((m) => _matchesModuleSearch(m, q)).toList();
     final avatarProvider = _buildAvatarProvider();
 
     return Scaffold(
@@ -1199,11 +1111,13 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
               builder: (context, constraints) {
                 final compactWidth = constraints.maxWidth < 370;
                 final horizontalPadding = compactWidth ? 16.0 : 22.0;
+                final bottomInset = MediaQuery.paddingOf(context).bottom + 96;
                 return Padding(
                   padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
                   child: _buildList(
-                    filtered,
+                    _modules,
                     topInset: _learningHeaderExtent + 12,
+                    bottomInset: bottomInset,
                   ),
                 );
               },
@@ -1250,8 +1164,6 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
                             widget.onRequestTabChange?.call(_profileTabIndex),
                         onLogout: _logout,
                       ),
-                      const SizedBox(height: 20),
-                      _buildScrollableSearchBar(),
                     ],
                   ),
                 );
@@ -1263,11 +1175,15 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
     );
   }
 
-  Widget _buildList(List<LearningMaterial> items, {double topInset = 0}) {
+  Widget _buildList(
+    List<LearningMaterial> items, {
+    double topInset = 0,
+    double bottomInset = 12,
+  }) {
     if (_loading) {
       return ListView(
         physics: const ClampingScrollPhysics(),
-        padding: EdgeInsets.fromLTRB(0, topInset, 0, 12),
+        padding: EdgeInsets.fromLTRB(0, topInset, 0, bottomInset),
         children: const [
           SizedBox(
             height: 180,
@@ -1282,7 +1198,7 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
     if (_error != null) {
       return ListView(
         physics: const ClampingScrollPhysics(),
-        padding: EdgeInsets.fromLTRB(0, topInset, 0, 12),
+        padding: EdgeInsets.fromLTRB(0, topInset, 0, bottomInset),
         children: [
           _MessageCard(
             icon: Icons.error_outline_rounded,
@@ -1307,24 +1223,23 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
         behavior: const _NoOverscrollScrollBehavior(),
         child: ListView.separated(
           physics: const ClampingScrollPhysics(),
-          padding: EdgeInsets.fromLTRB(0, topInset, 0, 12),
+          padding: EdgeInsets.fromLTRB(0, topInset, 0, bottomInset),
           clipBehavior: Clip.hardEdge,
           itemCount: hasItems ? items.length : 1,
           separatorBuilder: (_, __) => const SizedBox(height: 12),
           itemBuilder: (_, index) {
             if (!hasItems) {
               return _MessageCard(
-                icon: Icons.search_off_rounded,
-                title: _isTl ? 'Walang resulta' : 'No results found',
+                icon: Icons.menu_book_outlined,
+                title: _isTl
+                    ? 'Wala pang learning materials'
+                    : 'No learning materials yet',
                 message: _isTl
-                    ? 'Walang tumugma sa hinanap mo.'
-                    : 'No module matched your search.',
-                buttonText: _isTl ? 'I-clear' : 'Clear',
+                    ? 'Bumalik muli sa ibang pagkakataon o i-refresh ang pahina.'
+                    : 'Check again later or refresh the page.',
+                buttonText: _isTl ? 'I-refresh' : 'Refresh',
                 color: const Color(0xFFB11217),
-                onPressed: () {
-                  _searchController.clear();
-                  setState(() => searchQuery = '');
-                },
+                onPressed: _refreshModulesAndProgress,
               );
             }
 
@@ -2451,57 +2366,6 @@ class _SectionTitle extends StatelessWidget {
           fontSize: 24,
           fontWeight: FontWeight.w800,
           color: Color(0xFF111827),
-        ),
-      ),
-    );
-  }
-}
-
-class _SearchField extends StatelessWidget {
-  final String hintText;
-  final String value;
-  final ValueChanged<String> onChanged;
-  final VoidCallback? onClear;
-
-  const _SearchField({
-    required this.hintText,
-    required this.value,
-    required this.onChanged,
-    this.onClear,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 14,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: TextField(
-        controller: TextEditingController(text: value)
-          ..selection = TextSelection.collapsed(offset: value.length),
-        onChanged: onChanged,
-        decoration: InputDecoration(
-          prefixIcon: const Icon(Icons.search_rounded),
-          suffixIcon: onClear == null
-              ? null
-              : IconButton(
-                  onPressed: onClear,
-                  icon: const Icon(Icons.close_rounded),
-                ),
-          hintText: hintText,
-          border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 16,
-          ),
         ),
       ),
     );

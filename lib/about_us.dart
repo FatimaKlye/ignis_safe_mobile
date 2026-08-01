@@ -9,7 +9,7 @@ import 'login.dart';
 import 'widgets/main_tab_header.dart';
 import 'profile_refresh_notifier.dart';
 
-enum AboutFilter { all, about, team, bfpDasmarinas, contacts }
+enum AboutFilter { all, about, bfpDasmarinas, contacts }
 
 /// Index of the Profile tab within [IgnisHomePage]'s tab list
 /// (Module = 0, About Us = 1, Profile = 2). Kept as a local constant
@@ -123,11 +123,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
         ),
         PopupMenuItem(
           value: AboutFilter.about,
-          child: Text(t(context, 'About', 'Tungkol')),
-        ),
-        PopupMenuItem(
-          value: AboutFilter.team,
-          child: Text(t(context, 'Team', 'Koponan')),
+          child: const Text('IGNIS SAFE'),
         ),
         PopupMenuItem(
           value: AboutFilter.bfpDasmarinas,
@@ -151,8 +147,6 @@ class _AboutUsPageState extends State<AboutUsPage> {
         return true;
       case AboutFilter.about:
         return s.type == _AboutSectionType.about;
-      case AboutFilter.team:
-        return s.type == _AboutSectionType.team;
       case AboutFilter.bfpDasmarinas:
         return s.type == _AboutSectionType.partner;
       case AboutFilter.contacts:
@@ -344,40 +338,15 @@ class _AboutUsPageState extends State<AboutUsPage> {
       _AboutSection(
         type: _AboutSectionType.about,
         title: "IGNIS SAFE",
-        searchText: "Ignis Safe interactive 3D fire safety simulation mission",
+        searchText:
+            "Ignis Safe interactive 3D fire safety simulation mission logo shield fire truck hose flame water spray protected secure developers team Fatima Klye M Sierra fatimaklyesierra081005@gmail.com Andrei C Quias andreicarisma24@gmail.com Rave Paulo Piolo V Sierra Sarah Flor Macandile Maricis Punzalan adviser",
         icon: Icons.local_fire_department_rounded,
         subtitle: t(
           context,
-          "Our mission and what the app offers",
-          "Ang aming misyon at inaalok ng app",
+          "Our mission, logo meaning, developers, and adviser",
+          "Ang aming misyon, kahulugan ng logo, mga developer, at tagapayo",
         ),
-        builder: (context) => const _ModernAboutCard(),
-      ),
-      _AboutSection(
-        type: _AboutSectionType.about,
-        title: t(context, "Logo Meaning", "Kahulugan ng Logo"),
-        searchText:
-            "logo shield fire truck hose flame water spray ignis latin fire safe protected secure mission prevention preparedness",
-        icon: Icons.shield_rounded,
-        subtitle: t(
-          context,
-          "The story behind our shield and flame",
-          "Ang kuwento sa likod ng aming kalasag at apoy",
-        ),
-        builder: (context) => const _LogoMeaningCard(),
-      ),
-      _AboutSection(
-        type: _AboutSectionType.team,
-        title: t(context, "Meet the Developers", "Kilalanin ang mga Developer"),
-        searchText:
-            "Fatima Klye M Sierra fatimaklyesierra081005@gmail.com Andrei C Quias Rave Paulo Sierra Sarah Flor Macandile Maricis Punzalan Adviser",
-        icon: Icons.groups_rounded,
-        subtitle: t(
-          context,
-          "The team behind Ignis Safe",
-          "Ang koponan sa likod ng Ignis Safe",
-        ),
-        builder: (context) => const _TeamCard(),
+        builder: (context) => const _IgnisSafeSectionContent(),
       ),
       _AboutSection(
         type: _AboutSectionType.partner,
@@ -429,7 +398,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
 // Sections + UI blocks
 // ─────────────────────────────────────────────────────────────
 
-enum _AboutSectionType { about, team, partner, contact }
+enum _AboutSectionType { about, partner, contact }
 
 class _AboutSection {
   final _AboutSectionType type;
@@ -447,6 +416,23 @@ class _AboutSection {
     required this.subtitle,
     required this.builder,
   });
+}
+
+class _IgnisSafeSectionContent extends StatelessWidget {
+  const _IgnisSafeSectionContent();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Column(
+      children: [
+        _ModernAboutCard(),
+        SizedBox(height: 14),
+        _LogoMeaningCard(),
+        SizedBox(height: 14),
+        _TeamCard(),
+      ],
+    );
+  }
 }
 
 class _ExpandableSectionCard extends StatefulWidget {
@@ -997,7 +983,7 @@ class _TeamCard extends StatelessWidget {
         displayLast: "QUIAS",
         role: "3D UNITY DEVELOPER",
         roleTl: "3D UNITY DEVELOPER",
-        email: "",
+        email: "andreicarisma24@gmail.com",
         bio:
             "Builds interactive and immersive applications. He also serves as a Project Manager, overseeing planning, coordination, and timely delivery of projects.",
         bioTl:
@@ -1010,7 +996,7 @@ class _TeamCard extends StatelessWidget {
         displayLast: "SIERRA",
         role: "WEBSITE DEVELOPER",
         roleTl: "WEBSITE DEVELOPER",
-        email: "",
+        email: null,
         bio:
             "Responsible for designing, building, and maintaining responsive and functional websites, ensuring performance, usability, and a seamless user experience.",
         bioTl:
@@ -1023,7 +1009,7 @@ class _TeamCard extends StatelessWidget {
         displayLast: "MACANDILE",
         role: "DOCUMENTATION",
         roleTl: "DOKUMENTASYON",
-        email: "",
+        email: null,
         bio:
             "Ensures that all project records, reports, and required materials are accurate, organized, and properly maintained to support compliance and operational efficiency.",
         bioTl:
@@ -1036,7 +1022,7 @@ class _TeamCard extends StatelessWidget {
         displayLast: "PUNZALAN",
         role: "ADVISER",
         roleTl: "TAGAPAYO",
-        email: "",
+        email: null,
         bio:
             "Provides strategic guidance, oversight, and expert recommendations to support informed decision-making and overall project direction.",
         bioTl:
@@ -1064,11 +1050,7 @@ class _TeamCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              t(
-                context,
-                "MEET OUR DEVELOPERS",
-                "KILALANIN ANG AMING MGA DEVELOPER",
-              ),
+              t(context, "DEVELOPERS & ADVISER", "MGA DEVELOPER AT TAGAPAYO"),
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w900,
@@ -1342,6 +1324,13 @@ class _ContactCard extends StatelessWidget {
 
   const _ContactCard();
 
+  Future<void> _dial(String number) async {
+    await launchUrl(
+      Uri(scheme: 'tel', path: number),
+      mode: LaunchMode.externalApplication,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -1406,14 +1395,14 @@ class _ContactCard extends StatelessWidget {
               icon: Icons.local_phone_rounded,
               label: t(context, "Landline", "Landline"),
               value: "(046) 884-6131 / 416-0875",
-              onTap: () {},
+              onTap: () => _dial('(046) 884-6131'),
             ),
             const SizedBox(height: 8),
             _ContactRow(
               icon: Icons.smartphone_rounded,
               label: t(context, "Mobile", "Mobile"),
               value: "0995-336-9534",
-              onTap: () {},
+              onTap: () => _dial('0995-336-9534'),
             ),
             const SizedBox(height: 12),
             Container(
@@ -1528,18 +1517,42 @@ class _DevTile extends StatelessWidget {
                       color: Color(0xFFB11217),
                     ),
                   ),
-                  if (m.email.trim().isNotEmpty) ...[
-                    const SizedBox(height: 8),
-                    Text(
-                      "EMAIL: ${m.email}",
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w700,
-                        decoration: TextDecoration.underline,
+                  const SizedBox(height: 8),
+                  InkWell(
+                    onTap: m.email == null
+                        ? null
+                        : () => launchUrl(
+                            Uri(scheme: 'mailto', path: m.email),
+                            mode: LaunchMode.externalApplication,
+                          ),
+                    borderRadius: BorderRadius.circular(6),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 2),
+                      child: Text(
+                        m.email == null
+                            ? t(
+                                context,
+                                "EMAIL: To be added",
+                                "EMAIL: Idadagdag",
+                              )
+                            : "EMAIL: ${m.email}",
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          color: m.email == null
+                              ? const Color(0xFF777777)
+                              : const Color(0xFF2D2D2D),
+                          fontStyle: m.email == null
+                              ? FontStyle.italic
+                              : FontStyle.normal,
+                          decoration: m.email == null
+                              ? TextDecoration.none
+                              : TextDecoration.underline,
+                        ),
                       ),
                     ),
-                  ],
+                  ),
                   const SizedBox(height: 10),
                   Text(
                     t(context, m.bio, m.bioTl),
@@ -1650,7 +1663,7 @@ class _TeamMember {
   final String displayLast;
   final String role;
   final String roleTl;
-  final String email;
+  final String? email;
   final String bio;
   final String bioTl;
   final String asset;
