@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -7,9 +8,13 @@ import 'localization/language_controller.dart';
 import 'login.dart';
 import 'faq_page.dart';
 import 'widgets/account_menu.dart';
+import 'widgets/main_tab_header.dart';
 import 'profile_refresh_notifier.dart';
 
 part 'edit_profile_page.dart';
+part 'profile_modern_view.dart';
+part 'profile_edit_modern_view.dart';
+part 'profile_image_crop_view.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({
@@ -267,8 +272,22 @@ class _ProfilePageState extends State<ProfilePage> {
     return null;
   }
 
+  Future<void> _openModernEditProfile(BuildContext context) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const EditProfilePage()),
+    );
+    if (!mounted) return;
+    setState(() => _isLoadingProfile = true);
+    await _loadProfile();
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => _buildModernProfileView(this, context);
+
+  // Kept temporarily as a layout reference while the modern view is rolled out.
+  // ignore: unused_element
+  Widget _buildLegacyProfile(BuildContext context) {
     final avatarImage = _getAvatarImage();
     final topPadding = MediaQuery.of(context).padding.top;
 
@@ -313,7 +332,9 @@ class _ProfilePageState extends State<ProfilePage> {
                 final listGap = compactHeight ? 16.0 : 24.0;
                 final avatarRadius = compactWidth ? 20.0 : 22.0;
                 final titleSize = (width * 0.075).clamp(20.0, 30.0).toDouble();
-                final avatarSize = (width * 0.42).clamp(132.0, 168.0).toDouble();
+                final avatarSize = (width * 0.42)
+                    .clamp(132.0, 168.0)
+                    .toDouble();
 
                 return Padding(
                   padding: EdgeInsets.symmetric(
@@ -333,7 +354,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             elevation: 8,
                             color: Colors.white,
                             surfaceTintColor: Colors.white,
-                            shadowColor: Colors.black.withOpacity(0.18),
+                            shadowColor: Colors.black.withValues(alpha: 0.18),
                             shape: accountMenuShape(),
                             constraints: const BoxConstraints(minWidth: 180),
                             onSelected: (value) async {
@@ -441,7 +462,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                       color: Colors.white,
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Colors.black.withOpacity(0.16),
+                                          color: Colors.black.withValues(
+                                            alpha: 0.16,
+                                          ),
                                           blurRadius: 22,
                                           offset: const Offset(0, 12),
                                         ),
@@ -511,7 +534,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                       await Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (_) => const EditProfilePage(),
+                                          builder: (_) =>
+                                              const EditProfilePage(),
                                         ),
                                       );
 
@@ -568,7 +592,6 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
     );
   }
-
 }
 
 class _BigButton extends StatelessWidget {
@@ -594,7 +617,7 @@ class _BigButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
+            color: Colors.black.withValues(alpha: 0.06),
             blurRadius: 16,
             offset: const Offset(0, 8),
           ),
@@ -614,7 +637,7 @@ class _BigButton extends StatelessWidget {
                   width: 38,
                   height: 38,
                   decoration: BoxDecoration(
-                    color: btnColor.withOpacity(0.08),
+                    color: btnColor.withValues(alpha: 0.08),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(icon, size: 19, color: btnColor),
@@ -632,10 +655,7 @@ class _BigButton extends StatelessWidget {
                     ),
                   ),
                 ),
-                Icon(
-                  Icons.chevron_right_rounded,
-                  color: Colors.grey.shade400,
-                ),
+                Icon(Icons.chevron_right_rounded, color: Colors.grey.shade400),
               ],
             ),
           ),
@@ -662,7 +682,7 @@ class _LanguageSelector extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.10),
+            color: Colors.black.withValues(alpha: 0.10),
             blurRadius: 16,
             offset: const Offset(0, 10),
           ),

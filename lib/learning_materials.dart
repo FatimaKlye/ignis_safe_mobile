@@ -9,7 +9,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'login.dart';
 import 'localization/app_text.dart';
 import 'widgets/app_notification.dart';
-import 'widgets/account_menu.dart';
+import 'widgets/main_tab_header.dart';
 import 'profile_refresh_notifier.dart';
 import 'module_progress_overview_service.dart';
 
@@ -20,9 +20,11 @@ import 'module_2_house.dart/pre_assess_instruction.dart' as pre2;
 import 'module_2_house.dart/module_2_learningmaterials.dart' as house_lm;
 import 'module_5_building.dart/module_5_learningmaterials.dart' as building_lm;
 import 'module_4_kitchen.dart/module_4_learningmaterials.dart' as kitchen_lm;
-import 'module_3_electrical.dart/module_3_learningmaterials.dart' as electrical_lm;
+import 'module_3_electrical.dart/module_3_learningmaterials.dart'
+    as electrical_lm;
 import 'module_2_house.dart/simulation_scene_house.dart' as house_sim;
-import 'module_3_electrical.dart/simulation_scene_electrical.dart' as electrical_sim;
+import 'module_3_electrical.dart/simulation_scene_electrical.dart'
+    as electrical_sim;
 import 'module_4_kitchen.dart/simulation_scene.dart' as kitchen_sim;
 import 'module_5_building.dart/simulation_scene.dart' as building_sim;
 
@@ -38,10 +40,10 @@ import 'module_3_electrical.dart/post_assess_instruction.dart' as post3;
 import 'module_4_kitchen.dart/post_assess_instruction.dart' as post4;
 import 'module_5_building.dart/post_assess_instruction.dart' as post5;
 
-
 /// Index of the Profile tab within [IgnisHomePage]'s tab list
 /// (Module = 0, About Us = 1, Profile = 2).
 const int _profileTabIndex = 2;
+const double _learningHeaderExtent = 270;
 
 class _NoOverscrollScrollBehavior extends ScrollBehavior {
   const _NoOverscrollScrollBehavior();
@@ -74,14 +76,14 @@ class _ModuleProgressSnapshot {
   });
 
   const _ModuleProgressSnapshot.initial()
-      : loading = true,
-        loaded = false,
-        preTestCompleted = false,
-        canOpenLearning = false,
-        learningCompleted = false,
-        canOpenPostTest = false,
-        postTestCompleted = false,
-        error = null;
+    : loading = true,
+      loaded = false,
+      preTestCompleted = false,
+      canOpenLearning = false,
+      learningCompleted = false,
+      canOpenPostTest = false,
+      postTestCompleted = false,
+      error = null;
 
   final bool loading;
   final bool loaded;
@@ -232,10 +234,7 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
   }
 
   Future<void> _refreshModulesAndProgress() async {
-    await Future.wait([
-      _loadModules(),
-      _loadAllTrackedProgress(),
-    ]);
+    await Future.wait([_loadModules(), _loadAllTrackedProgress()]);
   }
 
   void _listenRealtime() {
@@ -332,21 +331,18 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
         page = DatabaseLearningMaterialPage(moduleNo: moduleNo);
     }
 
-    await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => page),
-    );
+    await Navigator.push(context, MaterialPageRoute(builder: (_) => page));
 
     if (mounted && _isTrackedProgressModule(moduleNo)) {
       await _loadProgressForTrackedModule(moduleNo);
     }
   }
 
-  String _t(String en, String tl) =>
-      _isTl && tl.trim().isNotEmpty ? tl : en;
+  String _t(String en, String tl) => _isTl && tl.trim().isNotEmpty ? tl : en;
 
   _ModuleProgressSnapshot _progressFor(int moduleNo) {
-    return _progressByModule[moduleNo] ?? const _ModuleProgressSnapshot.initial();
+    return _progressByModule[moduleNo] ??
+        const _ModuleProgressSnapshot.initial();
   }
 
   Future<void> _loadAllTrackedProgress() async {
@@ -400,8 +396,9 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
     }
 
     try {
-      final overview =
-          await ModuleProgressOverviewService(client: _client).load();
+      final overview = await ModuleProgressOverviewService(
+        client: _client,
+      ).load();
 
       if (!mounted) return;
       setState(() {
@@ -469,6 +466,7 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
     if (!_isTrackedProgressModule(moduleNo)) return false;
     return _progressFor(moduleNo).postTestCompleted;
   }
+
   bool _isModuleActionLocked(int moduleNo, String actionKey) {
     if (!_isTrackedProgressModule(moduleNo)) return false;
     if (actionKey == 'simulation') return false;
@@ -529,17 +527,17 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
         'Tapusin muna ang Modyul sa Pag-aaral upang mabuksan ito.',
       );
     }
-    return _t(
-      'This section is locked.',
-      'Naka-lock pa ang bahaging ito.',
-    );
+    return _t('This section is locked.', 'Naka-lock pa ang bahaging ito.');
   }
 
   String? _lockedSubtitleFor(int moduleNo, String actionKey) {
     if (!_isModuleActionLocked(moduleNo, actionKey)) return null;
 
     if (_isTrackedProgressModule(moduleNo) && _progressLoadingFor(moduleNo)) {
-      return _t('Checking saved progress...', 'Sinusuri ang naka-save na progress...');
+      return _t(
+        'Checking saved progress...',
+        'Sinusuri ang naka-save na progress...',
+      );
     }
 
     if (_isTrackedProgressModule(moduleNo) && actionKey == 'pre_test') {
@@ -549,7 +547,8 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
       );
     }
 
-    if (_isTrackedProgressModule(moduleNo) && actionKey == 'learning_materials') {
+    if (_isTrackedProgressModule(moduleNo) &&
+        actionKey == 'learning_materials') {
       return _t(
         'Complete the Pre-Assessment first to unlock it.',
         'Tapusin muna ang Paunang Pagsusulit upang mabuksan ito.',
@@ -580,7 +579,10 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
       return _t('Learning Module Locked', 'Naka-lock ang Modyul sa Pag-aaral');
     }
     if (actionKey == 'post_test') {
-      return _t('Post-Assessment Locked', 'Naka-lock ang Panghuling Pagsusulit');
+      return _t(
+        'Post-Assessment Locked',
+        'Naka-lock ang Panghuling Pagsusulit',
+      );
     }
     return _t('Locked', 'Naka-lock');
   }
@@ -599,8 +601,13 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
         final compact = MediaQuery.of(dialogContext).size.width < 360;
 
         return Dialog(
-          insetPadding: const EdgeInsets.symmetric(horizontal: 22, vertical: 24),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+          insetPadding: const EdgeInsets.symmetric(
+            horizontal: 22,
+            vertical: 24,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(22),
+          ),
           child: Stack(
             children: [
               Padding(
@@ -738,153 +745,147 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
   }
 
   Future<void> _showModuleSimulationDialog(int moduleNo) async {
-  if (moduleNo != 1 &&
-      moduleNo != 2 &&
-      moduleNo != 3 &&
-      moduleNo != 4 &&
-      moduleNo != 5) {
-    _showActionNotice(
-      _t(
-        '3D Simulation',
-        '3D Simulasyon',
-      ),
+    if (moduleNo != 1 &&
+        moduleNo != 2 &&
+        moduleNo != 3 &&
+        moduleNo != 4 &&
+        moduleNo != 5) {
+      _showActionNotice(_t('3D Simulation', '3D Simulasyon'));
+      return;
+    }
+
+    if (!mounted) return;
+
+    String barrierLabel;
+    Widget Function(BuildContext dialogContext) dialogBuilder;
+
+    switch (moduleNo) {
+      case 2:
+        barrierLabel = 'house_fire_escape_tutorial';
+        dialogBuilder = (dialogContext) => _HouseFireEscapeSimulationDialog(
+          isTl: _isTl,
+          accent: _moduleAccent(2),
+          accent2: _moduleAccent2(2),
+          onClose: () => Navigator.pop(dialogContext),
+          onStart: () {
+            Navigator.pop(dialogContext);
+            Future.microtask(() {
+              if (mounted) {
+                _openModuleTwoSimulation();
+              }
+            });
+          },
+        );
+        break;
+
+      case 3:
+        barrierLabel = 'electrical_fire_safety_tutorial';
+        dialogBuilder = (dialogContext) => _ElectricalFireSimulationDialog(
+          isTl: _isTl,
+          accent: _moduleAccent(3),
+          accent2: _moduleAccent2(3),
+          onClose: () => Navigator.pop(dialogContext),
+          onStart: () {
+            Navigator.pop(dialogContext);
+            Future.microtask(() {
+              if (mounted) {
+                _openModuleThreeSimulation();
+              }
+            });
+          },
+        );
+        break;
+
+      case 4:
+        barrierLabel = 'kitchen_fire_safety_tutorial';
+        dialogBuilder = (dialogContext) => _KitchenFireSimulationDialog(
+          isTl: _isTl,
+          accent: _moduleAccent(4),
+          accent2: _moduleAccent2(4),
+          onClose: () => Navigator.pop(dialogContext),
+          onStart: () {
+            Navigator.pop(dialogContext);
+            Future.microtask(() {
+              if (mounted) {
+                _openModuleFourSimulation();
+              }
+            });
+          },
+        );
+        break;
+
+      case 5:
+        barrierLabel = 'tenement_fire_evacuation_tutorial';
+        dialogBuilder = (dialogContext) => _TenementFireSimulationDialog(
+          isTl: _isTl,
+          accent: _moduleAccent(5),
+          accent2: _moduleAccent2(5),
+          onClose: () => Navigator.pop(dialogContext),
+          onStart: () {
+            Navigator.pop(dialogContext);
+            Future.microtask(() {
+              if (mounted) {
+                _openModuleFiveSimulation();
+              }
+            });
+          },
+        );
+        break;
+
+      default:
+        barrierLabel = 'pass_method_tutorial';
+        dialogBuilder = (dialogContext) => _PassMethodSimulationDialog(
+          isTl: _isTl,
+          accent: _moduleAccent(1),
+          accent2: _moduleAccent2(1),
+          onClose: () => Navigator.pop(dialogContext),
+          onStart: () {
+            Navigator.pop(dialogContext);
+            Future.microtask(() {
+              if (mounted) {
+                _openModuleOneSimulation();
+              }
+            });
+          },
+        );
+    }
+
+    await showGeneralDialog<void>(
+      context: context,
+      barrierLabel: barrierLabel,
+      barrierDismissible: true,
+      barrierColor: Colors.black.withOpacity(0.42),
+      transitionDuration: const Duration(milliseconds: 220),
+      pageBuilder: (dialogContext, _, __) {
+        return SafeArea(
+          child: Stack(
+            children: [
+              BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+                child: Container(color: Colors.transparent),
+              ),
+              Center(child: dialogBuilder(dialogContext)),
+            ],
+          ),
+        );
+      },
+      transitionBuilder: (_, animation, __, child) {
+        final curved = CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeOutCubic,
+        );
+
+        return FadeTransition(
+          opacity: curved,
+          child: ScaleTransition(
+            scale: Tween<double>(begin: 0.96, end: 1.0).animate(curved),
+            child: child,
+          ),
+        );
+      },
     );
-    return;
   }
 
-  if (!mounted) return;
-
-  String barrierLabel;
-  Widget Function(BuildContext dialogContext) dialogBuilder;
-
-  switch (moduleNo) {
-    case 2:
-      barrierLabel = 'house_fire_escape_tutorial';
-      dialogBuilder = (dialogContext) => _HouseFireEscapeSimulationDialog(
-            isTl: _isTl,
-            accent: _moduleAccent(2),
-            accent2: _moduleAccent2(2),
-            onClose: () => Navigator.pop(dialogContext),
-            onStart: () {
-              Navigator.pop(dialogContext);
-              Future.microtask(() {
-                if (mounted) {
-                  _openModuleTwoSimulation();
-                }
-              });
-            },
-          );
-      break;
-
-    case 3:
-      barrierLabel = 'electrical_fire_safety_tutorial';
-      dialogBuilder = (dialogContext) => _ElectricalFireSimulationDialog(
-            isTl: _isTl,
-            accent: _moduleAccent(3),
-            accent2: _moduleAccent2(3),
-            onClose: () => Navigator.pop(dialogContext),
-            onStart: () {
-              Navigator.pop(dialogContext);
-              Future.microtask(() {
-                if (mounted) {
-                  _openModuleThreeSimulation();
-                }
-              });
-            },
-          );
-      break;
-
-    case 4:
-      barrierLabel = 'kitchen_fire_safety_tutorial';
-      dialogBuilder = (dialogContext) => _KitchenFireSimulationDialog(
-            isTl: _isTl,
-            accent: _moduleAccent(4),
-            accent2: _moduleAccent2(4),
-            onClose: () => Navigator.pop(dialogContext),
-            onStart: () {
-              Navigator.pop(dialogContext);
-              Future.microtask(() {
-                if (mounted) {
-                  _openModuleFourSimulation();
-                }
-              });
-            },
-          );
-      break;
-
-    case 5:
-      barrierLabel = 'tenement_fire_evacuation_tutorial';
-      dialogBuilder = (dialogContext) => _TenementFireSimulationDialog(
-            isTl: _isTl,
-            accent: _moduleAccent(5),
-            accent2: _moduleAccent2(5),
-            onClose: () => Navigator.pop(dialogContext),
-            onStart: () {
-              Navigator.pop(dialogContext);
-              Future.microtask(() {
-                if (mounted) {
-                  _openModuleFiveSimulation();
-                }
-              });
-            },
-          );
-      break;
-
-    default:
-      barrierLabel = 'pass_method_tutorial';
-      dialogBuilder = (dialogContext) => _PassMethodSimulationDialog(
-            isTl: _isTl,
-            accent: _moduleAccent(1),
-            accent2: _moduleAccent2(1),
-            onClose: () => Navigator.pop(dialogContext),
-            onStart: () {
-              Navigator.pop(dialogContext);
-              Future.microtask(() {
-                if (mounted) {
-                  _openModuleOneSimulation();
-                }
-              });
-            },
-          );
-  }
-
-  await showGeneralDialog<void>(
-    context: context,
-    barrierLabel: barrierLabel,
-    barrierDismissible: true,
-    barrierColor: Colors.black.withOpacity(0.42),
-    transitionDuration: const Duration(milliseconds: 220),
-    pageBuilder: (dialogContext, _, __) {
-      return SafeArea(
-        child: Stack(
-          children: [
-            BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-              child: Container(color: Colors.transparent),
-            ),
-            Center(
-              child: dialogBuilder(dialogContext),
-            ),
-          ],
-        ),
-      );
-    },
-    transitionBuilder: (_, animation, __, child) {
-      final curved = CurvedAnimation(
-        parent: animation,
-        curve: Curves.easeOutCubic,
-      );
-
-      return FadeTransition(
-        opacity: curved,
-        child: ScaleTransition(
-          scale: Tween<double>(begin: 0.96, end: 1.0).animate(curved),
-          child: child,
-        ),
-      );
-    },
-  );
-}
   Future<void> _openModuleOneSimulation() async {
     if (!mounted || _openingModuleOneSimulation) return;
 
@@ -893,9 +894,7 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
     try {
       await Navigator.push(
         context,
-        MaterialPageRoute(
-          builder: (_) => const SimulationScene(),
-        ),
+        MaterialPageRoute(builder: (_) => const SimulationScene()),
       );
     } finally {
       if (mounted) {
@@ -914,9 +913,7 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
     try {
       await Navigator.push(
         context,
-        MaterialPageRoute(
-          builder: (_) => const house_sim.SimulationScene2(),
-        ),
+        MaterialPageRoute(builder: (_) => const house_sim.SimulationScene2()),
       );
     } finally {
       if (mounted) {
@@ -956,9 +953,7 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
     try {
       await Navigator.push(
         context,
-        MaterialPageRoute(
-          builder: (_) => const kitchen_sim.SimulationScene4(),
-        ),
+        MaterialPageRoute(builder: (_) => const kitchen_sim.SimulationScene4()),
       );
     } finally {
       if (mounted) {
@@ -1019,7 +1014,12 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
         page = const pre5.PreAssessmentIntroPage2();
         break;
       default:
-        _showActionNotice(_t('This module is not available yet.', 'Hindi pa available ang modyul na ito.'));
+        _showActionNotice(
+          _t(
+            'This module is not available yet.',
+            'Hindi pa available ang modyul na ito.',
+          ),
+        );
         return;
     }
 
@@ -1060,7 +1060,10 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
         break;
       default:
         _showActionNotice(
-          _t('This module is not available yet.', 'Hindi pa available ang modyul na ito.'),
+          _t(
+            'This module is not available yet.',
+            'Hindi pa available ang modyul na ito.',
+          ),
         );
         return;
     }
@@ -1116,11 +1119,15 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
 
     final actionText = _normalizeSearch(
       _ModuleAction.items(false)
-              .map((action) => '${action.key} ${action.title} ${action.subtitle}')
+              .map(
+                (action) => '${action.key} ${action.title} ${action.subtitle}',
+              )
               .join(' ') +
           ' ' +
           _ModuleAction.items(true)
-              .map((action) => '${action.key} ${action.title} ${action.subtitle}')
+              .map(
+                (action) => '${action.key} ${action.title} ${action.subtitle}',
+              )
               .join(' ') +
           ' pre test pre assessment preassessment pretest post test post assessment postassessment posttest practical application practical simulation 3d simulation learning material learning materials materyal pag aaral paunang pagsusulit panghuling pagsusulit simulasyon modyul module',
     );
@@ -1166,10 +1173,7 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
                 _searchController.clear();
                 setState(() => searchQuery = '');
               },
-              icon: const Icon(
-                Icons.close_rounded,
-                color: Color(0xFF9E9E9E),
-              ),
+              icon: const Icon(Icons.close_rounded, color: Color(0xFF9E9E9E)),
             ),
         ],
       ),
@@ -1181,156 +1185,73 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
     final q = _normalizeSearch(searchQuery);
     final filtered = _modules.where((m) => _matchesModuleSearch(m, q)).toList();
     final avatarProvider = _buildAvatarProvider();
-    final topPadding = MediaQuery.of(context).padding.top;
 
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Stack(
+        fit: StackFit.expand,
         children: [
           Positioned.fill(
             child: Image.asset('assets/bg.png', fit: BoxFit.cover),
           ),
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              height: topPadding + 200,
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Color(0xFFB11217),
-                    Color(0xFFB11217),
-                    Colors.transparent,
-                  ],
-                  stops: [0.0, 0.65, 1.0],
-                ),
-              ),
-            ),
-          ),
-          SafeArea(
+          Positioned.fill(
             child: LayoutBuilder(
               builder: (context, constraints) {
-                final width = constraints.maxWidth;
-                final height = constraints.maxHeight;
-                final compactWidth = width < 370;
-                final compactHeight = height < 660;
-                final horizontalPadding = compactWidth ? 16.0 : 25.0;
-                final verticalPadding = compactHeight ? 8.0 : 14.0;
-                final topGap = compactHeight ? 8.0 : 20.0;
-                final titleGap = compactHeight ? 18.0 : 30.0;
-                final listGap = compactHeight ? 16.0 : 24.0;
-                final avatarRadius = compactWidth ? 20.0 : 22.0;
-                final titleSize = (width * 0.075).clamp(20.0, 30.0).toDouble();
+                final compactWidth = constraints.maxWidth < 370;
+                final horizontalPadding = compactWidth ? 16.0 : 22.0;
+                return Padding(
+                  padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+                  child: _buildList(
+                    filtered,
+                    topInset: _learningHeaderExtent + 12,
+                  ),
+                );
+              },
+            ),
+          ),
+          const MainTabHeaderBackdrop(height: _learningHeaderExtent),
+          SafeArea(
+            bottom: false,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final compactWidth = constraints.maxWidth < 370;
+                final horizontalPadding = compactWidth ? 16.0 : 22.0;
 
                 return Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: horizontalPadding,
-                    vertical: verticalPadding,
+                  padding: EdgeInsets.fromLTRB(
+                    horizontalPadding,
+                    12,
+                    horizontalPadding,
+                    0,
                   ),
                   child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(height: topGap),
-                      Row(
-                        textDirection: TextDirection.rtl,
-                        children: [
-                          PopupMenuButton<String>(
-                            tooltip: '',
-                            offset: const Offset(0, 55),
-                            elevation: 8,
-                            color: Colors.white,
-                            surfaceTintColor: Colors.white,
-                            shadowColor: Colors.black.withOpacity(0.18),
-                            shape: accountMenuShape(),
-                            constraints: const BoxConstraints(minWidth: 180),
-                            onSelected: (value) async {
-                              if (value == 'profile') {
-                                widget.onRequestTabChange?.call(_profileTabIndex);
-                                return;
-                              }
-                              if (value == 'logout') {
-                                await _logout();
-                                return;
-                              }
-                            },
-                            itemBuilder: (context) => buildAccountMenuItems(
-                              context,
-                              profileLabel: context.tr('profile'),
-                              logoutLabel: context.tr('log_out'),
-                            ),
-                            child: CircleAvatar(
-                              radius: avatarRadius,
-                              backgroundColor: Colors.grey.shade400,
-                              backgroundImage: avatarProvider,
-                              child: avatarProvider == null
-                                  ? const Icon(
-                                      Icons.person,
-                                      size: 22,
-                                      color: Colors.white,
-                                    )
-                                  : null,
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Text(
-                                  _firstName.isEmpty && _lastName.isEmpty
-                                      ? context.tr('hi')
-                                      : context.tr(
-                                          'hi_name',
-                                          params: {'name': '$_firstName $_lastName'.trim()},
-                                        ),
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
-                                  textAlign: TextAlign.right,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  context.tr('welcome_to_ignis_safe_short'),
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
-                                  textAlign: TextAlign.right,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+                      MainTabHeader(
+                        greeting: _firstName.isEmpty && _lastName.isEmpty
+                            ? context.tr('hi')
+                            : context.tr(
+                                'hi_name',
+                                params: {
+                                  'name': '$_firstName $_lastName'.trim(),
+                                },
+                              ),
+                        accountLabel: context.tr('welcome_to_ignis_safe_short'),
+                        title: context.tr('learning_materials'),
+                        subtitle: _isTl
+                            ? 'Matuto, magsanay nang ligtas, at laging maging handa.'
+                            : 'Build knowledge, practice safely, and stay prepared.',
+                        titleIcon: Icons.menu_book_rounded,
+                        avatarImage: avatarProvider,
+                        profileLabel: context.tr('profile'),
+                        logoutLabel: context.tr('log_out'),
+                        onProfile: () =>
+                            widget.onRequestTabChange?.call(_profileTabIndex),
+                        onLogout: _logout,
                       ),
-                      SizedBox(height: titleGap),
-                      Center(
-                        child: Text(
-                          context.tr('learning_materials'),
-                          textAlign: TextAlign.center,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: titleSize,
-                            fontWeight: FontWeight.w800,
-                            color: Colors.white,
-                            height: 1.12,
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: listGap),
-                      _buildScrollableSearchBar(),
                       const SizedBox(height: 20),
-                      Expanded(child: _buildList(filtered)),
+                      _buildScrollableSearchBar(),
                     ],
                   ),
                 );
@@ -1342,23 +1263,38 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
     );
   }
 
-  Widget _buildList(List<LearningMaterial> items) {
+  Widget _buildList(List<LearningMaterial> items, {double topInset = 0}) {
     if (_loading) {
-      return const Center(
-        child: CircularProgressIndicator(color: Color(0xFFB11217)),
+      return ListView(
+        physics: const ClampingScrollPhysics(),
+        padding: EdgeInsets.fromLTRB(0, topInset, 0, 12),
+        children: const [
+          SizedBox(
+            height: 180,
+            child: Center(
+              child: CircularProgressIndicator(color: Color(0xFFB11217)),
+            ),
+          ),
+        ],
       );
     }
 
     if (_error != null) {
-      return _MessageCard(
-        icon: Icons.error_outline_rounded,
-        title: _isTl
-            ? 'Hindi ma-load ang learning materials'
-            : 'Cannot load learning materials',
-        message: _error!,
-        buttonText: _isTl ? 'Subukan muli' : 'Retry',
-        color: const Color(0xFFB11217),
-        onPressed: _loadModules,
+      return ListView(
+        physics: const ClampingScrollPhysics(),
+        padding: EdgeInsets.fromLTRB(0, topInset, 0, 12),
+        children: [
+          _MessageCard(
+            icon: Icons.error_outline_rounded,
+            title: _isTl
+                ? 'Hindi ma-load ang learning materials'
+                : 'Cannot load learning materials',
+            message: _error!,
+            buttonText: _isTl ? 'Subukan muli' : 'Retry',
+            color: const Color(0xFFB11217),
+            onPressed: _loadModules,
+          ),
+        ],
       );
     }
 
@@ -1371,7 +1307,7 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
         behavior: const _NoOverscrollScrollBehavior(),
         child: ListView.separated(
           physics: const ClampingScrollPhysics(),
-          padding: const EdgeInsets.only(bottom: 12),
+          padding: EdgeInsets.fromLTRB(0, topInset, 0, 12),
           clipBehavior: Clip.hardEdge,
           itemCount: hasItems ? items.length : 1,
           separatorBuilder: (_, __) => const SizedBox(height: 12),
@@ -1482,7 +1418,9 @@ class _DatabaseLearningMaterialPageState
           .maybeSingle();
 
       if (row == null) {
-        throw Exception('Module ${widget.moduleNo} has no learning material row.');
+        throw Exception(
+          'Module ${widget.moduleNo} has no learning material row.',
+        );
       }
 
       final material = LearningMaterial.fromMap(Map<String, dynamic>.from(row));
@@ -1627,7 +1565,10 @@ class _DatabaseLearningMaterialPageState
       _showLearningDialog(
         icon: last ? Icons.verified_rounded : Icons.check_circle_rounded,
         title: last
-            ? _t('Learning materials completed', 'Tapos na ang modyul sa pag-aaral')
+            ? _t(
+                'Learning materials completed',
+                'Tapos na ang modyul sa pag-aaral',
+              )
             : _t('Section complete', 'Tapos na ang seksyon'),
         message: last
             ? _t(
@@ -1722,7 +1663,9 @@ class _DatabaseLearningMaterialPageState
     _completeLearningMaterialAndOpenPostAssessment(m.moduleNo);
   }
 
-  Future<void> _completeLearningMaterialAndOpenPostAssessment(int moduleNo) async {
+  Future<void> _completeLearningMaterialAndOpenPostAssessment(
+    int moduleNo,
+  ) async {
     try {
       final progression = ModuleProgressionService(client: _client);
       await progression.markLearningMaterialCompleted(moduleNo: moduleNo);
@@ -1764,7 +1707,10 @@ class _DatabaseLearningMaterialPageState
       if (!mounted) return;
       await _showLearningDialog(
         icon: Icons.lock_outline_rounded,
-        title: _t('Post-Assessment Locked', 'Naka-lock ang Panghuling Pagsusulit'),
+        title: _t(
+          'Post-Assessment Locked',
+          'Naka-lock ang Panghuling Pagsusulit',
+        ),
         message: e.message,
         buttonText: _t('OK', 'Sige'),
       );
@@ -1779,8 +1725,7 @@ class _DatabaseLearningMaterialPageState
     }
   }
 
-  String _t(String en, String tl) =>
-      _isTl && tl.trim().isNotEmpty ? tl : en;
+  String _t(String en, String tl) => _isTl && tl.trim().isNotEmpty ? tl : en;
 
   List<LearningSource> _pageSources(LearningPage page) {
     final seen = <String>{};
@@ -1828,40 +1773,40 @@ class _DatabaseLearningMaterialPageState
                     child: CircularProgressIndicator(color: Colors.white),
                   )
                 : _error != null
-                    ? Padding(
-                        padding: const EdgeInsets.all(18),
-                        child: Center(
-                          child: _MessageCard(
-                            icon: Icons.error_outline_rounded,
-                            title: _t(
-                              'Cannot load learning material',
-                              'Hindi ma-load ang learning material',
-                            ),
-                            message: _error!,
-                            buttonText: _t('Retry', 'Subukan muli'),
-                            color: _accent,
-                            onPressed: _loadMaterial,
-                          ),
+                ? Padding(
+                    padding: const EdgeInsets.all(18),
+                    child: Center(
+                      child: _MessageCard(
+                        icon: Icons.error_outline_rounded,
+                        title: _t(
+                          'Cannot load learning material',
+                          'Hindi ma-load ang learning material',
                         ),
-                      )
-                    : m == null || m.pages.isEmpty
-                        ? Padding(
-                            padding: const EdgeInsets.all(18),
-                            child: Center(
-                              child: _MessageCard(
-                                icon: Icons.menu_book_outlined,
-                                title: _t('No content', 'Walang content'),
-                                message: _t(
-                                  'No learning material content found.',
-                                  'Walang learning material content na nakita.',
-                                ),
-                                buttonText: _t('Back', 'Balik'),
-                                color: _accent,
-                                onPressed: () => Navigator.pop(context),
-                              ),
-                            ),
-                          )
-                        : _buildContent(m),
+                        message: _error!,
+                        buttonText: _t('Retry', 'Subukan muli'),
+                        color: _accent,
+                        onPressed: _loadMaterial,
+                      ),
+                    ),
+                  )
+                : m == null || m.pages.isEmpty
+                ? Padding(
+                    padding: const EdgeInsets.all(18),
+                    child: Center(
+                      child: _MessageCard(
+                        icon: Icons.menu_book_outlined,
+                        title: _t('No content', 'Walang content'),
+                        message: _t(
+                          'No learning material content found.',
+                          'Walang learning material content na nakita.',
+                        ),
+                        buttonText: _t('Back', 'Balik'),
+                        color: _accent,
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ),
+                  )
+                : _buildContent(m),
           ),
         ],
       ),
@@ -1873,7 +1818,8 @@ class _DatabaseLearningMaterialPageState
     final last = _pageIndex >= m.pages.length - 1;
     final supportingImages = m.mediaAssets
         .where(
-          (x) => x.assetType != 'background' &&
+          (x) =>
+              x.assetType != 'background' &&
               x.assetType != 'hero' &&
               x.assetType != 'fire_class_image',
         )
@@ -1967,7 +1913,10 @@ class _DatabaseLearningMaterialPageState
                       SizedBox(height: sectionGap),
                       _ExpandableSection(
                         accent: _accent,
-                        title: _t('Fire Class Guide', 'Gabay sa Klase ng Sunog'),
+                        title: _t(
+                          'Fire Class Guide',
+                          'Gabay sa Klase ng Sunog',
+                        ),
                         initiallyExpanded: true,
                         child: _FireGuide(
                           guides: _fireGuides,
@@ -2062,7 +2011,10 @@ class _DatabaseLearningMaterialPageState
     if (b.blockType == 'label') {
       return _LearningTipCard(
         accent: _accent,
-        title: _t('Tap to reveal safety reminder', 'I-tap para makita ang paalala'),
+        title: _t(
+          'Tap to reveal safety reminder',
+          'I-tap para makita ang paalala',
+        ),
         text: text,
       );
     }
@@ -2114,14 +2066,18 @@ class LearningMaterial {
   });
 
   factory LearningMaterial.fromMap(Map<String, dynamic> m) {
-    final pages = _list(m['pages'])
-        .map((x) => LearningPage.fromMap(Map<String, dynamic>.from(x)))
-        .toList()
-      ..sort((a, b) => a.pageNo.compareTo(b.pageNo));
-    final media = _list(m['media_assets'])
-        .map((x) => LearningMediaAsset.fromMap(Map<String, dynamic>.from(x)))
-        .toList()
-      ..sort((a, b) => a.displayOrder.compareTo(b.displayOrder));
+    final pages =
+        _list(m['pages'])
+            .map((x) => LearningPage.fromMap(Map<String, dynamic>.from(x)))
+            .toList()
+          ..sort((a, b) => a.pageNo.compareTo(b.pageNo));
+    final media =
+        _list(m['media_assets'])
+            .map(
+              (x) => LearningMediaAsset.fromMap(Map<String, dynamic>.from(x)),
+            )
+            .toList()
+          ..sort((a, b) => a.displayOrder.compareTo(b.displayOrder));
 
     return LearningMaterial(
       moduleNo: _int(m['module_no']),
@@ -2135,8 +2091,10 @@ class LearningMaterial {
     );
   }
 
-  String moduleLabel(bool isTl) => isTl ? 'MODYUL $moduleNo' : 'MODULE $moduleNo';
-  String title(bool isTl) => isTl && titleTl.trim().isNotEmpty ? titleTl : titleEn;
+  String moduleLabel(bool isTl) =>
+      isTl ? 'MODYUL $moduleNo' : 'MODULE $moduleNo';
+  String title(bool isTl) =>
+      isTl && titleTl.trim().isNotEmpty ? titleTl : titleEn;
   String subtitle(bool isTl) =>
       isTl && subtitleTl.trim().isNotEmpty ? subtitleTl : subtitleEn;
 
@@ -2220,10 +2178,11 @@ class LearningPage {
   });
 
   factory LearningPage.fromMap(Map<String, dynamic> m) {
-    final blocks = _list(m['blocks'])
-        .map((x) => LearningBlock.fromMap(Map<String, dynamic>.from(x)))
-        .toList()
-      ..sort((a, b) => a.blockNo.compareTo(b.blockNo));
+    final blocks =
+        _list(m['blocks'])
+            .map((x) => LearningBlock.fromMap(Map<String, dynamic>.from(x)))
+            .toList()
+          ..sort((a, b) => a.blockNo.compareTo(b.blockNo));
     return LearningPage(
       pageNo: _int(m['page_no']),
       titleEn: _str(m['title_en']),
@@ -2232,7 +2191,8 @@ class LearningPage {
     );
   }
 
-  String title(bool isTl) => isTl && titleTl.trim().isNotEmpty ? titleTl : titleEn;
+  String title(bool isTl) =>
+      isTl && titleTl.trim().isNotEmpty ? titleTl : titleEn;
 }
 
 class LearningBlock {
@@ -2259,8 +2219,9 @@ class LearningBlock {
   factory LearningBlock.fromMap(Map<String, dynamic> m) {
     return LearningBlock(
       blockNo: _int(m['block_no']),
-      blockType:
-          _str(m['block_type']).isEmpty ? 'paragraph' : _str(m['block_type']),
+      blockType: _str(m['block_type']).isEmpty
+          ? 'paragraph'
+          : _str(m['block_type']),
       textEn: _str(m['text_en']),
       textTl: _str(m['text_tl']),
       sourceTitle: _str(m['source_title']),
@@ -2357,9 +2318,12 @@ class FireClassGuide {
     );
   }
 
-  String name(bool isTl) => isTl && classNameTl.trim().isNotEmpty ? classNameTl : classNameEn;
-  List<String> examples(bool isTl) => isTl && examplesTl.isNotEmpty ? examplesTl : examplesEn;
-  List<String> agents(bool isTl) => isTl && agentsTl.isNotEmpty ? agentsTl : agentsEn;
+  String name(bool isTl) =>
+      isTl && classNameTl.trim().isNotEmpty ? classNameTl : classNameEn;
+  List<String> examples(bool isTl) =>
+      isTl && examplesTl.isNotEmpty ? examplesTl : examplesEn;
+  List<String> agents(bool isTl) =>
+      isTl && agentsTl.isNotEmpty ? agentsTl : agentsEn;
 }
 
 class _ProfileHeader extends StatelessWidget {
@@ -2391,8 +2355,9 @@ class _ProfileHeader extends StatelessWidget {
           PopupMenuButton<String>(
             tooltip: '',
             offset: const Offset(0, 52),
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
             onSelected: (value) async {
               if (value == 'profile') onProfile();
               if (value == 'logout') onLogout();
@@ -2422,7 +2387,8 @@ class _ProfileHeader extends StatelessWidget {
             child: CircleAvatar(
               radius: 22,
               backgroundColor: const Color(0xFFE5E7EB),
-              backgroundImage: (avatarUrl != null && avatarUrl!.trim().isNotEmpty)
+              backgroundImage:
+                  (avatarUrl != null && avatarUrl!.trim().isNotEmpty)
                   ? NetworkImage(avatarUrl!)
                   : null,
               child: (avatarUrl == null || avatarUrl!.trim().isEmpty)
@@ -2532,8 +2498,10 @@ class _SearchField extends StatelessWidget {
                 ),
           hintText: hintText,
           border: InputBorder.none,
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 16,
+          ),
         ),
       ),
     );
@@ -2616,8 +2584,9 @@ class _ModuleCard extends StatelessWidget {
                     child: Padding(
                       padding: EdgeInsets.all(cardPadding),
                       child: Row(
-                        crossAxisAlignment:
-                            isExpanded ? CrossAxisAlignment.start : CrossAxisAlignment.center,
+                        crossAxisAlignment: isExpanded
+                            ? CrossAxisAlignment.start
+                            : CrossAxisAlignment.center,
                         children: [
                           Container(
                             width: imgSize,
@@ -2652,7 +2621,9 @@ class _ModuleCard extends StatelessWidget {
                                         ),
                                         decoration: BoxDecoration(
                                           color: accent,
-                                          borderRadius: BorderRadius.circular(999),
+                                          borderRadius: BorderRadius.circular(
+                                            999,
+                                          ),
                                         ),
                                         child: Text(
                                           moduleLabel,
@@ -2667,14 +2638,22 @@ class _ModuleCard extends StatelessWidget {
                                       ),
                                     ),
                                     SizedBox(width: compact ? 6 : 8),
-                                    Icon(_moduleIcon(moduleNo), color: accent, size: 18),
+                                    Icon(
+                                      _moduleIcon(moduleNo),
+                                      color: accent,
+                                      size: 18,
+                                    ),
                                   ],
                                 ),
                                 SizedBox(height: compact ? 8 : 10),
                                 Text(
                                   title,
-                                  maxLines: isExpanded ? null : (compact ? 2 : 3),
-                                  overflow: isExpanded ? TextOverflow.visible : TextOverflow.ellipsis,
+                                  maxLines: isExpanded
+                                      ? null
+                                      : (compact ? 2 : 3),
+                                  overflow: isExpanded
+                                      ? TextOverflow.visible
+                                      : TextOverflow.ellipsis,
                                   softWrap: true,
                                   style: TextStyle(
                                     color: const Color(0xFF111827),
@@ -2687,8 +2666,12 @@ class _ModuleCard extends StatelessWidget {
                                 const SizedBox(height: 6),
                                 Text(
                                   description,
-                                  maxLines: isExpanded ? null : (compact ? 2 : 3),
-                                  overflow: isExpanded ? TextOverflow.visible : TextOverflow.ellipsis,
+                                  maxLines: isExpanded
+                                      ? null
+                                      : (compact ? 2 : 3),
+                                  overflow: isExpanded
+                                      ? TextOverflow.visible
+                                      : TextOverflow.ellipsis,
                                   softWrap: true,
                                   style: TextStyle(
                                     color: const Color(0xFF4B5563),
@@ -2707,7 +2690,9 @@ class _ModuleCard extends StatelessWidget {
                             width: arrowSize,
                             height: arrowSize,
                             decoration: BoxDecoration(
-                              color: isExpanded ? accent : accent.withOpacity(0.10),
+                              color: isExpanded
+                                  ? accent
+                                  : accent.withOpacity(0.10),
                               borderRadius: BorderRadius.circular(14),
                             ),
                             child: AnimatedRotation(
@@ -2728,17 +2713,28 @@ class _ModuleCard extends StatelessWidget {
                   AnimatedCrossFade(
                     firstChild: const SizedBox(width: double.infinity),
                     secondChild: Padding(
-                      padding: EdgeInsets.fromLTRB(cardPadding, 0, cardPadding, cardPadding),
+                      padding: EdgeInsets.fromLTRB(
+                        cardPadding,
+                        0,
+                        cardPadding,
+                        cardPadding,
+                      ),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Divider(height: 18, color: Colors.black.withOpacity(0.07)),
+                          Divider(
+                            height: 18,
+                            color: Colors.black.withOpacity(0.07),
+                          ),
                           ...actions.map(
                             (action) => _ModuleActionTile(
                               action: action,
                               accent: accent,
-                              isActive: selectedActionKey == '$moduleNo:${action.key}',
-                              isLocked: isActionLocked?.call(action.key) ?? false,
+                              isActive:
+                                  selectedActionKey ==
+                                  '$moduleNo:${action.key}',
+                              isLocked:
+                                  isActionLocked?.call(action.key) ?? false,
                               lockedSubtitle: lockedSubtitle?.call(action.key),
                               onTap: () => onChildTap(action.key),
                             ),
@@ -2763,7 +2759,6 @@ class _ModuleCard extends StatelessWidget {
   }
 }
 
-
 class _ModuleAction {
   final String key;
   final IconData icon;
@@ -2783,25 +2778,33 @@ class _ModuleAction {
         key: 'pre_test',
         icon: Icons.assignment_outlined,
         title: isTl ? 'Paunang Pagsusulit' : 'Pre-Assessment',
-        subtitle: isTl ? 'Sagutan muna bago aralin ang modyul.' : 'Start the assessment before studying the module.',
+        subtitle: isTl
+            ? 'Sagutan muna bago aralin ang modyul.'
+            : 'Start the assessment before studying the module.',
       ),
       _ModuleAction(
         key: 'learning_materials',
         icon: Icons.menu_book_rounded,
         title: isTl ? 'Modyul sa Pag-aaral' : 'Learning Materials',
-        subtitle: isTl ? 'Basahin ang module pages at references.' : 'Read the module pages and references.',
+        subtitle: isTl
+            ? 'Basahin ang module pages at references.'
+            : 'Read the module pages and references.',
       ),
       _ModuleAction(
         key: 'post_test',
         icon: Icons.fact_check_outlined,
         title: isTl ? 'Panghuling Pagsusulit' : 'Post-Assessment',
-        subtitle: isTl ? 'Gamitin pagkatapos ng Modyul sa Pag-aaral.' : 'Use after completing the learning materials.',
+        subtitle: isTl
+            ? 'Gamitin pagkatapos ng Modyul sa Pag-aaral.'
+            : 'Use after completing the learning materials.',
       ),
       _ModuleAction(
         key: 'simulation',
         icon: Icons.sports_esports_rounded,
         title: isTl ? '3D Simulasyon' : '3D Simulation',
-        subtitle: isTl ? 'Buksan ang interactive 3D activity.' : 'Open the interactive 3D activity.',
+        subtitle: isTl
+            ? 'Buksan ang interactive 3D activity.'
+            : 'Open the interactive 3D activity.',
       ),
     ];
   }
@@ -2839,15 +2842,15 @@ class _ModuleActionTile extends StatelessWidget {
             color: isLocked
                 ? const Color(0xFFF3F4F6)
                 : isActive
-                    ? accent.withOpacity(0.10)
-                    : const Color(0xFFF9FAFB),
+                ? accent.withOpacity(0.10)
+                : const Color(0xFFF9FAFB),
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
               color: isLocked
                   ? Colors.black.withOpacity(0.06)
                   : isActive
-                      ? accent.withOpacity(0.38)
-                      : Colors.black.withOpacity(0.05),
+                  ? accent.withOpacity(0.38)
+                  : Colors.black.withOpacity(0.05),
             ),
           ),
           child: Row(
@@ -2859,8 +2862,8 @@ class _ModuleActionTile extends StatelessWidget {
                   color: isLocked
                       ? const Color(0xFFE5E7EB)
                       : isActive
-                          ? accent
-                          : accent.withOpacity(0.10),
+                      ? accent
+                      : accent.withOpacity(0.10),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
@@ -2868,8 +2871,8 @@ class _ModuleActionTile extends StatelessWidget {
                   color: isLocked
                       ? const Color(0xFF6B7280)
                       : isActive
-                          ? Colors.white
-                          : accent,
+                      ? Colors.white
+                      : accent,
                   size: 20,
                 ),
               ),
@@ -2886,8 +2889,8 @@ class _ModuleActionTile extends StatelessWidget {
                         color: isLocked
                             ? const Color(0xFF6B7280)
                             : isActive
-                                ? accent
-                                : const Color(0xFF111827),
+                            ? accent
+                            : const Color(0xFF111827),
                         fontSize: 13.5,
                         fontWeight: FontWeight.w800,
                         height: 1.25,
@@ -2914,12 +2917,14 @@ class _ModuleActionTile extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Icon(
-                isLocked ? Icons.lock_outline_rounded : Icons.arrow_forward_ios_rounded,
+                isLocked
+                    ? Icons.lock_outline_rounded
+                    : Icons.arrow_forward_ios_rounded,
                 color: isLocked
                     ? const Color(0xFF9CA3AF)
                     : isActive
-                        ? accent
-                        : const Color(0xFF9CA3AF),
+                    ? accent
+                    : const Color(0xFF9CA3AF),
                 size: 14,
               ),
             ],
@@ -2994,7 +2999,10 @@ class _DetailHeader extends StatelessWidget {
                       child: SizedBox(
                         width: buttonSize,
                         height: buttonSize,
-                        child: Icon(Icons.arrow_back_rounded, color: headerAccent),
+                        child: Icon(
+                          Icons.arrow_back_rounded,
+                          color: headerAccent,
+                        ),
                       ),
                     ),
                   ),
@@ -3014,7 +3022,9 @@ class _DetailHeader extends StatelessWidget {
                                 vertical: 5,
                               ),
                               decoration: BoxDecoration(
-                                gradient: LinearGradient(colors: [headerAccent, headerAccent2]),
+                                gradient: LinearGradient(
+                                  colors: [headerAccent, headerAccent2],
+                                ),
                                 borderRadius: BorderRadius.circular(999),
                               ),
                               child: Text(
@@ -3029,7 +3039,10 @@ class _DetailHeader extends StatelessWidget {
                               ),
                             ),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 6,
+                              ),
                               decoration: BoxDecoration(
                                 color: headerAccent.withOpacity(0.08),
                                 borderRadius: BorderRadius.circular(12),
@@ -3112,7 +3125,6 @@ class _DetailHeader extends StatelessWidget {
   }
 }
 
-
 class _ContentCard extends StatelessWidget {
   final Color accent;
   final Color accent2;
@@ -3166,7 +3178,9 @@ class _ContentCard extends StatelessWidget {
                         vertical: compact ? 7 : 8,
                       ),
                       decoration: BoxDecoration(
-                        gradient: LinearGradient(colors: [headerAccent, headerAccent2]),
+                        gradient: LinearGradient(
+                          colors: [headerAccent, headerAccent2],
+                        ),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
@@ -3211,10 +3225,7 @@ class _ResponsiveImageFrame extends StatelessWidget {
   final Color accent;
   final Widget child;
 
-  const _ResponsiveImageFrame({
-    required this.accent,
-    required this.child,
-  });
+  const _ResponsiveImageFrame({required this.accent, required this.child});
 
   @override
   Widget build(BuildContext context) {
@@ -3246,9 +3257,6 @@ class _ResponsiveImageFrame extends StatelessWidget {
     );
   }
 }
-
-
-
 
 class _ElectricalFireSimulationDialog extends StatelessWidget {
   final bool isTl;
@@ -3475,7 +3483,10 @@ class _ElectricalFireSimulationDialog extends StatelessWidget {
                                 ),
                               ),
                               onPressed: onStart,
-                              icon: const Icon(Icons.play_arrow_rounded, size: 24),
+                              icon: const Icon(
+                                Icons.play_arrow_rounded,
+                                size: 24,
+                              ),
                               label: Text(
                                 buttonText,
                                 textAlign: TextAlign.center,
@@ -3753,7 +3764,10 @@ class _HouseFireEscapeSimulationDialog extends StatelessWidget {
                                 ),
                               ),
                               onPressed: onStart,
-                              icon: const Icon(Icons.play_arrow_rounded, size: 24),
+                              icon: const Icon(
+                                Icons.play_arrow_rounded,
+                                size: 24,
+                              ),
                               label: Text(
                                 buttonText,
                                 textAlign: TextAlign.center,
@@ -3975,7 +3989,9 @@ class _PassMethodSimulationDialog extends StatelessWidget {
                           decoration: BoxDecoration(
                             color: const Color(0xFFFFF7F7),
                             borderRadius: BorderRadius.circular(18),
-                            border: Border.all(color: brandRed.withOpacity(0.15)),
+                            border: Border.all(
+                              color: brandRed.withOpacity(0.15),
+                            ),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -4035,7 +4051,10 @@ class _PassMethodSimulationDialog extends StatelessWidget {
                                 ),
                               ),
                               onPressed: onStart,
-                              icon: const Icon(Icons.play_arrow_rounded, size: 24),
+                              icon: const Icon(
+                                Icons.play_arrow_rounded,
+                                size: 24,
+                              ),
                               label: Text(
                                 buttonText,
                                 textAlign: TextAlign.center,
@@ -4253,7 +4272,9 @@ class _KitchenFireSimulationDialog extends StatelessWidget {
                           decoration: BoxDecoration(
                             color: const Color(0xFFFFFBEB),
                             borderRadius: BorderRadius.circular(18),
-                            border: Border.all(color: accent.withValues(alpha: 0.15)),
+                            border: Border.all(
+                              color: accent.withValues(alpha: 0.15),
+                            ),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -4313,7 +4334,10 @@ class _KitchenFireSimulationDialog extends StatelessWidget {
                                 ),
                               ),
                               onPressed: onStart,
-                              icon: const Icon(Icons.play_arrow_rounded, size: 24),
+                              icon: const Icon(
+                                Icons.play_arrow_rounded,
+                                size: 24,
+                              ),
                               label: Text(
                                 buttonText,
                                 textAlign: TextAlign.center,
@@ -4655,10 +4679,7 @@ class _PassMethodBullet extends StatelessWidget {
   final String text;
   final Color accent;
 
-  const _PassMethodBullet({
-    required this.text,
-    required this.accent,
-  });
+  const _PassMethodBullet({required this.text, required this.accent});
 
   @override
   Widget build(BuildContext context) {
@@ -4671,10 +4692,7 @@ class _PassMethodBullet extends StatelessWidget {
             width: 22,
             height: 22,
             margin: const EdgeInsets.only(top: 1),
-            decoration: BoxDecoration(
-              color: accent,
-              shape: BoxShape.circle,
-            ),
+            decoration: BoxDecoration(color: accent, shape: BoxShape.circle),
             child: const Icon(
               Icons.check_rounded,
               color: Colors.white,
@@ -4700,7 +4718,6 @@ class _PassMethodBullet extends StatelessWidget {
     );
   }
 }
-
 
 class _LearningDialogCard extends StatelessWidget {
   final IconData icon;
@@ -4748,7 +4765,11 @@ class _LearningDialogCard extends StatelessWidget {
                     gradient: LinearGradient(colors: [accent, accent2]),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(icon, color: Colors.white, size: compact ? 27 : 31),
+                  child: Icon(
+                    icon,
+                    color: Colors.white,
+                    size: compact ? 27 : 31,
+                  ),
                 ),
                 const SizedBox(height: 14),
                 Text(
@@ -4919,15 +4940,15 @@ class _ReadingCheckpointCard extends StatelessWidget {
 
     final message = completed
         ? (isLast
-            ? (isTl
-                ? 'Maaari mo nang simulan ang paunang pagsusulit.'
-                : 'You may now start the pre-assessment.')
-            : (isTl
-                ? 'Maaari ka nang pumunta sa susunod na bahagi.'
-                : 'You may now continue to the next section.'))
+              ? (isTl
+                    ? 'Maaari mo nang simulan ang paunang pagsusulit.'
+                    : 'You may now start the pre-assessment.')
+              : (isTl
+                    ? 'Maaari ka nang pumunta sa susunod na bahagi.'
+                    : 'You may now continue to the next section.'))
         : (isTl
-            ? 'Mag-scroll hanggang mapuno ang progress bar bago magpatuloy.'
-            : 'Scroll until the progress bar is complete before continuing.');
+              ? 'Mag-scroll hanggang mapuno ang progress bar bago magpatuloy.'
+              : 'Scroll until the progress bar is complete before continuing.');
 
     return Container(
       width: double.infinity,
@@ -4936,7 +4957,9 @@ class _ReadingCheckpointCard extends StatelessWidget {
         color: completed ? accent.withOpacity(0.09) : Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: completed ? accent.withOpacity(0.24) : Colors.black.withOpacity(0.06),
+          color: completed
+              ? accent.withOpacity(0.24)
+              : Colors.black.withOpacity(0.06),
         ),
         boxShadow: [
           BoxShadow(
@@ -4982,7 +5005,10 @@ class _ReadingCheckpointCard extends StatelessWidget {
                       ),
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: accent.withOpacity(0.10),
                         borderRadius: BorderRadius.circular(999),
@@ -5017,7 +5043,6 @@ class _ReadingCheckpointCard extends StatelessWidget {
     );
   }
 }
-
 
 class _ExpandableSection extends StatelessWidget {
   final String title;
@@ -5127,7 +5152,9 @@ class _BottomActionBar extends StatelessWidget {
         Widget nextButton() {
           return DecoratedBox(
             decoration: BoxDecoration(
-              gradient: canNext ? LinearGradient(colors: [accent, accent2]) : null,
+              gradient: canNext
+                  ? LinearGradient(colors: [accent, accent2])
+                  : null,
               color: canNext ? null : const Color(0xFFE5E7EB),
               borderRadius: BorderRadius.circular(14),
             ),
@@ -5165,7 +5192,9 @@ class _BottomActionBar extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   Icon(
-                    last ? Icons.play_arrow_rounded : Icons.arrow_forward_rounded,
+                    last
+                        ? Icons.play_arrow_rounded
+                        : Icons.arrow_forward_rounded,
                     size: 18,
                   ),
                 ],
@@ -5212,7 +5241,6 @@ class _BottomActionBar extends StatelessWidget {
   }
 }
 
-
 class _DbImage extends StatelessWidget {
   final LearningMediaAsset asset;
 
@@ -5236,10 +5264,10 @@ class _DbImage extends StatelessWidget {
     final imageUrl = directUrl.isNotEmpty
         ? directUrl
         : storagePath.isNotEmpty
-            ? Supabase.instance.client.storage
-                .from(_bucketName)
-                .getPublicUrl(storagePath)
-            : '';
+        ? Supabase.instance.client.storage
+              .from(_bucketName)
+              .getPublicUrl(storagePath)
+        : '';
 
     if (imageUrl.isNotEmpty &&
         (imageUrl.startsWith('http://') || imageUrl.startsWith('https://'))) {
@@ -5254,10 +5282,10 @@ class _DbImage extends StatelessWidget {
   }
 
   Widget _fallback() => const Icon(
-        Icons.local_fire_department_rounded,
-        color: Color(0xFFB11217),
-        size: 38,
-      );
+    Icons.local_fire_department_rounded,
+    color: Color(0xFFB11217),
+    size: 38,
+  );
 }
 
 class _Bullets extends StatelessWidget {
@@ -5339,10 +5367,8 @@ class _FireGuide extends StatelessWidget {
               child: Image.asset(
                 g.imageAsset,
                 fit: BoxFit.contain,
-                errorBuilder: (_, __, ___) => Icon(
-                  Icons.fire_extinguisher,
-                  color: accent,
-                ),
+                errorBuilder: (_, __, ___) =>
+                    Icon(Icons.fire_extinguisher, color: accent),
               ),
             );
 
@@ -5389,11 +5415,7 @@ class _FireGuide extends StatelessWidget {
                   ? Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
-                      children: [
-                        image,
-                        const SizedBox(height: 10),
-                        text,
-                      ],
+                      children: [image, const SizedBox(height: 10), text],
                     )
                   : Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -5410,7 +5432,6 @@ class _FireGuide extends StatelessWidget {
     );
   }
 }
-
 
 class _ImageGallery extends StatelessWidget {
   final String title;
@@ -5574,11 +5595,7 @@ class _SourceReferenceCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            Icons.verified_outlined,
-            color: accent,
-            size: 20,
-          ),
+          Icon(Icons.verified_outlined, color: accent, size: 20),
           const SizedBox(width: 10),
           Expanded(
             child: Column(
@@ -5604,60 +5621,60 @@ class _SourceReferenceCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 10),
-                ...sources.map(
-                  (source) {
-                    final organization = source.organization.trim();
-                    final sourceTitle = source.title.trim();
-                    final accessedAt = source.accessedAt.trim();
+                ...sources.map((source) {
+                  final organization = source.organization.trim();
+                  final sourceTitle = source.title.trim();
+                  final accessedAt = source.accessedAt.trim();
 
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 6),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 6),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          organization.isNotEmpty
+                              ? organization
+                              : (isTl
+                                    ? 'Hindi tinukoy na organisasyon'
+                                    : 'Unspecified organization'),
+                          style: const TextStyle(
+                            color: Color(0xFF111827),
+                            fontWeight: FontWeight.w800,
+                            fontSize: 12,
+                            height: 1.3,
+                            fontFamily: 'Poppins',
+                          ),
+                        ),
+                        if (sourceTitle.isNotEmpty) ...[
+                          const SizedBox(height: 2),
                           Text(
-                            organization.isNotEmpty
-                                ? organization
-                                : (isTl ? 'Hindi tinukoy na organisasyon' : 'Unspecified organization'),
+                            sourceTitle,
                             style: const TextStyle(
-                              color: Color(0xFF111827),
-                              fontWeight: FontWeight.w800,
+                              color: Color(0xFF374151),
                               fontSize: 12,
+                              height: 1.35,
+                              fontFamily: 'Poppins',
+                            ),
+                          ),
+                        ],
+                        if (accessedAt.isNotEmpty) ...[
+                          const SizedBox(height: 2),
+                          Text(
+                            isTl
+                                ? 'Na-access noong: $accessedAt'
+                                : 'Accessed: $accessedAt',
+                            style: const TextStyle(
+                              color: Color(0xFF6B7280),
+                              fontSize: 10.5,
                               height: 1.3,
                               fontFamily: 'Poppins',
                             ),
                           ),
-                          if (sourceTitle.isNotEmpty) ...[
-                            const SizedBox(height: 2),
-                            Text(
-                              sourceTitle,
-                              style: const TextStyle(
-                                color: Color(0xFF374151),
-                                fontSize: 12,
-                                height: 1.35,
-                                fontFamily: 'Poppins',
-                              ),
-                            ),
-                          ],
-                          if (accessedAt.isNotEmpty) ...[
-                            const SizedBox(height: 2),
-                            Text(
-                              isTl
-                                  ? 'Na-access noong: $accessedAt'
-                                  : 'Accessed: $accessedAt',
-                              style: const TextStyle(
-                                color: Color(0xFF6B7280),
-                                fontSize: 10.5,
-                                height: 1.3,
-                                fontFamily: 'Poppins',
-                              ),
-                            ),
-                          ],
                         ],
-                      ),
-                    );
-                  },
-                ),
+                      ],
+                    ),
+                  );
+                }),
               ],
             ),
           ),
@@ -5670,15 +5687,11 @@ class _SourceReferenceCard extends StatelessWidget {
 bool _isBrandRed(Color color) => color.toARGB32() == 0xFFB11217;
 
 Color _softHeaderAccent(Color accent) {
-  return _isBrandRed(accent)
-      ? const Color(0xFFD95A60)
-      : accent;
+  return _isBrandRed(accent) ? const Color(0xFFD95A60) : accent;
 }
 
 Color _softHeaderAccent2(Color accent, Color accent2) {
-  return _isBrandRed(accent)
-      ? const Color(0xFFE97872)
-      : accent2;
+  return _isBrandRed(accent) ? const Color(0xFFE97872) : accent2;
 }
 
 Color _moduleAccent(int moduleNo) {
@@ -5728,11 +5741,10 @@ IconData _moduleIcon(int moduleNo) {
 
 List<dynamic> _list(dynamic v) => v is List ? v : const [];
 String _str(dynamic v) => (v ?? '').toString();
-int _int(dynamic v) =>
-    v is int ? v : int.tryParse((v ?? '').toString()) ?? 0;
+int _int(dynamic v) => v is int ? v : int.tryParse((v ?? '').toString()) ?? 0;
 List<String> _stringList(dynamic v) => v is List
     ? v
-        .map((x) => (x ?? '').toString())
-        .where((x) => x.trim().isNotEmpty)
-        .toList()
+          .map((x) => (x ?? '').toString())
+          .where((x) => x.trim().isNotEmpty)
+          .toList()
     : const [];
