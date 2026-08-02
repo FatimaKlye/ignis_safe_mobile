@@ -43,7 +43,8 @@ import 'module_5_building.dart/post_assess_instruction.dart' as post5;
 /// Index of the Profile tab within [IgnisHomePage]'s tab list
 /// (Module = 0, About Us = 1, Profile = 2).
 const int _profileTabIndex = 2;
-const double _learningHeaderExtent = 220;
+const double _learningHeaderExtent = 290;
+const double _compactLearningHeaderExtent = 310;
 
 class _NoOverscrollScrollBehavior extends ScrollBehavior {
   const _NoOverscrollScrollBehavior();
@@ -331,7 +332,7 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
     await Navigator.push(context, MaterialPageRoute(builder: (_) => page));
 
     if (mounted && _isTrackedProgressModule(moduleNo)) {
-      await _loadProgressForTrackedModule(moduleNo);
+      await _loadProgressForTrackedModule(moduleNo, force: true);
     }
   }
 
@@ -359,11 +360,15 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
     }
   }
 
-  Future<void> _loadProgressForTrackedModule(int moduleNo) async {
+  Future<void> _loadProgressForTrackedModule(
+    int moduleNo, {
+    bool force = false,
+  }) async {
     if (!_isTrackedProgressModule(moduleNo)) return;
 
     final loadedAt = _progressLoadedAt;
-    if (loadedAt != null &&
+    if (!force &&
+        loadedAt != null &&
         DateTime.now().difference(loadedAt) < const Duration(seconds: 20)) {
       return;
     }
@@ -1023,7 +1028,7 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
     await Navigator.push(context, MaterialPageRoute(builder: (_) => page));
 
     if (mounted && _isTrackedProgressModule(moduleNo)) {
-      await _loadProgressForTrackedModule(moduleNo);
+      await _loadProgressForTrackedModule(moduleNo, force: true);
     }
   }
 
@@ -1068,7 +1073,7 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
     await Navigator.push(context, MaterialPageRoute(builder: (_) => page));
 
     if (mounted && _isTrackedProgressModule(moduleNo)) {
-      await _loadProgressForTrackedModule(moduleNo);
+      await _loadProgressForTrackedModule(moduleNo, force: true);
     }
   }
 
@@ -1094,9 +1099,140 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
     return AssetImage(_avatarUrl!);
   }
 
+  Widget _buildModuleProgressCard() {
+    final moduleNumbers = _trackedProgressModules.toList()..sort();
+    final completedCount = moduleNumbers
+        .where((moduleNo) => _postTestCompletedFor(moduleNo))
+        .length;
+    final isLoading = moduleNumbers.any(_progressLoadingFor);
+    final hasError = moduleNumbers.any(
+      (moduleNo) => _progressErrorFor(moduleNo) != null,
+    );
+    final progress = completedCount / moduleNumbers.length;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: _loadAllTrackedProgress,
+        borderRadius: BorderRadius.circular(22),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(22),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.86)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.13),
+                blurRadius: 18,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFFECEC),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      Icons.insights_rounded,
+                      color: Color(0xFFB11217),
+                      size: 20,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          _t('Module Progress', 'Progreso ng Modyul'),
+                          style: const TextStyle(
+                            color: Color(0xFF172033),
+                            fontSize: 13.5,
+                            fontWeight: FontWeight.w900,
+                            fontFamily: 'Poppins',
+                          ),
+                        ),
+                        const SizedBox(height: 1),
+                        Text(
+                          hasError
+                              ? _t(
+                                  'Tap to refresh saved progress',
+                                  'I-tap para i-refresh ang naka-save na progreso',
+                                )
+                              : _t(
+                                  '$completedCount of ${moduleNumbers.length} modules completed',
+                                  '$completedCount sa ${moduleNumbers.length} modyul ang natapos',
+                                ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: hasError
+                                ? const Color(0xFFB11217)
+                                : const Color(0xFF717784),
+                            fontSize: 10.5,
+                            fontWeight: FontWeight.w600,
+                            fontFamily: 'Poppins',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  if (isLoading)
+                    const SizedBox.square(
+                      dimension: 22,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.4,
+                        color: Color(0xFFB11217),
+                      ),
+                    )
+                  else
+                    Text(
+                      '$completedCount/${moduleNumbers.length}',
+                      style: const TextStyle(
+                        color: Color(0xFFB11217),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w900,
+                        fontFamily: 'Poppins',
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(999),
+                child: LinearProgressIndicator(
+                  value: progress,
+                  minHeight: 7,
+                  backgroundColor: const Color(0xFFF3E7E5),
+                  valueColor: const AlwaysStoppedAnimation<Color>(
+                    Color(0xFFB11217),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final avatarProvider = _buildAvatarProvider();
+    final headerExtent = MediaQuery.sizeOf(context).width < 370
+        ? _compactLearningHeaderExtent
+        : _learningHeaderExtent;
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -1116,14 +1252,14 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
                   padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
                   child: _buildList(
                     _modules,
-                    topInset: _learningHeaderExtent + 12,
+                    topInset: headerExtent + 12,
                     bottomInset: bottomInset,
                   ),
                 );
               },
             ),
           ),
-          const MainTabHeaderBackdrop(height: _learningHeaderExtent),
+          MainTabHeaderBackdrop(height: headerExtent),
           SafeArea(
             bottom: false,
             child: LayoutBuilder(
@@ -1164,6 +1300,8 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
                             widget.onRequestTabChange?.call(_profileTabIndex),
                         onLogout: _logout,
                       ),
+                      const SizedBox(height: 16),
+                      _buildModuleProgressCard(),
                     ],
                   ),
                 );
@@ -1251,6 +1389,7 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
               description: m.subtitle(_isTl),
               image: m.heroImage,
               isTl: _isTl,
+              isCompleted: _postTestCompletedFor(m.moduleNo),
               isExpanded: _expandedModuleNo == m.moduleNo,
               selectedActionKey: _selectedModuleActionKey,
               isActionLocked: (actionKey) =>
@@ -2379,6 +2518,7 @@ class _ModuleCard extends StatelessWidget {
   final String description;
   final LearningMediaAsset? image;
   final bool isTl;
+  final bool isCompleted;
   final bool isExpanded;
   final String? selectedActionKey;
   final bool Function(String actionKey)? isActionLocked;
@@ -2393,6 +2533,7 @@ class _ModuleCard extends StatelessWidget {
     required this.description,
     required this.image,
     required this.isTl,
+    required this.isCompleted,
     required this.isExpanded,
     required this.selectedActionKey,
     this.isActionLocked,
@@ -2502,11 +2643,45 @@ class _ModuleCard extends StatelessWidget {
                                       ),
                                     ),
                                     SizedBox(width: compact ? 6 : 8),
-                                    Icon(
-                                      _moduleIcon(moduleNo),
-                                      color: accent,
-                                      size: 18,
-                                    ),
+                                    if (isCompleted)
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 7,
+                                          vertical: 5,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFFE8F4EE),
+                                          borderRadius: BorderRadius.circular(
+                                            999,
+                                          ),
+                                        ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            const Icon(
+                                              Icons.check_circle_rounded,
+                                              color: Color(0xFF2E7D5B),
+                                              size: 14,
+                                            ),
+                                            const SizedBox(width: 3),
+                                            Text(
+                                              isTl ? 'Tapos' : 'Done',
+                                              style: const TextStyle(
+                                                color: Color(0xFF2E7D5B),
+                                                fontSize: 9.5,
+                                                fontWeight: FontWeight.w900,
+                                                fontFamily: 'Poppins',
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    else
+                                      Icon(
+                                        _moduleIcon(moduleNo),
+                                        color: accent,
+                                        size: 18,
+                                      ),
                                   ],
                                 ),
                                 SizedBox(height: compact ? 8 : 10),
