@@ -237,7 +237,8 @@ class _RegisterPageState extends State<RegisterPage> {
         default:
           return 'not_found';
       }
-    } catch (_) {
+    } catch (e) {
+      debugPrint('check_email_status failed: $e');
       return 'not_found';
     }
   }
@@ -251,15 +252,16 @@ class _RegisterPageState extends State<RegisterPage> {
         'cancel_pending_signup_email',
         body: {'email': normalized},
       );
-    } catch (_) {
+    } catch (e) {
       // Best-effort only. If this fails, the next sign-up attempt will still
       // be guarded by Supabase and the user will see a clear message.
+      debugPrint('cancel_pending_signup_email failed: $e');
     }
 
     try {
       await supabase.auth.signOut();
-    } catch (_) {
-      // ignore
+    } catch (e) {
+      debugPrint('signOut during cleanup failed: $e');
     }
   }
 
@@ -760,9 +762,13 @@ class _RegisterPageState extends State<RegisterPage> {
         return;
       }
 
-      if (status == 'pending_email_verification' ||
-          status == 'pending_password_setup' ||
-          status == 'expired') {
+      // A pending, unconfirmed signup is resumed rather than recreated:
+      // navigating straight to VerifyEmailPage lets the user continue
+      // verifying the same account (Supabase treats a repeat signUp() on an
+      // unconfirmed email as a resend, not a new account). Only a truly
+      // expired pending record (>24h, see get_registration_status) is
+      // cleared out so the user can start fresh.
+      if (status == 'expired') {
         await _cleanupPendingRegistration(email);
       }
 

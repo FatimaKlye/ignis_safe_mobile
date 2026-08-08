@@ -82,23 +82,18 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     _otpFocus.requestFocus();
   }
 
+  // Leaving this screen (Back button or the "Login" link) must not delete
+  // the pending account - the signup stays unverified in Supabase Auth so
+  // the user can come back later and continue verifying the same account
+  // instead of it being recreated from scratch. Only sign out of the
+  // temporary session created by signUp().
   Future<void> _cleanupPendingByEmail() async {
     if (_completed || _email.isEmpty) return;
 
     try {
-      await supabase.functions.invoke(
-        'cancel_pending_signup_email',
-        body: {'email': _email},
-      );
-    } catch (_) {
-      // Best-effort cleanup only. The Edge Function should delete only
-      // incomplete signups and must not delete completed accounts.
-    }
-
-    try {
       await supabase.auth.signOut();
-    } catch (_) {
-      // ignore
+    } catch (e) {
+      debugPrint('signOut on exit failed: $e');
     }
   }
 
@@ -241,7 +236,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
         );
       } else {
         await supabase.auth.signOut();
-        await supabase.auth.signUp(
+        final signUpResponse = await supabase.auth.signUp(
           email: _email,
           password: widget.password,
           data: {
@@ -253,6 +248,30 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
             'signup_source': 'mobile',
           },
         );
+
+        // Supabase does not throw when the email already belongs to a
+        // confirmed account - it returns 200 with an empty `identities`
+        // list and sends no email at all (anti-enumeration behavior). Left
+        // unchecked, the code above would report "sent" even though no OTP
+        // was ever dispatched.
+        final identities = signUpResponse.user?.identities;
+        if (identities != null && identities.isEmpty) {
+          if (!mounted) return;
+          await _showNoticeDialog(
+            title: t(
+              context,
+              'Email Already Registered',
+              'May Account na ang Email',
+            ),
+            message: t(
+              context,
+              'This email already has an account. Please login instead, or use Forgot Password if needed.',
+              'May account na ang email na ito. Mag-login na lang, o gamitin ang Nakalimutan ang Password kung kailangan.',
+            ),
+          );
+          return;
+        }
+
         _signupStarted = true;
       }
 
