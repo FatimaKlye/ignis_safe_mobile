@@ -81,9 +81,28 @@ class _SplashVideoPageState extends State<SplashVideoPage> {
     if (!onboardingDone) {
       return const OnboardingOnePage();
     } else if (session != null) {
+      final active = await _isAccountActive(session.user.id);
+      if (!active) {
+        await Supabase.instance.client.auth.signOut();
+        return const LoginPage();
+      }
       return const IgnisHomePage();
     } else {
       return const LoginPage();
+    }
+  }
+
+  Future<bool> _isAccountActive(String userId) async {
+    try {
+      final row = await Supabase.instance.client
+          .from('profiles')
+          .select('is_active')
+          .eq('id', userId)
+          .maybeSingle();
+
+      return (row?['is_active'] ?? true) != false;
+    } catch (_) {
+      return true;
     }
   }
 

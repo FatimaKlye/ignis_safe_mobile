@@ -113,6 +113,14 @@ const Map<String, Map<String, String>> _strings = {
     'en': 'You must read and agree to the Terms and Conditions before logging in.',
     'tl': 'Kailangan mong basahin at tanggapin ang Mga Tuntunin at Kundisyon bago mag-login.',
   },
+  'account_deactivated': {
+    'en': 'Your account has been deactivated. Please contact an administrator.',
+    'tl': 'Ang iyong account ay na-deactivate. Mangyaring makipag-ugnayan sa isang administrator.',
+  },
+  'mobile_access_not_enabled': {
+    'en': 'Your account is not active. Please contact your administrator.',
+    'tl': 'Hindi active ang iyong account. Makipag-ugnayan sa iyong administrator.',
+  },
   'terms_accepted': {
     'en': 'Terms accepted.',
     'tl': 'Tinanggap ang mga tuntunin.',

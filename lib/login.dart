@@ -162,6 +162,45 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  Future<bool> _isMobileLearningAllowed(String userId) async {
+    try {
+      final row = await supabase
+          .from('admin')
+          .select('status')
+          .eq('admin_id', userId)
+          .maybeSingle();
+
+      if (row == null) {
+        // No row in `admin` — this is a regular mobile_user account, always
+        // allowed.
+        return true;
+      }
+
+      final status = (row['status'] as String?)?.trim().toLowerCase() ?? '';
+      return status == 'active';
+    } catch (e) {
+      debugPrint('Error checking mobile learning access: $e');
+      // Fail open on lookup errors, matching _isAccountActive below, so a
+      // transient network/RLS issue doesn't lock out a regular mobile user.
+      return true;
+    }
+  }
+
+  Future<bool> _isAccountActive(String userId) async {
+    try {
+      final row = await supabase
+          .from('profiles')
+          .select('is_active')
+          .eq('id', userId)
+          .maybeSingle();
+
+      return (row?['is_active'] ?? true) != false;
+    } catch (e) {
+      debugPrint('Error checking account status: $e');
+      return true;
+    }
+  }
+
   Future<bool> _hasAcceptedTerms(String userId) async {
     try {
       final row = await supabase
@@ -179,6 +218,25 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> _handlePostLogin(User user) async {
     await _ensureProfile(user);
+
+    final active = await _isAccountActive(user.id);
+
+    if (!mounted) return;
+
+    if (!active) {
+      try {
+        await supabase.auth.signOut();
+      } catch (e) {
+        debugPrint('Error signing out: $e');
+      }
+      if (!mounted) return;
+      await _notifyDialog(
+        context,
+        message: context.tr('account_deactivated'),
+        type: AppNotificationType.warning,
+      );
+      return;
+    }
 
     final accepted = await _hasAcceptedTerms(user.id);
 
@@ -237,6 +295,27 @@ class _LoginPageState extends State<LoginPage> {
         _notify(
           context,
           message: context.tr('login_failed'),
+          type: AppNotificationType.error,
+        );
+        return;
+      }
+
+      // Admin/Personnel accounts must have an Active status to use the
+      // mobile app; regular mobile_user accounts (no `admin` row) are always
+      // allowed. Check before touching `profiles` so a blocked account never
+      // gets a learner profile created.
+      final accessAllowed = await _isMobileLearningAllowed(user.id);
+      if (!mounted) return;
+      if (!accessAllowed) {
+        try {
+          await supabase.auth.signOut();
+        } catch (e) {
+          debugPrint('Error signing out: $e');
+        }
+        if (!mounted) return;
+        _notify(
+          context,
+          message: context.tr('mobile_access_not_enabled'),
           type: AppNotificationType.error,
         );
         return;
