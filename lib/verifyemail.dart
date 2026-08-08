@@ -250,6 +250,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
             'registration_completed': false,
             'app_language_code':
                 Localizations.localeOf(context).languageCode == 'tl' ? 'tl' : 'en',
+            'signup_source': 'mobile',
           },
         );
         _signupStarted = true;
