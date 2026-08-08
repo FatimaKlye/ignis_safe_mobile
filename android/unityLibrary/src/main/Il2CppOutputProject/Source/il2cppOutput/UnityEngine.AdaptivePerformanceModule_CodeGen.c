@@ -10,7 +10,6 @@
 extern void EmbeddedAttribute__ctor_m0FDF4083A188E1969B2CEDBE8427D59B66E97525 (void);
 extern void RefSafetyRulesAttribute__ctor_m4B2B90F41D61436103CA5670CF7E613F957D67C7 (void);
 extern void AdaptivePerformanceRenderSettings_get_MainLightShadowmapResolutionMultiplier_m1C321FC5CE335F500CC453F77D2C5D65AC09FE04 (void);
-extern void AdaptivePerformanceRenderSettings_get_DecalsDrawDistance_m8AF659B95A9FE171DEB3E3E78D8D9E9E998979F0 (void);
 extern void AdaptivePerformanceRenderSettings_get_MainLightShadowCascadesCountBias_m3947CFDDEBDAEB4946390D6B4974FE71EE198FE7 (void);
 extern void AdaptivePerformanceRenderSettings_get_ShadowQualityBias_m8BBA723E51D4603E8F2FBA544145F96075EF0C29 (void);
 extern void AdaptivePerformanceRenderSettings_get_LutBias_mA1A9D48AD9489390B87E4584569CDE3B68B2FEE1 (void);
@@ -21,12 +20,11 @@ extern void AdaptivePerformanceRenderSettings_get_SkipDynamicBatching_mECF4149B6
 extern void AdaptivePerformanceRenderSettings_get_SkipFrontToBackSorting_m4E9D5CD20F1869E93DB9FFAD874B607668732D25 (void);
 extern void AdaptivePerformanceRenderSettings_get_SkipTransparentObjects_mF14292D682D98CD5D4BF34B9CA606FDE38918F6E (void);
 extern void AdaptivePerformanceRenderSettings__cctor_mAA2D2F6F74CADD156149ADB4939A7D4ABDDD118D (void);
-static Il2CppMethodPointer s_methodPointers[14] = 
+static Il2CppMethodPointer s_methodPointers[13] = 
 {
 	EmbeddedAttribute__ctor_m0FDF4083A188E1969B2CEDBE8427D59B66E97525,
 	RefSafetyRulesAttribute__ctor_m4B2B90F41D61436103CA5670CF7E613F957D67C7,
 	AdaptivePerformanceRenderSettings_get_MainLightShadowmapResolutionMultiplier_m1C321FC5CE335F500CC453F77D2C5D65AC09FE04,
-	AdaptivePerformanceRenderSettings_get_DecalsDrawDistance_m8AF659B95A9FE171DEB3E3E78D8D9E9E998979F0,
 	AdaptivePerformanceRenderSettings_get_MainLightShadowCascadesCountBias_m3947CFDDEBDAEB4946390D6B4974FE71EE198FE7,
 	AdaptivePerformanceRenderSettings_get_ShadowQualityBias_m8BBA723E51D4603E8F2FBA544145F96075EF0C29,
 	AdaptivePerformanceRenderSettings_get_LutBias_mA1A9D48AD9489390B87E4584569CDE3B68B2FEE1,
@@ -38,28 +36,27 @@ static Il2CppMethodPointer s_methodPointers[14] =
 	AdaptivePerformanceRenderSettings_get_SkipTransparentObjects_mF14292D682D98CD5D4BF34B9CA606FDE38918F6E,
 	AdaptivePerformanceRenderSettings__cctor_mAA2D2F6F74CADD156149ADB4939A7D4ABDDD118D,
 };
-static const int32_t s_InvokerIndices[14] = 
+static const int32_t s_InvokerIndices[13] = 
 {
-	15749,
-	11863,
-	27268,
-	27268,
-	27190,
-	27190,
-	27268,
-	27268,
-	27268,
-	27190,
-	27150,
-	27150,
-	27150,
-	27316,
+	11894,
+	9101,
+	18179,
+	18112,
+	18112,
+	18179,
+	18179,
+	18179,
+	18112,
+	18082,
+	18082,
+	18082,
+	18222,
 };
 IL2CPP_EXTERN_C const Il2CppCodeGenModule g_UnityEngine_AdaptivePerformanceModule_CodeGenModule;
 const Il2CppCodeGenModule g_UnityEngine_AdaptivePerformanceModule_CodeGenModule = 
 {
 	"UnityEngine.AdaptivePerformanceModule.dll",
-	14,
+	13,
 	s_methodPointers,
 	0,
 	NULL,

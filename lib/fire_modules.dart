@@ -6,6 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'login.dart';
 import 'localization/app_text.dart';
+import 'profile_refresh_notifier.dart';
 
 import 'module_1_extinguisher.dart/pre_assess_instruction.dart' as pre1;
 import 'module_1_extinguisher.dart/post_assessment_extinguisher.dart';
@@ -105,8 +106,11 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
   @override
   void initState() {
     super.initState();
+    profileRefreshNotifier.addListener(_handleProfileChanged);
     _initializePage();
   }
+
+  void _handleProfileChanged() => _loadProfile();
 
   Future<void> _initializePage() async {
     await _loadProfile();
@@ -141,6 +145,7 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
 
   @override
   void dispose() {
+    profileRefreshNotifier.removeListener(_handleProfileChanged);
     _moduleProgressChannel?.unsubscribe();
     super.dispose();
   }
@@ -591,6 +596,7 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
                 children: [
                   const SizedBox(height: 20),
                   Row(
+                    textDirection: TextDirection.rtl,
                     children: [
                       PopupMenuButton<String>(
                         tooltip: "",
@@ -646,7 +652,7 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
                       const SizedBox(width: 10),
                       Expanded(
                         child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text(
                             _firstName.isEmpty && _lastName.isEmpty
@@ -657,6 +663,7 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
                                   ),
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
+                            textAlign: TextAlign.right,
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 12,
@@ -666,6 +673,7 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
                           const SizedBox(height: 2),
                           Text(
                             context.tr('welcome_to_ignis_safe_short'),
+                            textAlign: TextAlign.right,
                             style: TextStyle(
                               color: Colors.black,
                               fontSize: 14,

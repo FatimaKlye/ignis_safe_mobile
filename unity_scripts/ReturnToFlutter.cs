@@ -55,6 +55,8 @@ public static class ReturnToFlutter
 #if UNITY_ANDROID && !UNITY_EDITOR
         try
         {
+            IgnisFlutterActivityBridge.MarkSimulationCompleted();
+
             // FIX: Do NOT wrap 'activity' in a nested 'using' block
             // WHY: The nested 'using' calls activity.Dispose() when the block exits, BEFORE the
             //      runOnUiThread lambda runs on the Android UI thread. A disposed AndroidJavaObject

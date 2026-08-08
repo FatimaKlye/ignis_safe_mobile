@@ -129,7 +129,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
       await _showInfoDialog(
         title: _txt('Failed to load profile', 'Hindi na-load ang profile'),
-        message: _friendlyError(e, 'Failed to load profile.', 'Hindi na-load ang profile. Pakisubukang muli.'),
+        message: _friendlyError(
+          e,
+          'Failed to load profile.',
+          'Hindi na-load ang profile. Pakisubukang muli.',
+        ),
         buttonText: _txt('OK', 'Sige'),
         icon: Icons.error_outline_rounded,
       );
@@ -146,21 +150,31 @@ class _EditProfilePageState extends State<EditProfilePage> {
       if (picked == null) return;
 
       final bytes = await picked.readAsBytes();
-      final ext = picked.name.contains('.')
-          ? picked.name.split('.').last.toLowerCase()
-          : 'jpg';
 
       if (!mounted) return;
 
+      final croppedBytes = await Navigator.of(context).push<Uint8List>(
+        MaterialPageRoute(
+          fullscreenDialog: true,
+          builder: (_) => ProfileImageCropPage(imageBytes: bytes, isTl: _isTl),
+        ),
+      );
+
+      if (croppedBytes == null || !mounted) return;
+
       setState(() {
-        _newAvatarBytes = bytes;
-        _newAvatarExt = ext;
+        _newAvatarBytes = croppedBytes;
+        _newAvatarExt = 'png';
       });
     } catch (e) {
       if (!mounted) return;
       await _showInfoDialog(
         title: _txt('Image Error', 'Error sa Larawan'),
-        message: _friendlyError(e, 'Could not read selected image.', 'Hindi mabasa ang napiling larawan. Pakisubukang muli.'),
+        message: _friendlyError(
+          e,
+          'Could not read selected image.',
+          'Hindi mabasa ang napiling larawan. Pakisubukang muli.',
+        ),
         buttonText: _txt('OK', 'Sige'),
         icon: Icons.error_outline_rounded,
       );
@@ -176,7 +190,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
     if (first.isEmpty || last.isEmpty) {
       await _showInfoDialog(
         title: _txt('Incomplete Details', 'Kulang ang Detalye'),
-        message: _txt('Please complete First Name and Last Name.', 'Pakikumpleto ang Pangalan at Apelyido.'),
+        message: _txt(
+          'Please complete First Name and Last Name.',
+          'Pakikumpleto ang Pangalan at Apelyido.',
+        ),
         buttonText: _txt('OK', 'Sige'),
         icon: Icons.warning_amber_rounded,
       );
@@ -187,7 +204,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
       if (password.length < 6) {
         await _showInfoDialog(
           title: _txt('Invalid Password', 'Hindi Wastong Password'),
-          message: _txt('Password must be at least 6 characters.', 'Ang password ay dapat may hindi bababa sa 6 na character.'),
+          message: _txt(
+            'Password must be at least 6 characters.',
+            'Ang password ay dapat may hindi bababa sa 6 na character.',
+          ),
           buttonText: _txt('OK', 'Sige'),
           icon: Icons.warning_amber_rounded,
         );
@@ -197,7 +217,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
       if (password != confirm) {
         await _showInfoDialog(
           title: _txt('Password Mismatch', 'Hindi Magkatugma ang Password'),
-          message: _txt('Passwords do not match.', 'Hindi magkatugma ang mga password.'),
+          message: _txt(
+            'Passwords do not match.',
+            'Hindi magkatugma ang mga password.',
+          ),
           buttonText: _txt('OK', 'Sige'),
           icon: Icons.warning_amber_rounded,
         );
@@ -223,21 +246,38 @@ class _EditProfilePageState extends State<EditProfilePage> {
     final password = _passwordCtrl.text.trim();
 
     if (first != _originalFirstName) {
-      changes.add(_txt('First Name: "$_originalFirstName" → "$first"', 'Pangalan: "$_originalFirstName" → "$first"'));
+      changes.add(
+        _txt(
+          'First Name: "$_originalFirstName" → "$first"',
+          'Pangalan: "$_originalFirstName" → "$first"',
+        ),
+      );
     }
 
     if (last != _originalLastName) {
-      changes.add(_txt('Last Name: "$_originalLastName" → "$last"', 'Apelyido: "$_originalLastName" → "$last"'));
+      changes.add(
+        _txt(
+          'Last Name: "$_originalLastName" → "$last"',
+          'Apelyido: "$_originalLastName" → "$last"',
+        ),
+      );
     }
 
     if (_newAvatarBytes != null) {
-      changes.add(_txt('Profile Photo: Updated', 'Larawan sa Profile: Na-update'));
+      changes.add(
+        _txt('Profile Photo: Updated', 'Larawan sa Profile: Na-update'),
+      );
     }
 
     if (password.isNotEmpty) {
       changes.add(_txt('Password: Will be updated', 'Password: I-a-update'));
     } else {
-      changes.add(_txt('Password: No change (left blank)', 'Password: Walang pagbabago (iniwang blangko)'));
+      changes.add(
+        _txt(
+          'Password: No change (left blank)',
+          'Password: Walang pagbabago (iniwang blangko)',
+        ),
+      );
     }
 
     return changes;
@@ -267,7 +307,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
     final sure = await _showConfirmDialog(
       title: _txt('Confirm Update', 'Kumpirmahin ang Update'),
-      message: _txt('Are you sure you want to update these changes?', 'Sigurado ka bang gusto mong i-update ang mga pagbabagong ito?'),
+      message: _txt(
+        'Are you sure you want to update these changes?',
+        'Sigurado ka bang gusto mong i-update ang mga pagbabagong ito?',
+      ),
       confirmText: _txt('Yes, Update', 'Oo, I-update'),
       cancelText: _txt('No', 'Hindi'),
     );
@@ -300,7 +343,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
       if (!mounted) return;
       await _showInfoDialog(
         title: _txt('Update Failed', 'Hindi Na-update'),
-        message: _friendlyError(e, 'Update failed.', 'Hindi na-update ang profile. Pakisubukang muli.'),
+        message: _friendlyError(
+          e,
+          'Update failed.',
+          'Hindi na-update ang profile. Pakisubukang muli.',
+        ),
         buttonText: _txt('OK', 'Sige'),
         icon: Icons.error_outline_rounded,
       );
@@ -328,14 +375,16 @@ class _EditProfilePageState extends State<EditProfilePage> {
       final ext = (_newAvatarExt ?? 'jpg').toLowerCase();
       final path = '${user.id}/avatar.$ext';
 
-      await supabase.storage.from(_bucketName).uploadBinary(
-        path,
-        _newAvatarBytes!,
-        fileOptions: FileOptions(
-          upsert: true,
-          contentType: _getContentType(ext),
-        ),
-      );
+      await supabase.storage
+          .from(_bucketName)
+          .uploadBinary(
+            path,
+            _newAvatarBytes!,
+            fileOptions: FileOptions(
+              upsert: true,
+              contentType: _getContentType(ext),
+            ),
+          );
 
       final rawUrl = supabase.storage.from(_bucketName).getPublicUrl(path);
       avatarUrl = '$rawUrl?v=${DateTime.now().millisecondsSinceEpoch}';
@@ -384,6 +433,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
     }
 
     if (!mounted) return;
+
+    notifyProfileChanged();
 
     setState(() {
       _originalFirstName = firstName;
@@ -605,8 +656,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                     ),
                                     elevation: 4,
                                   ),
-                                  onPressed: () =>
-                                      Navigator.pop(context, true),
+                                  onPressed: () => Navigator.pop(context, true),
                                   child: FittedBox(
                                     fit: BoxFit.scaleDown,
                                     child: Text(
@@ -784,8 +834,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                     ),
                                     elevation: 4,
                                   ),
-                                  onPressed: () =>
-                                      Navigator.pop(context, true),
+                                  onPressed: () => Navigator.pop(context, true),
                                   child: FittedBox(
                                     fit: BoxFit.scaleDown,
                                     child: Text(
@@ -873,11 +922,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             color: Colors.white.withOpacity(0.18),
                             shape: BoxShape.circle,
                           ),
-                          child: Icon(
-                            icon,
-                            color: Colors.white,
-                            size: 24,
-                          ),
+                          child: Icon(icon, color: Colors.white, size: 24),
                         ),
                         const SizedBox(height: 10),
                         Text(
@@ -975,8 +1020,21 @@ class _EditProfilePageState extends State<EditProfilePage> {
     return null;
   }
 
+  void _toggleModernPasswordVisibility() {
+    setState(() => _showPass = !_showPass);
+  }
+
+  void _toggleModernConfirmVisibility() {
+    setState(() => _showConfirm = !_showConfirm);
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) =>
+      _buildModernEditProfileView(this, context);
+
+  // Kept temporarily as a layout reference while the modern view is rolled out.
+  // ignore: unused_element
+  Widget _buildLegacyEditProfile(BuildContext context) {
     final avatarImage = _buildAvatarImage();
 
     if (_isLoading) {
@@ -1106,12 +1164,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
               builder: (context, constraints) {
                 final screenWidth = constraints.maxWidth;
                 final horizontalPadding = screenWidth < 360 ? 16.0 : 25.0;
-                final avatarSize =
-                    (screenWidth * 0.42).clamp(132.0, 160.0).toDouble();
-                final cameraSize =
-                    (avatarSize * 0.2625).clamp(36.0, 42.0).toDouble();
-                final maxContentWidth =
-                    screenWidth > 520 ? 520.0 : double.infinity;
+                final avatarSize = (screenWidth * 0.42)
+                    .clamp(132.0, 160.0)
+                    .toDouble();
+                final cameraSize = (avatarSize * 0.2625)
+                    .clamp(36.0, 42.0)
+                    .toDouble();
+                final maxContentWidth = screenWidth > 520
+                    ? 520.0
+                    : double.infinity;
 
                 return SingleChildScrollView(
                   padding: EdgeInsets.fromLTRB(
@@ -1390,7 +1451,10 @@ class _Field extends StatelessWidget {
           decoration: InputDecoration(
             isDense: true,
             prefixIcon: Icon(icon, size: 20, color: Colors.grey.shade500),
-            prefixIconConstraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+            prefixIconConstraints: const BoxConstraints(
+              minWidth: 32,
+              minHeight: 32,
+            ),
             contentPadding: const EdgeInsets.symmetric(vertical: 8),
             border: const UnderlineInputBorder(
               borderSide: BorderSide(color: Color(0x1F000000)),
@@ -1450,8 +1514,15 @@ class _PasswordField extends StatelessWidget {
           maxLines: 1,
           decoration: InputDecoration(
             isDense: true,
-            prefixIcon: Icon(Icons.lock_outline, size: 20, color: Colors.grey.shade500),
-            prefixIconConstraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+            prefixIcon: Icon(
+              Icons.lock_outline,
+              size: 20,
+              color: Colors.grey.shade500,
+            ),
+            prefixIconConstraints: const BoxConstraints(
+              minWidth: 32,
+              minHeight: 32,
+            ),
             contentPadding: const EdgeInsets.symmetric(vertical: 8),
             border: const UnderlineInputBorder(
               borderSide: BorderSide(color: Color(0x1F000000)),
@@ -1467,7 +1538,9 @@ class _PasswordField extends StatelessWidget {
               padding: EdgeInsets.zero,
               onPressed: onToggle,
               icon: Icon(
-                show ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                show
+                    ? Icons.visibility_off_outlined
+                    : Icons.visibility_outlined,
                 size: 20,
                 color: Colors.grey.shade500,
               ),

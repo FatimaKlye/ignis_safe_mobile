@@ -205,7 +205,7 @@ class PreAssessmentCompletionPage2 extends StatelessWidget {
                               child: Text(
                                 t(
                                   context,
-                                  'Start Module 4 Learning Materials',
+                                  'Proceed to Learning Materials',
                                   'Magpatuloy sa Modyul sa Pag-aaral',
                                 ),
                                 textAlign: TextAlign.center,
@@ -245,10 +245,7 @@ class PreAssessmentCompletionPage2 extends StatelessWidget {
   }
 
   void _closeToLearningMaterials(BuildContext context) {
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => const LearningMaterialsTab()),
-      (route) => false,
-    );
+    Navigator.of(context).popUntil((route) => route.isFirst);
   }
 }
 

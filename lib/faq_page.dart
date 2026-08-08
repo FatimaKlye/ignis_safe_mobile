@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'localization/language_controller.dart';
 
 const Color _faqBrandRed = Color(0xFFB11217);
+const Color _faqNavy = Color(0xFF142D57);
 
 Future<void> showFAQDialog(BuildContext context) {
   return showDialog(
     context: context,
-    barrierColor: Colors.black.withOpacity(0.5),
+    barrierColor: Colors.black.withValues(alpha: 0.5),
     builder: (dialogContext) => const FAQDialog(),
   );
 }
@@ -70,31 +71,41 @@ class _FAQDialogState extends State<FAQDialog> {
       child: ConstrainedBox(
         constraints: BoxConstraints(
           maxWidth: 480,
-          maxHeight: size.height * 0.75,
+          maxHeight: size.height * 0.82,
         ),
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(24),
+            color: const Color(0xFFFFFBF9),
+            borderRadius: BorderRadius.circular(26),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.85)),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.2),
-                blurRadius: 30,
-                offset: const Offset(0, 16),
+                color: Colors.black.withValues(alpha: 0.18),
+                blurRadius: 34,
+                spreadRadius: -5,
+                offset: const Offset(0, 18),
               ),
             ],
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _FAQHeader(title: t(context, "FAQ", "Mga Madalas Itanong")),
+              _FAQHeader(
+                title: t(context, "Help & FAQ", "Tulong at FAQ"),
+                subtitle: t(
+                  context,
+                  "Quick answers about IGNIS SAFE",
+                  "Mabilis na sagot tungkol sa IGNIS SAFE",
+                ),
+              ),
               Flexible(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(16, 14, 16, 18),
+                  padding: const EdgeInsets.fromLTRB(15, 16, 15, 18),
                   child: Column(
                     children: List.generate(items.length, (index) {
                       return _FAQCard(
                         item: items[index],
+                        number: index + 1,
                         expanded: _expandedIndex == index,
                         onTap: () {
                           setState(() {
@@ -117,16 +128,21 @@ class _FAQDialogState extends State<FAQDialog> {
 }
 
 class _FAQHeader extends StatelessWidget {
-  const _FAQHeader({required this.title});
+  const _FAQHeader({required this.title, required this.subtitle});
 
   final String title;
+  final String subtitle;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 20, 12, 18),
+      padding: const EdgeInsets.fromLTRB(18, 18, 10, 18),
       decoration: const BoxDecoration(
-        color: _faqBrandRed,
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFFC9232A), _faqBrandRed, Color(0xFF861018)],
+        ),
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(24),
           topRight: Radius.circular(24),
@@ -135,11 +151,12 @@ class _FAQHeader extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            width: 40,
-            height: 40,
+            width: 44,
+            height: 44,
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.15),
-              shape: BoxShape.circle,
+              color: Colors.white.withValues(alpha: 0.14),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.16)),
             ),
             child: const Icon(
               Icons.help_outline_rounded,
@@ -149,15 +166,31 @@ class _FAQHeader extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           Expanded(
-            child: Text(
-              title,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w900,
-                fontSize: 18,
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 18,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  subtitle,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.72),
+                    fontWeight: FontWeight.w500,
+                    fontSize: 9.5,
+                  ),
+                ),
+              ],
             ),
           ),
           IconButton(
@@ -182,25 +215,39 @@ class _FAQItem {
 class _FAQCard extends StatelessWidget {
   const _FAQCard({
     required this.item,
+    required this.number,
     required this.expanded,
     required this.onTap,
   });
 
   final _FAQItem item;
+  final int number;
   final bool expanded;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
-        color: const Color(0xFFF7F7F8),
-        borderRadius: BorderRadius.circular(16),
+        color: expanded ? Colors.white : const Color(0xFFF7F5F4),
+        borderRadius: BorderRadius.circular(17),
         border: Border.all(
-          color: expanded ? _faqBrandRed.withOpacity(0.35) : Colors.transparent,
-          width: 1.2,
+          color: expanded
+              ? _faqBrandRed.withValues(alpha: 0.24)
+              : const Color(0xFFEDE8E5),
+          width: 1,
         ),
+        boxShadow: expanded
+            ? [
+                BoxShadow(
+                  color: _faqBrandRed.withValues(alpha: 0.07),
+                  blurRadius: 18,
+                  spreadRadius: -6,
+                  offset: const Offset(0, 9),
+                ),
+              ]
+            : null,
       ),
       child: Material(
         color: Colors.transparent,
@@ -209,19 +256,41 @@ class _FAQCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           onTap: onTap,
           child: Padding(
-            padding: const EdgeInsets.all(14),
+            padding: const EdgeInsets.all(13),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 180),
+                      width: 30,
+                      height: 30,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: expanded
+                            ? _faqBrandRed
+                            : _faqBrandRed.withValues(alpha: 0.09),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(
+                        '$number',
+                        style: TextStyle(
+                          color: expanded ? Colors.white : _faqBrandRed,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
                     Expanded(
                       child: Text(
-                        item.question,
+                        item.question.replaceFirst(RegExp(r'^\d+\.\s*'), ''),
                         style: const TextStyle(
+                          color: _faqNavy,
                           fontWeight: FontWeight.w800,
-                          fontSize: 14.5,
+                          fontSize: 13.5,
                           height: 1.3,
                         ),
                       ),
@@ -232,7 +301,7 @@ class _FAQCard extends StatelessWidget {
                       duration: const Duration(milliseconds: 200),
                       child: Icon(
                         Icons.keyboard_arrow_down_rounded,
-                        color: _faqBrandRed,
+                        color: expanded ? _faqBrandRed : _faqNavy,
                       ),
                     ),
                   ],
@@ -240,14 +309,14 @@ class _FAQCard extends StatelessWidget {
                 AnimatedCrossFade(
                   firstChild: const SizedBox(width: double.infinity, height: 0),
                   secondChild: Padding(
-                    padding: const EdgeInsets.only(top: 10),
+                    padding: const EdgeInsets.only(top: 12, left: 40),
                     child: Text(
                       item.answer,
                       style: TextStyle(
-                        fontSize: 13.5,
-                        height: 1.45,
+                        fontSize: 12.5,
+                        height: 1.5,
                         fontWeight: FontWeight.w500,
-                        color: Colors.grey.shade800,
+                        color: const Color(0xFF626773),
                       ),
                     ),
                   ),

@@ -7,7 +7,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'login.dart';
 import 'home.dart';
 import 'onboarding1.dart';
-import 'splash_video_page.dart';
+import 'splash_page.dart';
 import 'localization/language_controller.dart';
 
 Future<void> main() async {
@@ -48,7 +48,7 @@ class MyApp extends StatelessWidget {
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            home: const SplashVideoPage(),
+            home: const SplashPage(),
             routes: {
               '/login': (_) => const LoginPage(),
               '/home': (_) => const IgnisHomePage(),

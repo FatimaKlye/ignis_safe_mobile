@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:video_player/video_player.dart';
+import '../widgets/reliable_video_player.dart';
 import 'module_progression_service.dart';
 import 'post_assess_instruction_house.dart';
 
@@ -99,8 +100,10 @@ class _LmMediaRow {
   const _LmMediaRow({required this.assetPath, this.publicUrl});
 
   String get displayPath {
+    final bundledPath = assetPath.trim();
+    if (bundledPath.startsWith('assets/')) return bundledPath;
     if (publicUrl != null && publicUrl!.trim().isNotEmpty) return publicUrl!.trim();
-    return assetPath.trim();
+    return bundledPath;
   }
 }
 
@@ -2303,7 +2306,7 @@ class _StepPreviewVideoCard extends StatelessWidget {
             aspectRatio: 16 / 9,
             child: videoAssetPath == null
                 ? _VideoPlaceholder(icon: icon)
-                : _InlineAssetVideoPlayer(source: videoAssetPath!),
+                : ReliableVideoPlayer(source: videoAssetPath!),
           ),
           const SizedBox(height: 12),
           Text(

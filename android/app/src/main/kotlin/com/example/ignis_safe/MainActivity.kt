@@ -97,8 +97,14 @@ class MainActivity : FlutterActivity() {
         // FIX: Only process if this is our Unity request
         // WHY: Avoid processing unrelated activity results
         if (requestCode == unityRequestCode) {
-            Log.d(tag, "onActivityResult called for Unity scene")
-            completePendingResult()
+            val completed =
+                resultCode == RESULT_OK &&
+                    data?.getBooleanExtra("completed", false) == true
+            Log.d(
+                tag,
+                "onActivityResult called for Unity scene: completed=$completed"
+            )
+            completePendingResult(completed)
             // FIX: Kill the :unity process immediately after the result is delivered.
             // WHY: Activity.finish() closes UnityPlayerGameActivity but leaves the :unity
             //      process alive. Android keeps empty processes for performance (process reuse).
@@ -121,8 +127,16 @@ class MainActivity : FlutterActivity() {
         // WHY: onResume can be called multiple times; only trigger once when returning from Unity
         if (waitingForUnityReturn && pendingResult != null && !unityChannelReplyDelivered) {
             Log.d(tag, "onResume detected return from Unity")
-            Handler(Looper.getMainLooper()).post {
-                completePendingResult()
+            Handler(Looper.getMainLooper()).postDelayed({
+                if (!waitingForUnityReturn || unityChannelReplyDelivered) {
+                    return@postDelayed
+                }
+
+                Log.w(
+                    tag,
+                    "Unity returned without an activity result; treating it as cancelled"
+                )
+                completePendingResult(completed = false)
                 // FIX: Also kill :unity process in the onResume fallback path.
                 // WHY: onActivityResult may not fire if the :unity process was killed externally
                 //      (e.g., OOM killer) before Android could send the result. In that case
@@ -130,7 +144,7 @@ class MainActivity : FlutterActivity() {
                 //      is dead for the next launch. killUnityProcess() is idempotent — if the
                 //      process is already dead it logs a message and returns harmlessly.
                 killUnityProcess()
-            }
+            }, 500L)
         }
     }
 
@@ -174,7 +188,7 @@ class MainActivity : FlutterActivity() {
 
     // FIX: Add synchronized block to prevent race conditions between onActivityResult and onResume
     // WHY: Multiple threads/lifecycle callbacks could call this simultaneously, causing ANR
-    private fun completePendingResult() {
+    private fun completePendingResult(completed: Boolean) {
         synchronized(this) {
             // FIX: Early exit if result already delivered to prevent double-delivery
             // WHY: onActivityResult and onResume can race; prevent sending result twice
@@ -192,10 +206,13 @@ class MainActivity : FlutterActivity() {
             waitingForUnityReturn = false
 
             try {
-                Log.d(tag, "Delivering Unity completion result for scene: $scene")
+                Log.d(
+                    tag,
+                    "Delivering Unity result for scene: $scene completed=$completed"
+                )
                 result.success(
                     mapOf(
-                        "completed" to true,
+                        "completed" to completed,
                         "sceneName" to scene
                     )
                 )

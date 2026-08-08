@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'localization/language_controller.dart';
 import 'login.dart';
-import 'widgets/account_menu.dart';
+import 'widgets/main_tab_header.dart';
+import 'profile_refresh_notifier.dart';
 
-enum AboutFilter { all, about, team, bfpDasmarinas, contacts }
+enum AboutFilter { all, about, bfpDasmarinas, contacts }
 
 /// Index of the Profile tab within [IgnisHomePage]'s tab list
 /// (Module = 0, About Us = 1, Profile = 2). Kept as a local constant
@@ -56,7 +59,16 @@ class _AboutUsPageState extends State<AboutUsPage> {
   @override
   void initState() {
     super.initState();
+    profileRefreshNotifier.addListener(_handleProfileChanged);
     _loadProfile();
+  }
+
+  void _handleProfileChanged() => _loadProfile();
+
+  @override
+  void dispose() {
+    profileRefreshNotifier.removeListener(_handleProfileChanged);
+    super.dispose();
   }
 
   Future<void> _loadProfile() async {
@@ -111,11 +123,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
         ),
         PopupMenuItem(
           value: AboutFilter.about,
-          child: Text(t(context, 'About', 'Tungkol')),
-        ),
-        PopupMenuItem(
-          value: AboutFilter.team,
-          child: Text(t(context, 'Team', 'Koponan')),
+          child: const Text('IGNIS SAFE'),
         ),
         PopupMenuItem(
           value: AboutFilter.bfpDasmarinas,
@@ -139,8 +147,6 @@ class _AboutUsPageState extends State<AboutUsPage> {
         return true;
       case AboutFilter.about:
         return s.type == _AboutSectionType.about;
-      case AboutFilter.team:
-        return s.type == _AboutSectionType.team;
       case AboutFilter.bfpDasmarinas:
         return s.type == _AboutSectionType.partner;
       case AboutFilter.contacts:
@@ -165,7 +171,6 @@ class _AboutUsPageState extends State<AboutUsPage> {
     final avatarProvider = _avatarUrl != null && _avatarUrl!.trim().isNotEmpty
         ? NetworkImage(_avatarUrl!) as ImageProvider
         : null;
-    final topPadding = MediaQuery.of(context).padding.top;
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -174,146 +179,49 @@ class _AboutUsPageState extends State<AboutUsPage> {
           Positioned.fill(
             child: Image.asset('assets/bg.png', fit: BoxFit.cover),
           ),
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              height: topPadding + 200,
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Color(0xFFB11217),
-                    Color(0xFFB11217),
-                    Colors.transparent,
-                  ],
-                  stops: [0.0, 0.65, 1.0],
-                ),
-              ),
-            ),
-          ),
+          const MainTabHeaderBackdrop(height: 270),
           SafeArea(
             child: LayoutBuilder(
               builder: (context, constraints) {
                 final width = constraints.maxWidth;
-                final height = constraints.maxHeight;
                 final compactWidth = width < 370;
-                final compactHeight = height < 660;
-                final horizontalPadding = compactWidth ? 16.0 : 25.0;
-                final verticalPadding = compactHeight ? 8.0 : 14.0;
-                final topGap = compactHeight ? 8.0 : 20.0;
-                final titleGap = compactHeight ? 18.0 : 30.0;
-                final listGap = compactHeight ? 16.0 : 24.0;
-                final avatarRadius = compactWidth ? 20.0 : 22.0;
-                final titleSize = (width * 0.075).clamp(20.0, 30.0).toDouble();
+                final horizontalPadding = compactWidth ? 16.0 : 22.0;
 
                 return Padding(
                   padding: EdgeInsets.symmetric(
                     horizontal: horizontalPadding,
-                    vertical: verticalPadding,
+                    vertical: 12,
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(height: topGap),
-                      Row(
-                        children: [
-                          PopupMenuButton<String>(
-                            tooltip: '',
-                            offset: const Offset(0, 55),
-                            elevation: 8,
-                            color: Colors.white,
-                            surfaceTintColor: Colors.white,
-                            shadowColor: Colors.black.withOpacity(0.18),
-                            shape: accountMenuShape(),
-                            constraints: const BoxConstraints(minWidth: 180),
-                            onSelected: (value) async {
-                              if (value == 'profile') {
-                                await _goToProfile();
-                                return;
-                              }
-                              if (value == 'logout') {
-                                await _logout();
-                                return;
-                              }
-                            },
-                            itemBuilder: (context) => buildAccountMenuItems(
-                              context,
-                              profileLabel: t(context, 'Profile', 'Profile'),
-                              logoutLabel: t(context, 'Log Out', 'Mag-logout'),
-                            ),
-                            child: CircleAvatar(
-                              radius: avatarRadius,
-                              backgroundColor: Colors.grey.shade400,
-                              backgroundImage: avatarProvider,
-                              child: avatarProvider == null
-                                  ? const Icon(
-                                      Icons.person,
-                                      size: 22,
-                                      color: Colors.white,
-                                    )
-                                  : null,
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  _firstName.isEmpty && _lastName.isEmpty
-                                      ? t(context, 'Hi!', 'Kumusta!')
-                                      : t(
-                                          context,
-                                          'Hi, $_firstName $_lastName'.trim(),
-                                          'Kumusta, $_firstName $_lastName'.trim(),
-                                        ),
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  t(
-                                    context,
-                                    'Welcome to Ignis Safe',
-                                    'Mabuhay, Ignis Safe',
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: titleGap),
-                      Center(
-                        child: Text(
-                          t(context, 'About Us', 'Tungkol sa Amin'),
-                          textAlign: TextAlign.center,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: titleSize,
-                            fontWeight: FontWeight.w800,
-                            color: Colors.white,
-                            height: 1.12,
-                          ),
+                      MainTabHeader(
+                        greeting: _firstName.isEmpty && _lastName.isEmpty
+                            ? t(context, 'Hi!', 'Kumusta!')
+                            : t(
+                                context,
+                                'Hi, $_firstName $_lastName'.trim(),
+                                'Kumusta, $_firstName $_lastName'.trim(),
+                              ),
+                        accountLabel: t(
+                          context,
+                          'Welcome to IGNIS SAFE',
+                          'Mabuhay sa IGNIS SAFE',
                         ),
+                        title: t(context, 'About Us', 'Tungkol sa Amin'),
+                        subtitle: t(
+                          context,
+                          'Discover our mission, identity, and the people behind the app.',
+                          'Kilalanin ang aming layunin, pagkakakilanlan, at ang team sa likod ng app.',
+                        ),
+                        titleIcon: Icons.info_rounded,
+                        avatarImage: avatarProvider,
+                        profileLabel: t(context, 'Profile', 'Profile'),
+                        logoutLabel: t(context, 'Log Out', 'Mag-logout'),
+                        onProfile: _goToProfile,
+                        onLogout: _logout,
                       ),
-                      SizedBox(height: listGap),
+                      const SizedBox(height: 20),
                       Container(
                         height: 50,
                         padding: const EdgeInsets.symmetric(horizontal: 14),
@@ -337,7 +245,9 @@ class _AboutUsPageState extends State<AboutUsPage> {
                                 onChanged: _onSearchChanged,
                                 decoration: InputDecoration(
                                   hintText: t(context, 'Search', 'Maghanap'),
-                                  hintStyle: const TextStyle(color: Colors.grey),
+                                  hintStyle: const TextStyle(
+                                    color: Colors.grey,
+                                  ),
                                   border: InputBorder.none,
                                   isDense: true,
                                 ),
@@ -374,8 +284,6 @@ class _AboutUsPageState extends State<AboutUsPage> {
       ),
     );
   }
-
-
 
   Widget _buildAboutContent({
     required List<_AboutSection> visible,
@@ -431,40 +339,14 @@ class _AboutUsPageState extends State<AboutUsPage> {
         type: _AboutSectionType.about,
         title: "IGNIS SAFE",
         searchText:
-            "Ignis Safe interactive 3D fire safety simulation mission",
+            "Ignis Safe interactive 3D fire safety simulation mission logo shield fire truck hose flame water spray protected secure developers team Fatima Klye M Sierra fatimaklyesierra081005@gmail.com Andrei C Quias andreicarisma24@gmail.com Rave Paulo Piolo V Sierra Sarah Flor Macandile Maricis Punzalan adviser",
         icon: Icons.local_fire_department_rounded,
         subtitle: t(
           context,
-          "Our mission and what the app offers",
-          "Ang aming misyon at inaalok ng app",
+          "Our mission, logo meaning, developers, and adviser",
+          "Ang aming misyon, kahulugan ng logo, mga developer, at tagapayo",
         ),
-        builder: (context) => const _ModernAboutCard(),
-      ),
-      _AboutSection(
-        type: _AboutSectionType.about,
-        title: t(context, "Logo Meaning", "Kahulugan ng Logo"),
-        searchText:
-            "logo shield fire truck hose flame water spray ignis latin fire safe protected secure mission prevention preparedness",
-        icon: Icons.shield_rounded,
-        subtitle: t(
-          context,
-          "The story behind our shield and flame",
-          "Ang kuwento sa likod ng aming kalasag at apoy",
-        ),
-        builder: (context) => const _LogoMeaningCard(),
-      ),
-      _AboutSection(
-        type: _AboutSectionType.team,
-        title: t(context, "Meet the Developers", "Kilalanin ang mga Developer"),
-        searchText:
-            "Fatima Klye M Sierra fatimaklyesierra081005@gmail.com Andrei C Quias Rave Paulo Sierra Sarah Flor Macandile Maricis Punzalan Adviser",
-        icon: Icons.groups_rounded,
-        subtitle: t(
-          context,
-          "The team behind Ignis Safe",
-          "Ang koponan sa likod ng Ignis Safe",
-        ),
-        builder: (context) => const _TeamCard(),
+        builder: (context) => const _IgnisSafeSectionContent(),
       ),
       _AboutSection(
         type: _AboutSectionType.partner,
@@ -486,8 +368,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
           "Emergency Contact Information",
           "Impormasyon sa Emergency",
         ),
-        searchText:
-            "hotline emergency 046 884 6131 416 0875 0995 336 9534",
+        searchText: "hotline emergency 046 884 6131 416 0875 0995 336 9534",
         icon: Icons.phone_in_talk_rounded,
         subtitle: t(
           context,
@@ -517,7 +398,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
 // Sections + UI blocks
 // ─────────────────────────────────────────────────────────────
 
-enum _AboutSectionType { about, team, partner, contact }
+enum _AboutSectionType { about, partner, contact }
 
 class _AboutSection {
   final _AboutSectionType type;
@@ -535,6 +416,23 @@ class _AboutSection {
     required this.subtitle,
     required this.builder,
   });
+}
+
+class _IgnisSafeSectionContent extends StatelessWidget {
+  const _IgnisSafeSectionContent();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Column(
+      children: [
+        _ModernAboutCard(),
+        SizedBox(height: 14),
+        _LogoMeaningCard(),
+        SizedBox(height: 14),
+        _TeamCard(),
+      ],
+    );
+  }
 }
 
 class _ExpandableSectionCard extends StatefulWidget {
@@ -556,8 +454,7 @@ class _ExpandableSectionCard extends StatefulWidget {
   });
 
   @override
-  State<_ExpandableSectionCard> createState() =>
-      _ExpandableSectionCardState();
+  State<_ExpandableSectionCard> createState() => _ExpandableSectionCardState();
 }
 
 class _ExpandableSectionCardState extends State<_ExpandableSectionCard> {
@@ -716,8 +613,10 @@ class _ModernAboutCard extends StatelessWidget {
                       colors: [brandRed, Color(0xFFE65A5F)],
                     ),
                   ),
-                  child: const Icon(Icons.local_fire_department_rounded,
-                      color: Colors.white),
+                  child: const Icon(
+                    Icons.local_fire_department_rounded,
+                    color: Colors.white,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 const Expanded(
@@ -756,8 +655,11 @@ class _ModernAboutCard extends StatelessWidget {
                   icon: Icons.view_in_ar_rounded,
                 ),
                 _Chip(
-                  text: t(context, "Hands-on Practice",
-                      "Hands-on na Pagsasanay"),
+                  text: t(
+                    context,
+                    "Hands-on Practice",
+                    "Hands-on na Pagsasanay",
+                  ),
                   icon: Icons.touch_app_rounded,
                 ),
                 _Chip(
@@ -765,8 +667,7 @@ class _ModernAboutCard extends StatelessWidget {
                   icon: Icons.verified_rounded,
                 ),
                 _Chip(
-                  text: t(context, "Fire Awareness",
-                      "Kaalaman sa Sunog"),
+                  text: t(context, "Fire Awareness", "Kaalaman sa Sunog"),
                   icon: Icons.school_rounded,
                 ),
               ],
@@ -1070,7 +971,8 @@ class _TeamCard extends StatelessWidget {
         role: "MOBILE DEVELOPER",
         roleTl: "MOBILE DEVELOPER",
         email: "fatimaklyesierra081005@gmail.com",
-        bio: "Manages mobile application & databases and supports project coordination. She also serves as an Assistant Project Manager, helping ensure timelines and deliverables are met efficiently.",
+        bio:
+            "Manages mobile application & databases and supports project coordination. She also serves as an Assistant Project Manager, helping ensure timelines and deliverables are met efficiently.",
         bioTl:
             "Namamahala ng mobile application at mga database at sumusuporta sa koordinasyon ng proyekto. Nagsisilbi rin siya bilang Assistant Project Manager, na tumutulong na matiyak na natutugunan ang mga takdang oras at naihahatid ang mga resulta nang mahusay.",
         asset: "assets/dev_fatima1.jpg",
@@ -1081,8 +983,9 @@ class _TeamCard extends StatelessWidget {
         displayLast: "QUIAS",
         role: "3D UNITY DEVELOPER",
         roleTl: "3D UNITY DEVELOPER",
-        email: "",
-        bio: "Builds interactive and immersive applications. He also serves as a Project Manager, overseeing planning, coordination, and timely delivery of projects.",
+        email: "andreicarisma24@gmail.com",
+        bio:
+            "Builds interactive and immersive applications. He also serves as a Project Manager, overseeing planning, coordination, and timely delivery of projects.",
         bioTl:
             "Nagtatayo ng mga interactive at immersive na application. Nagsisilbi rin siya bilang Project Manager, na nangunguna sa pagpaplano, koordinasyon, at napapanahong paghahatid ng mga proyekto.",
         asset: "assets/dev_andrei.jpg",
@@ -1093,8 +996,9 @@ class _TeamCard extends StatelessWidget {
         displayLast: "SIERRA",
         role: "WEBSITE DEVELOPER",
         roleTl: "WEBSITE DEVELOPER",
-        email: "",
-        bio: "Responsible for designing, building, and maintaining responsive and functional websites, ensuring performance, usability, and a seamless user experience.",
+        email: null,
+        bio:
+            "Responsible for designing, building, and maintaining responsive and functional websites, ensuring performance, usability, and a seamless user experience.",
         bioTl:
             "Responsable sa pagdidisenyo, pagtatayo, at pagpapanatili ng mga responsive at functional na website, na tinitiyak ang pagganap, kakayahang magamit, at maayos na karanasan ng gumagamit.",
         asset: "assets/dev_rave.png",
@@ -1105,8 +1009,9 @@ class _TeamCard extends StatelessWidget {
         displayLast: "MACANDILE",
         role: "DOCUMENTATION",
         roleTl: "DOKUMENTASYON",
-        email: "",
-        bio: "Ensures that all project records, reports, and required materials are accurate, organized, and properly maintained to support compliance and operational efficiency.",
+        email: null,
+        bio:
+            "Ensures that all project records, reports, and required materials are accurate, organized, and properly maintained to support compliance and operational efficiency.",
         bioTl:
             "Tinitiyak na ang lahat ng rekord ng proyekto, ulat, at mga kinakailangang materyales ay tumpak, organisado, at maayos na pinapanatili upang suportahan ang pagsunod at kahusayan sa operasyon.",
         asset: "assets/dev_sarah.jpg",
@@ -1117,8 +1022,9 @@ class _TeamCard extends StatelessWidget {
         displayLast: "PUNZALAN",
         role: "ADVISER",
         roleTl: "TAGAPAYO",
-        email: "",
-        bio: "Provides strategic guidance, oversight, and expert recommendations to support informed decision-making and overall project direction.",
+        email: null,
+        bio:
+            "Provides strategic guidance, oversight, and expert recommendations to support informed decision-making and overall project direction.",
         bioTl:
             "Nagbibigay ng estratehikong gabay, pangangasiwa, at mga rekomendasyon ng eksperto upang suportahan ang matalinong paggawa ng desisyon at pangkalahatang direksyon ng proyekto.",
         asset: "assets/dev_maricis.png",
@@ -1144,8 +1050,7 @@ class _TeamCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              t(context, "MEET OUR DEVELOPERS",
-                  "KILALANIN ANG AMING MGA DEVELOPER"),
+              t(context, "DEVELOPERS & ADVISER", "MGA DEVELOPER AT TAGAPAYO"),
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w900,
@@ -1292,8 +1197,11 @@ class _PartnerCard extends StatelessWidget {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Icon(Icons.phone_in_talk_rounded,
-                          size: 18, color: Color(0xFFB11217)),
+                      const Icon(
+                        Icons.phone_in_talk_rounded,
+                        size: 18,
+                        color: Color(0xFFB11217),
+                      ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
@@ -1334,8 +1242,11 @@ class _PartnerCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          t(context, "City Fire Marshal",
-                              "Lungsod na Fire Marshal"),
+                          t(
+                            context,
+                            "City Fire Marshal",
+                            "Lungsod na Fire Marshal",
+                          ),
                           textAlign: TextAlign.left,
                           style: const TextStyle(
                             fontSize: 12.2,
@@ -1413,6 +1324,13 @@ class _ContactCard extends StatelessWidget {
 
   const _ContactCard();
 
+  Future<void> _dial(String number) async {
+    await launchUrl(
+      Uri(scheme: 'tel', path: number),
+      mode: LaunchMode.externalApplication,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -1477,14 +1395,14 @@ class _ContactCard extends StatelessWidget {
               icon: Icons.local_phone_rounded,
               label: t(context, "Landline", "Landline"),
               value: "(046) 884-6131 / 416-0875",
-              onTap: () {},
+              onTap: () => _dial('(046) 884-6131'),
             ),
             const SizedBox(height: 8),
             _ContactRow(
               icon: Icons.smartphone_rounded,
               label: t(context, "Mobile", "Mobile"),
               value: "0995-336-9534",
-              onTap: () {},
+              onTap: () => _dial('0995-336-9534'),
             ),
             const SizedBox(height: 12),
             Container(
@@ -1580,8 +1498,9 @@ class _DevTile extends StatelessWidget {
         showDialog(
           context: context,
           builder: (_) => AlertDialog(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(18),
+            ),
             title: Text(
               m.fullName,
               style: const TextStyle(fontWeight: FontWeight.w900),
@@ -1598,18 +1517,42 @@ class _DevTile extends StatelessWidget {
                       color: Color(0xFFB11217),
                     ),
                   ),
-                  if (m.email.trim().isNotEmpty) ...[
-                    const SizedBox(height: 8),
-                    Text(
-                      "EMAIL: ${m.email}",
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w700,
-                        decoration: TextDecoration.underline,
+                  const SizedBox(height: 8),
+                  InkWell(
+                    onTap: m.email == null
+                        ? null
+                        : () => launchUrl(
+                            Uri(scheme: 'mailto', path: m.email),
+                            mode: LaunchMode.externalApplication,
+                          ),
+                    borderRadius: BorderRadius.circular(6),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 2),
+                      child: Text(
+                        m.email == null
+                            ? t(
+                                context,
+                                "EMAIL: To be added",
+                                "EMAIL: Idadagdag",
+                              )
+                            : "EMAIL: ${m.email}",
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          color: m.email == null
+                              ? const Color(0xFF777777)
+                              : const Color(0xFF2D2D2D),
+                          fontStyle: m.email == null
+                              ? FontStyle.italic
+                              : FontStyle.normal,
+                          decoration: m.email == null
+                              ? TextDecoration.none
+                              : TextDecoration.underline,
+                        ),
                       ),
                     ),
-                  ],
+                  ),
                   const SizedBox(height: 10),
                   Text(
                     t(context, m.bio, m.bioTl),
@@ -1651,11 +1594,22 @@ class _DevTile extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CircleAvatar(
-              radius: 26,
-              backgroundColor: const Color(0xFFF2F2F2),
-              backgroundImage: AssetImage(m.asset),
-              onBackgroundImageError: (_, __) {},
+            ClipOval(
+              child: SizedBox.square(
+                dimension: 52,
+                child: Image.asset(
+                  m.asset,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => const ColoredBox(
+                    color: Color(0xFFF2F2F2),
+                    child: Icon(
+                      Icons.person_rounded,
+                      color: Color(0xFF8C8C8C),
+                      size: 30,
+                    ),
+                  ),
+                ),
+              ),
             ),
             const SizedBox(height: 8),
             Text(
@@ -1709,7 +1663,7 @@ class _TeamMember {
   final String displayLast;
   final String role;
   final String roleTl;
-  final String email;
+  final String? email;
   final String bio;
   final String bioTl;
   final String asset;
@@ -1837,7 +1791,7 @@ class _EmptyState extends StatelessWidget {
                 style: const TextStyle(fontWeight: FontWeight.w800),
               ),
             ),
-          )
+          ),
         ],
       ),
     );
@@ -1898,13 +1852,15 @@ class _CaviteBfpDirectoryCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                const Icon(Icons.apartment_rounded,
-                    color: Color(0xFFB11217)),
+                const Icon(Icons.apartment_rounded, color: Color(0xFFB11217)),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    t(context, "Cavite BFP Directory",
-                        "Direktoryo ng Cavite BFP"),
+                    t(
+                      context,
+                      "Cavite BFP Directory",
+                      "Direktoryo ng Cavite BFP",
+                    ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
@@ -1992,8 +1948,7 @@ class _DistrictAccordion extends StatelessWidget {
         data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
         child: ExpansionTile(
           initiallyExpanded: initiallyExpanded,
-          tilePadding:
-              const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          tilePadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
           childrenPadding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
           collapsedIconColor: const Color(0xFFB11217),
           iconColor: const Color(0xFFB11217),
@@ -2025,6 +1980,25 @@ class _DirectoryEntryTile extends StatelessWidget {
   final _DirectoryEntry entry;
   const _DirectoryEntryTile({required this.entry});
 
+  Future<void> _open(BuildContext context, Uri uri) async {
+    if (await launchUrl(uri, mode: LaunchMode.externalApplication)) return;
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('No compatible app is available.')),
+    );
+  }
+
+  Future<void> _copy(BuildContext context, String value) async {
+    await Clipboard.setData(ClipboardData(text: value));
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('$value copied')));
+  }
+
+  Uri _phoneUri(String value) =>
+      Uri(scheme: 'tel', path: value.replaceAll(RegExp(r'[^0-9+]'), ''));
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -2052,12 +2026,18 @@ class _DirectoryEntryTile extends StatelessWidget {
           // Email (tappable)
           InkWell(
             borderRadius: BorderRadius.circular(10),
+            onTap: () =>
+                _open(context, Uri(scheme: 'mailto', path: entry.email)),
+            onLongPress: () => _copy(context, entry.email),
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 6),
               child: Row(
                 children: [
-                  const Icon(Icons.email_rounded,
-                      size: 18, color: Color(0xFFB11217)),
+                  const Icon(
+                    Icons.email_rounded,
+                    size: 18,
+                    color: Color(0xFFB11217),
+                  ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -2072,6 +2052,12 @@ class _DirectoryEntryTile extends StatelessWidget {
                         decoration: TextDecoration.underline,
                       ),
                     ),
+                  ),
+                  IconButton(
+                    tooltip: 'Copy email',
+                    visualDensity: VisualDensity.compact,
+                    onPressed: () => _copy(context, entry.email),
+                    icon: const Icon(Icons.copy_rounded, size: 17),
                   ),
                 ],
               ),
@@ -2088,22 +2074,39 @@ class _DirectoryEntryTile extends StatelessWidget {
                 .map(
                   (c) => InkWell(
                     borderRadius: BorderRadius.circular(999),
+                    onTap: () => _open(context, _phoneUri(c)),
+                    onLongPress: () => _copy(context, c),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 7),
+                        horizontal: 10,
+                        vertical: 7,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(999),
                         border: Border.all(color: const Color(0xFFE6E6E6)),
                       ),
-                      child: Text(
-                        c,
-                        style: const TextStyle(
-                          fontSize: 12.2,
-                          fontWeight: FontWeight.w700,
-                          color: Color(0xFF2D2D2D),
-                          decoration: TextDecoration.underline,
-                        ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            c,
+                            style: const TextStyle(
+                              fontSize: 12.2,
+                              fontWeight: FontWeight.w700,
+                              color: Color(0xFF2D2D2D),
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          GestureDetector(
+                            onTap: () => _copy(context, c),
+                            child: const Tooltip(
+                              message: 'Copy phone number',
+                              child: Icon(Icons.copy_rounded, size: 15),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
