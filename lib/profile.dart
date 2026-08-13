@@ -10,6 +10,7 @@ import 'faq_page.dart';
 import 'widgets/account_menu.dart';
 import 'widgets/main_tab_header.dart';
 import 'profile_refresh_notifier.dart';
+import 'profile_progress_sync.dart';
 
 part 'edit_profile_page.dart';
 part 'profile_modern_view.dart';
@@ -120,25 +121,11 @@ class _ProfilePageState extends State<ProfilePage> {
           avatarUrl = dbAvatarUrl;
         }
 
-        final rawCompleted = profileData['completed_simulations'];
-        if (rawCompleted != null) {
-          if (rawCompleted is num) {
-            completedSimulations =
-                '${rawCompleted.toInt()} / $_totalSimulations';
-          } else {
-            final rawText = rawCompleted.toString().trim();
-            if (rawText.isNotEmpty) {
-              if (rawText.contains('/')) {
-                completedSimulations = rawText;
-              } else {
-                final parsed = int.tryParse(rawText);
-                if (parsed != null) {
-                  completedSimulations = '$parsed / $_totalSimulations';
-                }
-              }
-            }
-          }
-        }
+        final liveCompletedSimulations =
+            await ProfileProgressSync.fetchCompletedSimulationCount(
+              totalSimulations: _totalSimulations,
+            );
+        completedSimulations = '$liveCompletedSimulations / $_totalSimulations';
 
         final dbLastSimulation = (profileData['last_simulation'] ?? '')
             .toString()

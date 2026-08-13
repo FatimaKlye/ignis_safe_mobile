@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ignis_safe/module_progress_overview_service.dart';
+import 'package:ignis_safe/profile_progress_sync.dart';
 import 'package:ignis_safe/unity_launcher.dart';
 
 void main() {
@@ -46,5 +47,27 @@ void main() {
     expect(overview.learningCompleted, isTrue);
     expect(overview.canOpenPostTest, isFalse);
     expect(overview.postTestCompleted, isTrue);
+  });
+
+  test('profile progress counts each completed simulation module once', () {
+    final completedCount = ProfileProgressSync.completedSimulationCountFromRows(
+      [
+        {
+          'module_id': 'module-1',
+          'simulation_completed_at': '2026-08-12T14:41:15Z',
+        },
+        {
+          'module_id': 'module-1',
+          'simulation_completed_at': '2026-08-13T00:31:01Z',
+        },
+        {
+          'module_id': 'module-2',
+          'simulation_completed_at': '2026-08-13T00:31:01Z',
+        },
+        {'module_id': 'module-3', 'simulation_completed_at': null},
+      ],
+    );
+
+    expect(completedCount, 2);
   });
 }
