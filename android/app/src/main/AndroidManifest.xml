@@ -70,7 +70,12 @@
             android:hardwareAccelerated="true"
             android:resizeableActivity="false"
             android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|uiMode|screenSize|smallestScreenSize|fontScale|layoutDirection|density"
-            tools:replace="android:hardwareAccelerated,android:launchMode,android:resizeableActivity,android:screenOrientation" />
+            tools:replace="android:hardwareAccelerated,android:launchMode,android:resizeableActivity,android:screenOrientation">
+            <intent-filter tools:node="remove">
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
         <meta-data
             android:name="flutterEmbedding"
