@@ -1,16 +1,23 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 
 bool isNetworkError(dynamic error) {
   if (error is SocketException) return true;
+  if (error is TimeoutException) return true;
   final msg = error.toString().toLowerCase();
   return msg.contains('socketexception') ||
+      msg.contains('authretryablefetchexception') ||
       msg.contains('failed host lookup') ||
       msg.contains('connection refused') ||
       msg.contains('connection reset') ||
       msg.contains('network is unreachable') ||
       msg.contains('clientexception') ||
+      msg.contains('operation timed out') ||
+      msg.contains('request_timeout') ||
       msg.contains('connection timed out') ||
+      msg.contains('connection closed') ||
+      msg.contains('connection terminated') ||
       msg.contains('no address associated') ||
       msg.contains('errno = 7') ||
       msg.contains('errno = 101') ||
@@ -25,9 +32,7 @@ Future<void> showNoInternetDialog(BuildContext context) async {
     barrierDismissible: false,
     builder: (dialogContext) {
       return AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(18),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
         title: Text(
           isTl ? 'Walang Internet' : 'No Internet Connection',
           textAlign: TextAlign.center,

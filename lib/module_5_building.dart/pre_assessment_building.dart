@@ -1134,6 +1134,7 @@ class _PreAssessmentBuildingPageState
             score: correctCount,
             totalQuestions: _questions.length,
             assessmentTitle: _assessmentTitle,
+            attemptId: _attemptId!,
           ),
         ),
       );

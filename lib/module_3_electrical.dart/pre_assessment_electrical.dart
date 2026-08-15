@@ -1054,6 +1054,7 @@ class _PreAssessmentElectricalPageState
             score: correctCount,
             totalQuestions: _questions.length,
             assessmentTitle: _assessmentTitle,
+            attemptId: _attemptId!,
           ),
         ),
       );

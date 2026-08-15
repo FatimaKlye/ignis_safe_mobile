@@ -1106,6 +1106,7 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
             score: correctCount,
             totalQuestions: _questions.length,
             assessmentTitle: _assessmentTitle,
+            attemptId: _attemptId!,
           ),
         ),
       );

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../localization/language_controller.dart';
 import '../learning_materials.dart';
+import '../widgets/answer_feedback_screen.dart';
+import '../widgets/score_result_action_buttons.dart';
 import 'module_2_learningmaterials.dart' as house_lm;
 
 const Color kHouseOrange = Color(0xFFF97316);
@@ -54,11 +56,13 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
     required this.score,
     required this.totalQuestions,
     required this.assessmentTitle,
+    required this.attemptId,
   });
 
   final int score;
   final int totalQuestions;
   final String assessmentTitle;
+  final String attemptId;
 
   @override
   Widget build(BuildContext context) {
@@ -158,79 +162,21 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 40),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        style: ButtonStyle(
-                          minimumSize: const WidgetStatePropertyAll<Size>(
-                            Size.fromHeight(56),
-                          ),
-                          padding: const WidgetStatePropertyAll<EdgeInsets>(
-                            EdgeInsets.symmetric(
-                              horizontal: 18,
-                              vertical: 14,
-                            ),
-                          ),
-                          backgroundColor:
-                              WidgetStateProperty.resolveWith<Color>(
-                            (states) {
-                              if (states.contains(WidgetState.pressed)) {
-                                return AppColors.primaryButtonPressed;
-                              }
-                              return AppColors.primaryButton;
-                            },
-                          ),
-                          foregroundColor: const WidgetStatePropertyAll<Color>(
-                            AppColors.textOnRed,
-                          ),
-                          elevation: const WidgetStatePropertyAll<double>(8),
-                          shadowColor: WidgetStatePropertyAll<Color>(
-                            AppColors.brandRed.withValues(alpha: 0.30),
-                          ),
-                          shape: WidgetStatePropertyAll<OutlinedBorder>(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(18),
-                            ),
+                    ScoreResultActionButtons(
+                      onAnswerFeedback: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => AnswerFeedbackScreen(
+                            attemptId: attemptId,
+                            assessmentTitle: assessmentTitle,
                           ),
                         ),
-                        onPressed: () {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) =>
-                                  const house_lm.LearningMaterialHousePage(),
-                            ),
-                          );
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(
-                              Icons.arrow_forward_rounded,
-                              color: AppColors.textOnRed,
-                              size: 21,
-                            ),
-                            const SizedBox(width: 8),
-                            Flexible(
-                              child: Text(
-                                t(
-                                  context,
-                                  'Proceed to Learning Materials',
-                                  'Magpatuloy sa Modyul sa Pag-aaral',
-                                ),
-                                textAlign: TextAlign.center,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  color: AppColors.textOnRed,
-                                  fontFamily: 'Poppins',
-                                  fontWeight: FontWeight.w900,
-                                  fontSize: 15.5,
-                                ),
-                              ),
-                            ),
-                          ],
+                      ),
+                      onContinue: () => Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              const house_lm.LearningMaterialHousePage(),
                         ),
                       ),
                     ),
@@ -266,10 +212,12 @@ class PreAssessmentCompletionPage extends PreAssessmentCompletionPage1 {
     required int score,
     required int totalQuestions,
     required String assessmentTitle,
+    required String attemptId,
   }) : super(
           score: score,
           totalQuestions: totalQuestions,
           assessmentTitle: assessmentTitle,
+          attemptId: attemptId,
         );
 }
 

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -26,6 +28,8 @@ class VerifyEmailPage extends StatefulWidget {
 
 class _VerifyEmailPageState extends State<VerifyEmailPage> {
   static const Color brandRed = Color(0xFFB71C1C);
+  static const Duration _otpRequestTimeout = Duration(seconds: 30);
+  static const Duration _resendCooldown = Duration(seconds: 60);
 
   final SupabaseClient supabase = Supabase.instance.client;
   final TextEditingController _otpCtrl = TextEditingController();
@@ -34,11 +38,23 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   bool _isSending = false;
   bool _isVerifying = false;
   bool _signupStarted = false;
+  bool _signupRequestAttempted = false;
   bool _completed = false;
+  DateTime? _lastOtpRequestAt;
+  Timer? _cooldownTimer;
 
   String get _email => widget.email.trim().toLowerCase();
   String get _code => _otpCtrl.text.trim();
   bool get _codeComplete => RegExp(r'^\d{6}$').hasMatch(_code);
+  Duration get _resendRemaining {
+    final lastRequest = _lastOtpRequestAt;
+    if (lastRequest == null) return Duration.zero;
+
+    final remaining = _resendCooldown - DateTime.now().difference(lastRequest);
+    return remaining.isNegative ? Duration.zero : remaining;
+  }
+
+  bool get _resendOnCooldown => _resendRemaining > Duration.zero;
 
   @override
   void initState() {
@@ -57,6 +73,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
 
   @override
   void dispose() {
+    _cooldownTimer?.cancel();
     _otpCtrl.dispose();
     _otpFocus.dispose();
     super.dispose();
@@ -80,6 +97,38 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   void _clearOtp() {
     _otpCtrl.clear();
     _otpFocus.requestFocus();
+  }
+
+  Future<T> _withOtpTimeout<T>(Future<T> request) {
+    return request.timeout(_otpRequestTimeout);
+  }
+
+  void _startResendCooldown() {
+    _lastOtpRequestAt = DateTime.now();
+    _cooldownTimer?.cancel();
+    _cooldownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+
+      if (!_resendOnCooldown) {
+        timer.cancel();
+      }
+      setState(() {});
+    });
+  }
+
+  bool _isMissingInitialSignupError(AuthException error) {
+    final message = error.message.toLowerCase();
+    final code = error.code?.toLowerCase() ?? '';
+
+    return code == 'user_not_found' ||
+        message.contains('user not found') ||
+        message.contains('not found') ||
+        message.contains('no user') ||
+        message.contains('signup not found') ||
+        message.contains('no signup');
   }
 
   // Leaving this screen (Back button or the "Login" link) must not delete
@@ -225,57 +274,17 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
 
   Future<void> _sendOtp({bool showToast = true}) async {
     if (_isSending || _email.isEmpty) return;
+    if (showToast && _resendOnCooldown) return;
 
     setState(() => _isSending = true);
 
     try {
-      if (_signupStarted) {
-        await supabase.auth.resend(
-          type: OtpType.signup,
-          email: _email,
-        );
-      } else {
-        await supabase.auth.signOut();
-        final signUpResponse = await supabase.auth.signUp(
-          email: _email,
-          password: widget.password,
-          data: {
-            'first_name': widget.firstName.trim(),
-            'last_name': widget.lastName.trim(),
-            'registration_completed': false,
-            'app_language_code':
-                Localizations.localeOf(context).languageCode == 'tl' ? 'tl' : 'en',
-            'signup_source': 'mobile',
-          },
-        );
-
-        // Supabase does not throw when the email already belongs to a
-        // confirmed account - it returns 200 with an empty `identities`
-        // list and sends no email at all (anti-enumeration behavior). Left
-        // unchecked, the code above would report "sent" even though no OTP
-        // was ever dispatched.
-        final identities = signUpResponse.user?.identities;
-        if (identities != null && identities.isEmpty) {
-          if (!mounted) return;
-          await _showNoticeDialog(
-            title: t(
-              context,
-              'Email Already Registered',
-              'May Account na ang Email',
-            ),
-            message: t(
-              context,
-              'This email already has an account. Please login instead, or use Forgot Password if needed.',
-              'May account na ang email na ito. Mag-login na lang, o gamitin ang Nakalimutan ang Password kung kailangan.',
-            ),
-          );
-          return;
-        }
-
-        _signupStarted = true;
-      }
+      final sent = await _requestSignupOtp();
 
       if (!mounted) return;
+      if (!sent) return;
+
+      _startResendCooldown();
 
       if (showToast) {
         _notify(
@@ -292,11 +301,20 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       if (!mounted) return;
       final message = e.message.toLowerCase();
 
-      if (message.contains('already registered') ||
+      if (isNetworkError(e)) {
+        if (_signupRequestAttempted) {
+          _startResendCooldown();
+        }
+        await showNoInternetDialog(context);
+      } else if (message.contains('already registered') ||
           message.contains('already exists') ||
           message.contains('user already')) {
         await _showNoticeDialog(
-          title: t(context, 'Email Already Registered', 'May Account na ang Email'),
+          title: t(
+            context,
+            'Email Already Registered',
+            'May Account na ang Email',
+          ),
           message: t(
             context,
             'This email already has an account. Please login instead, or use Forgot Password if needed.',
@@ -309,6 +327,19 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
           message: e.message,
         );
       }
+    } on TimeoutException {
+      if (!mounted) return;
+      if (_signupRequestAttempted) {
+        _startResendCooldown();
+      }
+      await _showNoticeDialog(
+        title: t(context, 'Request Timed Out', 'Nag-time out ang Request'),
+        message: t(
+          context,
+          'The code request is taking too long. If it does not arrive shortly, check your connection and tap Resend code.',
+          'Masyadong matagal ang request ng code. Kung hindi ito dumating agad, suriin ang connection at pindutin ang Magpadala ulit.',
+        ),
+      );
     } catch (e) {
       if (!mounted) return;
       if (isNetworkError(e)) {
@@ -328,6 +359,73 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     }
   }
 
+  Future<bool> _requestSignupOtp() async {
+    final languageCode = Localizations.localeOf(context).languageCode == 'tl'
+        ? 'tl'
+        : 'en';
+
+    if (_signupStarted || _signupRequestAttempted) {
+      try {
+        await _withOtpTimeout(
+          supabase.auth.resend(type: OtpType.signup, email: _email),
+        );
+        _signupStarted = true;
+        return true;
+      } on AuthException catch (e) {
+        if (!_signupStarted && _isMissingInitialSignupError(e)) {
+          _signupRequestAttempted = false;
+        } else {
+          rethrow;
+        }
+      }
+    }
+
+    try {
+      await _withOtpTimeout(supabase.auth.signOut());
+    } catch (e) {
+      debugPrint('signOut before signup OTP failed: $e');
+    }
+
+    _signupRequestAttempted = true;
+    final signUpResponse = await _withOtpTimeout(
+      supabase.auth.signUp(
+        email: _email,
+        password: widget.password,
+        data: {
+          'first_name': widget.firstName.trim(),
+          'last_name': widget.lastName.trim(),
+          'registration_completed': false,
+          'app_language_code': languageCode,
+          'signup_source': 'mobile',
+        },
+      ),
+    );
+
+    // Supabase does not throw when the email already belongs to a confirmed
+    // account - it returns 200 with an empty `identities` list and sends no
+    // email at all (anti-enumeration behavior).
+    final identities = signUpResponse.user?.identities;
+    if (identities != null && identities.isEmpty) {
+      if (!mounted) return false;
+      await _showNoticeDialog(
+        title: t(
+          context,
+          'Email Already Registered',
+          'May Account na ang Email',
+        ),
+        message: t(
+          context,
+          'This email already has an account. Please login instead, or use Forgot Password if needed.',
+          'May account na ang email na ito. Mag-login na lang, o gamitin ang Nakalimutan ang Password kung kailangan.',
+        ),
+      );
+      return false;
+    }
+
+    _signupStarted = true;
+    return true;
+  }
+
   Future<void> _verifyOtp() async {
     if (_isVerifying || _email.isEmpty) return;
 
@@ -344,13 +442,19 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       return;
     }
 
+    final languageCode = Localizations.localeOf(context).languageCode == 'tl'
+        ? 'tl'
+        : 'en';
+
     setState(() => _isVerifying = true);
 
     try {
-      final response = await supabase.auth.verifyOTP(
-        type: OtpType.signup,
-        email: _email,
-        token: _code,
+      final response = await _withOtpTimeout(
+        supabase.auth.verifyOTP(
+          type: OtpType.signup,
+          email: _email,
+          token: _code,
+        ),
       );
 
       final user = response.user ?? supabase.auth.currentUser;
@@ -366,8 +470,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
         'last_name': widget.lastName.trim(),
         'email': _email,
         'registration_status': 'completed',
-        'app_language_code':
-            Localizations.localeOf(context).languageCode == 'tl' ? 'tl' : 'en',
+        'app_language_code': languageCode,
         'updated_at': DateTime.now().toUtc().toIso8601String(),
       });
 
@@ -377,8 +480,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
             'first_name': widget.firstName.trim(),
             'last_name': widget.lastName.trim(),
             'registration_completed': true,
-            'app_language_code':
-                Localizations.localeOf(context).languageCode == 'tl' ? 'tl' : 'en',
+            'app_language_code': languageCode,
           },
         ),
       );
@@ -390,9 +492,23 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       await _showAccountCreatedDialog();
     } on AuthException catch (e) {
       if (!mounted) return;
+      if (isNetworkError(e)) {
+        await showNoInternetDialog(context);
+      } else {
+        await _showNoticeDialog(
+          title: t(context, 'Invalid Code', 'Maling Code'),
+          message: e.message,
+        );
+      }
+    } on TimeoutException {
+      if (!mounted) return;
       await _showNoticeDialog(
-        title: t(context, 'Invalid Code', 'Maling Code'),
-        message: e.message,
+        title: t(context, 'Request Timed Out', 'Nag-time out ang Request'),
+        message: t(
+          context,
+          'Verification is taking too long. Please check your connection and try again.',
+          'Masyadong matagal ang pag-verify. Suriin ang connection at subukang muli.',
+        ),
       );
     } catch (e) {
       if (!mounted) return;
@@ -574,7 +690,9 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                           style: TextStyle(
                             fontFamily: 'Poppins',
                             fontSize: isFilled ? 22 : 20,
-                            fontWeight: isFilled ? FontWeight.w700 : FontWeight.w400,
+                            fontWeight: isFilled
+                                ? FontWeight.w700
+                                : FontWeight.w400,
                             color: isFilled ? Colors.black87 : Colors.black26,
                           ),
                           child: Text(isFilled ? typed[i] : '–'),
@@ -609,70 +727,70 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   }
 
   Widget _buildFooter() => Column(
-        mainAxisSize: MainAxisSize.min,
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Row(
         children: [
-          Row(
-            children: [
-              const Expanded(child: Divider(thickness: 1)),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Text(
-                  t(context, 'OR', 'O'),
-                  style: const TextStyle(
-                    fontFamily: 'Poppins',
-                    color: Colors.grey,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+          const Expanded(child: Divider(thickness: 1)),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Text(
+              t(context, 'OR', 'O'),
+              style: const TextStyle(
+                fontFamily: 'Poppins',
+                color: Colors.grey,
+                fontWeight: FontWeight.w600,
               ),
-              const Expanded(child: Divider(thickness: 1)),
-            ],
+            ),
           ),
-          const SizedBox(height: 10),
-          Wrap(
-            alignment: WrapAlignment.center,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              Text(
-                "${t(context, 'Already have an account?', 'Mayroon ka nang account?')} ",
-                style: const TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 13,
-                  color: Colors.grey,
-                ),
+          const Expanded(child: Divider(thickness: 1)),
+        ],
+      ),
+      const SizedBox(height: 10),
+      Wrap(
+        alignment: WrapAlignment.center,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+          Text(
+            "${t(context, 'Already have an account?', 'Mayroon ka nang account?')} ",
+            style: const TextStyle(
+              fontFamily: 'Poppins',
+              fontSize: 13,
+              color: Colors.grey,
+            ),
+          ),
+          TextButton(
+            onPressed: (_isSending || _isVerifying)
+                ? null
+                : () async {
+                    await _cleanupPendingByEmail();
+                    LoginPage.skipAutoRoute = false;
+                    if (!context.mounted) return;
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (_) => const LoginPage()),
+                      (route) => false,
+                    );
+                  },
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              minimumSize: Size.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            child: Text(
+              t(context, 'Login', 'Mag-login'),
+              style: const TextStyle(
+                fontFamily: 'Poppins',
+                color: brandRed,
+                fontWeight: FontWeight.bold,
+                fontSize: 13,
               ),
-              TextButton(
-                onPressed: (_isSending || _isVerifying)
-                    ? null
-                    : () async {
-                        await _cleanupPendingByEmail();
-                        LoginPage.skipAutoRoute = false;
-                        if (!context.mounted) return;
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(builder: (_) => const LoginPage()),
-                          (route) => false,
-                        );
-                      },
-                style: TextButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
-                  minimumSize: Size.zero,
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                ),
-                child: Text(
-                  t(context, 'Login', 'Mag-login'),
-                  style: const TextStyle(
-                    fontFamily: 'Poppins',
-                    color: brandRed,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 13,
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
         ],
-      );
+      ),
+    ],
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -697,9 +815,14 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       );
     }
 
+    final resendSeconds = _resendRemaining.inSeconds;
+    final resendDisabled = _isVerifying || _isSending || _resendOnCooldown;
+
     return WillPopScope(
       onWillPop: () async {
-        if (_isSending || _isVerifying || _completed) return !_isSending && !_isVerifying;
+        if (_isSending || _isVerifying || _completed) {
+          return !_isSending && !_isVerifying;
+        }
         await _cleanupPendingByEmail();
         return true;
       },
@@ -725,7 +848,10 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Padding(
-                              padding: const EdgeInsets.only(top: 70, bottom: 30),
+                              padding: const EdgeInsets.only(
+                                top: 70,
+                                bottom: 30,
+                              ),
                               child: SizedBox(
                                 height: 120,
                                 child: FittedBox(
@@ -775,7 +901,12 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                             const SizedBox(height: 24),
                             Container(
                               width: double.infinity,
-                              padding: const EdgeInsets.fromLTRB(18, 18, 18, 16),
+                              padding: const EdgeInsets.fromLTRB(
+                                18,
+                                18,
+                                18,
+                                16,
+                              ),
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(20),
@@ -823,14 +954,20 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                                   _buildOtpCard(),
                                   const SizedBox(height: 10),
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       TextButton(
-                                        onPressed: _otpCtrl.text.isEmpty ? null : _clearOtp,
+                                        onPressed: _otpCtrl.text.isEmpty
+                                            ? null
+                                            : _clearOtp,
                                         style: TextButton.styleFrom(
-                                          padding: const EdgeInsets.symmetric(horizontal: 6),
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 6,
+                                          ),
                                           minimumSize: Size.zero,
-                                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                          tapTargetSize:
+                                              MaterialTapTargetSize.shrinkWrap,
                                         ),
                                         child: Text(
                                           t(context, 'Clear', 'Burahin'),
@@ -845,23 +982,42 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                                         ),
                                       ),
                                       TextButton(
-                                        onPressed: (_isVerifying || _isSending)
+                                        onPressed: resendDisabled
                                             ? null
                                             : () => _sendOtp(showToast: true),
                                         style: TextButton.styleFrom(
-                                          padding: const EdgeInsets.symmetric(horizontal: 6),
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 6,
+                                          ),
                                           minimumSize: Size.zero,
-                                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                          tapTargetSize:
+                                              MaterialTapTargetSize.shrinkWrap,
                                         ),
                                         child: Text(
                                           _isSending
-                                              ? t(context, 'Sending...', 'Ipinapadala...')
-                                              : t(context, 'Resend code', 'Magpadala ulit'),
-                                          style: const TextStyle(
+                                              ? t(
+                                                  context,
+                                                  'Sending...',
+                                                  'Ipinapadala...',
+                                                )
+                                              : _resendOnCooldown
+                                              ? t(
+                                                  context,
+                                                  'Resend in ${resendSeconds}s',
+                                                  'Ulit sa ${resendSeconds}s',
+                                                )
+                                              : t(
+                                                  context,
+                                                  'Resend code',
+                                                  'Magpadala ulit',
+                                                ),
+                                          style: TextStyle(
                                             fontFamily: 'Poppins',
                                             fontSize: 12,
                                             fontWeight: FontWeight.w700,
-                                            color: brandRed,
+                                            color: resendDisabled && !_isSending
+                                                ? Colors.black26
+                                                : brandRed,
                                           ),
                                         ),
                                       ),
@@ -875,10 +1031,14 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                               width: double.infinity,
                               height: 50,
                               child: ElevatedButton(
-                                onPressed: (_isVerifying || _isSending) ? null : _verifyOtp,
+                                onPressed: (_isVerifying || _isSending)
+                                    ? null
+                                    : _verifyOtp,
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: brandRed,
-                                  disabledBackgroundColor: brandRed.withOpacity(0.55),
+                                  disabledBackgroundColor: brandRed.withOpacity(
+                                    0.55,
+                                  ),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10),
                                   ),
@@ -899,7 +1059,11 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                                                 'Verify Email Address',
                                                 'I-verify ang Email Address',
                                               )
-                                            : t(context, 'Enter Code', 'Ilagay ang Code'),
+                                            : t(
+                                                context,
+                                                'Enter Code',
+                                                'Ilagay ang Code',
+                                              ),
                                         textAlign: TextAlign.center,
                                         style: const TextStyle(
                                           fontFamily: 'Poppins',

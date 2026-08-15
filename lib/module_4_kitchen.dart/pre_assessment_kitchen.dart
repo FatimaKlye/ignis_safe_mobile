@@ -1105,6 +1105,7 @@ class _PreAssessmentKitchenPageState
             score: correctCount,
             totalQuestions: _questions.length,
             assessmentTitle: _assessmentTitle,
+            attemptId: _attemptId!,
           ),
         ),
       );

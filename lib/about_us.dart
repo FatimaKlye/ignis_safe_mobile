@@ -11,10 +11,6 @@ import 'profile_refresh_notifier.dart';
 
 enum AboutFilter { all, about, bfpDasmarinas, contacts }
 
-/// Index of the Profile tab within [IgnisHomePage]'s tab list
-/// (Module = 0, About Us = 1, Profile = 2). Kept as a local constant
-/// because importing `home.dart`'s `HomeTab` enum here would create a
-/// circular import (home.dart already imports this file).
 const int _profileTabIndex = 2;
 
 class _NoOverscrollScrollBehavior extends ScrollBehavior {
@@ -50,17 +46,18 @@ class _AboutUsPageState extends State<AboutUsPage> {
   String _firstName = '';
   String _lastName = '';
   String? _avatarUrl;
-
-  // navbar
-  // search + filter
   String _searchQuery = '';
   AboutFilter _filter = AboutFilter.all;
+  _AboutUsData? _aboutData;
+  Object? _loadError;
+  bool _loading = true;
 
   @override
   void initState() {
     super.initState();
     profileRefreshNotifier.addListener(_handleProfileChanged);
     _loadProfile();
+    _loadAboutUs();
   }
 
   void _handleProfileChanged() => _loadProfile();
@@ -82,11 +79,223 @@ class _AboutUsPageState extends State<AboutUsPage> {
           .maybeSingle();
       if (!mounted || data == null) return;
       setState(() {
-        _firstName = data['first_name'] ?? '';
-        _lastName = data['last_name'] ?? '';
+        _firstName = (data['first_name'] ?? '').toString();
+        _lastName = (data['last_name'] ?? '').toString();
         _avatarUrl = data['avatar_url'] as String?;
       });
     } catch (_) {}
+  }
+
+  Future<void> _loadAboutUs() async {
+    if (mounted) {
+      setState(() {
+        _loading = true;
+        _loadError = null;
+      });
+    }
+
+    try {
+      final client = Supabase.instance.client;
+      final responses = await Future.wait<dynamic>([
+        client.from('about_us_ui_texts').select('key,text_en,text_tl'),
+        client
+            .from('about_us_sections')
+            .select()
+            .eq('is_active', true)
+            .order('display_order'),
+        client.from('about_us_ignis').select().eq('section_key', 'ignis_safe').single(),
+        client
+            .from('about_us_ignis_chips')
+            .select()
+            .eq('section_key', 'ignis_safe')
+            .eq('is_active', true)
+            .order('display_order'),
+        client
+            .from('about_us_name_meanings')
+            .select()
+            .eq('section_key', 'ignis_safe')
+            .eq('is_active', true)
+            .order('display_order'),
+        client
+            .from('about_us_team_members')
+            .select()
+            .eq('section_key', 'ignis_safe')
+            .eq('is_active', true)
+            .order('display_order'),
+        client
+            .from('about_us_partner_info')
+            .select()
+            .eq('section_key', 'bfp_dasmarinas')
+            .single(),
+        client
+            .from('about_us_emergency_info')
+            .select()
+            .eq('section_key', 'emergency_contacts')
+            .single(),
+        client
+            .from('about_us_emergency_numbers')
+            .select()
+            .eq('section_key', 'emergency_contacts')
+            .eq('is_active', true)
+            .order('display_order'),
+        client
+            .from('about_us_contact_points')
+            .select()
+            .eq('is_active', true),
+        client
+            .from('about_us_partner_contact_links')
+            .select()
+            .eq('section_key', 'bfp_dasmarinas')
+            .order('display_order'),
+        client
+            .from('about_us_directory_info')
+            .select()
+            .eq('section_key', 'cavite_directory')
+            .single(),
+        client
+            .from('about_us_directory_groups')
+            .select()
+            .eq('section_key', 'cavite_directory')
+            .eq('is_active', true)
+            .order('display_order'),
+        client
+            .from('about_us_directory_entries')
+            .select()
+            .eq('is_active', true)
+            .order('display_order'),
+        client
+            .from('about_us_directory_phones')
+            .select()
+            .eq('is_active', true)
+            .order('display_order'),
+      ]);
+
+      final uiTexts = <String, _LocalizedText>{};
+      for (final raw in (responses[0] as List)) {
+        final row = Map<String, dynamic>.from(raw as Map);
+        uiTexts[row['key'].toString()] = _LocalizedText.fromRow(
+          row,
+          enKey: 'text_en',
+          tlKey: 'text_tl',
+        );
+      }
+
+      final sectionRows = (responses[1] as List)
+          .map((e) => _SectionRecord.fromRow(Map<String, dynamic>.from(e as Map)))
+          .toList();
+
+      final ignis = _IgnisRecord.fromRow(
+        Map<String, dynamic>.from(responses[2] as Map),
+        chips: (responses[3] as List)
+            .map((e) => _IgnisChip.fromRow(Map<String, dynamic>.from(e as Map)))
+            .toList(),
+        meanings: (responses[4] as List)
+            .map((e) => _NameMeaning.fromRow(Map<String, dynamic>.from(e as Map)))
+            .toList(),
+        team: (responses[5] as List)
+            .map((e) => _TeamMember.fromRow(Map<String, dynamic>.from(e as Map)))
+            .toList(),
+      );
+
+      final contactPoints = <String, _ContactPoint>{};
+      for (final raw in (responses[9] as List)) {
+        final row = Map<String, dynamic>.from(raw as Map);
+        final point = _ContactPoint.fromRow(row);
+        contactPoints[point.key] = point;
+      }
+
+      final partnerContactKeys = (responses[10] as List)
+          .map((e) => Map<String, dynamic>.from(e as Map)['contact_key'].toString())
+          .toList();
+
+      final partner = _PartnerRecord.fromRow(
+        Map<String, dynamic>.from(responses[6] as Map),
+        contacts: partnerContactKeys
+            .map((key) => contactPoints[key]!)
+            .toList(),
+      );
+
+      final emergency = _EmergencyRecord.fromRow(
+        Map<String, dynamic>.from(responses[7] as Map),
+        numbers: (responses[8] as List)
+            .map((e) {
+              final row = Map<String, dynamic>.from(e as Map);
+              return _EmergencyNumber.fromRow(
+                row,
+                contact: contactPoints[row['contact_key'].toString()]!,
+              );
+            })
+            .toList(),
+      );
+
+      final directoryInfo = _DirectoryInfo.fromRow(
+        Map<String, dynamic>.from(responses[11] as Map),
+      );
+      final groupRows = (responses[12] as List)
+          .map((e) => Map<String, dynamic>.from(e as Map))
+          .toList();
+      final entryRows = (responses[13] as List)
+          .map((e) => Map<String, dynamic>.from(e as Map))
+          .toList();
+      final phoneRows = (responses[14] as List)
+          .map((e) => Map<String, dynamic>.from(e as Map))
+          .toList();
+
+      final phonesByEntry = <String, List<_DirectoryPhone>>{};
+      for (final row in phoneRows) {
+        final key = row['entry_key'].toString();
+        phonesByEntry.putIfAbsent(key, () => []).add(_DirectoryPhone.fromRow(row));
+      }
+
+      final entriesByGroup = <String, List<_DirectoryEntry>>{};
+      for (final row in entryRows) {
+        final groupKey = row['group_key'].toString();
+        final entryKey = row['entry_key'].toString();
+        entriesByGroup.putIfAbsent(groupKey, () => []).add(
+              _DirectoryEntry.fromRow(
+                row,
+                phones: phonesByEntry[entryKey] ?? const [],
+              ),
+            );
+      }
+
+      final groups = groupRows
+          .map(
+            (row) => _DirectoryGroup.fromRow(
+              row,
+              entries: entriesByGroup[row['group_key'].toString()] ?? const [],
+            ),
+          )
+          .toList();
+
+      final data = _AboutUsData(
+        uiTexts: uiTexts,
+        sections: sectionRows,
+        ignis: ignis,
+        partner: partner,
+        emergency: emergency,
+        directoryInfo: directoryInfo,
+        directoryGroups: groups,
+      );
+
+      if (!mounted) return;
+      setState(() {
+        _aboutData = data;
+        _loading = false;
+      });
+    } catch (e, st) {
+      debugPrint('Failed to load About Us content: $e\n$st');
+      if (!mounted) return;
+      setState(() {
+        _loadError = e;
+        _loading = false;
+      });
+    }
+  }
+
+  String _ui(BuildContext context, String key) {
+    final value = _aboutData!.uiTexts[key]!;
+    return value.resolve(context);
   }
 
   Future<void> _logout() async {
@@ -112,26 +321,20 @@ class _AboutUsPageState extends State<AboutUsPage> {
 
   void _onSearchChanged(String v) => setState(() => _searchQuery = v);
 
-  void _openFilterMenu(BuildContext context) async {
+  Future<void> _openFilterMenu(BuildContext context) async {
     final selected = await showMenu<AboutFilter>(
       context: context,
       position: const RelativeRect.fromLTRB(9999, 120, 16, 0),
       items: [
-        PopupMenuItem(
-          value: AboutFilter.all,
-          child: Text(t(context, 'All', 'Lahat')),
-        ),
-        PopupMenuItem(
-          value: AboutFilter.about,
-          child: const Text('IGNIS SAFE'),
-        ),
+        PopupMenuItem(value: AboutFilter.all, child: Text(_ui(context, 'filter_all'))),
+        PopupMenuItem(value: AboutFilter.about, child: Text(_ui(context, 'filter_about'))),
         PopupMenuItem(
           value: AboutFilter.bfpDasmarinas,
-          child: Text(t(context, 'BFP Dasmariñas', 'BFP Dasmariñas')),
+          child: Text(_ui(context, 'filter_partner')),
         ),
         PopupMenuItem(
           value: AboutFilter.contacts,
-          child: Text(t(context, 'Contacts', 'Mga Kontak')),
+          child: Text(_ui(context, 'filter_contacts')),
         ),
       ],
     );
@@ -156,29 +359,65 @@ class _AboutUsPageState extends State<AboutUsPage> {
 
   bool _matchesSearch(_AboutSection s, String q) {
     if (q.isEmpty) return true;
-    final hay = ('${s.title} ${s.searchText}'.toLowerCase());
-    return hay.contains(q);
+    return s.searchText.toLowerCase().contains(q);
   }
 
   @override
   Widget build(BuildContext context) {
-    final q = _searchQuery.trim().toLowerCase();
+    final avatarProvider = _avatarUrl != null && _avatarUrl!.trim().isNotEmpty
+        ? NetworkImage(_avatarUrl!) as ImageProvider
+        : null;
 
+    if (_loading) {
+      return Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Stack(
+          children: [
+            Positioned.fill(child: Image.asset('assets/bg.png', fit: BoxFit.cover)),
+            const MainTabHeaderBackdrop(height: 270),
+            const SafeArea(
+              child: Center(child: CircularProgressIndicator(color: brandRed)),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (_loadError != null || _aboutData == null) {
+      return Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Stack(
+          children: [
+            Positioned.fill(child: Image.asset('assets/bg.png', fit: BoxFit.cover)),
+            const MainTabHeaderBackdrop(height: 270),
+            SafeArea(
+              child: Center(
+                child: IconButton(
+                  onPressed: _loadAboutUs,
+                  icon: const Icon(Icons.refresh_rounded, color: brandRed, size: 36),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    final q = _searchQuery.trim().toLowerCase();
     final sections = _buildSections();
     final visible = sections
         .where((s) => _matchesFilter(s) && _matchesSearch(s, q))
         .toList();
-    final avatarProvider = _avatarUrl != null && _avatarUrl!.trim().isNotEmpty
-        ? NetworkImage(_avatarUrl!) as ImageProvider
-        : null;
+    final fullName = '$_firstName $_lastName'.trim();
+    final greeting = fullName.isEmpty
+        ? _ui(context, 'greeting_guest')
+        : _ui(context, 'greeting_user').replaceAll('{name}', fullName);
 
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Stack(
         children: [
-          Positioned.fill(
-            child: Image.asset('assets/bg.png', fit: BoxFit.cover),
-          ),
+          Positioned.fill(child: Image.asset('assets/bg.png', fit: BoxFit.cover)),
           const MainTabHeaderBackdrop(height: 270),
           SafeArea(
             child: LayoutBuilder(
@@ -196,28 +435,14 @@ class _AboutUsPageState extends State<AboutUsPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       MainTabHeader(
-                        greeting: _firstName.isEmpty && _lastName.isEmpty
-                            ? t(context, 'Hi!', 'Kumusta!')
-                            : t(
-                                context,
-                                'Hi, $_firstName $_lastName'.trim(),
-                                'Kumusta, $_firstName $_lastName'.trim(),
-                              ),
-                        accountLabel: t(
-                          context,
-                          'Welcome to IGNIS SAFE',
-                          'Mabuhay sa IGNIS SAFE',
-                        ),
-                        title: t(context, 'About Us', 'Tungkol sa Amin'),
-                        subtitle: t(
-                          context,
-                          'Discover our mission, identity, and the people behind the app.',
-                          'Kilalanin ang aming layunin, pagkakakilanlan, at ang team sa likod ng app.',
-                        ),
+                        greeting: greeting,
+                        accountLabel: _ui(context, 'welcome_label'),
+                        title: _ui(context, 'page_title'),
+                        subtitle: _ui(context, 'page_subtitle'),
                         titleIcon: Icons.info_rounded,
                         avatarImage: avatarProvider,
-                        profileLabel: t(context, 'Profile', 'Profile'),
-                        logoutLabel: t(context, 'Log Out', 'Mag-logout'),
+                        profileLabel: _ui(context, 'profile_label'),
+                        logoutLabel: _ui(context, 'logout_label'),
                         onProfile: _goToProfile,
                         onLogout: _logout,
                       ),
@@ -244,17 +469,15 @@ class _AboutUsPageState extends State<AboutUsPage> {
                               child: TextField(
                                 onChanged: _onSearchChanged,
                                 decoration: InputDecoration(
-                                  hintText: t(context, 'Search', 'Maghanap'),
-                                  hintStyle: const TextStyle(
-                                    color: Colors.grey,
-                                  ),
+                                  hintText: _ui(context, 'search_placeholder'),
+                                  hintStyle: const TextStyle(color: Colors.grey),
                                   border: InputBorder.none,
                                   isDense: true,
                                 ),
                               ),
                             ),
                             IconButton(
-                              tooltip: t(context, 'Filter', 'Salain'),
+                              tooltip: _ui(context, 'filter_label'),
                               onPressed: () => _openFilterMenu(context),
                               icon: Icon(
                                 Icons.filter_list_rounded,
@@ -295,18 +518,16 @@ class _AboutUsPageState extends State<AboutUsPage> {
       child: SingleChildScrollView(
         physics: const ClampingScrollPhysics(),
         clipBehavior: Clip.hardEdge,
-        padding: EdgeInsets.fromLTRB(
-          horizontalPadding,
-          0,
-          horizontalPadding,
-          12,
-        ),
+        padding: EdgeInsets.fromLTRB(horizontalPadding, 0, horizontalPadding, 12),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             if (visible.isEmpty)
               _EmptyState(
+                title: _ui(context, 'empty_title'),
+                body: _ui(context, 'empty_body'),
+                resetLabel: _ui(context, 'reset'),
                 onClear: () => setState(() {
                   _searchQuery = '';
                   _filter = AboutFilter.all;
@@ -319,7 +540,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
                     bottom: index == visible.length - 1 ? 0 : 14,
                   ),
                   child: _ExpandableSectionCard(
-                    key: ValueKey(visible[index].title),
+                    key: ValueKey(visible[index].key),
                     icon: visible[index].icon,
                     title: visible[index].title,
                     subtitle: visible[index].subtitle,
@@ -334,73 +555,59 @@ class _AboutUsPageState extends State<AboutUsPage> {
   }
 
   List<_AboutSection> _buildSections() {
-    return [
-      _AboutSection(
-        type: _AboutSectionType.about,
-        title: "IGNIS SAFE",
-        searchText:
-            "Ignis Safe interactive 3D fire safety simulation mission logo shield fire truck hose flame water spray protected secure developers team Fatima Klye M Sierra fatimaklyesierra081005@gmail.com Andrei C Quias andreicarisma24@gmail.com Rave Paulo Piolo V Sierra Sarah Flor Macandile Maricis Punzalan adviser",
-        icon: Icons.local_fire_department_rounded,
-        subtitle: t(
-          context,
-          "Our mission, logo meaning, developers, and adviser",
-          "Ang aming misyon, kahulugan ng logo, mga developer, at tagapayo",
-        ),
-        builder: (context) => const _IgnisSafeSectionContent(),
-      ),
-      _AboutSection(
-        type: _AboutSectionType.partner,
-        title: "BFP R4A Dasmariñas City Fire Station",
-        searchText:
-            "Bureau of Fire Protection Philippines fire safety education",
-        icon: Icons.local_fire_department_outlined,
-        subtitle: t(
-          context,
-          "Our partner fire station",
-          "Aming kasosyong istasyon ng bumbero",
-        ),
-        builder: (context) => const _PartnerCard(),
-      ),
-      _AboutSection(
-        type: _AboutSectionType.contact,
-        title: t(
-          context,
-          "Emergency Contact Information",
-          "Impormasyon sa Emergency",
-        ),
-        searchText: "hotline emergency 046 884 6131 416 0875 0995 336 9534",
-        icon: Icons.phone_in_talk_rounded,
-        subtitle: t(
-          context,
-          "Hotlines you can call anytime",
-          "Mga hotline na maaari mong tawagan",
-        ),
-        builder: (context) => const _ContactCard(),
-      ),
-      _AboutSection(
-        type: _AboutSectionType.contact,
-        title: t(context, "Cavite BFP Directory", "Direktoryo ng Cavite BFP"),
-        searchText:
-            "Office of the Provincial Fire Director Cavite City Kawit Noveleta Rosario Bacoor Imus Dasmarinas Carmona GMA Silang General Trias Amadeo Indang Tanza Trece Martires Alfonso Aguinaldo Magallanes Maragondon Mendez Naic Tagaytay Ternate",
-        icon: Icons.apartment_rounded,
-        subtitle: t(
-          context,
-          "Fire stations across Cavite by district",
-          "Mga istasyon ng bumbero sa Cavite ayon sa distrito",
-        ),
-        builder: (context) => _CaviteBfpDirectoryCard(query: _searchQuery),
-      ),
-    ];
+    final data = _aboutData!;
+    return data.sections.map((record) {
+      final title = record.title.resolve(context);
+      final subtitle = record.subtitle.resolve(context);
+      Widget child;
+      switch (record.sectionKey) {
+        case 'ignis_safe':
+          child = _IgnisSafeSectionContent(
+            data: data.ignis,
+            uiTexts: data.uiTexts,
+          );
+          break;
+        case 'bfp_dasmarinas':
+          child = _PartnerCard(data: data.partner);
+          break;
+        case 'emergency_contacts':
+          child = _ContactCard(data: data.emergency);
+          break;
+        case 'cavite_directory':
+          child = _CaviteBfpDirectoryCard(
+            query: _searchQuery,
+            info: data.directoryInfo,
+            groups: data.directoryGroups,
+            uiTexts: data.uiTexts,
+          );
+          break;
+        default:
+          child = const SizedBox.shrink();
+      }
+
+      return _AboutSection(
+        key: record.sectionKey,
+        type: record.type,
+        title: title,
+        searchText: [
+          record.title.en,
+          record.title.tl,
+          record.subtitle.en,
+          record.subtitle.tl,
+          data.searchTextFor(record.sectionKey),
+        ].join(' '),
+        icon: _iconFromKey(record.iconKey),
+        subtitle: subtitle,
+        builder: (_) => child,
+      );
+    }).toList();
   }
 }
-
-// ─────────────────────────────────────────────────────────────
-// Sections + UI blocks
-// ─────────────────────────────────────────────────────────────
 
 enum _AboutSectionType { about, partner, contact }
 
 class _AboutSection {
+  final String key;
   final _AboutSectionType type;
   final String title;
   final String searchText;
@@ -409,6 +616,7 @@ class _AboutSection {
   final Widget Function(BuildContext) builder;
 
   _AboutSection({
+    required this.key,
     required this.type,
     required this.title,
     required this.searchText,
@@ -419,17 +627,20 @@ class _AboutSection {
 }
 
 class _IgnisSafeSectionContent extends StatelessWidget {
-  const _IgnisSafeSectionContent();
+  const _IgnisSafeSectionContent({required this.data, required this.uiTexts});
+
+  final _IgnisRecord data;
+  final Map<String, _LocalizedText> uiTexts;
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
+    return Column(
       children: [
-        _ModernAboutCard(),
-        SizedBox(height: 14),
-        _LogoMeaningCard(),
-        SizedBox(height: 14),
-        _TeamCard(),
+        _ModernAboutCard(data: data),
+        const SizedBox(height: 14),
+        _LogoMeaningCard(data: data),
+        const SizedBox(height: 14),
+        _TeamCard(data: data, uiTexts: uiTexts),
       ],
     );
   }
@@ -577,24 +788,14 @@ class _ExpandableSectionCardState extends State<_ExpandableSectionCard> {
 
 class _ModernAboutCard extends StatelessWidget {
   static const Color brandRed = Color(0xFFB11217);
+  const _ModernAboutCard({required this.data});
 
-  const _ModernAboutCard();
+  final _IgnisRecord data;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.10),
-            blurRadius: 18,
-            offset: const Offset(0, 8),
-          ),
-        ],
-        border: Border.all(color: const Color(0xFFF0F0F0)),
-      ),
+      decoration: _cardDecoration(),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -613,16 +814,13 @@ class _ModernAboutCard extends StatelessWidget {
                       colors: [brandRed, Color(0xFFE65A5F)],
                     ),
                   ),
-                  child: const Icon(
-                    Icons.local_fire_department_rounded,
-                    color: Colors.white,
-                  ),
+                  child: const Icon(Icons.local_fire_department_rounded, color: Colors.white),
                 ),
                 const SizedBox(width: 12),
-                const Expanded(
+                Expanded(
                   child: Text(
-                    "IGNIS SAFE",
-                    style: TextStyle(
+                    data.heading.resolve(context),
+                    style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w900,
                       color: Color(0xFF1E1E1E),
@@ -633,11 +831,7 @@ class _ModernAboutCard extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              t(
-                context,
-                "An interactive 3D fire safety simulation that helps users learn proper prevention and emergency response through realistic, hands-on scenarios in a controlled environment.",
-                "Isang interactive na 3D fire safety simulation na tumutulong sa mga gumagamit na matuto ng wastong pag-iwas at pagtugon sa emerhensiya sa pamamagitan ng mga makatotohanang senaryo sa kontroladong kapaligiran.",
-              ),
+              data.description.resolve(context),
               style: const TextStyle(
                 height: 1.35,
                 fontSize: 13.5,
@@ -649,28 +843,14 @@ class _ModernAboutCard extends StatelessWidget {
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: [
-                _Chip(
-                  text: t(context, "3D Scenarios", "3D na Senaryo"),
-                  icon: Icons.view_in_ar_rounded,
-                ),
-                _Chip(
-                  text: t(
-                    context,
-                    "Hands-on Practice",
-                    "Hands-on na Pagsasanay",
-                  ),
-                  icon: Icons.touch_app_rounded,
-                ),
-                _Chip(
-                  text: t(context, "Safe Learning", "Ligtas na Pag-aaral"),
-                  icon: Icons.verified_rounded,
-                ),
-                _Chip(
-                  text: t(context, "Fire Awareness", "Kaalaman sa Sunog"),
-                  icon: Icons.school_rounded,
-                ),
-              ],
+              children: data.chips
+                  .map(
+                    (chip) => _Chip(
+                      text: chip.label.resolve(context),
+                      icon: _iconFromKey(chip.iconKey),
+                    ),
+                  )
+                  .toList(),
             ),
             const SizedBox(height: 14),
             Container(
@@ -686,11 +866,7 @@ class _ModernAboutCard extends StatelessWidget {
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      t(
-                        context,
-                        "Goal: Improve readiness through correct decision-making and proper extinguisher handling.",
-                        "Layunin: Palakasin ang kahandaan sa pamamagitan ng tamang paggawa ng desisyon at wastong paggamit ng pamatay-sunog.",
-                      ),
+                      data.goal.resolve(context),
                       style: const TextStyle(
                         fontSize: 12.8,
                         height: 1.25,
@@ -711,30 +887,19 @@ class _ModernAboutCard extends StatelessWidget {
 
 class _LogoMeaningCard extends StatelessWidget {
   static const Color brandRed = Color(0xFFB11217);
+  const _LogoMeaningCard({required this.data});
 
-  const _LogoMeaningCard();
+  final _IgnisRecord data;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.10),
-            blurRadius: 18,
-            offset: const Offset(0, 8),
-          ),
-        ],
-        border: Border.all(color: const Color(0xFFF0F0F0)),
-      ),
+      decoration: _cardDecoration(),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 14),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Top: logo left + paragraph right
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -749,7 +914,7 @@ class _LogoMeaningCard extends StatelessWidget {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(18),
                     child: Image.asset(
-                      "assets/logo.png",
+                      data.logoAssetPath,
                       fit: BoxFit.fitHeight,
                       errorBuilder: (_, __, ___) => const Icon(
                         Icons.shield_rounded,
@@ -762,15 +927,7 @@ class _LogoMeaningCard extends StatelessWidget {
                 const SizedBox(width: 14),
                 Expanded(
                   child: Text(
-                    t(
-                      context,
-                      "The IGNIS SAFE logo is built around a shield, symbolizing protection and safety. "
-                          "The fire truck and hose show readiness to respond quickly during emergencies. "
-                          "The flame represents fire risk, while the water spray represents control and prevention.",
-                      "Ang logo ng IGNIS SAFE ay nakabase sa isang kalasag, na sumasalamin sa proteksyon at kaligtasan. "
-                          "Ang fire truck at hose ay nagpapakita ng kahandaang tumugon nang mabilis sa mga emerhensiya. "
-                          "Ang apoy ay kumakatawan sa panganib ng sunog, habang ang tubig ay kumakatawan sa kontrol at pag-iwas.",
-                    ),
+                    data.logoDescription.resolve(context),
                     textAlign: TextAlign.left,
                     style: const TextStyle(
                       fontSize: 12.8,
@@ -782,14 +939,12 @@ class _LogoMeaningCard extends StatelessWidget {
                 ),
               ],
             ),
-
             const SizedBox(height: 14),
-
-            const Align(
+            Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                "IGNIS SAFE",
-                style: TextStyle(
+                data.brandHeading.resolve(context),
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w900,
                   color: Color(0xFF1E1E1E),
@@ -797,67 +952,26 @@ class _LogoMeaningCard extends StatelessWidget {
                 ),
               ),
             ),
-
             const SizedBox(height: 12),
-
-            // Ignis / Safe blocks
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: _MeaningMiniBlock(
-                    title: "Ignis",
-                    body: t(
-                      context,
-                      "is a Latin word meaning fire.",
-                      "ay isang salitang Latin na nangangahulugang apoy.",
+                for (int i = 0; i < data.meanings.length; i++) ...[
+                  Expanded(
+                    child: _MeaningMiniBlock(
+                      title: data.meanings[i].term.resolve(context),
+                      body: data.meanings[i].body.resolve(context),
                     ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _MeaningMiniBlock(
-                    title: "Safe",
-                    body: t(
-                      context,
-                      "means protected or secure.",
-                      "ay nangangahulugang protektado o ligtas.",
-                    ),
-                  ),
-                ),
+                  if (i != data.meanings.length - 1) const SizedBox(width: 12),
+                ],
               ],
             ),
-
             const SizedBox(height: 12),
-
-            Text(
-              t(
-                context,
-                "Together, Ignis Safe means protection from fire or fire safety. "
-                    "It reflects a mission focused on preventing fire risks, ensuring preparedness, "
-                    "and keeping people and property safe from fire-related hazards.",
-                "Magkasama, ang Ignis Safe ay nangangahulugang proteksyon mula sa sunog o kaligtasan sa sunog. "
-                    "Sumasalamin ito sa isang misyon na nakatuon sa pag-iwas sa panganib ng sunog, pagtitiyak ng kahandaan, "
-                    "at pagpapanatiling ligtas ang mga tao at ari-arian mula sa mga panganib na may kaugnayan sa sunog.",
-              ),
-              textAlign: TextAlign.left,
-              style: const TextStyle(
-                fontSize: 12.8,
-                height: 1.35,
-                color: Color(0xFF2D2D2D),
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-
+            _bodyText(data.together.resolve(context)),
             const SizedBox(height: 12),
-
             Text(
-              t(
-                context,
-                "Ignis Safe focuses on fire safety, prevention, and emergency preparedness.",
-                "Ang Ignis Safe ay nakatuon sa kaligtasan sa sunog, pag-iwas, at paghahanda para sa emerhensiya.",
-              ),
-              textAlign: TextAlign.left,
+              data.focusHeading.resolve(context),
               style: const TextStyle(
                 fontSize: 12.8,
                 height: 1.35,
@@ -865,30 +979,9 @@ class _LogoMeaningCard extends StatelessWidget {
                 fontWeight: FontWeight.w900,
               ),
             ),
-
             const SizedBox(height: 10),
-
-            Text(
-              t(
-                context,
-                "It provides fire safety education, training, and awareness programs to help individuals and organizations "
-                    "understand fire risks and how to respond properly during emergencies. It also supports inspection, compliance, "
-                    "and safety reporting to strengthen overall fire protection systems.",
-                "Nagbibigay ito ng edukasyon sa kaligtasan sa sunog, pagsasanay, at mga programa ng kamalayan upang matulungan "
-                    "ang mga indibidwal at organisasyon na maunawaan ang mga panganib ng sunog at kung paano tumugon nang wasto sa mga emerhensiya. "
-                    "Sinusuportahan din nito ang inspeksyon, pagsunod, at pag-uulat sa kaligtasan upang palakasin ang pangkalahatang sistema ng proteksyon sa sunog.",
-              ),
-              textAlign: TextAlign.left,
-              style: const TextStyle(
-                fontSize: 12.8,
-                height: 1.35,
-                color: Color(0xFF2D2D2D),
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-
+            _bodyText(data.focusBody.resolve(context)),
             const SizedBox(height: 12),
-
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(12),
@@ -898,12 +991,7 @@ class _LogoMeaningCard extends StatelessWidget {
                 border: Border.all(color: const Color(0xFFF1D5D6)),
               ),
               child: Text(
-                t(
-                  context,
-                  "In essence, Ignis Safe helps prevent fires, prepare people for emergencies, and protect lives and property.",
-                  "Sa esensya, tinutulungan ng Ignis Safe ang pag-iwas sa sunog, paghahanda ng mga tao para sa mga emerhensiya, at pagprotekta ng buhay at ari-arian.",
-                ),
-                textAlign: TextAlign.left,
+                data.essence.resolve(context),
                 style: const TextStyle(
                   fontSize: 12.8,
                   height: 1.35,
@@ -914,6 +1002,19 @@ class _LogoMeaningCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _bodyText(String text) {
+    return Text(
+      text,
+      textAlign: TextAlign.left,
+      style: const TextStyle(
+        fontSize: 12.8,
+        height: 1.35,
+        color: Color(0xFF2D2D2D),
+        fontWeight: FontWeight.w600,
       ),
     );
   }
@@ -934,7 +1035,6 @@ class _MeaningMiniBlock extends StatelessWidget {
         border: Border.all(color: const Color(0xFFEDEDED)),
       ),
       child: RichText(
-        textAlign: TextAlign.left,
         text: TextSpan(
           style: const TextStyle(
             fontFamily: 'Poppins',
@@ -943,14 +1043,8 @@ class _MeaningMiniBlock extends StatelessWidget {
             color: Color(0xFF2D2D2D),
           ),
           children: [
-            TextSpan(
-              text: "$title ",
-              style: const TextStyle(fontWeight: FontWeight.w900),
-            ),
-            TextSpan(
-              text: body,
-              style: const TextStyle(fontWeight: FontWeight.w600),
-            ),
+            TextSpan(text: '$title ', style: const TextStyle(fontWeight: FontWeight.w900)),
+            TextSpan(text: body, style: const TextStyle(fontWeight: FontWeight.w600)),
           ],
         ),
       ),
@@ -959,98 +1053,24 @@ class _MeaningMiniBlock extends StatelessWidget {
 }
 
 class _TeamCard extends StatelessWidget {
-  const _TeamCard();
+  const _TeamCard({required this.data, required this.uiTexts});
+
+  final _IgnisRecord data;
+  final Map<String, _LocalizedText> uiTexts;
+
+  String _ui(BuildContext context, String key) => uiTexts[key]!.resolve(context);
 
   @override
   Widget build(BuildContext context) {
-    final team = [
-      _TeamMember(
-        fullName: "FATIMA KLYE M. SIERRA",
-        displayFirst: "FATIMA",
-        displayLast: "SIERRA",
-        role: "MOBILE DEVELOPER",
-        roleTl: "MOBILE DEVELOPER",
-        email: "fatimaklyesierra081005@gmail.com",
-        bio:
-            "Manages mobile application & databases and supports project coordination. She also serves as an Assistant Project Manager, helping ensure timelines and deliverables are met efficiently.",
-        bioTl:
-            "Namamahala ng mobile application at mga database at sumusuporta sa koordinasyon ng proyekto. Nagsisilbi rin siya bilang Assistant Project Manager, na tumutulong na matiyak na natutugunan ang mga takdang oras at naihahatid ang mga resulta nang mahusay.",
-        asset: "assets/dev_fatima1.jpg",
-      ),
-      _TeamMember(
-        fullName: "ANDREI C. QUIAS",
-        displayFirst: "ANDREI",
-        displayLast: "QUIAS",
-        role: "3D UNITY DEVELOPER",
-        roleTl: "3D UNITY DEVELOPER",
-        email: "andreicarisma24@gmail.com",
-        bio:
-            "Builds interactive and immersive applications. He also serves as a Project Manager, overseeing planning, coordination, and timely delivery of projects.",
-        bioTl:
-            "Nagtatayo ng mga interactive at immersive na application. Nagsisilbi rin siya bilang Project Manager, na nangunguna sa pagpaplano, koordinasyon, at napapanahong paghahatid ng mga proyekto.",
-        asset: "assets/dev_andrei.jpg",
-      ),
-      _TeamMember(
-        fullName: "RAVE PAULO PIOLO V. SIERRA",
-        displayFirst: "RAVE",
-        displayLast: "SIERRA",
-        role: "WEBSITE DEVELOPER",
-        roleTl: "WEBSITE DEVELOPER",
-        email: null,
-        bio:
-            "Responsible for designing, building, and maintaining responsive and functional websites, ensuring performance, usability, and a seamless user experience.",
-        bioTl:
-            "Responsable sa pagdidisenyo, pagtatayo, at pagpapanatili ng mga responsive at functional na website, na tinitiyak ang pagganap, kakayahang magamit, at maayos na karanasan ng gumagamit.",
-        asset: "assets/dev_rave.png",
-      ),
-      _TeamMember(
-        fullName: "SARAH FLOR MACANDILE",
-        displayFirst: "SARAH",
-        displayLast: "MACANDILE",
-        role: "DOCUMENTATION",
-        roleTl: "DOKUMENTASYON",
-        email: null,
-        bio:
-            "Ensures that all project records, reports, and required materials are accurate, organized, and properly maintained to support compliance and operational efficiency.",
-        bioTl:
-            "Tinitiyak na ang lahat ng rekord ng proyekto, ulat, at mga kinakailangang materyales ay tumpak, organisado, at maayos na pinapanatili upang suportahan ang pagsunod at kahusayan sa operasyon.",
-        asset: "assets/dev_sarah.jpg",
-      ),
-      _TeamMember(
-        fullName: "MARICIS PUNZALAN",
-        displayFirst: "MARICIS",
-        displayLast: "PUNZALAN",
-        role: "ADVISER",
-        roleTl: "TAGAPAYO",
-        email: null,
-        bio:
-            "Provides strategic guidance, oversight, and expert recommendations to support informed decision-making and overall project direction.",
-        bioTl:
-            "Nagbibigay ng estratehikong gabay, pangangasiwa, at mga rekomendasyon ng eksperto upang suportahan ang matalinong paggawa ng desisyon at pangkalahatang direksyon ng proyekto.",
-        asset: "assets/dev_maricis.png",
-      ),
-    ];
-
     return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.10),
-            blurRadius: 18,
-            offset: const Offset(0, 8),
-          ),
-        ],
-        border: Border.all(color: const Color(0xFFF0F0F0)),
-      ),
+      decoration: _cardDecoration(),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 14),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              t(context, "DEVELOPERS & ADVISER", "MGA DEVELOPER AT TAGAPAYO"),
+              data.teamHeading.resolve(context),
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w900,
@@ -1067,18 +1087,7 @@ class _TeamCard extends StatelessWidget {
                 border: Border.all(color: const Color(0xFFEDEDED)),
               ),
               child: Text(
-                t(
-                  context,
-                  "We are the Ignis Safe Team, fourth-year BSIT students from National University – Dasmariñas.\n\n"
-                      "Our group is developing a technology-driven fire safety education platform as part of our capstone project.\n\n "
-                      "We focus on building interactive, user-centered solutions that promote fire awareness, prevention, and proper emergency response. "
-                      "Our goal is to create a practical system with real-world relevance and community impact.",
-                  "Kami ang Ignis Safe Team, mga fourth-year na mag-aaral ng BSIT mula sa National University – Dasmariñas.\n\n"
-                      "Ang aming grupo ay nagde-develop ng isang technology-driven na platform para sa fire safety education bilang bahagi ng aming capstone project.\n\n "
-                      "Nakatuon kami sa pagbuo ng mga interactive at user-centered na solusyon na nagtataguyod ng kaalaman sa sunog, pag-iwas, at wastong pagtugon sa emerhensiya. "
-                      "Ang aming layunin ay lumikha ng isang praktikal na sistema na may kaugnayan sa totoong mundo at epekto sa komunidad.",
-                ),
-                textAlign: TextAlign.left,
+                data.teamIntro.resolve(context),
                 style: const TextStyle(
                   fontSize: 12.8,
                   height: 1.35,
@@ -1092,18 +1101,19 @@ class _TeamCard extends StatelessWidget {
               height: 146,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
-                itemCount: team.length,
+                itemCount: data.team.length,
                 separatorBuilder: (_, __) => const SizedBox(width: 12),
-                itemBuilder: (context, i) => _DevTile(m: team[i]),
+                itemBuilder: (context, i) => _DevTile(
+                  member: data.team[i],
+                  closeLabel: _ui(context, 'close'),
+                  emailPrefix: _ui(context, 'email_prefix'),
+                  emailPending: _ui(context, 'email_pending'),
+                ),
               ),
             ),
             const SizedBox(height: 10),
             Text(
-              t(
-                context,
-                "Tip: Tap any profile (optional) to open a short bio dialog.",
-                "Tip: I-tap ang anumang profile (opsyonal) upang buksan ang maikling bio dialog.",
-              ),
+              data.teamTip.resolve(context),
               style: const TextStyle(
                 fontSize: 12,
                 color: Color(0xFF666666),
@@ -1118,31 +1128,21 @@ class _TeamCard extends StatelessWidget {
 }
 
 class _PartnerCard extends StatelessWidget {
-  const _PartnerCard();
+  const _PartnerCard({required this.data});
+  final _PartnerRecord data;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.10),
-            blurRadius: 18,
-            offset: const Offset(0, 8),
-          ),
-        ],
-        border: Border.all(color: const Color(0xFFF0F0F0)),
-      ),
+      decoration: _cardDecoration(),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "BFP R4A Dasmariñas City Fire Station",
-              style: TextStyle(
+            Text(
+              data.heading.resolve(context),
+              style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w900,
                 color: Color(0xFF1E1E1E),
@@ -1150,12 +1150,7 @@ class _PartnerCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              t(
-                context,
-                "An official fire service unit operating under the Bureau of Fire Protection (BFP) in the Philippines. The BFP is a national government agency tasked with preventing and suppressing destructive fires, enforcing the Fire Code, and conducting community fire safety education nationwide.",
-                "Isang opisyal na yunit ng serbisyong pangsunog na nag-ooperate sa ilalim ng Bureau of Fire Protection (BFP) sa Pilipinas. Ang BFP ay isang pambansang ahensya ng gobyerno na may tungkuling pigilan at supilin ang mga mapanwasak na sunog, ipatupad ang Fire Code, at magsagawa ng edukasyon sa kaligtasan sa sunog sa buong bansa.",
-              ),
-              textAlign: TextAlign.left,
+              data.description.resolve(context),
               style: const TextStyle(
                 height: 1.35,
                 fontSize: 13.2,
@@ -1163,10 +1158,7 @@ class _PartnerCard extends StatelessWidget {
                 fontWeight: FontWeight.w500,
               ),
             ),
-
             const SizedBox(height: 14),
-
-            // Dasmariñas City Fire Station block
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(14),
@@ -1182,9 +1174,9 @@ class _PartnerCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    "DASMARIÑAS CITY FIRE STATION",
-                    style: TextStyle(
+                  Text(
+                    data.stationHeading.resolve(context),
+                    style: const TextStyle(
                       fontSize: 13.8,
                       fontWeight: FontWeight.w900,
                       color: Color(0xFFB11217),
@@ -1192,25 +1184,14 @@ class _PartnerCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 10),
-
-                  // contacts
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Icon(
-                        Icons.phone_in_talk_rounded,
-                        size: 18,
-                        color: Color(0xFFB11217),
-                      ),
+                      const Icon(Icons.phone_in_talk_rounded, size: 18, color: Color(0xFFB11217)),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          t(
-                            context,
-                            "In case of Fire or other Emergencies, call:\n(046) 884-6131 / 416-0875 | 0995 336 9534",
-                            "Sa kaso ng Sunog o iba pang Emerhensiya, tumawag sa:\n(046) 884-6131 / 416-0875 | 0995 336 9534",
-                          ),
-                          textAlign: TextAlign.left,
+                          '${data.emergencyLabel.resolve(context)}\n${data.contacts.map((c) => c.displayValue).join(' | ')}',
                           style: const TextStyle(
                             fontSize: 12.8,
                             height: 1.3,
@@ -1221,50 +1202,30 @@ class _PartnerCard extends StatelessWidget {
                       ),
                     ],
                   ),
-
                   const SizedBox(height: 12),
-
-                  // Fire marshal
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          "FCINSP MICHAEL JOHN V ESCAÑO",
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                            fontSize: 12.8,
-                            fontWeight: FontWeight.w900,
-                            color: Color(0xFF1E1E1E),
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          t(
-                            context,
-                            "City Fire Marshal",
-                            "Lungsod na Fire Marshal",
-                          ),
-                          textAlign: TextAlign.left,
-                          style: const TextStyle(
-                            fontSize: 12.2,
-                            fontWeight: FontWeight.w700,
-                            color: Color(0xFF6B6B6B),
-                          ),
-                        ),
-                      ],
+                  Text(
+                    data.fireMarshalName,
+                    style: const TextStyle(
+                      fontSize: 12.8,
+                      fontWeight: FontWeight.w900,
+                      color: Color(0xFF1E1E1E),
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    data.fireMarshalTitle.resolve(context),
+                    style: const TextStyle(
+                      fontSize: 12.2,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF6B6B6B),
                     ),
                   ),
                 ],
               ),
             ),
-
             const SizedBox(height: 12),
-
             Text(
-              t(context, "Vision", "Bisyon"),
+              data.visionLabel.resolve(context),
               style: const TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w900,
@@ -1272,25 +1233,10 @@ class _PartnerCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 6),
-            Text(
-              t(
-                context,
-                "A modern fire service fully capable of ensuring a fire safe nation by 2034.",
-                "Isang modernong serbisyong pangsunog na ganap na kayang tiyakin ang isang ligtas na bansang walang sunog sa taong 2034.",
-              ),
-              textAlign: TextAlign.left,
-              style: const TextStyle(
-                fontSize: 12.8,
-                height: 1.35,
-                color: Color(0xFF2D2D2D),
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-
+            _partnerBody(data.vision.resolve(context)),
             const SizedBox(height: 10),
-
             Text(
-              t(context, "Mission", "Misyon"),
+              data.missionLabel.resolve(context),
               style: const TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w900,
@@ -1298,31 +1244,28 @@ class _PartnerCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 6),
-            Text(
-              t(
-                context,
-                "We commit to prevent and suppress destructive fires, investigate its causes; enforce Fire Code and other related laws; respond to man-made and natural disasters and other emergencies.",
-                "Kami ay nakatuon sa pagpigil at pagsugpo ng mapanwasak na sunog, pagsisiyasat ng sanhi nito; pagpapatupad ng Fire Code at iba pang kaugnay na batas; pagtugon sa mga man-made at natural na sakuna at iba pang emerhensiya.",
-              ),
-              textAlign: TextAlign.left,
-              style: const TextStyle(
-                fontSize: 12.8,
-                height: 1.35,
-                color: Color(0xFF2D2D2D),
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+            _partnerBody(data.mission.resolve(context)),
           ],
         ),
       ),
     );
   }
+
+  Widget _partnerBody(String text) => Text(
+        text,
+        style: const TextStyle(
+          fontSize: 12.8,
+          height: 1.35,
+          color: Color(0xFF2D2D2D),
+          fontWeight: FontWeight.w600,
+        ),
+      );
 }
 
 class _ContactCard extends StatelessWidget {
   static const Color brandRed = Color(0xFFB11217);
-
-  const _ContactCard();
+  const _ContactCard({required this.data});
+  final _EmergencyRecord data;
 
   Future<void> _dial(String number) async {
     await launchUrl(
@@ -1361,11 +1304,7 @@ class _ContactCard extends StatelessWidget {
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    t(
-                      context,
-                      "Emergency Contact Information",
-                      "Impormasyon sa Emergency",
-                    ),
+                    data.heading.resolve(context),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
@@ -1379,11 +1318,7 @@ class _ContactCard extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              t(
-                context,
-                "In case of fire or other emergencies, the public may call the station's hotlines:",
-                "Sa kaso ng sunog o iba pang emerhensiya, maaaring tumawag ang publiko sa mga hotline ng istasyon:",
-              ),
+              data.intro.resolve(context),
               style: const TextStyle(
                 fontSize: 13,
                 color: Color(0xFF3A3A3A),
@@ -1391,19 +1326,15 @@ class _ContactCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 10),
-            _ContactRow(
-              icon: Icons.local_phone_rounded,
-              label: t(context, "Landline", "Landline"),
-              value: "(046) 884-6131 / 416-0875",
-              onTap: () => _dial('(046) 884-6131'),
-            ),
-            const SizedBox(height: 8),
-            _ContactRow(
-              icon: Icons.smartphone_rounded,
-              label: t(context, "Mobile", "Mobile"),
-              value: "0995-336-9534",
-              onTap: () => _dial('0995-336-9534'),
-            ),
+            for (int i = 0; i < data.numbers.length; i++) ...[
+              _ContactRow(
+                icon: _iconFromKey(data.numbers[i].iconKey),
+                label: data.numbers[i].label.resolve(context),
+                value: data.numbers[i].displayValue,
+                onTap: () => _dial(data.numbers[i].dialValue),
+              ),
+              if (i != data.numbers.length - 1) const SizedBox(height: 8),
+            ],
             const SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.all(12),
@@ -1413,11 +1344,7 @@ class _ContactCard extends StatelessWidget {
                 border: Border.all(color: const Color(0xFFEDEDED)),
               ),
               child: Text(
-                t(
-                  context,
-                  "If you are in immediate danger, prioritize evacuation and follow local emergency procedures.",
-                  "Kung ikaw ay nasa agarang panganib, unahin ang paglikas at sundin ang mga lokal na pamamaraan sa emerhensiya.",
-                ),
+                data.safetyNote.resolve(context),
                 style: const TextStyle(
                   fontSize: 12.5,
                   height: 1.25,
@@ -1465,10 +1392,7 @@ class _ContactRow extends StatelessWidget {
                   color: Color(0xFF2D2D2D),
                 ),
                 children: [
-                  TextSpan(
-                    text: "$label: ",
-                    style: const TextStyle(fontWeight: FontWeight.w800),
-                  ),
+                  TextSpan(text: '$label: ', style: const TextStyle(fontWeight: FontWeight.w800)),
                   TextSpan(
                     text: value,
                     style: const TextStyle(
@@ -1487,8 +1411,17 @@ class _ContactRow extends StatelessWidget {
 }
 
 class _DevTile extends StatelessWidget {
-  final _TeamMember m;
-  const _DevTile({required this.m});
+  const _DevTile({
+    required this.member,
+    required this.closeLabel,
+    required this.emailPrefix,
+    required this.emailPending,
+  });
+
+  final _TeamMember member;
+  final String closeLabel;
+  final String emailPrefix;
+  final String emailPending;
 
   @override
   Widget build(BuildContext context) {
@@ -1498,11 +1431,9 @@ class _DevTile extends StatelessWidget {
         showDialog(
           context: context,
           builder: (_) => AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(18),
-            ),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
             title: Text(
-              m.fullName,
+              member.fullName,
               style: const TextStyle(fontWeight: FontWeight.w900),
             ),
             content: SingleChildScrollView(
@@ -1511,7 +1442,7 @@ class _DevTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    t(context, m.role, m.roleTl),
+                    member.role.resolve(context),
                     style: const TextStyle(
                       fontWeight: FontWeight.w800,
                       color: Color(0xFFB11217),
@@ -1519,34 +1450,28 @@ class _DevTile extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   InkWell(
-                    onTap: m.email == null
+                    onTap: member.email == null
                         ? null
                         : () => launchUrl(
-                            Uri(scheme: 'mailto', path: m.email),
-                            mode: LaunchMode.externalApplication,
-                          ),
+                              Uri(scheme: 'mailto', path: member.email),
+                              mode: LaunchMode.externalApplication,
+                            ),
                     borderRadius: BorderRadius.circular(6),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 2),
                       child: Text(
-                        m.email == null
-                            ? t(
-                                context,
-                                "EMAIL: To be added",
-                                "EMAIL: Idadagdag",
-                              )
-                            : "EMAIL: ${m.email}",
+                        member.email == null
+                            ? '$emailPrefix: $emailPending'
+                            : '$emailPrefix: ${member.email}',
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontWeight: FontWeight.w700,
-                          color: m.email == null
+                          color: member.email == null
                               ? const Color(0xFF777777)
                               : const Color(0xFF2D2D2D),
-                          fontStyle: m.email == null
-                              ? FontStyle.italic
-                              : FontStyle.normal,
-                          decoration: m.email == null
+                          fontStyle: member.email == null ? FontStyle.italic : FontStyle.normal,
+                          decoration: member.email == null
                               ? TextDecoration.none
                               : TextDecoration.underline,
                         ),
@@ -1555,8 +1480,7 @@ class _DevTile extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    t(context, m.bio, m.bioTl),
-                    textAlign: TextAlign.left,
+                    member.bio.resolve(context),
                     style: const TextStyle(
                       height: 1.4,
                       fontWeight: FontWeight.w500,
@@ -1569,7 +1493,7 @@ class _DevTile extends StatelessWidget {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: Text(t(context, "Close", "Isara")),
+                child: Text(closeLabel),
               ),
             ],
           ),
@@ -1598,23 +1522,18 @@ class _DevTile extends StatelessWidget {
               child: SizedBox.square(
                 dimension: 52,
                 child: Image.asset(
-                  m.asset,
+                  member.assetPath,
                   fit: BoxFit.cover,
                   errorBuilder: (_, __, ___) => const ColoredBox(
                     color: Color(0xFFF2F2F2),
-                    child: Icon(
-                      Icons.person_rounded,
-                      color: Color(0xFF8C8C8C),
-                      size: 30,
-                    ),
+                    child: Icon(Icons.person_rounded, color: Color(0xFF8C8C8C), size: 30),
                   ),
                 ),
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              m.displayFirst,
-              textAlign: TextAlign.left,
+              member.displayFirst,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
@@ -1626,8 +1545,7 @@ class _DevTile extends StatelessWidget {
             ),
             const SizedBox(height: 2),
             Text(
-              m.displayLast,
-              textAlign: TextAlign.left,
+              member.displayLast,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
@@ -1639,10 +1557,9 @@ class _DevTile extends StatelessWidget {
             ),
             const SizedBox(height: 6),
             Text(
-              t(context, m.role, m.roleTl),
+              member.role.resolve(context),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.left,
               style: const TextStyle(
                 fontSize: 10,
                 fontWeight: FontWeight.w700,
@@ -1657,41 +1574,15 @@ class _DevTile extends StatelessWidget {
   }
 }
 
-class _TeamMember {
-  final String fullName;
-  final String displayFirst;
-  final String displayLast;
-  final String role;
-  final String roleTl;
-  final String? email;
-  final String bio;
-  final String bioTl;
-  final String asset;
-
-  const _TeamMember({
-    required this.fullName,
-    required this.displayFirst,
-    required this.displayLast,
-    required this.role,
-    required this.roleTl,
-    required this.email,
-    required this.bio,
-    required this.bioTl,
-    required this.asset,
-  });
-}
-
 class _Chip extends StatelessWidget {
   final String text;
   final IconData icon;
-
   const _Chip({required this.text, required this.icon});
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final maxChipWidth = screenWidth > 82 ? screenWidth - 82 : screenWidth;
-
     return ConstrainedBox(
       constraints: BoxConstraints(maxWidth: maxChipWidth),
       child: Container(
@@ -1726,32 +1617,30 @@ class _Chip extends StatelessWidget {
 }
 
 class _EmptyState extends StatelessWidget {
+  final String title;
+  final String body;
+  final String resetLabel;
   final VoidCallback onClear;
-  const _EmptyState({required this.onClear});
+
+  const _EmptyState({
+    required this.title,
+    required this.body,
+    required this.resetLabel,
+    required this.onClear,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0xFFF0F0F0)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 14,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
+      decoration: _cardDecoration(radius: 18, blur: 14, offsetY: 6, opacity: 0.08),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Icon(Icons.search_off_rounded, size: 44, color: Colors.grey),
           const SizedBox(height: 10),
           Text(
-            t(context, "No results found.", "Walang nahanap na resulta."),
+            title,
             style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w800,
@@ -1760,12 +1649,7 @@ class _EmptyState extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           Text(
-            t(
-              context,
-              "Try a different keyword or reset filters.",
-              "Subukan ang ibang keyword o i-reset ang mga filter.",
-            ),
-            textAlign: TextAlign.left,
+            body,
             style: const TextStyle(
               fontSize: 12.5,
               height: 1.25,
@@ -1781,15 +1665,10 @@ class _EmptyState extends StatelessWidget {
               onPressed: onClear,
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFB11217),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                 elevation: 0,
               ),
-              child: Text(
-                t(context, "Reset", "I-reset"),
-                style: const TextStyle(fontWeight: FontWeight.w800),
-              ),
+              child: Text(resetLabel, style: const TextStyle(fontWeight: FontWeight.w800)),
             ),
           ),
         ],
@@ -1799,32 +1678,39 @@ class _EmptyState extends StatelessWidget {
 }
 
 class _CaviteBfpDirectoryCard extends StatelessWidget {
+  const _CaviteBfpDirectoryCard({
+    required this.query,
+    required this.info,
+    required this.groups,
+    required this.uiTexts,
+  });
+
   final String query;
-  const _CaviteBfpDirectoryCard({required this.query});
+  final _DirectoryInfo info;
+  final List<_DirectoryGroup> groups;
+  final Map<String, _LocalizedText> uiTexts;
 
   @override
   Widget build(BuildContext context) {
     final q = query.trim().toLowerCase();
-
-    // Filter groups and entries by query
-    final filteredGroups = _caviteBfpGroups
+    final filteredGroups = groups
         .map((g) {
           final entries = g.entries.where((e) {
             if (q.isEmpty) return true;
-            final hay = [
-              e.name,
+            return [
+              e.name.en,
+              e.name.tl,
               e.email,
-              ...e.contacts,
-            ].join(' ').toLowerCase();
-            return hay.contains(q);
+              ...e.phones.map((p) => p.displayValue),
+            ].join(' ').toLowerCase().contains(q);
           }).toList();
-
-          return _DirectoryGroup(title: g.title, entries: entries);
+          return g.copyWith(entries: entries);
         })
         .where((g) {
           if (q.isEmpty) return true;
-          final groupMatch = g.title.toLowerCase().contains(q);
-          return groupMatch || g.entries.isNotEmpty;
+          return g.title.en.toLowerCase().contains(q) ||
+              g.title.tl.toLowerCase().contains(q) ||
+              g.entries.isNotEmpty;
         })
         .toList();
 
@@ -1856,11 +1742,7 @@ class _CaviteBfpDirectoryCard extends StatelessWidget {
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    t(
-                      context,
-                      "Cavite BFP Directory",
-                      "Direktoryo ng Cavite BFP",
-                    ),
+                    info.heading.resolve(context),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
@@ -1874,11 +1756,7 @@ class _CaviteBfpDirectoryCard extends StatelessWidget {
             ),
             const SizedBox(height: 6),
             Text(
-              t(
-                context,
-                "Search by station name, district, email, or number. Tap to call/email.",
-                "Maghanap ayon sa pangalan ng istasyon, distrito, email, o numero. I-tap para tumawag/mag-email.",
-              ),
+              info.intro.resolve(context),
               style: const TextStyle(
                 fontSize: 12.5,
                 height: 1.25,
@@ -1887,7 +1765,6 @@ class _CaviteBfpDirectoryCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
-
             if (filteredGroups.isEmpty)
               Container(
                 width: double.infinity,
@@ -1898,11 +1775,7 @@ class _CaviteBfpDirectoryCard extends StatelessWidget {
                   border: Border.all(color: const Color(0xFFEFEFEF)),
                 ),
                 child: Text(
-                  t(
-                    context,
-                    "No matching results in Cavite BFP Directory.",
-                    "Walang katugmang resulta sa Direktoryo ng Cavite BFP.",
-                  ),
+                  info.noResults.resolve(context),
                   style: const TextStyle(
                     fontSize: 12.8,
                     height: 1.25,
@@ -1918,6 +1791,7 @@ class _CaviteBfpDirectoryCard extends StatelessWidget {
                   child: _DistrictAccordion(
                     group: g,
                     initiallyExpanded: q.isNotEmpty,
+                    uiTexts: uiTexts,
                   ),
                 ),
               ),
@@ -1929,12 +1803,15 @@ class _CaviteBfpDirectoryCard extends StatelessWidget {
 }
 
 class _DistrictAccordion extends StatelessWidget {
-  final _DirectoryGroup group;
-  final bool initiallyExpanded;
   const _DistrictAccordion({
     required this.group,
+    required this.uiTexts,
     this.initiallyExpanded = false,
   });
+
+  final _DirectoryGroup group;
+  final bool initiallyExpanded;
+  final Map<String, _LocalizedText> uiTexts;
 
   @override
   Widget build(BuildContext context) {
@@ -1953,7 +1830,7 @@ class _DistrictAccordion extends StatelessWidget {
           collapsedIconColor: const Color(0xFFB11217),
           iconColor: const Color(0xFFB11217),
           title: Text(
-            group.title,
+            group.title.resolve(context),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(
@@ -1966,7 +1843,7 @@ class _DistrictAccordion extends StatelessWidget {
               .map(
                 (e) => Padding(
                   padding: const EdgeInsets.only(top: 10),
-                  child: _DirectoryEntryTile(entry: e),
+                  child: _DirectoryEntryTile(entry: e, uiTexts: uiTexts),
                 ),
               )
               .toList(),
@@ -1977,27 +1854,28 @@ class _DistrictAccordion extends StatelessWidget {
 }
 
 class _DirectoryEntryTile extends StatelessWidget {
+  const _DirectoryEntryTile({required this.entry, required this.uiTexts});
+
   final _DirectoryEntry entry;
-  const _DirectoryEntryTile({required this.entry});
+  final Map<String, _LocalizedText> uiTexts;
+
+  String _ui(BuildContext context, String key) => uiTexts[key]!.resolve(context);
 
   Future<void> _open(BuildContext context, Uri uri) async {
     if (await launchUrl(uri, mode: LaunchMode.externalApplication)) return;
     if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('No compatible app is available.')),
+      SnackBar(content: Text(_ui(context, 'no_compatible_app'))),
     );
   }
 
   Future<void> _copy(BuildContext context, String value) async {
     await Clipboard.setData(ClipboardData(text: value));
     if (!context.mounted) return;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('$value copied')));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('$value ${_ui(context, 'copied_suffix')}')),
+    );
   }
-
-  Uri _phoneUri(String value) =>
-      Uri(scheme: 'tel', path: value.replaceAll(RegExp(r'[^0-9+]'), ''));
 
   @override
   Widget build(BuildContext context) {
@@ -2012,7 +1890,7 @@ class _DirectoryEntryTile extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            entry.name,
+            entry.name.resolve(context),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(
@@ -2022,22 +1900,15 @@ class _DirectoryEntryTile extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 10),
-
-          // Email (tappable)
           InkWell(
             borderRadius: BorderRadius.circular(10),
-            onTap: () =>
-                _open(context, Uri(scheme: 'mailto', path: entry.email)),
+            onTap: () => _open(context, Uri(scheme: 'mailto', path: entry.email)),
             onLongPress: () => _copy(context, entry.email),
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 6),
               child: Row(
                 children: [
-                  const Icon(
-                    Icons.email_rounded,
-                    size: 18,
-                    color: Color(0xFFB11217),
-                  ),
+                  const Icon(Icons.email_rounded, size: 18, color: Color(0xFFB11217)),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -2054,7 +1925,7 @@ class _DirectoryEntryTile extends StatelessWidget {
                     ),
                   ),
                   IconButton(
-                    tooltip: 'Copy email',
+                    tooltip: _ui(context, 'copy_email_tooltip'),
                     visualDensity: VisualDensity.compact,
                     onPressed: () => _copy(context, entry.email),
                     icon: const Icon(Icons.copy_rounded, size: 17),
@@ -2063,24 +1934,18 @@ class _DirectoryEntryTile extends StatelessWidget {
               ),
             ),
           ),
-
           const SizedBox(height: 8),
-
-          // Phones (tappable chips)
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: entry.contacts
+            children: entry.phones
                 .map(
-                  (c) => InkWell(
+                  (phone) => InkWell(
                     borderRadius: BorderRadius.circular(999),
-                    onTap: () => _open(context, _phoneUri(c)),
-                    onLongPress: () => _copy(context, c),
+                    onTap: () => _open(context, Uri(scheme: 'tel', path: phone.dialValue)),
+                    onLongPress: () => _copy(context, phone.displayValue),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 7,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(999),
@@ -2090,7 +1955,7 @@ class _DirectoryEntryTile extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            c,
+                            phone.displayValue,
                             style: const TextStyle(
                               fontSize: 12.2,
                               fontWeight: FontWeight.w700,
@@ -2100,10 +1965,10 @@ class _DirectoryEntryTile extends StatelessWidget {
                           ),
                           const SizedBox(width: 6),
                           GestureDetector(
-                            onTap: () => _copy(context, c),
-                            child: const Tooltip(
-                              message: 'Copy phone number',
-                              child: Icon(Icons.copy_rounded, size: 15),
+                            onTap: () => _copy(context, phone.displayValue),
+                            child: Tooltip(
+                              message: _ui(context, 'copy_phone_tooltip'),
+                              child: const Icon(Icons.copy_rounded, size: 15),
                             ),
                           ),
                         ],
@@ -2119,191 +1984,544 @@ class _DirectoryEntryTile extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────────────────────
-// Directory data models + data
-// ─────────────────────────────────────────────────────────────
+class _LocalizedText {
+  const _LocalizedText(this.en, this.tl);
+  final String en;
+  final String tl;
 
-class _DirectoryGroup {
-  final String title;
-  final List<_DirectoryEntry> entries;
-  const _DirectoryGroup({required this.title, required this.entries});
+  String resolve(BuildContext context) => t(context, en, tl);
+
+  factory _LocalizedText.fromRow(
+    Map<String, dynamic> row, {
+    required String enKey,
+    required String tlKey,
+  }) {
+    return _LocalizedText(row[enKey].toString(), row[tlKey].toString());
+  }
+}
+
+class _SectionRecord {
+  const _SectionRecord({
+    required this.sectionKey,
+    required this.type,
+    required this.title,
+    required this.subtitle,
+    required this.iconKey,
+  });
+
+  final String sectionKey;
+  final _AboutSectionType type;
+  final _LocalizedText title;
+  final _LocalizedText subtitle;
+  final String iconKey;
+
+  factory _SectionRecord.fromRow(Map<String, dynamic> row) {
+    return _SectionRecord(
+      sectionKey: row['section_key'].toString(),
+      type: switch (row['section_type'].toString()) {
+        'about' => _AboutSectionType.about,
+        'partner' => _AboutSectionType.partner,
+        _ => _AboutSectionType.contact,
+      },
+      title: _LocalizedText.fromRow(row, enKey: 'title_en', tlKey: 'title_tl'),
+      subtitle: _LocalizedText.fromRow(row, enKey: 'subtitle_en', tlKey: 'subtitle_tl'),
+      iconKey: row['icon_key'].toString(),
+    );
+  }
+}
+
+class _IgnisChip {
+  const _IgnisChip({required this.label, required this.iconKey});
+  final _LocalizedText label;
+  final String iconKey;
+
+  factory _IgnisChip.fromRow(Map<String, dynamic> row) => _IgnisChip(
+        label: _LocalizedText.fromRow(row, enKey: 'label_en', tlKey: 'label_tl'),
+        iconKey: row['icon_key'].toString(),
+      );
+}
+
+class _NameMeaning {
+  const _NameMeaning({required this.term, required this.body});
+  final _LocalizedText term;
+  final _LocalizedText body;
+
+  factory _NameMeaning.fromRow(Map<String, dynamic> row) => _NameMeaning(
+        term: _LocalizedText.fromRow(row, enKey: 'term_en', tlKey: 'term_tl'),
+        body: _LocalizedText.fromRow(row, enKey: 'body_en', tlKey: 'body_tl'),
+      );
+}
+
+class _TeamMember {
+  const _TeamMember({
+    required this.fullName,
+    required this.displayFirst,
+    required this.displayLast,
+    required this.role,
+    required this.email,
+    required this.bio,
+    required this.assetPath,
+  });
+
+  final String fullName;
+  final String displayFirst;
+  final String displayLast;
+  final _LocalizedText role;
+  final String? email;
+  final _LocalizedText bio;
+  final String assetPath;
+
+  factory _TeamMember.fromRow(Map<String, dynamic> row) => _TeamMember(
+        fullName: row['full_name'].toString(),
+        displayFirst: row['display_first'].toString(),
+        displayLast: row['display_last'].toString(),
+        role: _LocalizedText.fromRow(row, enKey: 'role_en', tlKey: 'role_tl'),
+        email: row['email'] as String?,
+        bio: _LocalizedText.fromRow(row, enKey: 'bio_en', tlKey: 'bio_tl'),
+        assetPath: row['asset_path'].toString(),
+      );
+}
+
+class _IgnisRecord {
+  const _IgnisRecord({
+    required this.heading,
+    required this.description,
+    required this.goal,
+    required this.logoAssetPath,
+    required this.logoDescription,
+    required this.brandHeading,
+    required this.together,
+    required this.focusHeading,
+    required this.focusBody,
+    required this.essence,
+    required this.teamHeading,
+    required this.teamIntro,
+    required this.teamTip,
+    required this.chips,
+    required this.meanings,
+    required this.team,
+  });
+
+  final _LocalizedText heading;
+  final _LocalizedText description;
+  final _LocalizedText goal;
+  final String logoAssetPath;
+  final _LocalizedText logoDescription;
+  final _LocalizedText brandHeading;
+  final _LocalizedText together;
+  final _LocalizedText focusHeading;
+  final _LocalizedText focusBody;
+  final _LocalizedText essence;
+  final _LocalizedText teamHeading;
+  final _LocalizedText teamIntro;
+  final _LocalizedText teamTip;
+  final List<_IgnisChip> chips;
+  final List<_NameMeaning> meanings;
+  final List<_TeamMember> team;
+
+  factory _IgnisRecord.fromRow(
+    Map<String, dynamic> row, {
+    required List<_IgnisChip> chips,
+    required List<_NameMeaning> meanings,
+    required List<_TeamMember> team,
+  }) =>
+      _IgnisRecord(
+        heading: _LocalizedText.fromRow(row, enKey: 'heading_en', tlKey: 'heading_tl'),
+        description: _LocalizedText.fromRow(row, enKey: 'description_en', tlKey: 'description_tl'),
+        goal: _LocalizedText.fromRow(row, enKey: 'goal_en', tlKey: 'goal_tl'),
+        logoAssetPath: row['logo_asset_path'].toString(),
+        logoDescription: _LocalizedText.fromRow(
+          row,
+          enKey: 'logo_description_en',
+          tlKey: 'logo_description_tl',
+        ),
+        brandHeading: _LocalizedText.fromRow(
+          row,
+          enKey: 'brand_heading_en',
+          tlKey: 'brand_heading_tl',
+        ),
+        together: _LocalizedText.fromRow(row, enKey: 'together_en', tlKey: 'together_tl'),
+        focusHeading: _LocalizedText.fromRow(
+          row,
+          enKey: 'focus_heading_en',
+          tlKey: 'focus_heading_tl',
+        ),
+        focusBody: _LocalizedText.fromRow(row, enKey: 'focus_body_en', tlKey: 'focus_body_tl'),
+        essence: _LocalizedText.fromRow(row, enKey: 'essence_en', tlKey: 'essence_tl'),
+        teamHeading: _LocalizedText.fromRow(
+          row,
+          enKey: 'team_heading_en',
+          tlKey: 'team_heading_tl',
+        ),
+        teamIntro: _LocalizedText.fromRow(row, enKey: 'team_intro_en', tlKey: 'team_intro_tl'),
+        teamTip: _LocalizedText.fromRow(row, enKey: 'team_tip_en', tlKey: 'team_tip_tl'),
+        chips: chips,
+        meanings: meanings,
+        team: team,
+      );
+}
+
+class _PartnerRecord {
+  const _PartnerRecord({
+    required this.heading,
+    required this.description,
+    required this.stationHeading,
+    required this.emergencyLabel,
+    required this.contacts,
+    required this.fireMarshalName,
+    required this.fireMarshalTitle,
+    required this.visionLabel,
+    required this.vision,
+    required this.missionLabel,
+    required this.mission,
+  });
+
+  final _LocalizedText heading;
+  final _LocalizedText description;
+  final _LocalizedText stationHeading;
+  final _LocalizedText emergencyLabel;
+  final List<_ContactPoint> contacts;
+  final String fireMarshalName;
+  final _LocalizedText fireMarshalTitle;
+  final _LocalizedText visionLabel;
+  final _LocalizedText vision;
+  final _LocalizedText missionLabel;
+  final _LocalizedText mission;
+
+  factory _PartnerRecord.fromRow(
+    Map<String, dynamic> row, {
+    required List<_ContactPoint> contacts,
+  }) => _PartnerRecord(
+        heading: _LocalizedText.fromRow(row, enKey: 'heading_en', tlKey: 'heading_tl'),
+        description: _LocalizedText.fromRow(row, enKey: 'description_en', tlKey: 'description_tl'),
+        stationHeading: _LocalizedText.fromRow(
+          row,
+          enKey: 'station_heading_en',
+          tlKey: 'station_heading_tl',
+        ),
+        emergencyLabel: _LocalizedText.fromRow(
+          row,
+          enKey: 'emergency_label_en',
+          tlKey: 'emergency_label_tl',
+        ),
+        contacts: contacts,
+        fireMarshalName: row['fire_marshal_name'].toString(),
+        fireMarshalTitle: _LocalizedText.fromRow(
+          row,
+          enKey: 'fire_marshal_title_en',
+          tlKey: 'fire_marshal_title_tl',
+        ),
+        visionLabel: _LocalizedText.fromRow(
+          row,
+          enKey: 'vision_label_en',
+          tlKey: 'vision_label_tl',
+        ),
+        vision: _LocalizedText.fromRow(row, enKey: 'vision_en', tlKey: 'vision_tl'),
+        missionLabel: _LocalizedText.fromRow(
+          row,
+          enKey: 'mission_label_en',
+          tlKey: 'mission_label_tl',
+        ),
+        mission: _LocalizedText.fromRow(row, enKey: 'mission_en', tlKey: 'mission_tl'),
+      );
+}
+
+class _ContactPoint {
+  const _ContactPoint({
+    required this.key,
+    required this.displayValue,
+    required this.dialValue,
+  });
+
+  final String key;
+  final String displayValue;
+  final String dialValue;
+
+  factory _ContactPoint.fromRow(Map<String, dynamic> row) => _ContactPoint(
+        key: row['contact_key'].toString(),
+        displayValue: row['display_value'].toString(),
+        dialValue: row['dial_value'].toString(),
+      );
+}
+
+class _EmergencyNumber {
+  const _EmergencyNumber({
+    required this.label,
+    required this.contact,
+    required this.iconKey,
+  });
+
+  final _LocalizedText label;
+  final _ContactPoint contact;
+  final String iconKey;
+
+  String get displayValue => contact.displayValue;
+  String get dialValue => contact.dialValue;
+
+  factory _EmergencyNumber.fromRow(
+    Map<String, dynamic> row, {
+    required _ContactPoint contact,
+  }) => _EmergencyNumber(
+        label: _LocalizedText.fromRow(row, enKey: 'label_en', tlKey: 'label_tl'),
+        contact: contact,
+        iconKey: row['icon_key'].toString(),
+      );
+}
+
+class _EmergencyRecord {
+  const _EmergencyRecord({
+    required this.heading,
+    required this.intro,
+    required this.safetyNote,
+    required this.numbers,
+  });
+
+  final _LocalizedText heading;
+  final _LocalizedText intro;
+  final _LocalizedText safetyNote;
+  final List<_EmergencyNumber> numbers;
+
+  factory _EmergencyRecord.fromRow(
+    Map<String, dynamic> row, {
+    required List<_EmergencyNumber> numbers,
+  }) =>
+      _EmergencyRecord(
+        heading: _LocalizedText.fromRow(row, enKey: 'heading_en', tlKey: 'heading_tl'),
+        intro: _LocalizedText.fromRow(row, enKey: 'intro_en', tlKey: 'intro_tl'),
+        safetyNote: _LocalizedText.fromRow(
+          row,
+          enKey: 'safety_note_en',
+          tlKey: 'safety_note_tl',
+        ),
+        numbers: numbers,
+      );
+}
+
+class _DirectoryInfo {
+  const _DirectoryInfo({required this.heading, required this.intro, required this.noResults});
+  final _LocalizedText heading;
+  final _LocalizedText intro;
+  final _LocalizedText noResults;
+
+  factory _DirectoryInfo.fromRow(Map<String, dynamic> row) => _DirectoryInfo(
+        heading: _LocalizedText.fromRow(row, enKey: 'heading_en', tlKey: 'heading_tl'),
+        intro: _LocalizedText.fromRow(row, enKey: 'intro_en', tlKey: 'intro_tl'),
+        noResults: _LocalizedText.fromRow(
+          row,
+          enKey: 'no_results_en',
+          tlKey: 'no_results_tl',
+        ),
+      );
+}
+
+class _DirectoryPhone {
+  const _DirectoryPhone({required this.displayValue, required this.dialValue});
+  final String displayValue;
+  final String dialValue;
+
+  factory _DirectoryPhone.fromRow(Map<String, dynamic> row) => _DirectoryPhone(
+        displayValue: row['display_value'].toString(),
+        dialValue: row['dial_value'].toString(),
+      );
 }
 
 class _DirectoryEntry {
-  final String name;
-  final String email;
-  final List<String> contacts;
   const _DirectoryEntry({
     required this.name,
     required this.email,
-    required this.contacts,
+    required this.phones,
   });
+
+  final _LocalizedText name;
+  final String email;
+  final List<_DirectoryPhone> phones;
+
+  factory _DirectoryEntry.fromRow(
+    Map<String, dynamic> row, {
+    required List<_DirectoryPhone> phones,
+  }) =>
+      _DirectoryEntry(
+        name: _LocalizedText.fromRow(row, enKey: 'name_en', tlKey: 'name_tl'),
+        email: row['email'].toString(),
+        phones: phones,
+      );
 }
 
-const List<_DirectoryGroup> _caviteBfpGroups = [
-  _DirectoryGroup(
-    title: "Office of the Provincial Fire Director",
-    entries: [
-      _DirectoryEntry(
-        name: "Provincial Fire Director – Cavite",
-        email: "cavitebfp@yahoo.com",
-        contacts: ["046-471-3747", "0943-386-8772", "0967-805-5581"],
+class _DirectoryGroup {
+  const _DirectoryGroup({required this.title, required this.entries});
+  final _LocalizedText title;
+  final List<_DirectoryEntry> entries;
+
+  factory _DirectoryGroup.fromRow(
+    Map<String, dynamic> row, {
+    required List<_DirectoryEntry> entries,
+  }) =>
+      _DirectoryGroup(
+        title: _LocalizedText.fromRow(row, enKey: 'title_en', tlKey: 'title_tl'),
+        entries: entries,
+      );
+
+  _DirectoryGroup copyWith({List<_DirectoryEntry>? entries}) {
+    return _DirectoryGroup(title: title, entries: entries ?? this.entries);
+  }
+}
+
+class _AboutUsData {
+  const _AboutUsData({
+    required this.uiTexts,
+    required this.sections,
+    required this.ignis,
+    required this.partner,
+    required this.emergency,
+    required this.directoryInfo,
+    required this.directoryGroups,
+  });
+
+  final Map<String, _LocalizedText> uiTexts;
+  final List<_SectionRecord> sections;
+  final _IgnisRecord ignis;
+  final _PartnerRecord partner;
+  final _EmergencyRecord emergency;
+  final _DirectoryInfo directoryInfo;
+  final List<_DirectoryGroup> directoryGroups;
+
+  String searchTextFor(String sectionKey) {
+    switch (sectionKey) {
+      case 'ignis_safe':
+        return [
+          ignis.heading.en,
+          ignis.heading.tl,
+          ignis.description.en,
+          ignis.description.tl,
+          ignis.goal.en,
+          ignis.goal.tl,
+          ignis.logoDescription.en,
+          ignis.logoDescription.tl,
+          ignis.together.en,
+          ignis.together.tl,
+          ignis.focusHeading.en,
+          ignis.focusHeading.tl,
+          ignis.focusBody.en,
+          ignis.focusBody.tl,
+          ignis.essence.en,
+          ignis.essence.tl,
+          ignis.teamHeading.en,
+          ignis.teamHeading.tl,
+          ignis.teamIntro.en,
+          ignis.teamIntro.tl,
+          ...ignis.chips.expand((c) => [c.label.en, c.label.tl]),
+          ...ignis.meanings.expand((m) => [m.term.en, m.term.tl, m.body.en, m.body.tl]),
+          ...ignis.team.expand((m) => [
+                m.fullName,
+                m.displayFirst,
+                m.displayLast,
+                m.role.en,
+                m.role.tl,
+                m.email ?? '',
+                m.bio.en,
+                m.bio.tl,
+              ]),
+        ].join(' ');
+      case 'bfp_dasmarinas':
+        return [
+          partner.heading.en,
+          partner.heading.tl,
+          partner.description.en,
+          partner.description.tl,
+          partner.stationHeading.en,
+          partner.stationHeading.tl,
+          partner.emergencyLabel.en,
+          partner.emergencyLabel.tl,
+          ...partner.contacts.expand((c) => [c.displayValue, c.dialValue]),
+          partner.fireMarshalName,
+          partner.fireMarshalTitle.en,
+          partner.fireMarshalTitle.tl,
+          partner.vision.en,
+          partner.vision.tl,
+          partner.mission.en,
+          partner.mission.tl,
+        ].join(' ');
+      case 'emergency_contacts':
+        return [
+          emergency.heading.en,
+          emergency.heading.tl,
+          emergency.intro.en,
+          emergency.intro.tl,
+          emergency.safetyNote.en,
+          emergency.safetyNote.tl,
+          ...emergency.numbers.expand((n) => [
+                n.label.en,
+                n.label.tl,
+                n.displayValue,
+                n.dialValue,
+              ]),
+        ].join(' ');
+      case 'cavite_directory':
+        return [
+          directoryInfo.heading.en,
+          directoryInfo.heading.tl,
+          directoryInfo.intro.en,
+          directoryInfo.intro.tl,
+          ...directoryGroups.expand((g) => [
+                g.title.en,
+                g.title.tl,
+                ...g.entries.expand((e) => [
+                      e.name.en,
+                      e.name.tl,
+                      e.email,
+                      ...e.phones.map((p) => p.displayValue),
+                    ]),
+              ]),
+        ].join(' ');
+      default:
+        return '';
+    }
+  }
+}
+
+IconData _iconFromKey(String key) {
+  switch (key) {
+    case 'local_fire_department':
+      return Icons.local_fire_department_rounded;
+    case 'local_fire_department_outlined':
+      return Icons.local_fire_department_outlined;
+    case 'phone_in_talk':
+      return Icons.phone_in_talk_rounded;
+    case 'apartment':
+      return Icons.apartment_rounded;
+    case 'view_in_ar':
+      return Icons.view_in_ar_rounded;
+    case 'touch_app':
+      return Icons.touch_app_rounded;
+    case 'verified':
+      return Icons.verified_rounded;
+    case 'school':
+      return Icons.school_rounded;
+    case 'local_phone':
+      return Icons.local_phone_rounded;
+    case 'smartphone':
+      return Icons.smartphone_rounded;
+    default:
+      return Icons.info_rounded;
+  }
+}
+
+BoxDecoration _cardDecoration({
+  double radius = 20,
+  double blur = 18,
+  double offsetY = 8,
+  double opacity = 0.10,
+}) {
+  return BoxDecoration(
+    color: Colors.white,
+    borderRadius: BorderRadius.circular(radius),
+    boxShadow: [
+      BoxShadow(
+        color: Colors.black.withOpacity(opacity),
+        blurRadius: blur,
+        offset: Offset(0, offsetY),
       ),
     ],
-  ),
-  _DirectoryGroup(
-    title: "First District",
-    entries: [
-      _DirectoryEntry(
-        name: "Cavite City",
-        email: "admn.cavcityfs@gmail.com",
-        contacts: ["(046) 484-2899", "0966-694-1416"],
-      ),
-      _DirectoryEntry(
-        name: "Kawit",
-        email: "admn.bfpkawit@yahoo.com.ph",
-        contacts: ["(046) 484-5250", "0966-132-0605"],
-      ),
-      _DirectoryEntry(
-        name: "Noveleta",
-        email: "noveletafirestation@gmail.com",
-        contacts: ["(046) 438-5684", "0917-547-3696"],
-      ),
-      _DirectoryEntry(
-        name: "Rosario",
-        email: "admn.rosario.fire214@yahoo.com",
-        contacts: ["(046) 438-1616", "0939-232-6045"],
-      ),
-    ],
-  ),
-  _DirectoryGroup(
-    title: "Second District",
-    entries: [
-      _DirectoryEntry(
-        name: "Bacoor City",
-        email: "bfpbacoor@yahoo.com",
-        contacts: ["(046) 417-6060", "0966-695-9711"],
-      ),
-    ],
-  ),
-  _DirectoryGroup(
-    title: "Third District",
-    entries: [
-      _DirectoryEntry(
-        name: "Imus City",
-        email: "imuscfs@gmail.com",
-        contacts: ["(046) 970-5161", "0966-705-9174"],
-      ),
-    ],
-  ),
-  _DirectoryGroup(
-    title: "Fourth District",
-    entries: [
-      _DirectoryEntry(
-        name: "Dasmariñas City",
-        email: "dasmafscavite@gmail.com",
-        contacts: ["416-0875", "424-2537", "0995-336-9534"],
-      ),
-    ],
-  ),
-  _DirectoryGroup(
-    title: "Fifth District",
-    entries: [
-      _DirectoryEntry(
-        name: "Carmona",
-        email: "carmonafirestation@gmail.com",
-        contacts: ["(046) 430-1666", "0915-602-1572"],
-      ),
-      _DirectoryEntry(
-        name: "General Mariano Alvarez (GMA)",
-        email: "gma.fire@yahoo.com",
-        contacts: ["(046) 443-9110", "0938-781-9294", "0955-790-3765"],
-      ),
-      _DirectoryEntry(
-        name: "Silang",
-        email: "silangfirestation@yahoo.com",
-        contacts: ["(046) 414-0484", "0915-602-1593"],
-      ),
-    ],
-  ),
-  _DirectoryGroup(
-    title: "Sixth District",
-    entries: [
-      _DirectoryEntry(
-        name: "General Trias City",
-        email: "gen3bfp210.admn@gmail.com",
-        contacts: ["(046) 437-7625", "0917-593-1522"],
-      ),
-    ],
-  ),
-  _DirectoryGroup(
-    title: "Seventh District",
-    entries: [
-      _DirectoryEntry(
-        name: "Amadeo",
-        email: "amadeobfp@gmail.com",
-        contacts: ["(046) 483-2490", "0915-601-6805"],
-      ),
-      _DirectoryEntry(
-        name: "Indang",
-        email: "indang_bfp@yahoo.com",
-        contacts: ["(046) 415-1217", "0915-603-4245", "0933-824-5948"],
-      ),
-      _DirectoryEntry(
-        name: "Tanza",
-        email: "tanzafs@gmail.com",
-        contacts: ["(046) 505-6084"],
-      ),
-      _DirectoryEntry(
-        name: "Trece Martires City",
-        email: "charliebase13@gmail.com",
-        contacts: ["(046) 419-0057", "0918-425-7897"],
-      ),
-    ],
-  ),
-  _DirectoryGroup(
-    title: "Eighth District",
-    entries: [
-      _DirectoryEntry(
-        name: "Alfonso",
-        email: "alfonsocavitefs@gmail.com",
-        contacts: ["(046) 522-0480", "0915-602-2113"],
-      ),
-      _DirectoryEntry(
-        name: "General Emilio Aguinaldo",
-        email: "aguinaldo.firestation@gmail.com",
-        contacts: ["0921-458-593", "0966-256-7730"],
-      ),
-      _DirectoryEntry(
-        name: "Magallanes",
-        email: "magallanes_firestation@yahoo.com",
-        contacts: ["(046) 529-6245", "0915-602-1644"],
-      ),
-      _DirectoryEntry(
-        name: "Maragondon",
-        email: "maragondon219@gmail.com",
-        contacts: ["(046) 412-1911", "0966-375-3790"],
-      ),
-      _DirectoryEntry(
-        name: "Mendez",
-        email: "mendez_firestation@yahoo.com",
-        contacts: ["(046) 413-2237", "0977-200-1102"],
-      ),
-      _DirectoryEntry(
-        name: "Naic",
-        email: "bfpnaic.official@yahoo.com",
-        contacts: ["(046) 412-1481", "0917-679-7861"],
-      ),
-      _DirectoryEntry(
-        name: "Tagaytay City",
-        email: "tagaytayfire@gmail.com",
-        contacts: ["(046) 483-1193", "0942-989-8495"],
-      ),
-      _DirectoryEntry(
-        name: "Ternate",
-        email: "maragondon219@gmail.com",
-        contacts: ["(046) 419-1911", "0966-375-9790"],
-      ),
-    ],
-  ),
-];
+    border: Border.all(color: const Color(0xFFF0F0F0)),
+  );
+}

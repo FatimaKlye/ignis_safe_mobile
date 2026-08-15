@@ -433,6 +433,7 @@ class _PreAssessmentExtinguisherPageState
             score: _intFrom(result['score']),
             totalQuestions: _intFrom(result['total_questions']),
             assessmentTitle: assessmentTitle,
+            attemptId: result['attempt_id'].toString(),
           ),
         ),
       );
@@ -1184,6 +1185,7 @@ class _PreAssessmentExtinguisherPageState
             score: correctCount,
             totalQuestions: _questions.length,
             assessmentTitle: _assessmentTitle,
+            attemptId: _attemptId!,
           ),
         ),
       );
