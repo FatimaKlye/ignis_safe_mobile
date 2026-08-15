@@ -28,7 +28,11 @@ class ScoreResultActionButtons extends StatelessWidget {
     const double height = 56;
 
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+      // Each button already gets its height from the SizedBox below.
+      // CrossAxisAlignment.stretch would force a tight infinite-height
+      // constraint here, because this Row is laid out inside a scrollable
+      // Column with an unbounded vertical constraint.
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Expanded(
           child: SizedBox(
