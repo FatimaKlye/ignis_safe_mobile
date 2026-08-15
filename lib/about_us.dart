@@ -1058,6 +1058,34 @@ class _MeaningMiniBlock extends StatelessWidget {
   }
 }
 
+/// Display order of the developers in the About Us team section.
+/// Applied here so no database changes are required.
+const List<String> _developerDisplayOrder = <String>[
+  'ANDREI C. QUIAS',
+  'FATIMA KLYE M. SIERRA',
+  'RAVE PAULO PIOLO V. SIERRA',
+  'SARAH FLOR MACANDILE',
+];
+
+/// Sorts developers by [_developerDisplayOrder]. Anyone not listed keeps their
+/// original database order and is appended after the listed members.
+List<_TeamMember> _sortDevelopers(List<_TeamMember> members) {
+  int rankOf(_TeamMember member) {
+    final name = member.fullName.toUpperCase().replaceAll(RegExp(r'\s+'), ' ').trim();
+    final index = _developerDisplayOrder.indexOf(name);
+    return index == -1 ? _developerDisplayOrder.length : index;
+  }
+
+  final entries = <MapEntry<int, _TeamMember>>[
+    for (int i = 0; i < members.length; i++) MapEntry(i, members[i]),
+  ];
+  entries.sort((a, b) {
+    final byRank = rankOf(a.value).compareTo(rankOf(b.value));
+    return byRank != 0 ? byRank : a.key.compareTo(b.key);
+  });
+  return [for (final entry in entries) entry.value];
+}
+
 class _TeamCard extends StatelessWidget {
   const _TeamCard({required this.data, required this.uiTexts});
 
@@ -1068,7 +1096,7 @@ class _TeamCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final developers = data.team.where((m) => !m.isAdviser).toList();
+    final developers = _sortDevelopers(data.team.where((m) => !m.isAdviser).toList());
     final advisers = data.team.where((m) => m.isAdviser).toList();
 
     return Container(
