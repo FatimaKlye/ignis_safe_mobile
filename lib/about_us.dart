@@ -1068,65 +1068,104 @@ class _TeamCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final developers = data.team.where((m) => !m.isAdviser).toList();
+    final advisers = data.team.where((m) => m.isAdviser).toList();
+
     return Container(
       decoration: _cardDecoration(),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              data.teamHeading.resolve(context),
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w900,
-                color: Color(0xFFB11217),
-                letterSpacing: 0.4,
-              ),
-            ),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF9F9F9),
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: const Color(0xFFEDEDED)),
-              ),
-              child: Text(
-                data.teamIntro.resolve(context),
-                style: const TextStyle(
-                  fontSize: 12.8,
-                  height: 1.35,
-                  color: Color(0xFF2D2D2D),
-                  fontWeight: FontWeight.w600,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final width = constraints.maxWidth;
+            final compact = width < 300;
+            final devAvatar = compact ? 56.0 : (width < 340 ? 62.0 : 68.0);
+            final nameSize = compact ? 13.5 : 15.0;
+            final roleSize = compact ? 10.5 : 11.5;
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  data.teamHeading.resolve(context),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xFFB11217),
+                    letterSpacing: 0.4,
+                  ),
                 ),
-              ),
-            ),
-            const SizedBox(height: 12),
-            SizedBox(
-              height: 146,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: data.team.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 12),
-                itemBuilder: (context, i) => _DevTile(
-                  member: data.team[i],
-                  closeLabel: _ui(context, 'close'),
-                  emailPrefix: _ui(context, 'email_prefix'),
-                  emailPending: _ui(context, 'email_pending'),
+                const SizedBox(height: 10),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF9F9F9),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: const Color(0xFFEDEDED)),
+                  ),
+                  child: Text(
+                    data.teamIntro.resolve(context),
+                    style: const TextStyle(
+                      fontSize: 12.8,
+                      height: 1.35,
+                      color: Color(0xFF2D2D2D),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              data.teamTip.resolve(context),
-              style: const TextStyle(
-                fontSize: 12,
-                color: Color(0xFF666666),
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
+                const SizedBox(height: 14),
+                for (int i = 0; i < developers.length; i++) ...[
+                  _DeveloperCard(
+                    member: developers[i],
+                    avatarSize: devAvatar,
+                    nameSize: nameSize,
+                    roleSize: roleSize,
+                    onTap: () => _showMemberBio(
+                      context,
+                      member: developers[i],
+                      closeLabel: _ui(context, 'close'),
+                      emailPrefix: _ui(context, 'email_prefix'),
+                      emailPending: _ui(context, 'email_pending'),
+                    ),
+                  ),
+                  if (i != developers.length - 1) const SizedBox(height: 10),
+                ],
+                if (advisers.isNotEmpty) ...[
+                  SizedBox(height: developers.isEmpty ? 0 : 18),
+                  _TeamGroupLabel(
+                    text: t(context, 'PROJECT ADVISER', 'TAGAPAYO NG PROYEKTO'),
+                  ),
+                  const SizedBox(height: 10),
+                  for (int i = 0; i < advisers.length; i++) ...[
+                    _AdviserCard(
+                      member: advisers[i],
+                      avatarSize: devAvatar - 14,
+                      nameSize: nameSize - 1.5,
+                      roleSize: roleSize - 0.5,
+                      onTap: () => _showMemberBio(
+                        context,
+                        member: advisers[i],
+                        closeLabel: _ui(context, 'close'),
+                        emailPrefix: _ui(context, 'email_prefix'),
+                        emailPending: _ui(context, 'email_pending'),
+                      ),
+                    ),
+                    if (i != advisers.length - 1) const SizedBox(height: 10),
+                  ],
+                ],
+                const SizedBox(height: 12),
+                Text(
+                  data.teamTip.resolve(context),
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Color(0xFF666666),
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
@@ -1440,102 +1479,161 @@ class _ContactRow extends StatelessWidget {
   }
 }
 
-class _DevTile extends StatelessWidget {
-  const _DevTile({
+Future<void> _showMemberBio(
+  BuildContext context, {
+  required _TeamMember member,
+  required String closeLabel,
+  required String emailPrefix,
+  required String emailPending,
+}) {
+  return showDialog(
+    context: context,
+    builder: (_) => AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+      title: Text(
+        member.fullName,
+        style: const TextStyle(fontWeight: FontWeight.w900),
+      ),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              member.role.resolve(context),
+              style: const TextStyle(
+                fontWeight: FontWeight.w800,
+                color: Color(0xFFB11217),
+              ),
+            ),
+            const SizedBox(height: 8),
+            InkWell(
+              onTap: member.email == null
+                  ? null
+                  : () => launchUrl(
+                        Uri(scheme: 'mailto', path: member.email),
+                        mode: LaunchMode.externalApplication,
+                      ),
+              borderRadius: BorderRadius.circular(6),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 2),
+                child: Text(
+                  member.email == null
+                      ? '$emailPrefix: $emailPending'
+                      : '$emailPrefix: ${member.email}',
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    color: member.email == null
+                        ? const Color(0xFF777777)
+                        : const Color(0xFF2D2D2D),
+                    fontStyle: member.email == null ? FontStyle.italic : FontStyle.normal,
+                    decoration: member.email == null
+                        ? TextDecoration.none
+                        : TextDecoration.underline,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              member.bio.resolve(context),
+              style: const TextStyle(
+                height: 1.4,
+                fontWeight: FontWeight.w500,
+                fontSize: 13,
+              ),
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(closeLabel),
+        ),
+      ],
+    ),
+  );
+}
+
+class _MemberAvatar extends StatelessWidget {
+  const _MemberAvatar({
     required this.member,
-    required this.closeLabel,
-    required this.emailPrefix,
-    required this.emailPending,
+    required this.size,
+    required this.ringColors,
+    this.ringWidth = 2.5,
   });
 
   final _TeamMember member;
-  final String closeLabel;
-  final String emailPrefix;
-  final String emailPending;
+  final double size;
+  final List<Color> ringColors;
+  final double ringWidth;
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(18),
-      onTap: () {
-        showDialog(
-          context: context,
-          builder: (_) => AlertDialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-            title: Text(
-              member.fullName,
-              style: const TextStyle(fontWeight: FontWeight.w900),
-            ),
-            content: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    member.role.resolve(context),
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w800,
-                      color: Color(0xFFB11217),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  InkWell(
-                    onTap: member.email == null
-                        ? null
-                        : () => launchUrl(
-                              Uri(scheme: 'mailto', path: member.email),
-                              mode: LaunchMode.externalApplication,
-                            ),
-                    borderRadius: BorderRadius.circular(6),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 2),
-                      child: Text(
-                        member.email == null
-                            ? '$emailPrefix: $emailPending'
-                            : '$emailPrefix: ${member.email}',
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          color: member.email == null
-                              ? const Color(0xFF777777)
-                              : const Color(0xFF2D2D2D),
-                          fontStyle: member.email == null ? FontStyle.italic : FontStyle.normal,
-                          decoration: member.email == null
-                              ? TextDecoration.none
-                              : TextDecoration.underline,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    member.bio.resolve(context),
-                    style: const TextStyle(
-                      height: 1.4,
-                      fontWeight: FontWeight.w500,
-                      fontSize: 13,
-                    ),
-                  ),
-                ],
+    return Container(
+      padding: EdgeInsets.all(ringWidth),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: ringColors,
+        ),
+      ),
+      child: ClipOval(
+        child: SizedBox.square(
+          dimension: size,
+          child: Image.asset(
+            member.assetPath,
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => ColoredBox(
+              color: const Color(0xFFF2F2F2),
+              child: Icon(
+                Icons.person_rounded,
+                color: const Color(0xFF8C8C8C),
+                size: size * 0.58,
               ),
             ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text(closeLabel),
-              ),
-            ],
           ),
-        );
-      },
-      child: Container(
-        width: 112,
-        padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+        ),
+      ),
+    );
+  }
+}
+
+class _DeveloperCard extends StatelessWidget {
+  static const Color brandRed = Color(0xFFB11217);
+
+  const _DeveloperCard({
+    required this.member,
+    required this.avatarSize,
+    required this.nameSize,
+    required this.roleSize,
+    required this.onTap,
+  });
+
+  final _TeamMember member;
+  final double avatarSize;
+  final double nameSize;
+  final double roleSize;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: Ink(
         decoration: BoxDecoration(
-          color: Colors.white,
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Colors.white, Color(0xFFFFF7F7)],
+          ),
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: const Color(0xFFF0F0F0)),
+          border: Border.all(color: brandRed.withOpacity(0.16)),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.08),
@@ -1544,60 +1642,202 @@ class _DevTile extends StatelessWidget {
             ),
           ],
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ClipOval(
-              child: SizedBox.square(
-                dimension: 52,
-                child: Image.asset(
-                  member.assetPath,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => const ColoredBox(
-                    color: Color(0xFFF2F2F2),
-                    child: Icon(Icons.person_rounded, color: Color(0xFF8C8C8C), size: 30),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(18),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                _MemberAvatar(
+                  member: member,
+                  size: avatarSize,
+                  ringColors: const [brandRed, Color(0xFFE65A5F)],
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        member.fullName,
+                        style: TextStyle(
+                          fontSize: nameSize,
+                          fontWeight: FontWeight.w900,
+                          color: const Color(0xFF1E1E1E),
+                          height: 1.2,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 5,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFFF1F1),
+                            borderRadius: BorderRadius.circular(999),
+                            border: Border.all(color: const Color(0xFFF1D5D6)),
+                          ),
+                          child: Text(
+                            member.role.resolve(context),
+                            style: TextStyle(
+                              fontSize: roleSize,
+                              fontWeight: FontWeight.w800,
+                              color: brandRed,
+                              height: 1.2,
+                              letterSpacing: 0.2,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ),
+                const SizedBox(width: 6),
+                Container(
+                  width: 26,
+                  height: 26,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFF1F1),
+                    shape: BoxShape.circle,
+                    border: Border.all(color: const Color(0xFFF1D5D6)),
+                  ),
+                  child: const Icon(
+                    Icons.chevron_right_rounded,
+                    size: 18,
+                    color: brandRed,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 8),
-            Text(
-              member.displayFirst,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w900,
-                color: Color(0xFF1E1E1E),
-                height: 1.05,
-              ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _TeamGroupLabel extends StatelessWidget {
+  const _TeamGroupLabel({required this.text});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        const Icon(
+          Icons.workspace_premium_rounded,
+          size: 15,
+          color: Color(0xFF9A9A9A),
+        ),
+        const SizedBox(width: 6),
+        Flexible(
+          child: Text(
+            text,
+            maxLines: 2,
+            style: const TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w800,
+              color: Color(0xFF8A8A8A),
+              letterSpacing: 0.8,
+              height: 1.2,
             ),
-            const SizedBox(height: 2),
-            Text(
-              member.displayLast,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w900,
-                color: Color(0xFF1E1E1E),
-                height: 1.05,
-              ),
+          ),
+        ),
+        const SizedBox(width: 10),
+        const Expanded(
+          child: Divider(
+            height: 1,
+            thickness: 1,
+            color: Color(0xFFEDEDED),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _AdviserCard extends StatelessWidget {
+  const _AdviserCard({
+    required this.member,
+    required this.avatarSize,
+    required this.nameSize,
+    required this.roleSize,
+    required this.onTap,
+  });
+
+  final _TeamMember member;
+  final double avatarSize;
+  final double nameSize;
+  final double roleSize;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: Ink(
+        decoration: BoxDecoration(
+          color: const Color(0xFFFAFAFA),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: const Color(0xFFEDEDED)),
+        ),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(11),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                _MemberAvatar(
+                  member: member,
+                  size: avatarSize,
+                  ringWidth: 2,
+                  ringColors: const [Color(0xFFE2E2E2), Color(0xFFF0F0F0)],
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        member.fullName,
+                        style: TextStyle(
+                          fontSize: nameSize,
+                          fontWeight: FontWeight.w800,
+                          color: const Color(0xFF3A3A3A),
+                          height: 1.2,
+                        ),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        member.role.resolve(context),
+                        style: TextStyle(
+                          fontSize: roleSize,
+                          fontWeight: FontWeight.w700,
+                          color: const Color(0xFF8A8A8A),
+                          height: 1.2,
+                          letterSpacing: 0.2,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 6),
+                const Icon(
+                  Icons.chevron_right_rounded,
+                  size: 18,
+                  color: Color(0xFFB0B0B0),
+                ),
+              ],
             ),
-            const SizedBox(height: 6),
-            Text(
-              member.role.resolve(context),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.w700,
-                color: Color(0xFF6B6B6B),
-                height: 1.05,
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -2100,6 +2340,15 @@ class _TeamMember {
   final String? email;
   final _LocalizedText bio;
   final String assetPath;
+
+  /// Advisers are separated from the developers in the About Us team section.
+  /// Detected from the role text so no database changes are required.
+  bool get isAdviser {
+    final value = '${role.en} ${role.tl}'.toUpperCase();
+    return value.contains('ADVISER') ||
+        value.contains('ADVISOR') ||
+        value.contains('TAGAPAYO');
+  }
 
   factory _TeamMember.fromRow(Map<String, dynamic> row) => _TeamMember(
         fullName: row['full_name'].toString(),
