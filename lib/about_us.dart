@@ -1094,6 +1094,11 @@ class _TeamCard extends StatelessWidget {
 
   String _ui(BuildContext context, String key) => uiTexts[key]!.resolve(context);
 
+  /// The profile-modal labels were added after the first About Us release, so
+  /// they fall back instead of throwing on an older database snapshot.
+  String _uiOr(BuildContext context, String key, String fallback) =>
+      uiTexts[key]?.resolve(context) ?? fallback;
+
   @override
   Widget build(BuildContext context) {
     final developers = _sortDevelopers(data.team.where((m) => !m.isAdviser).toList());
@@ -1153,8 +1158,10 @@ class _TeamCard extends StatelessWidget {
                       context,
                       member: developers[i],
                       closeLabel: _ui(context, 'close'),
-                      emailPrefix: _ui(context, 'email_prefix'),
-                      emailPending: _ui(context, 'email_pending'),
+                      emailLabel: _uiOr(context, 'member_email_action', 'Email'),
+                      linkedInLabel: _uiOr(context, 'member_linkedin_action', 'LinkedIn'),
+                      pendingLabel: _ui(context, 'email_pending'),
+                      noAppLabel: _ui(context, 'no_compatible_app'),
                     ),
                   ),
                   if (i != developers.length - 1) const SizedBox(height: 10),
@@ -1175,8 +1182,10 @@ class _TeamCard extends StatelessWidget {
                         context,
                         member: advisers[i],
                         closeLabel: _ui(context, 'close'),
-                        emailPrefix: _ui(context, 'email_prefix'),
-                        emailPending: _ui(context, 'email_pending'),
+                        emailLabel: _uiOr(context, 'member_email_action', 'Email'),
+                        linkedInLabel: _uiOr(context, 'member_linkedin_action', 'LinkedIn'),
+                        pendingLabel: _ui(context, 'email_pending'),
+                        noAppLabel: _ui(context, 'no_compatible_app'),
                       ),
                     ),
                     if (i != advisers.length - 1) const SizedBox(height: 10),
@@ -1511,79 +1520,464 @@ Future<void> _showMemberBio(
   BuildContext context, {
   required _TeamMember member,
   required String closeLabel,
-  required String emailPrefix,
-  required String emailPending,
+  required String emailLabel,
+  required String linkedInLabel,
+  required String pendingLabel,
+  required String noAppLabel,
 }) {
   return showDialog(
     context: context,
-    builder: (_) => AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-      title: Text(
-        member.fullName,
-        style: const TextStyle(fontWeight: FontWeight.w900),
-      ),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              member.role.resolve(context),
-              style: const TextStyle(
-                fontWeight: FontWeight.w800,
-                color: Color(0xFFB11217),
-              ),
-            ),
-            const SizedBox(height: 8),
-            InkWell(
-              onTap: member.email == null
-                  ? null
-                  : () => launchUrl(
-                        Uri(scheme: 'mailto', path: member.email),
-                        mode: LaunchMode.externalApplication,
-                      ),
-              borderRadius: BorderRadius.circular(6),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 2),
-                child: Text(
-                  member.email == null
-                      ? '$emailPrefix: $emailPending'
-                      : '$emailPrefix: ${member.email}',
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    color: member.email == null
-                        ? const Color(0xFF777777)
-                        : const Color(0xFF2D2D2D),
-                    fontStyle: member.email == null ? FontStyle.italic : FontStyle.normal,
-                    decoration: member.email == null
-                        ? TextDecoration.none
-                        : TextDecoration.underline,
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              member.bio.resolve(context),
-              style: const TextStyle(
-                height: 1.4,
-                fontWeight: FontWeight.w500,
-                fontSize: 13,
-              ),
-            ),
-          ],
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text(closeLabel),
-        ),
-      ],
+    barrierColor: Colors.black.withOpacity(0.55),
+    builder: (_) => _MemberProfileDialog(
+      member: member,
+      closeLabel: closeLabel,
+      emailLabel: emailLabel,
+      linkedInLabel: linkedInLabel,
+      pendingLabel: pendingLabel,
+      noAppLabel: noAppLabel,
     ),
   );
+}
+
+/// Premium profile card shown when a team member is tapped in About Us.
+/// Every piece of content comes from `about_us_team_members`; the labels come
+/// from `about_us_ui_texts`.
+class _MemberProfileDialog extends StatelessWidget {
+  static const Color brandRed = Color(0xFFB11217);
+  static const Color brandRedSoft = Color(0xFFE0474C);
+  static const Color linkedInBlue = Color(0xFF0A66C2);
+
+  const _MemberProfileDialog({
+    required this.member,
+    required this.closeLabel,
+    required this.emailLabel,
+    required this.linkedInLabel,
+    required this.pendingLabel,
+    required this.noAppLabel,
+  });
+
+  final _TeamMember member;
+  final String closeLabel;
+  final String emailLabel;
+  final String linkedInLabel;
+  final String pendingLabel;
+  final String noAppLabel;
+
+  Future<void> _open(BuildContext context, Uri uri) async {
+    bool opened;
+    try {
+      opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (_) {
+      opened = false;
+    }
+    if (opened || !context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(noAppLabel)),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final screen = MediaQuery.sizeOf(context);
+
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      insetPadding: EdgeInsets.symmetric(
+        horizontal: screen.width < 340 ? 14 : 22,
+        vertical: 28,
+      ),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxWidth: 400,
+          maxHeight: screen.height * 0.86,
+        ),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final width = constraints.maxWidth;
+            final compact = width < 320;
+            final stacked = width < 288;
+
+            final avatarSize = compact ? 82.0 : 94.0;
+            const ringWidth = 4.0;
+            final avatarTotal = avatarSize + ringWidth * 2;
+            final bandHeight = compact ? 84.0 : 94.0;
+            final bodyPadding = compact ? 16.0 : 22.0;
+
+            final email = member.email;
+            final linkedIn = member.linkedInUrl;
+
+            final emailButton = _ProfileActionButton(
+              label: email == null ? pendingLabel : emailLabel,
+              accent: brandRed,
+              filled: true,
+              compact: compact,
+              leadingBuilder: (color) => Icon(
+                Icons.mail_rounded,
+                size: 17,
+                color: color,
+              ),
+              onTap: email == null
+                  ? null
+                  : () => _open(context, Uri(scheme: 'mailto', path: email)),
+            );
+
+            final linkedInButton = _ProfileActionButton(
+              label: linkedIn == null ? pendingLabel : linkedInLabel,
+              accent: linkedInBlue,
+              filled: false,
+              compact: compact,
+              leadingBuilder: (color) => _LinkedInGlyph(size: 18, background: color),
+              onTap: linkedIn == null
+                  ? null
+                  : () => _open(context, Uri.parse(linkedIn)),
+            );
+
+            return Container(
+              width: width,
+              clipBehavior: Clip.antiAlias,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(26),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.22),
+                    blurRadius: 34,
+                    offset: const Offset(0, 16),
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                // The header is a Stack of only positioned children, so it
+                // needs a tight width handed down from this Column.
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  SizedBox(
+                    height: bandHeight + avatarTotal / 2,
+                    child: Stack(
+                      children: [
+                        Positioned(
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          child: Container(
+                            height: bandHeight,
+                            clipBehavior: Clip.antiAlias,
+                            decoration: const BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [brandRed, brandRedSoft],
+                              ),
+                            ),
+                            child: Stack(
+                              children: const [
+                                Positioned(top: -34, right: -20, child: _HeaderGlow(size: 96, opacity: 0.14)),
+                                Positioned(bottom: -52, left: -28, child: _HeaderGlow(size: 124, opacity: 0.10)),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          top: 8,
+                          right: 8,
+                          child: Material(
+                            color: Colors.white.withOpacity(0.18),
+                            shape: const CircleBorder(),
+                            child: InkWell(
+                              customBorder: const CircleBorder(),
+                              onTap: () => Navigator.pop(context),
+                              child: Tooltip(
+                                message: closeLabel,
+                                child: const SizedBox(
+                                  width: 32,
+                                  height: 32,
+                                  child: Icon(
+                                    Icons.close_rounded,
+                                    size: 18,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          top: bandHeight - avatarTotal / 2,
+                          left: 0,
+                          right: 0,
+                          child: Center(
+                            child: DecoratedBox(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.18),
+                                    blurRadius: 16,
+                                    offset: const Offset(0, 6),
+                                  ),
+                                ],
+                              ),
+                              child: _MemberAvatar(
+                                member: member,
+                                size: avatarSize,
+                                ringWidth: ringWidth,
+                                ringColors: const [Colors.white, Colors.white],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Flexible(
+                    child: SingleChildScrollView(
+                      padding: EdgeInsets.fromLTRB(
+                        bodyPadding,
+                        14,
+                        bodyPadding,
+                        bodyPadding,
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text(
+                            member.fullName,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: compact ? 17 : 19,
+                              fontWeight: FontWeight.w900,
+                              color: const Color(0xFF161616),
+                              height: 1.2,
+                              letterSpacing: 0.2,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Align(
+                            alignment: Alignment.center,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFFFF1F1),
+                                borderRadius: BorderRadius.circular(999),
+                                border: Border.all(color: const Color(0xFFF1D5D6)),
+                              ),
+                              child: Text(
+                                member.role.resolve(context),
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: compact ? 10.5 : 11.5,
+                                  fontWeight: FontWeight.w800,
+                                  color: brandRed,
+                                  height: 1.2,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 14),
+                          Text(
+                            member.bio.resolve(context),
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: compact ? 12.5 : 13.2,
+                              height: 1.55,
+                              fontWeight: FontWeight.w500,
+                              color: const Color(0xFF5A5A5A),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          const Divider(
+                            height: 1,
+                            thickness: 1,
+                            color: Color(0xFFEFEFEF),
+                          ),
+                          const SizedBox(height: 16),
+                          if (stacked) ...[
+                            emailButton,
+                            const SizedBox(height: 10),
+                            linkedInButton,
+                          ] else
+                            Row(
+                              children: [
+                                Expanded(child: emailButton),
+                                const SizedBox(width: 10),
+                                Expanded(child: linkedInButton),
+                              ],
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+/// Soft light blob that gives the profile header depth without an image.
+class _HeaderGlow extends StatelessWidget {
+  const _HeaderGlow({required this.size, required this.opacity});
+
+  final double size;
+  final double opacity;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.white.withOpacity(opacity),
+      ),
+    );
+  }
+}
+
+/// LinkedIn "in" mark drawn locally so no icon package is needed.
+class _LinkedInGlyph extends StatelessWidget {
+  const _LinkedInGlyph({required this.size, required this.background});
+
+  final double size;
+  final Color background;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: BorderRadius.circular(size * 0.24),
+      ),
+      child: Text(
+        'in',
+        textAlign: TextAlign.center,
+        textScaler: TextScaler.noScaling,
+        style: TextStyle(
+          fontSize: size * 0.56,
+          height: 1.05,
+          fontWeight: FontWeight.w900,
+          color: Colors.white,
+          letterSpacing: -0.2,
+        ),
+      ),
+    );
+  }
+}
+
+/// Email / LinkedIn action inside the member profile card. A null [onTap]
+/// renders the muted "to be added" state instead of an unusable button.
+class _ProfileActionButton extends StatelessWidget {
+  const _ProfileActionButton({
+    required this.label,
+    required this.accent,
+    required this.filled,
+    required this.compact,
+    required this.leadingBuilder,
+    required this.onTap,
+  });
+
+  final String label;
+  final Color accent;
+  final bool filled;
+  final bool compact;
+  final Widget Function(Color color) leadingBuilder;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final enabled = onTap != null;
+
+    late final Color background;
+    late final Color foreground;
+    late final Color borderColor;
+    var shadows = const <BoxShadow>[];
+
+    if (!enabled) {
+      background = const Color(0xFFF5F5F5);
+      foreground = const Color(0xFFA6A6A6);
+      borderColor = const Color(0xFFEBEBEB);
+    } else if (filled) {
+      background = accent;
+      foreground = Colors.white;
+      borderColor = accent;
+      shadows = [
+        BoxShadow(
+          color: accent.withOpacity(0.30),
+          blurRadius: 14,
+          offset: const Offset(0, 6),
+        ),
+      ];
+    } else {
+      background = Colors.white;
+      foreground = accent;
+      borderColor = accent.withOpacity(0.35);
+      shadows = [
+        BoxShadow(
+          color: accent.withOpacity(0.12),
+          blurRadius: 12,
+          offset: const Offset(0, 5),
+        ),
+      ];
+    }
+
+    final radius = BorderRadius.circular(14);
+
+    return DecoratedBox(
+      decoration: BoxDecoration(borderRadius: radius, boxShadow: shadows),
+      child: Material(
+        color: background,
+        borderRadius: radius,
+        child: InkWell(
+          borderRadius: radius,
+          onTap: onTap,
+          child: Container(
+            padding: EdgeInsets.symmetric(
+              horizontal: compact ? 10 : 14,
+              vertical: 12,
+            ),
+            decoration: BoxDecoration(
+              borderRadius: radius,
+              border: Border.all(color: borderColor),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                leadingBuilder(foreground),
+                const SizedBox(width: 8),
+                Flexible(
+                  child: Text(
+                    label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: compact ? 12 : 13,
+                      fontWeight: FontWeight.w800,
+                      color: foreground,
+                      letterSpacing: 0.2,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class _MemberAvatar extends StatelessWidget {
@@ -2357,6 +2751,7 @@ class _TeamMember {
     required this.displayLast,
     required this.role,
     required this.email,
+    required this.linkedInUrl,
     required this.bio,
     required this.assetPath,
   });
@@ -2366,6 +2761,7 @@ class _TeamMember {
   final String displayLast;
   final _LocalizedText role;
   final String? email;
+  final String? linkedInUrl;
   final _LocalizedText bio;
   final String assetPath;
 
@@ -2378,12 +2774,29 @@ class _TeamMember {
         value.contains('TAGAPAYO');
   }
 
+  /// Blank database cells must behave like missing ones so the profile modal
+  /// never offers an action that cannot open anything.
+  static String? _trimmed(Object? value) {
+    final text = value?.toString().trim();
+    return (text == null || text.isEmpty) ? null : text;
+  }
+
+  /// LinkedIn links are authored by hand in the back office, so a bare
+  /// `linkedin.com/in/...` value is upgraded to a launchable https URL.
+  static String? _link(Object? value) {
+    final text = _trimmed(value);
+    if (text == null) return null;
+    if (text.startsWith('http://') || text.startsWith('https://')) return text;
+    return 'https://$text';
+  }
+
   factory _TeamMember.fromRow(Map<String, dynamic> row) => _TeamMember(
         fullName: row['full_name'].toString(),
         displayFirst: row['display_first'].toString(),
         displayLast: row['display_last'].toString(),
         role: _LocalizedText.fromRow(row, enKey: 'role_en', tlKey: 'role_tl'),
-        email: row['email'] as String?,
+        email: _trimmed(row['email']),
+        linkedInUrl: _link(row['linkedin_url']),
         bio: _LocalizedText.fromRow(row, enKey: 'bio_en', tlKey: 'bio_tl'),
         assetPath: row['asset_path'].toString(),
       );

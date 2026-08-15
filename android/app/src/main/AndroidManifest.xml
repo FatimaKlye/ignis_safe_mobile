@@ -3,6 +3,22 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <!--
+        Android 11+ package visibility. Without these declarations url_launcher
+        cannot resolve a handler, so the About Us developer profile Email and
+        LinkedIn actions would silently do nothing on modern devices.
+    -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="mailto" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="https" />
+        </intent>
+    </queries>
+
     <application
         android:label="IGNIS SAFE"
         android:name="${applicationName}"
