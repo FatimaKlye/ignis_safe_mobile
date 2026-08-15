@@ -1247,7 +1247,20 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
               builder: (context, constraints) {
                 final compactWidth = constraints.maxWidth < 370;
                 final horizontalPadding = compactWidth ? 16.0 : 22.0;
-                final bottomInset = MediaQuery.paddingOf(context).bottom + 96;
+
+                // Mirrors FloatingNavBar's own responsive height (navbar.dart)
+                // so the list clears the glass nav bar without leaving a
+                // fixed, oversized gap below the last card on taller screens.
+                final navBarHeight = (constraints.maxWidth * 0.18)
+                    .clamp(54.0, 64.0)
+                    .clamp(0.0, 62.0);
+                const navBarBottomGap = 14.0;
+                final breathingRoom = (MediaQuery.sizeOf(context).height * 0.02)
+                    .clamp(14.0, 24.0);
+                final bottomInset = MediaQuery.paddingOf(context).bottom +
+                    navBarHeight +
+                    navBarBottomGap +
+                    breathingRoom;
                 return Padding(
                   padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
                   child: _buildList(
