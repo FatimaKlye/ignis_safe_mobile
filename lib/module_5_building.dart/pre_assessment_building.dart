@@ -9,6 +9,7 @@ import 'pre_assess_completion_page.dart';
 import 'pre_assess_instruction.dart';
 import '../profile_progress_sync.dart';
 import 'module_progression_service.dart';
+import '../widgets/assessment_nav_buttons.dart';
 
 class AppColors {
   // Purple / Violet Palette based on #7C3AED
@@ -1724,98 +1725,6 @@ class _PreAssessmentBuildingPageState
   }
 
   Widget _buildBottomBar() {
-    Widget primaryButton({
-      required String label,
-      required VoidCallback? onPressed,
-      IconData? icon,
-      Color color = AppColors.primaryButton,
-    }) {
-      return SizedBox(
-        height: 54,
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: color,
-            disabledBackgroundColor: AppColors.textMuted,
-            elevation: onPressed == null ? 0 : 7,
-            shadowColor: color.withOpacity(0.32),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(18),
-            ),
-          ),
-          onPressed: onPressed,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Flexible(
-                child: Text(
-                  label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    color: AppColors.textOnRed,
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.w900,
-                    fontSize: 14.5,
-                  ),
-                ),
-              ),
-              if (icon != null) ...[
-                const SizedBox(width: 7),
-                Icon(icon, color: AppColors.textOnRed, size: 19),
-              ],
-            ],
-          ),
-        ),
-      );
-    }
-
-    Widget secondaryButton({
-      required String label,
-      required VoidCallback? onPressed,
-      IconData? icon,
-    }) {
-      return SizedBox(
-        height: 54,
-        child: OutlinedButton(
-          style: OutlinedButton.styleFrom(
-            backgroundColor: AppColors.secondaryButton,
-            side: const BorderSide(
-              color: AppColors.primaryButton,
-              width: 1.2,
-            ),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(18),
-            ),
-          ),
-          onPressed: onPressed,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (icon != null) ...[
-                Icon(icon, color: AppColors.primaryButton, size: 18),
-                const SizedBox(width: 7),
-              ],
-              Flexible(
-                child: Text(
-                  label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    color: AppColors.primaryButton,
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.w900,
-                    fontSize: 14,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
     if (_showReview) {
       return SafeArea(
         top: false,
@@ -1823,17 +1732,21 @@ class _PreAssessmentBuildingPageState
         child: Row(
           children: [
             Expanded(
-              child: secondaryButton(
+              child: AssessmentSecondaryButton(
                 label: _txt('Back', 'Bumalik'),
                 icon: Icons.arrow_back_rounded,
+                backgroundColor: AppColors.secondaryButton,
+                accentColor: AppColors.primaryButton,
                 onPressed: () => Navigator.pop(context),
               ),
             ),
             const SizedBox(width: 10),
             Expanded(
-              child: primaryButton(
+              child: AssessmentPrimaryButton(
                 label: _txt('Completed', 'Tapos Na'),
                 icon: Icons.lock_rounded,
+                backgroundColor: AppColors.primaryButton,
+                disabledBackgroundColor: AppColors.textMuted,
                 onPressed: _isSubmitting
                     ? null
                     : () {
@@ -1861,9 +1774,11 @@ class _PreAssessmentBuildingPageState
         child: Row(
           children: [
             Expanded(
-              child: secondaryButton(
+              child: AssessmentSecondaryButton(
                 label: _txt('Questions', 'Mga Tanong'),
                 icon: Icons.arrow_back_rounded,
+                backgroundColor: AppColors.secondaryButton,
+                accentColor: AppColors.primaryButton,
                 // TEMP UNLOCK: onPressed: _timeExpired || _isSubmitting
               onPressed: _isSubmitting
                     ? null
@@ -1877,7 +1792,7 @@ class _PreAssessmentBuildingPageState
             ),
             const SizedBox(width: 10),
             Expanded(
-              child: primaryButton(
+              child: AssessmentPrimaryButton(
                 label: _isSubmitting
                     ? _txt('Submitting...', 'Ipinapasa...')
                     : locked
@@ -1886,7 +1801,8 @@ class _PreAssessmentBuildingPageState
                 icon: locked ? Icons.lock_outline_rounded : Icons.check_rounded,
                 // TEMP UNLOCK: onPressed: _isSubmitting || _timeExpired ? null : () => _submitAssessment(),
                 onPressed: _isSubmitting ? null : () => _submitAssessment(),
-                color: locked ? AppColors.textMuted : AppColors.primaryButton,
+                backgroundColor: locked ? AppColors.textMuted : AppColors.primaryButton,
+                disabledBackgroundColor: AppColors.textMuted,
               ),
             ),
           ],
@@ -1907,7 +1823,7 @@ class _PreAssessmentBuildingPageState
       child: Row(
         children: [
           Expanded(
-            child: secondaryButton(
+            child: AssessmentSecondaryButton(
               label: _editingFromSummary
                   ? _txt('Summary', 'Buod')
                   : (_currentIndex == 0
@@ -1916,16 +1832,20 @@ class _PreAssessmentBuildingPageState
               icon: _currentIndex == 0 && !_editingFromSummary
                   ? Icons.close_rounded
                   : Icons.arrow_back_rounded,
+              backgroundColor: AppColors.secondaryButton,
+              accentColor: AppColors.primaryButton,
               onPressed: _isSubmitting ? null : _goBack,
             ),
           ),
           const SizedBox(width: 10),
           Expanded(
-            child: primaryButton(
+            child: AssessmentPrimaryButton(
               label: _isSubmitting
                   ? _txt('Submitting...', 'Ipinapasa...')
                   : nextLabel,
               icon: Icons.arrow_forward_rounded,
+              backgroundColor: AppColors.primaryButton,
+              disabledBackgroundColor: AppColors.textMuted,
               // TEMP UNLOCK: onPressed: _timeExpired || _isSubmitting ? null : _goNext,
               onPressed: _isSubmitting ? null : _goNext,
             ),
