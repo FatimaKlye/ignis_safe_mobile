@@ -577,7 +577,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
           child = _PartnerCard(data: data.partner);
           break;
         case 'emergency_contacts':
-          child = _ContactCard(data: data.emergency);
+          child = _ContactCard(data: data.emergency, uiTexts: data.uiTexts);
           break;
         case 'cavite_directory':
           child = _CaviteBfpDirectoryCard(
@@ -1270,13 +1270,24 @@ class _PartnerCard extends StatelessWidget {
 
 class _ContactCard extends StatelessWidget {
   static const Color brandRed = Color(0xFFB11217);
-  const _ContactCard({required this.data});
+  const _ContactCard({required this.data, required this.uiTexts});
   final _EmergencyRecord data;
+  final Map<String, _LocalizedText> uiTexts;
+
+  String _ui(BuildContext context, String key) => uiTexts[key]!.resolve(context);
 
   Future<void> _dial(String number) async {
     await launchUrl(
       Uri(scheme: 'tel', path: number),
       mode: LaunchMode.externalApplication,
+    );
+  }
+
+  Future<void> _copy(BuildContext context, String value) async {
+    await Clipboard.setData(ClipboardData(text: value));
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('$value ${_ui(context, 'copied_suffix')}')),
     );
   }
 
@@ -1338,6 +1349,8 @@ class _ContactCard extends StatelessWidget {
                 label: data.numbers[i].label.resolve(context),
                 value: data.numbers[i].displayValue,
                 onTap: () => _dial(data.numbers[i].dialValue),
+                onCopy: () => _copy(context, data.numbers[i].displayValue),
+                copyTooltip: _ui(context, 'copy_phone_tooltip'),
               ),
               if (i != data.numbers.length - 1) const SizedBox(height: 8),
             ],
@@ -1371,12 +1384,16 @@ class _ContactRow extends StatelessWidget {
   final String label;
   final String value;
   final VoidCallback? onTap;
+  final VoidCallback? onCopy;
+  final String copyTooltip;
 
   const _ContactRow({
     required this.icon,
     required this.label,
     required this.value,
     this.onTap,
+    this.onCopy,
+    this.copyTooltip = '',
   });
 
   @override
@@ -1410,6 +1427,13 @@ class _ContactRow extends StatelessWidget {
               ),
             ),
           ),
+          if (onCopy != null)
+            IconButton(
+              tooltip: copyTooltip,
+              visualDensity: VisualDensity.compact,
+              onPressed: onCopy,
+              icon: const Icon(Icons.copy_rounded, size: 17, color: Color(0xFFB11217)),
+            ),
         ],
       ),
     );
