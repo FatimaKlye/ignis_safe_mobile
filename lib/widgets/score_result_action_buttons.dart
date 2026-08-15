@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../localization/language_controller.dart';
 
-/// IGNIS SAFE brand red — used for these action buttons regardless of a
-/// module's accent color, since Score Result actions are a brand-level
-/// (not module-themed) affordance.
+/// IGNIS SAFE brand red — the default accent, used by Module 1 whose theme
+/// is the brand red itself. Other modules pass their own theme colors.
 const Color kIgnisSafeRed = Color(0xFFB11217);
 const Color kIgnisSafeRedPressed = Color(0xFF7A1014);
 const Color kIgnisSafeRedShadow = Color(0x4DB11217);
@@ -12,16 +11,30 @@ const Color kIgnisSafeRedShadow = Color(0x4DB11217);
 /// The two side-by-side actions shown at the bottom of a Pre-Assessment
 /// Score Result screen: a secondary "Answer Feedback" button and a primary
 /// "Continue" button. Kept as a single shared widget so all module Score
-/// Result screens stay visually consistent.
+/// Result screens stay structurally consistent while each module supplies
+/// its own accent color from its existing `AppColors` palette.
 class ScoreResultActionButtons extends StatelessWidget {
   const ScoreResultActionButtons({
     super.key,
     required this.onAnswerFeedback,
     required this.onContinue,
+    this.accentColor = kIgnisSafeRed,
+    this.accentPressedColor = kIgnisSafeRedPressed,
+    this.accentShadowColor = kIgnisSafeRedShadow,
   });
 
   final VoidCallback onAnswerFeedback;
   final VoidCallback onContinue;
+
+  /// Module theme color: border/icon/text of "Answer Feedback" and the solid
+  /// background of "Continue".
+  final Color accentColor;
+
+  /// Pressed-state background of "Continue".
+  final Color accentPressedColor;
+
+  /// Drop shadow beneath "Continue" — the accent color at low opacity.
+  final Color accentShadowColor;
 
   @override
   Widget build(BuildContext context) {
@@ -42,8 +55,8 @@ class ScoreResultActionButtons extends StatelessWidget {
                 backgroundColor: const WidgetStatePropertyAll<Color>(
                   Colors.white,
                 ),
-                side: const WidgetStatePropertyAll<BorderSide>(
-                  BorderSide(color: kIgnisSafeRed, width: 1.6),
+                side: WidgetStatePropertyAll<BorderSide>(
+                  BorderSide(color: accentColor, width: 1.6),
                 ),
                 padding: const WidgetStatePropertyAll<EdgeInsets>(
                   EdgeInsets.symmetric(horizontal: 8, vertical: 10),
@@ -59,9 +72,9 @@ class ScoreResultActionButtons extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.fact_check_outlined,
-                    color: kIgnisSafeRed,
+                    color: accentColor,
                     size: 19,
                   ),
                   const SizedBox(width: 6),
@@ -71,8 +84,8 @@ class ScoreResultActionButtons extends StatelessWidget {
                       textAlign: TextAlign.center,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: kIgnisSafeRed,
+                      style: TextStyle(
+                        color: accentColor,
                         fontFamily: 'Poppins',
                         fontWeight: FontWeight.w800,
                         fontSize: 13,
@@ -96,17 +109,17 @@ class ScoreResultActionButtons extends StatelessWidget {
                 backgroundColor: WidgetStateProperty.resolveWith<Color>(
                   (states) {
                     if (states.contains(WidgetState.pressed)) {
-                      return kIgnisSafeRedPressed;
+                      return accentPressedColor;
                     }
-                    return kIgnisSafeRed;
+                    return accentColor;
                   },
                 ),
                 foregroundColor: const WidgetStatePropertyAll<Color>(
                   Colors.white,
                 ),
                 elevation: const WidgetStatePropertyAll<double>(8),
-                shadowColor: const WidgetStatePropertyAll<Color>(
-                  kIgnisSafeRedShadow,
+                shadowColor: WidgetStatePropertyAll<Color>(
+                  accentShadowColor,
                 ),
                 shape: WidgetStatePropertyAll<OutlinedBorder>(
                   RoundedRectangleBorder(

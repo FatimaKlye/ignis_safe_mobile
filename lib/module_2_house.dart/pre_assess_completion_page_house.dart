@@ -163,6 +163,11 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
                     ),
                     const SizedBox(height: 40),
                     ScoreResultActionButtons(
+                      accentColor: AppColors.primaryButton,
+                      accentPressedColor: AppColors.primaryButtonPressed,
+                      accentShadowColor: AppColors.primaryButton.withValues(
+                        alpha: 0.30,
+                      ),
                       onAnswerFeedback: () => Navigator.push(
                         context,
                         MaterialPageRoute(
