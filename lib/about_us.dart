@@ -420,6 +420,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
           Positioned.fill(child: Image.asset('assets/bg.png', fit: BoxFit.cover)),
           const MainTabHeaderBackdrop(height: 270),
           SafeArea(
+            bottom: false,
             child: LayoutBuilder(
               builder: (context, constraints) {
                 final width = constraints.maxWidth;
@@ -518,7 +519,12 @@ class _AboutUsPageState extends State<AboutUsPage> {
       child: SingleChildScrollView(
         physics: const ClampingScrollPhysics(),
         clipBehavior: Clip.hardEdge,
-        padding: EdgeInsets.fromLTRB(horizontalPadding, 0, horizontalPadding, 12),
+        padding: EdgeInsets.fromLTRB(
+          horizontalPadding,
+          0,
+          horizontalPadding,
+          MediaQuery.paddingOf(context).bottom + 96,
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,

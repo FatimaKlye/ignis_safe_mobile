@@ -30,6 +30,7 @@ Widget _buildModernProfileView(_ProfilePageState state, BuildContext context) {
         ),
         const MainTabHeaderBackdrop(height: 330),
         SafeArea(
+          bottom: false,
           child: LayoutBuilder(
             builder: (context, constraints) {
               final compactWidth = constraints.maxWidth < 370;
@@ -40,7 +41,7 @@ Widget _buildModernProfileView(_ProfilePageState state, BuildContext context) {
                   horizontalPadding,
                   12,
                   horizontalPadding,
-                  118,
+                  MediaQuery.paddingOf(context).bottom + 96,
                 ),
                 child: Center(
                   child: ConstrainedBox(
