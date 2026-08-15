@@ -34,159 +34,188 @@ Widget _buildModernProfileView(_ProfilePageState state, BuildContext context) {
           child: LayoutBuilder(
             builder: (context, constraints) {
               final compactWidth = constraints.maxWidth < 370;
+              final compactHeight = constraints.maxHeight < 700;
               final horizontalPadding = compactWidth ? 16.0 : 22.0;
+              final topPadding = compactHeight ? 8.0 : 12.0;
+              final bottomPadding = MediaQuery.paddingOf(context).bottom + 96;
+              final sectionGap = compactHeight ? 14.0 : 23.0;
+              final headingGap = compactHeight ? 16.0 : 24.0;
+              final panelGap = compactHeight ? 8.0 : 12.0;
 
               return SingleChildScrollView(
+                physics: const ClampingScrollPhysics(),
                 padding: EdgeInsets.fromLTRB(
                   horizontalPadding,
-                  12,
+                  topPadding,
                   horizontalPadding,
-                  MediaQuery.paddingOf(context).bottom + 96,
+                  bottomPadding,
                 ),
-                child: Center(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 540),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        MainTabHeader(
-                          greeting: state._displayName.trim().isEmpty
-                              ? state._t(context, 'Welcome back', 'Mabuhay')
-                              : state._t(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minHeight:
+                        (constraints.maxHeight - topPadding - bottomPadding)
+                            .clamp(0.0, double.infinity),
+                  ),
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 540),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          MainTabHeader(
+                            greeting: state._displayName.trim().isEmpty
+                                ? state._t(context, 'Welcome back', 'Mabuhay')
+                                : state._t(
+                                    context,
+                                    'Hi, ${state._displayName.trim().split(' ').first}',
+                                    'Kumusta, ${state._displayName.trim().split(' ').first}',
+                                  ),
+                            accountLabel: state._t(
+                              context,
+                              'Welcome to IGNIS SAFE',
+                              'Mabuhay sa IGNIS SAFE',
+                            ),
+                            title: state._t(
+                              context,
+                              'My Profile',
+                              'Aking Profile',
+                            ),
+                            subtitle: state._t(
+                              context,
+                              'Manage your account and track your training.',
+                              'Pamahalaan ang account at subaybayan ang training.',
+                            ),
+                            titleIcon: Icons.person_rounded,
+                            avatarImage: avatarImage,
+                            profileLabel: state._t(
+                              context,
+                              'Profile',
+                              'Profile',
+                            ),
+                            logoutLabel: state._t(
+                              context,
+                              'Log Out',
+                              'Mag-logout',
+                            ),
+                            onProfile: () {},
+                            onLogout: state._logout,
+                          ),
+                          SizedBox(height: sectionGap),
+                          _ModernProfileOverviewCard(
+                            compact: compactHeight,
+                            avatarImage: avatarImage,
+                            isLoading: state._isLoadingProfile,
+                            displayName: state._displayName,
+                            email: state._email,
+                            completedText: state._completedSimulations,
+                            progress: progress,
+                            lastSimulation: state._lastSimulation,
+                            onEdit: openEditProfile,
+                            accountLabel: state._t(
+                              context,
+                              'Active learner',
+                              'Aktibong learner',
+                            ),
+                            progressLabel: state._t(
+                              context,
+                              'Training progress',
+                              'Training progress',
+                            ),
+                            completedLabel: state._t(
+                              context,
+                              'simulations completed',
+                              'simulation ang natapos',
+                            ),
+                            recentLabel: state._t(
+                              context,
+                              'Recent activity',
+                              'Huling activity',
+                            ),
+                            noActivityLabel: state._t(
+                              context,
+                              'No simulation yet',
+                              'Wala pang simulation',
+                            ),
+                          ),
+                          SizedBox(height: headingGap),
+                          _ModernProfileSectionHeading(
+                            title: state._t(
+                              context,
+                              'Account & support',
+                              'Account at suporta',
+                            ),
+                            subtitle: state._t(
+                              context,
+                              'Personalize your experience and get help.',
+                              'I-personalize ang experience at humingi ng tulong.',
+                            ),
+                          ),
+                          SizedBox(height: panelGap),
+                          _ModernProfileActionPanel(
+                            children: [
+                              _ModernProfileActionTile(
+                                compact: compactHeight,
+                                icon: Icons.manage_accounts_outlined,
+                                title: state._t(
                                   context,
-                                  'Hi, ${state._displayName.trim().split(' ').first}',
-                                  'Kumusta, ${state._displayName.trim().split(' ').first}',
+                                  'Edit Profile',
+                                  'I-edit ang Profile',
                                 ),
-                          accountLabel: state._t(
-                            context,
-                            'Welcome to IGNIS SAFE',
-                            'Mabuhay sa IGNIS SAFE',
-                          ),
-                          title: state._t(
-                            context,
-                            'My Profile',
-                            'Aking Profile',
-                          ),
-                          subtitle: state._t(
-                            context,
-                            'Manage your account and track your training.',
-                            'Pamahalaan ang account at subaybayan ang training.',
-                          ),
-                          titleIcon: Icons.person_rounded,
-                          avatarImage: avatarImage,
-                          profileLabel: state._t(context, 'Profile', 'Profile'),
-                          logoutLabel: state._t(
-                            context,
-                            'Log Out',
-                            'Mag-logout',
-                          ),
-                          onProfile: () {},
-                          onLogout: state._logout,
-                        ),
-                        const SizedBox(height: 23),
-                        _ModernProfileOverviewCard(
-                          avatarImage: avatarImage,
-                          isLoading: state._isLoadingProfile,
-                          displayName: state._displayName,
-                          email: state._email,
-                          completedText: state._completedSimulations,
-                          progress: progress,
-                          lastSimulation: state._lastSimulation,
-                          onEdit: openEditProfile,
-                          accountLabel: state._t(
-                            context,
-                            'Active learner',
-                            'Aktibong learner',
-                          ),
-                          progressLabel: state._t(
-                            context,
-                            'Training progress',
-                            'Training progress',
-                          ),
-                          completedLabel: state._t(
-                            context,
-                            'simulations completed',
-                            'simulation ang natapos',
-                          ),
-                          recentLabel: state._t(
-                            context,
-                            'Recent activity',
-                            'Huling activity',
-                          ),
-                          noActivityLabel: state._t(
-                            context,
-                            'No simulation yet',
-                            'Wala pang simulation',
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-                        _ModernProfileSectionHeading(
-                          title: state._t(
-                            context,
-                            'Account & support',
-                            'Account at suporta',
-                          ),
-                          subtitle: state._t(
-                            context,
-                            'Personalize your experience and get help.',
-                            'I-personalize ang experience at humingi ng tulong.',
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        _ModernProfileActionPanel(
-                          children: [
-                            _ModernProfileActionTile(
-                              icon: Icons.manage_accounts_outlined,
-                              title: state._t(
-                                context,
-                                'Edit Profile',
-                                'I-edit ang Profile',
+                                subtitle: state._t(
+                                  context,
+                                  'Update your photo, name, or password',
+                                  'Baguhin ang larawan, pangalan, o password',
+                                ),
+                                onTap: openEditProfile,
                               ),
-                              subtitle: state._t(
-                                context,
-                                'Update your photo, name, or password',
-                                'Baguhin ang larawan, pangalan, o password',
+                              const _ModernProfileActionDivider(),
+                              _ModernProfileActionTile(
+                                compact: compactHeight,
+                                icon: Icons.help_outline_rounded,
+                                title: state._t(
+                                  context,
+                                  'Help & FAQ',
+                                  'Tulong at FAQ',
+                                ),
+                                subtitle: state._t(
+                                  context,
+                                  'Find quick answers about IGNIS SAFE',
+                                  'Makahanap ng mabilis na sagot tungkol sa IGNIS SAFE',
+                                ),
+                                color: const Color(0xFF142D57),
+                                onTap: () => showFAQDialog(context),
                               ),
-                              onTap: openEditProfile,
-                            ),
-                            const _ModernProfileActionDivider(),
-                            _ModernProfileActionTile(
-                              icon: Icons.help_outline_rounded,
-                              title: state._t(
-                                context,
-                                'Help & FAQ',
-                                'Tulong at FAQ',
+                              const _ModernProfileActionDivider(),
+                              _ModernProfileActionTile(
+                                compact: compactHeight,
+                                icon: Icons.logout_rounded,
+                                title: state._isLoggingOut
+                                    ? state._t(
+                                        context,
+                                        'Logging Out...',
+                                        'Nagla-log out...',
+                                      )
+                                    : state._t(
+                                        context,
+                                        'Log Out',
+                                        'Mag Log Out',
+                                      ),
+                                subtitle: state._t(
+                                  context,
+                                  'Securely sign out of this device',
+                                  'Ligtas na mag-sign out sa device na ito',
+                                ),
+                                color: brandRed,
+                                onTap: state._isLoggingOut
+                                    ? null
+                                    : state._logout,
+                                showChevron: false,
                               ),
-                              subtitle: state._t(
-                                context,
-                                'Find quick answers about IGNIS SAFE',
-                                'Makahanap ng mabilis na sagot tungkol sa IGNIS SAFE',
-                              ),
-                              color: const Color(0xFF142D57),
-                              onTap: () => showFAQDialog(context),
-                            ),
-                            const _ModernProfileActionDivider(),
-                            _ModernProfileActionTile(
-                              icon: Icons.logout_rounded,
-                              title: state._isLoggingOut
-                                  ? state._t(
-                                      context,
-                                      'Logging Out...',
-                                      'Nagla-log out...',
-                                    )
-                                  : state._t(context, 'Log Out', 'Mag Log Out'),
-                              subtitle: state._t(
-                                context,
-                                'Securely sign out of this device',
-                                'Ligtas na mag-sign out sa device na ito',
-                              ),
-                              color: brandRed,
-                              onTap: state._isLoggingOut ? null : state._logout,
-                              showChevron: false,
-                            ),
-                          ],
-                        ),
-                      ],
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -236,6 +265,7 @@ class _ModernProfileOverviewCard extends StatelessWidget {
     required this.completedLabel,
     required this.recentLabel,
     required this.noActivityLabel,
+    this.compact = false,
   });
 
   final ImageProvider? avatarImage;
@@ -251,15 +281,17 @@ class _ModernProfileOverviewCard extends StatelessWidget {
   final String completedLabel;
   final String recentLabel;
   final String noActivityLabel;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
     const navy = Color(0xFF142D57);
     const red = Color(0xFFB11217);
+    final avatarSize = compact ? 72.0 : 88.0;
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(18),
+      padding: EdgeInsets.all(compact ? 14 : 18),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
@@ -281,8 +313,8 @@ class _ModernProfileOverviewCard extends StatelessWidget {
                 clipBehavior: Clip.none,
                 children: [
                   Container(
-                    width: 88,
-                    height: 88,
+                    width: avatarSize,
+                    height: avatarSize,
                     padding: const EdgeInsets.all(3),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
@@ -303,9 +335,9 @@ class _ModernProfileOverviewCard extends StatelessWidget {
                       backgroundColor: const Color(0xFFFFF0ED),
                       backgroundImage: avatarImage,
                       child: avatarImage == null
-                          ? const Icon(
+                          ? Icon(
                               Icons.person_rounded,
-                              size: 38,
+                              size: avatarSize * 0.43,
                               color: red,
                             )
                           : null,
@@ -321,13 +353,13 @@ class _ModernProfileOverviewCard extends StatelessWidget {
                       child: InkWell(
                         customBorder: const CircleBorder(),
                         onTap: onEdit,
-                        child: const SizedBox(
-                          width: 30,
-                          height: 30,
+                        child: SizedBox(
+                          width: compact ? 26 : 30,
+                          height: compact ? 26 : 30,
                           child: Icon(
                             Icons.edit_rounded,
                             color: Colors.white,
-                            size: 15,
+                            size: compact ? 13 : 15,
                           ),
                         ),
                       ),
@@ -402,9 +434,9 @@ class _ModernProfileOverviewCard extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: compact ? 14 : 20),
           Container(height: 1, color: const Color(0xFFF0ECEA)),
-          const SizedBox(height: 17),
+          SizedBox(height: compact ? 12 : 17),
           Row(
             children: [
               Expanded(
@@ -427,7 +459,7 @@ class _ModernProfileOverviewCard extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: compact ? 8 : 10),
           ClipRRect(
             borderRadius: BorderRadius.circular(999),
             child: LinearProgressIndicator(
@@ -437,7 +469,7 @@ class _ModernProfileOverviewCard extends StatelessWidget {
               valueColor: const AlwaysStoppedAnimation<Color>(red),
             ),
           ),
-          const SizedBox(height: 7),
+          SizedBox(height: compact ? 6 : 7),
           Align(
             alignment: Alignment.centerLeft,
             child: Text(
@@ -449,10 +481,10 @@ class _ModernProfileOverviewCard extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 15),
+          SizedBox(height: compact ? 10 : 15),
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.all(12),
+            padding: EdgeInsets.all(compact ? 10 : 12),
             decoration: BoxDecoration(
               color: const Color(0xFFF6F8FC),
               borderRadius: BorderRadius.circular(14),
@@ -460,8 +492,8 @@ class _ModernProfileOverviewCard extends StatelessWidget {
             child: Row(
               children: [
                 Container(
-                  width: 34,
-                  height: 34,
+                  width: compact ? 30 : 34,
+                  height: compact ? 30 : 34,
                   decoration: const BoxDecoration(
                     color: Color(0xFFE7EDF7),
                     shape: BoxShape.circle,
@@ -622,6 +654,7 @@ class _ModernProfileActionTile extends StatelessWidget {
     required this.onTap,
     this.color = const Color(0xFFB11217),
     this.showChevron = true,
+    this.compact = false,
   });
 
   final IconData icon;
@@ -630,6 +663,7 @@ class _ModernProfileActionTile extends StatelessWidget {
   final VoidCallback? onTap;
   final Color color;
   final bool showChevron;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
@@ -638,17 +672,20 @@ class _ModernProfileActionTile extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+          padding: EdgeInsets.symmetric(
+            horizontal: 14,
+            vertical: compact ? 10 : 14,
+          ),
           child: Row(
             children: [
               Container(
-                width: 42,
-                height: 42,
+                width: compact ? 36 : 42,
+                height: compact ? 36 : 42,
                 decoration: BoxDecoration(
                   color: color.withValues(alpha: 0.09),
                   borderRadius: BorderRadius.circular(13),
                 ),
-                child: Icon(icon, color: color, size: 21),
+                child: Icon(icon, color: color, size: compact ? 18 : 21),
               ),
               const SizedBox(width: 12),
               Expanded(
