@@ -68,8 +68,8 @@ Widget _buildModernProfileView(_ProfilePageState state, BuildContext context) {
                                 ? state._t(context, 'Welcome back', 'Mabuhay')
                                 : state._t(
                                     context,
-                                    'Hi, ${state._displayName.trim().split(' ').first}',
-                                    'Kumusta, ${state._displayName.trim().split(' ').first}',
+                                    'Hi, ${state._displayName.trim()}',
+                                    'Kumusta, ${state._displayName.trim()}',
                                   ),
                             accountLabel: state._t(
                               context,
