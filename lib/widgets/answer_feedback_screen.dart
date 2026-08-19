@@ -18,6 +18,10 @@ const Color _kSuccessSoft = Color(0xFFE8F5EC);
 const Color _kError = Color(0xFFD32F2F);
 const Color _kErrorSoft = Color(0xFFFDEBEA);
 
+// Neutral rail behind the score progress bar. Kept module-independent so the
+// filled part (always the semantic green) reads the same in every module.
+const Color _kTrack = Color(0xFFE7EAEE);
+
 // Module 1's palette predates the shared border/shadow tokens the other
 // modules define, so those two values stay with its theme entry below.
 const Color _kModule1Border = Color(0xFFE8D8D9);
@@ -193,6 +197,10 @@ class _FeedbackItem {
   final bool isCorrect;
 }
 
+/// Which subset of the reviewed questions the list is currently showing.
+/// Purely a display filter — it never touches the loaded data or the score.
+enum _ReviewFilter { all, correct, wrong }
+
 /// Read-only Answer Feedback screen for a submitted Pre-Assessment attempt.
 ///
 /// Shown from the Pre-Assessment Score Result screen. Every question,
@@ -208,10 +216,17 @@ class AnswerFeedbackScreen extends StatefulWidget {
     super.key,
     required this.attemptId,
     this.assessmentTitle,
+    this.onBackToModule,
   });
 
   final String attemptId;
   final String? assessmentTitle;
+
+  /// Optional override for the "Back to Module" action at the end of the
+  /// review. Left null by every current caller, in which case the button
+  /// leaves this screen exactly the way its back arrow already does — no
+  /// existing navigation flow is altered.
+  final VoidCallback? onBackToModule;
 
   @override
   State<AnswerFeedbackScreen> createState() => _AnswerFeedbackScreenState();
@@ -226,37 +241,149 @@ class _AnswerFeedbackScreenState extends State<AnswerFeedbackScreen> {
   int _correctCount = 0;
   int? _moduleNo;
 
+  /// `pre` / `post` from `assessments.type`, or null while unknown.
+  String? _assessmentType;
+
+  _ReviewFilter _filter = _ReviewFilter.all;
+
+  // Scroll-progress plumbing for the "Question n of N" pill. None of this
+  // changes what is displayed — only when the pill appears and what it counts.
+  final ScrollController _scrollController = ScrollController();
+  final GlobalKey _listKey = GlobalKey();
+  final List<GlobalKey> _itemKeys = [];
+  int _visibleIndex = 0;
+  bool _pillVisible = false;
+
   _ModuleTheme get _theme => _ModuleTheme.forModuleNo(_moduleNo);
+
+  /// The questions the active filter lets through, in their loaded order.
+  List<_FeedbackItem> get _visibleItems {
+    switch (_filter) {
+      case _ReviewFilter.correct:
+        return _items.where((item) => item.isCorrect).toList();
+      case _ReviewFilter.wrong:
+        return _items.where((item) => !item.isCorrect).toList();
+      case _ReviewFilter.all:
+        return _items;
+    }
+  }
 
   @override
   void initState() {
     super.initState();
+    _scrollController.addListener(_handleScroll);
     _load();
   }
 
-  /// Resolves which module this attempt belongs to so the screen can wear that
-  /// module's theme. Failures are non-fatal: the feedback still loads and the
-  /// neutral theme is kept.
-  Future<int?> _resolveModuleNo() async {
+  @override
+  void dispose() {
+    _scrollController.removeListener(_handleScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  /// Stable key per card slot. Keyed by list position rather than by question
+  /// number so it stays unique even if two rows share a `question_no`.
+  GlobalKey _keyAt(int index) {
+    while (_itemKeys.length <= index) {
+      _itemKeys.add(GlobalKey());
+    }
+    return _itemKeys[index];
+  }
+
+  void _handleScroll() {
+    if (!_scrollController.hasClients) return;
+    final shouldShow = _scrollController.offset > 16;
+    final index = _computeVisibleIndex();
+    if (shouldShow != _pillVisible || index != _visibleIndex) {
+      setState(() {
+        _pillVisible = shouldShow;
+        _visibleIndex = index;
+      });
+    }
+  }
+
+  /// Index of the card currently sitting at the top of the review list.
+  int _computeVisibleIndex() {
+    final listBox = _listKey.currentContext?.findRenderObject() as RenderBox?;
+    if (listBox == null || !listBox.attached) return _visibleIndex;
+
+    final listTop = listBox.localToGlobal(Offset.zero).dy;
+    final count = _visibleItems.length;
+    var index = 0;
+
+    for (var i = 0; i < count && i < _itemKeys.length; i++) {
+      final box = _itemKeys[i].currentContext?.findRenderObject() as RenderBox?;
+      if (box == null || !box.attached) continue;
+      if (box.localToGlobal(Offset.zero).dy <= listTop + 96) {
+        index = i;
+      } else {
+        break;
+      }
+    }
+
+    return index;
+  }
+
+  void _setFilter(_ReviewFilter filter) {
+    if (_filter == filter) return;
+    setState(() {
+      _filter = filter;
+      _visibleIndex = 0;
+      _pillVisible = false;
+    });
+    if (_scrollController.hasClients) {
+      _scrollController.jumpTo(0);
+    }
+  }
+
+  void _handleBackToModule() {
+    final override = widget.onBackToModule;
+    if (override != null) {
+      override();
+      return;
+    }
+    Navigator.pop(context);
+  }
+
+  /// Resolves which module this attempt belongs to (so the screen can wear
+  /// that module's theme) and whether it was a pre- or post-assessment.
+  /// Failures are non-fatal: the feedback still loads and the neutral theme
+  /// is kept.
+  Future<Map<String, dynamic>> _resolveAttemptContext() async {
     try {
       final attemptRow = await _supabase
           .from('assessment_attempts')
-          .select('module_id')
+          .select('module_id, assessment_id')
           .eq('id', widget.attemptId)
           .maybeSingle();
 
+      int? moduleNo;
+      String? assessmentType;
+
       final moduleId = attemptRow?['module_id']?.toString();
-      if (moduleId == null || moduleId.isEmpty) return null;
+      if (moduleId != null && moduleId.isNotEmpty) {
+        final moduleRow = await _supabase
+            .from('modules')
+            .select('module_no')
+            .eq('id', moduleId)
+            .maybeSingle();
+        moduleNo = (moduleRow?['module_no'] as num?)?.toInt();
+      }
 
-      final moduleRow = await _supabase
-          .from('modules')
-          .select('module_no')
-          .eq('id', moduleId)
-          .maybeSingle();
+      final assessmentId = attemptRow?['assessment_id']?.toString();
+      if (assessmentId != null && assessmentId.isNotEmpty) {
+        final assessmentRow = await _supabase
+            .from('assessments')
+            .select('type')
+            .eq('id', assessmentId)
+            .maybeSingle();
+        assessmentType = assessmentRow?['type']?.toString();
+      }
 
-      return (moduleRow?['module_no'] as num?)?.toInt();
+      return {'module_no': moduleNo, 'assessment_type': assessmentType};
     } catch (_) {
-      return null;
+      return const {'module_no': null, 'assessment_type': null};
     }
   }
 
@@ -266,9 +393,12 @@ class _AnswerFeedbackScreenState extends State<AnswerFeedbackScreen> {
       _error = null;
     });
 
-    final moduleNo = await _resolveModuleNo();
+    final attemptContext = await _resolveAttemptContext();
     if (!mounted) return;
-    setState(() => _moduleNo = moduleNo);
+    setState(() {
+      _moduleNo = attemptContext['module_no'] as int?;
+      _assessmentType = attemptContext['assessment_type'] as String?;
+    });
 
     try {
       final answerRows = await _supabase
@@ -401,6 +531,8 @@ class _AnswerFeedbackScreenState extends State<AnswerFeedbackScreen> {
                     correctCount: _correctCount,
                     totalQuestions: _items.length,
                     assessmentTitle: widget.assessmentTitle,
+                    assessmentType: _assessmentType,
+                    moduleNo: _moduleNo,
                     theme: theme,
                   )
                 : null,
@@ -478,13 +610,73 @@ class _AnswerFeedbackScreenState extends State<AnswerFeedbackScreen> {
       );
     }
 
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(20, 18, 20, 28),
+    final visibleItems = _visibleItems;
+    final wrongCount = _items.length - _correctCount;
+
+    final listChildren = <Widget>[];
+    if (visibleItems.isEmpty) {
+      listChildren.add(_EmptyFilterState(theme: theme, filter: _filter));
+    } else {
+      for (var i = 0; i < visibleItems.length; i++) {
+        listChildren.add(
+          _FeedbackCard(
+            key: _keyAt(i),
+            item: visibleItems[i],
+            theme: theme,
+          ),
+        );
+        listChildren.add(const SizedBox(height: 10));
+      }
+    }
+    listChildren.add(const SizedBox(height: 6));
+    listChildren.add(
+      _BackToModuleButton(theme: theme, onTap: _handleBackToModule),
+    );
+
+    return Column(
       children: [
-        for (final item in _items) ...[
-          _FeedbackCard(item: item, theme: theme),
-          const SizedBox(height: 14),
-        ],
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
+          child: _FilterBar(
+            theme: theme,
+            selected: _filter,
+            allCount: _items.length,
+            correctCount: _correctCount,
+            wrongCount: wrongCount,
+            onChanged: _setFilter,
+          ),
+        ),
+        Expanded(
+          child: Stack(
+            children: [
+              ListView(
+                key: _listKey,
+                controller: _scrollController,
+                padding: const EdgeInsets.fromLTRB(16, 2, 16, 24),
+                children: listChildren,
+              ),
+              if (visibleItems.length > 1)
+                Positioned(
+                  top: 6,
+                  left: 0,
+                  right: 0,
+                  child: IgnorePointer(
+                    child: Center(
+                      child: AnimatedOpacity(
+                        opacity: _pillVisible ? 1 : 0,
+                        duration: const Duration(milliseconds: 180),
+                        child: _ReviewProgressPill(
+                          theme: theme,
+                          current: _visibleIndex + 1,
+                          total: visibleItems.length,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -514,12 +706,12 @@ class _FeedbackGradientHeader extends StatelessWidget {
   /// module subtitle are then left out rather than guessed.
   final int? moduleNo;
 
-  /// The white summary card that overlaps the bottom of the header, or null
-  /// while there is no score to show (loading, error, empty).
+  /// The summary card that overlaps the bottom of the header, or null while
+  /// there is no score to show (loading, error, empty).
   final Widget? summaryCard;
 
   /// How far the summary card hangs below the gradient.
-  static const double _cardOverhang = 62;
+  static const double _cardOverhang = 80;
 
   @override
   Widget build(BuildContext context) {
@@ -566,7 +758,7 @@ class _FeedbackGradientHeader extends StatelessWidget {
           SafeArea(
             bottom: false,
             child: Padding(
-              padding: EdgeInsets.fromLTRB(18, 6, 18, hasCard ? 74 : 28),
+              padding: EdgeInsets.fromLTRB(18, 6, 18, hasCard ? 82 : 26),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -582,7 +774,7 @@ class _FeedbackGradientHeader extends StatelessWidget {
                         _ModuleBadge(theme: theme, moduleNo: moduleNo!),
                     ],
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 14),
                   Text(
                     t(context, 'Answer Feedback', 'Paliwanag sa Sagot'),
                     textAlign: TextAlign.center,
@@ -590,14 +782,14 @@ class _FeedbackGradientHeader extends StatelessWidget {
                     style: TextStyle(
                       color: theme.onGradient,
                       fontFamily: 'Poppins',
-                      fontSize: 29,
-                      height: 1.08,
+                      fontSize: 25,
+                      height: 1.1,
                       fontWeight: FontWeight.w900,
-                      letterSpacing: -0.4,
+                      letterSpacing: -0.3,
                     ),
                   ),
                   if (moduleNo != null) ...[
-                    const SizedBox(height: 7),
+                    const SizedBox(height: 5),
                     Text(
                       context.tr('module_${moduleNo}_full_header'),
                       textAlign: TextAlign.center,
@@ -605,8 +797,8 @@ class _FeedbackGradientHeader extends StatelessWidget {
                       style: TextStyle(
                         color: theme.onGradient.withValues(alpha: 0.88),
                         fontFamily: 'Poppins',
-                        fontSize: 13.5,
-                        height: 1.32,
+                        fontSize: 12.5,
+                        height: 1.3,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -629,8 +821,8 @@ class _FeedbackGradientHeader extends StatelessWidget {
           children: [gradient, const SizedBox(height: _cardOverhang)],
         ),
         Positioned(
-          left: 20,
-          right: 20,
+          left: 16,
+          right: 16,
           bottom: 0,
           child: summaryCard!,
         ),
@@ -733,33 +925,63 @@ class _ModuleBadge extends StatelessWidget {
   }
 }
 
-/// Rounded white summary card that overlaps the gradient header, styled after
-/// the Pre-Assessment Introduction screen's `_AssessmentIntroCard`: generous
+/// English/Tagalog label for an `assessments.type` value, or null when the
+/// type could not be resolved (the line is then simply left out).
+String? _assessmentTypeLabel(BuildContext context, String? type) {
+  switch (type) {
+    case 'pre':
+      return t(context, 'Pre-Assessment', 'Paunang Pagsusulit');
+    case 'post':
+      return t(context, 'Post-Assessment', 'Panghuling Pagsusulit');
+    default:
+      return null;
+  }
+}
+
+/// Rounded summary card that overlaps the gradient header, styled after the
+/// Pre-Assessment Introduction screen's `_AssessmentIntroCard`: generous
 /// corner radius, soft deep shadow, and a gradient rounded-square icon tile.
-/// The wording stays this screen's own.
+///
+/// It carries the whole result summary in one glance — which module and which
+/// assessment type the attempt was, the assessment's own title, the "Review
+/// Your Answers" heading, the score, and a slim progress bar for that score.
 class _SummaryHeader extends StatelessWidget {
   const _SummaryHeader({
     required this.correctCount,
     required this.totalQuestions,
     required this.assessmentTitle,
+    required this.assessmentType,
+    required this.moduleNo,
     required this.theme,
   });
 
   final int correctCount;
   final int totalQuestions;
   final String? assessmentTitle;
+  final String? assessmentType;
+  final int? moduleNo;
   final _ModuleTheme theme;
 
   @override
   Widget build(BuildContext context) {
     final title = assessmentTitle?.trim() ?? '';
+    final typeLabel = _assessmentTypeLabel(context, assessmentType);
+
+    // "MODULE 1 · PRE-ASSESSMENT" — whichever of the two is known.
+    final metaParts = <String>[
+      if (moduleNo != null) context.tr('module_$moduleNo'),
+      if (typeLabel != null) typeLabel.toUpperCase(),
+    ];
+
+    final progress = totalQuestions > 0 ? correctCount / totalQuestions : 0.0;
+    final percent = (progress * 100).round();
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(14, 14, 14, 13),
       decoration: BoxDecoration(
         color: theme.surface,
-        borderRadius: BorderRadius.circular(26),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
             color: theme.shadow,
@@ -768,84 +990,248 @@ class _SummaryHeader extends StatelessWidget {
           ),
         ],
       ),
-      child: Row(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: 52,
-            height: 52,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [theme.gradientBase, theme.gradientDark],
-              ),
-              borderRadius: BorderRadius.circular(18),
-              boxShadow: [
-                BoxShadow(
-                  color: theme.accent.withValues(alpha: 0.25),
-                  blurRadius: 16,
-                  offset: const Offset(0, 8),
-                ),
-              ],
-            ),
-            child: Icon(theme.icon, color: theme.onGradient, size: 26),
-          ),
-          const SizedBox(width: 13),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (title.isNotEmpty) ...[
-                  Text(
-                    title,
-                    style: TextStyle(
-                      fontFamily: 'Poppins',
-                      fontWeight: FontWeight.w700,
-                      fontSize: 12,
-                      height: 1.25,
-                      letterSpacing: 0.2,
-                      color: theme.accent,
-                    ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 46,
+                height: 46,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [theme.gradientBase, theme.gradientDark],
                   ),
-                  const SizedBox(height: 3),
-                ],
-                Text(
-                  t(context, 'Review Your Answers', 'Suriin ang Iyong mga Sagot'),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: theme.accent.withValues(alpha: 0.25),
+                      blurRadius: 14,
+                      offset: const Offset(0, 7),
+                    ),
+                  ],
+                ),
+                child: Icon(theme.icon, color: theme.onGradient, size: 23),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (metaParts.isNotEmpty) ...[
+                      Text(
+                        metaParts.join('  ·  '),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.w800,
+                          fontSize: 10,
+                          height: 1.2,
+                          letterSpacing: 0.7,
+                          color: theme.accent,
+                        ),
+                      ),
+                      const SizedBox(height: 3),
+                    ],
+                    Text(
+                      t(
+                        context,
+                        'Review Your Answers',
+                        'Suriin ang Iyong mga Sagot',
+                      ),
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.w900,
+                        fontSize: 17,
+                        height: 1.15,
+                        letterSpacing: -0.2,
+                        color: theme.textPrimary,
+                      ),
+                    ),
+                    if (title.isNotEmpty) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        title,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.w600,
+                          fontSize: 11.5,
+                          height: 1.28,
+                          color: theme.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              const Icon(
+                Icons.check_circle_rounded,
+                color: _kSuccess,
+                size: 15,
+              ),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  t(
+                    context,
+                    '$correctCount / $totalQuestions Correct',
+                    '$correctCount / $totalQuestions Tama',
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontFamily: 'Poppins',
                     fontWeight: FontWeight.w900,
-                    fontSize: 16.5,
-                    height: 1.15,
+                    fontSize: 13,
                     color: theme.textPrimary,
                   ),
                 ),
-                const SizedBox(height: 7),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: theme.accentSoft,
-                    borderRadius: BorderRadius.circular(999),
-                  ),
-                  child: Text(
-                    t(
-                      context,
-                      '$correctCount out of $totalQuestions correct',
-                      '$correctCount sa $totalQuestions ang tama',
-                    ),
-                    style: TextStyle(
-                      fontFamily: 'Poppins',
-                      fontWeight: FontWeight.w800,
-                      fontSize: 12,
-                      color: theme.accent,
-                    ),
-                  ),
+              ),
+              Text(
+                '$percent%',
+                style: const TextStyle(
+                  fontFamily: 'Poppins',
+                  fontWeight: FontWeight.w900,
+                  fontSize: 13,
+                  color: _kSuccess,
                 ),
-              ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 7),
+          _ScoreBar(value: progress),
+        ],
+      ),
+    );
+  }
+}
+
+/// Slim rounded score bar. The fill is always the semantic green because it
+/// measures correct answers, not the module's brand.
+class _ScoreBar extends StatelessWidget {
+  const _ScoreBar({required this.value});
+
+  final double value;
+
+  @override
+  Widget build(BuildContext context) {
+    final clamped = value.clamp(0.0, 1.0);
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SizedBox(
+          // Explicit width: the summary Column hands its children loose
+          // constraints, under which an unsized bar would collapse to zero.
+          width: double.infinity,
+          height: 7,
+          child: Stack(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: _kTrack,
+                  borderRadius: BorderRadius.circular(999),
+                ),
+              ),
+              TweenAnimationBuilder<double>(
+                tween: Tween<double>(begin: 0, end: clamped),
+                duration: const Duration(milliseconds: 520),
+                curve: Curves.easeOutCubic,
+                builder: (context, animated, _) {
+                  return Container(
+                    width: constraints.maxWidth * animated,
+                    decoration: BoxDecoration(
+                      color: _kSuccess,
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+/// Segmented All / Correct / Wrong control that filters the review list.
+/// The selected pill wears the semantic color of what it shows — the module
+/// accent for "All", green for "Correct", red for "Wrong".
+class _FilterBar extends StatelessWidget {
+  const _FilterBar({
+    required this.theme,
+    required this.selected,
+    required this.allCount,
+    required this.correctCount,
+    required this.wrongCount,
+    required this.onChanged,
+  });
+
+  final _ModuleTheme theme;
+  final _ReviewFilter selected;
+  final int allCount;
+  final int correctCount;
+  final int wrongCount;
+  final ValueChanged<_ReviewFilter> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: theme.surface,
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: theme.border),
+        boxShadow: [
+          BoxShadow(
+            color: theme.shadow,
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: _FilterChip(
+              label: t(context, 'All', 'Lahat'),
+              count: allCount,
+              selected: selected == _ReviewFilter.all,
+              activeColor: theme.accent,
+              theme: theme,
+              onTap: () => onChanged(_ReviewFilter.all),
+            ),
+          ),
+          Expanded(
+            child: _FilterChip(
+              label: t(context, 'Correct', 'Tama'),
+              count: correctCount,
+              selected: selected == _ReviewFilter.correct,
+              activeColor: _kSuccess,
+              theme: theme,
+              onTap: () => onChanged(_ReviewFilter.correct),
+            ),
+          ),
+          Expanded(
+            child: _FilterChip(
+              label: t(context, 'Wrong', 'Mali'),
+              count: wrongCount,
+              selected: selected == _ReviewFilter.wrong,
+              activeColor: _kError,
+              theme: theme,
+              onTap: () => onChanged(_ReviewFilter.wrong),
             ),
           ),
         ],
@@ -854,8 +1240,172 @@ class _SummaryHeader extends StatelessWidget {
   }
 }
 
+class _FilterChip extends StatelessWidget {
+  const _FilterChip({
+    required this.label,
+    required this.count,
+    required this.selected,
+    required this.activeColor,
+    required this.theme,
+    required this.onTap,
+  });
+
+  final String label;
+  final int count;
+  final bool selected;
+  final Color activeColor;
+  final _ModuleTheme theme;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 180),
+      curve: Curves.easeOut,
+      height: 36,
+      decoration: BoxDecoration(
+        color: selected ? activeColor : Colors.transparent,
+        borderRadius: BorderRadius.circular(999),
+      ),
+      // Transparent Material so the tap ripple draws above the pill's own
+      // fill instead of behind it on the Scaffold's Material.
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(999),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 6),
+            child: Center(
+              child: Text(
+                '$label  $count',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontWeight: FontWeight.w800,
+                  fontSize: 12,
+                  letterSpacing: -0.1,
+                  color: selected ? Colors.white : theme.textSecondary,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Subtle floating "Question n of N" pill that fades in while the review list
+/// is scrolled. Purely an orientation aid — it is not interactive.
+class _ReviewProgressPill extends StatelessWidget {
+  const _ReviewProgressPill({
+    required this.theme,
+    required this.current,
+    required this.total,
+  });
+
+  final _ModuleTheme theme;
+  final int current;
+  final int total;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 6),
+      decoration: BoxDecoration(
+        color: theme.accent.withValues(alpha: 0.94),
+        borderRadius: BorderRadius.circular(999),
+        boxShadow: [
+          BoxShadow(
+            color: theme.accent.withValues(alpha: 0.28),
+            blurRadius: 12,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Text(
+        t(
+          context,
+          'Question $current of $total',
+          'Tanong $current ng $total',
+        ),
+        style: TextStyle(
+          fontFamily: 'Poppins',
+          fontWeight: FontWeight.w800,
+          fontSize: 11.5,
+          letterSpacing: 0.1,
+          color: theme.onGradient,
+        ),
+      ),
+    );
+  }
+}
+
+/// Shown when the active filter matches none of the reviewed questions —
+/// e.g. "Wrong" on a perfect attempt.
+class _EmptyFilterState extends StatelessWidget {
+  const _EmptyFilterState({required this.theme, required this.filter});
+
+  final _ModuleTheme theme;
+  final _ReviewFilter filter;
+
+  @override
+  Widget build(BuildContext context) {
+    final isWrongFilter = filter == _ReviewFilter.wrong;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 28),
+      decoration: BoxDecoration(
+        color: theme.surface,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: theme.border),
+      ),
+      child: Column(
+        children: [
+          Icon(
+            isWrongFilter
+                ? Icons.check_circle_rounded
+                : Icons.filter_alt_off_rounded,
+            color: isWrongFilter ? _kSuccess : theme.textSecondary,
+            size: 34,
+          ),
+          const SizedBox(height: 10),
+          Text(
+            isWrongFilter
+                ? t(
+                    context,
+                    'No wrong answers to review.',
+                    'Walang maling sagot na susuriin.',
+                  )
+                : t(
+                    context,
+                    'No correct answers to review.',
+                    'Walang tamang sagot na susuriin.',
+                  ),
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: 'Poppins',
+              fontWeight: FontWeight.w600,
+              fontSize: 13,
+              height: 1.4,
+              color: theme.textSecondary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// One reviewed question. The prompt is the loudest thing in the card; the
+/// badge row, the answer blocks, and the explanation all sit around it in
+/// steadily lighter weights.
 class _FeedbackCard extends StatelessWidget {
-  const _FeedbackCard({required this.item, required this.theme});
+  const _FeedbackCard({super.key, required this.item, required this.theme});
 
   final _FeedbackItem item;
   final _ModuleTheme theme;
@@ -897,16 +1447,16 @@ class _FeedbackCard extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(14, 12, 14, 13),
       decoration: BoxDecoration(
         color: theme.surface,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(18),
         border: Border.all(color: theme.border),
         boxShadow: [
           BoxShadow(
             color: theme.shadow,
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            blurRadius: 9,
+            offset: const Offset(0, 3),
           ),
         ],
       ),
@@ -915,9 +1465,10 @@ class _FeedbackCard extends StatelessWidget {
         children: [
           Row(
             children: [
+              // Question number stays on the left...
               Container(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
+                  horizontal: 9,
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
@@ -933,15 +1484,16 @@ class _FeedbackCard extends StatelessWidget {
                   style: TextStyle(
                     fontFamily: 'Poppins',
                     fontWeight: FontWeight.w800,
-                    fontSize: 11.5,
+                    fontSize: 11,
                     color: theme.accent,
                   ),
                 ),
               ),
               const Spacer(),
+              // ...and the Correct / Wrong status stays on the right.
               Container(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
+                  horizontal: 9,
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
@@ -956,7 +1508,7 @@ class _FeedbackCard extends StatelessWidget {
                           ? Icons.check_circle_rounded
                           : Icons.cancel_rounded,
                       color: statusColor,
-                      size: 14,
+                      size: 13,
                     ),
                     const SizedBox(width: 4),
                     Text(
@@ -966,7 +1518,7 @@ class _FeedbackCard extends StatelessWidget {
                       style: TextStyle(
                         fontFamily: 'Poppins',
                         fontWeight: FontWeight.w800,
-                        fontSize: 11.5,
+                        fontSize: 11,
                         color: statusColor,
                       ),
                     ),
@@ -975,18 +1527,19 @@ class _FeedbackCard extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 9),
           Text(
             prompt,
             style: TextStyle(
               fontFamily: 'Poppins',
-              fontWeight: FontWeight.w700,
-              fontSize: 14.5,
-              height: 1.4,
+              fontWeight: FontWeight.w800,
+              fontSize: 15.5,
+              height: 1.34,
+              letterSpacing: -0.2,
               color: theme.textPrimary,
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 10),
           _AnswerBlock(
             label: t(context, 'Your Answer', 'Iyong Sagot'),
             text: selectedText,
@@ -995,7 +1548,7 @@ class _FeedbackCard extends StatelessWidget {
             theme: theme,
           ),
           if (!item.isCorrect && correctText.isNotEmpty) ...[
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
             _AnswerBlock(
               label: t(context, 'Correct Answer', 'Tamang Sagot'),
               text: correctText,
@@ -1005,14 +1558,15 @@ class _FeedbackCard extends StatelessWidget {
             ),
           ],
           if (explanation.trim().isNotEmpty) ...[
-            const SizedBox(height: 12),
+            const SizedBox(height: 9),
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.fromLTRB(11, 9, 11, 10),
               decoration: BoxDecoration(
-                color: theme.background,
+                // Soft module tint, no outline — deliberately lighter than the
+                // answer blocks so it reads as supporting detail.
+                color: theme.accent.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: theme.border),
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -1020,9 +1574,9 @@ class _FeedbackCard extends StatelessWidget {
                   Icon(
                     Icons.lightbulb_outline_rounded,
                     color: theme.accent,
-                    size: 17,
+                    size: 16,
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 7),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1032,18 +1586,19 @@ class _FeedbackCard extends StatelessWidget {
                           style: TextStyle(
                             fontFamily: 'Poppins',
                             fontWeight: FontWeight.w800,
-                            fontSize: 12,
-                            color: theme.textPrimary,
+                            fontSize: 11,
+                            letterSpacing: 0.2,
+                            color: theme.accent,
                           ),
                         ),
-                        const SizedBox(height: 3),
+                        const SizedBox(height: 2),
                         Text(
                           explanation,
                           style: TextStyle(
                             fontFamily: 'Poppins',
                             fontWeight: FontWeight.w500,
-                            fontSize: 12.5,
-                            height: 1.45,
+                            fontSize: 12,
+                            height: 1.42,
                             color: theme.textSecondary,
                           ),
                         ),
@@ -1060,6 +1615,8 @@ class _FeedbackCard extends StatelessWidget {
   }
 }
 
+/// Tinted answer row with a semantic color rail down its left edge. The rail
+/// replaces the old full outline so the block sits quieter under the prompt.
 class _AnswerBlock extends StatelessWidget {
   const _AnswerBlock({
     required this.label,
@@ -1077,38 +1634,112 @@ class _AnswerBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      decoration: BoxDecoration(
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(11),
+      child: Container(
+        width: double.infinity,
         color: background,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withValues(alpha: 0.35)),
+        child: IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Container(width: 3, color: color),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(10, 7, 10, 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        label,
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.w800,
+                          fontSize: 10.5,
+                          letterSpacing: 0.2,
+                          color: color,
+                        ),
+                      ),
+                      const SizedBox(height: 1),
+                      Text(
+                        text,
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.w600,
+                          fontSize: 12.5,
+                          height: 1.34,
+                          color: theme.textPrimary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: TextStyle(
-              fontFamily: 'Poppins',
-              fontWeight: FontWeight.w800,
-              fontSize: 11,
-              color: color,
-            ),
+    );
+  }
+}
+
+/// Closing action after the last reviewed question.
+class _BackToModuleButton extends StatelessWidget {
+  const _BackToModuleButton({required this.theme, required this.onTap});
+
+  final _ModuleTheme theme;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: Ink(
+        height: 50,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [theme.gradientBase, theme.gradientDark],
           ),
-          const SizedBox(height: 2),
-          Text(
-            text,
-            style: TextStyle(
-              fontFamily: 'Poppins',
-              fontWeight: FontWeight.w600,
-              fontSize: 13,
-              height: 1.35,
-              color: theme.textPrimary,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: theme.accent.withValues(alpha: 0.28),
+              blurRadius: 14,
+              offset: const Offset(0, 7),
             ),
+          ],
+        ),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.arrow_back_rounded,
+                color: theme.onGradient,
+                size: 19,
+              ),
+              const SizedBox(width: 8),
+              Flexible(
+                child: Text(
+                  t(context, 'Back to Module', 'Bumalik sa Modyul'),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.w800,
+                    fontSize: 14.5,
+                    letterSpacing: 0.1,
+                    color: theme.onGradient,
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
