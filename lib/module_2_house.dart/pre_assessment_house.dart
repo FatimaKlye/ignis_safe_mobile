@@ -1064,15 +1064,19 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
 
     if (!forceSubmit) {
       final confirmed = await _showConfirmDialog(
-        title: _txt('Submit Pre-Assessment', 'Ipasa ang Paunang Pagsusulit'),
-        message: _txt(
-          'Answered: $_answeredCount / ${_questions.length}\n\n'
-          'After submission, you will be redirected to the completion page.',
-          'Nasagutan: $_answeredCount / ${_questions.length}\n\n'
-          'Pagkatapos ipasa, dadalhin ka sa completion page.',
+        title: _txt('Submit Pre-Assessment?', 'Ipasa ang Paunang Pagsusulit?'),
+        answeredSummary: _txt(
+          'All ${_questions.length} questions answered',
+          'Nasagutan ang lahat ng ${_questions.length} tanong',
         ),
-        confirmText: _txt('Submit', 'Ipasa'),
-        cancelText: _txt('Review Again', 'Suriin Muli'),
+        message: _txt(
+          'Once submitted, your answers cannot be changed and this '
+          'Pre-Assessment cannot be retaken.',
+          'Kapag naipasa na, hindi na maaaring baguhin ang iyong mga sagot '
+          'at hindi na muling makukuha ang Paunang Pagsusulit na ito.',
+        ),
+        confirmText: _txt('Submit Pre-Assessment →', 'Ipasa ang Pre-Assessment →'),
+        cancelText: _txt('Review Answers', 'Suriin ang mga Sagot'),
       );
 
       if (confirmed != true) return;
@@ -1186,6 +1190,7 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
 
   Future<bool?> _showConfirmDialog({
     required String title,
+    required String answeredSummary,
     required String message,
     required String confirmText,
     required String cancelText,
@@ -1259,16 +1264,32 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
                     height: 1.18,
                   ),
                 ),
-                const SizedBox(height: 8),
-                Container(
-                  height: 2,
-                  width: 90,
-                  decoration: BoxDecoration(
-                    color: AppColors.brandRed,
-                    borderRadius: BorderRadius.circular(99),
-                  ),
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.check_circle_rounded,
+                      color: AppColors.success,
+                      size: 18,
+                    ),
+                    const SizedBox(width: 6),
+                    Flexible(
+                      child: Text(
+                        answeredSummary,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.success,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 18),
+                const SizedBox(height: 14),
                 Text(
                   message,
                   textAlign: TextAlign.center,
@@ -1281,31 +1302,6 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed: () => Navigator.pop(dialogContext, true),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primaryButton,
-                      elevation: 4,
-                      shadowColor: AppColors.primaryButton.withOpacity(0.35),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                    ),
-                    child: Text(
-                      confirmText,
-                      style: const TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.textOnRed,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
                 SizedBox(
                   width: double.infinity,
                   height: 50,
@@ -1327,6 +1323,31 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage> {
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
                         color: AppColors.primaryButton,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.pop(dialogContext, true),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primaryButton,
+                      elevation: 4,
+                      shadowColor: AppColors.primaryButton.withOpacity(0.35),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    child: Text(
+                      confirmText,
+                      style: const TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textOnRed,
                       ),
                     ),
                   ),
