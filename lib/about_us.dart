@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -51,6 +53,26 @@ class _AboutUsPageState extends State<AboutUsPage> {
   _AboutUsData? _aboutData;
   Object? _loadError;
   bool _loading = true;
+  RealtimeChannel? _aboutUsChannel;
+  Timer? _aboutUsRefreshDebounce;
+
+  static const List<String> _aboutUsRealtimeTables = [
+    'about_us_ui_texts',
+    'about_us_sections',
+    'about_us_ignis',
+    'about_us_ignis_chips',
+    'about_us_name_meanings',
+    'about_us_team_members',
+    'about_us_partner_info',
+    'about_us_contact_points',
+    'about_us_partner_contact_links',
+    'about_us_emergency_info',
+    'about_us_emergency_numbers',
+    'about_us_directory_info',
+    'about_us_directory_groups',
+    'about_us_directory_entries',
+    'about_us_directory_phones',
+  ];
 
   @override
   void initState() {
@@ -58,6 +80,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
     profileRefreshNotifier.addListener(_handleProfileChanged);
     _loadProfile();
     _loadAboutUs();
+    _listenAboutUsRealtime();
   }
 
   void _handleProfileChanged() => _loadProfile();
@@ -65,7 +88,39 @@ class _AboutUsPageState extends State<AboutUsPage> {
   @override
   void dispose() {
     profileRefreshNotifier.removeListener(_handleProfileChanged);
+    _aboutUsRefreshDebounce?.cancel();
+    final channel = _aboutUsChannel;
+    if (channel != null) {
+      Supabase.instance.client.removeChannel(channel);
+    }
     super.dispose();
+  }
+
+  // Subscribes once to every About Us table so Admin edits appear here
+  // without the user needing to log out or restart the app. A single
+  // shared channel + debounced refresh keeps a burst of admin edits (e.g.
+  // saving several fields in a row) from triggering a reload per change.
+  void _listenAboutUsRealtime() {
+    if (_aboutUsChannel != null) return;
+
+    var channelBuilder = Supabase.instance.client.channel('about_us_admin_sync');
+    for (final table in _aboutUsRealtimeTables) {
+      channelBuilder = channelBuilder.onPostgresChanges(
+        event: PostgresChangeEvent.all,
+        schema: 'public',
+        table: table,
+        callback: (_) => _scheduleAboutUsRefresh(),
+      );
+    }
+    _aboutUsChannel = channelBuilder.subscribe();
+  }
+
+  void _scheduleAboutUsRefresh() {
+    _aboutUsRefreshDebounce?.cancel();
+    _aboutUsRefreshDebounce = Timer(
+      const Duration(milliseconds: 400),
+      () => _loadAboutUs(silent: true),
+    );
   }
 
   Future<void> _loadProfile() async {
@@ -86,10 +141,14 @@ class _AboutUsPageState extends State<AboutUsPage> {
     } catch (_) {}
   }
 
-  Future<void> _loadAboutUs() async {
-    if (mounted) {
+  Future<void> _loadAboutUs({bool silent = false}) async {
+    // Only show the full-page loading state on the very first load. Realtime
+    // -triggered refreshes (and any other silent re-fetch) update the data
+    // in place instead, so an Admin edit never causes a visible full-page
+    // reload or resets the user's current language/filter/search selection.
+    if (mounted && (!silent || _aboutData == null)) {
       setState(() {
-        _loading = true;
+        _loading = _aboutData == null;
         _loadError = null;
       });
     }
