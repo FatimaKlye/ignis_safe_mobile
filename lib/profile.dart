@@ -9,6 +9,7 @@ import 'app_refresh_action.dart';
 import 'localization/language_controller.dart';
 import 'login.dart';
 import 'faq_page.dart';
+import 'feedback_dialog.dart';
 import 'widgets/account_menu.dart';
 import 'widgets/main_tab_header.dart';
 import 'profile_refresh_notifier.dart';

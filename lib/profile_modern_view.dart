@@ -217,6 +217,23 @@ Widget _buildModernProfileView(_ProfilePageState state, BuildContext context) {
                                     : state._logout,
                                 showChevron: false,
                               ),
+                              const _ModernProfileActionDivider(),
+                              _ModernProfileActionTile(
+                                compact: compactHeight,
+                                icon: Icons.star_rate_rounded,
+                                title: state._t(
+                                  context,
+                                  'Feedback',
+                                  'Feedback',
+                                ),
+                                subtitle: state._t(
+                                  context,
+                                  'Rate your experience and share suggestions',
+                                  'I-rate ang iyong karanasan at magbahagi ng mungkahi',
+                                ),
+                                color: const Color(0xFF142D57),
+                                onTap: () => showFeedbackDialog(context),
+                              ),
                             ],
                           ),
                         ],
