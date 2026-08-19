@@ -4,6 +4,8 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'app_content_refresh.dart';
+import 'app_refresh_action.dart';
 import 'localization/language_controller.dart';
 import 'login.dart';
 import 'faq_page.dart';
@@ -40,6 +42,7 @@ class _ProfilePageState extends State<ProfilePage> {
   final SupabaseClient _supabase = Supabase.instance.client;
   bool _isLoadingProfile = true;
   bool _isLoggingOut = false;
+  bool _profileLoadFailed = false;
 
   String _displayName = '';
   String _email = '';
@@ -53,11 +56,28 @@ class _ProfilePageState extends State<ProfilePage> {
     super.initState();
     _completedSimulations = widget.completedSimulations;
     _lastSimulation = widget.lastSimulation;
+    AppContentRefreshRegistry.register(this, _handleAppContentRefresh);
     _initializePage();
+  }
+
+  @override
+  void dispose() {
+    AppContentRefreshRegistry.unregister(this);
+    super.dispose();
   }
 
   Future<void> _initializePage() async {
     await _loadProfile();
+  }
+
+  /// Backs the header menu's "Refresh & Check Updates" action for this tab:
+  /// re-reads the learner's Supabase profile and simulation progress.
+  Future<void> _handleAppContentRefresh() async {
+    await _loadProfile();
+
+    if (_profileLoadFailed) {
+      throw Exception('Failed to load the profile from Supabase.');
+    }
   }
 
   String _t(BuildContext context, String en, String tl) {
@@ -70,6 +90,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
       if (user == null) {
         if (!mounted) return;
+        _profileLoadFailed = false;
         setState(() {
           _displayName = widget.name?.trim() ?? '';
           _email = '';
@@ -135,6 +156,13 @@ class _ProfilePageState extends State<ProfilePage> {
         }
       }
 
+      _profileLoadFailed = false;
+      AppContentRefreshRegistry.reportContent(this, 'profile', {
+        'profile': profileData,
+        'completed_simulations': completedSimulations,
+        'last_simulation': lastSimulation,
+      });
+
       setState(() {
         _displayName = displayName;
         _email = email;
@@ -145,6 +173,8 @@ class _ProfilePageState extends State<ProfilePage> {
       });
     } catch (e) {
       final user = _supabase.auth.currentUser;
+
+      _profileLoadFailed = true;
 
       if (!mounted) return;
       setState(() {
@@ -349,6 +379,10 @@ class _ProfilePageState extends State<ProfilePage> {
                                 // Already on the Profile screen; nothing to do.
                                 return;
                               }
+                              if (value == 'refresh') {
+                                await runAppRefreshAndUpdateCheck(context);
+                                return;
+                              }
                               if (value == 'logout') {
                                 await _logout();
                                 return;
@@ -357,6 +391,11 @@ class _ProfilePageState extends State<ProfilePage> {
                             itemBuilder: (context) => buildAccountMenuItems(
                               context,
                               profileLabel: _t(context, 'Profile', 'Profile'),
+                              refreshLabel: _t(
+                                context,
+                                'Refresh & Check Updates',
+                                'I-refresh at Tingnan ang Updates',
+                              ),
                               logoutLabel: _t(context, 'Log Out', 'Mag-logout'),
                             ),
                             child: CircleAvatar(

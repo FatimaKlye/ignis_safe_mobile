@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../app_refresh_action.dart';
 import 'account_menu.dart';
 
 const Color _headerBrandRed = Color(0xFFB11217);
@@ -71,6 +72,7 @@ class MainTabHeader extends StatelessWidget {
     required this.titleIcon,
     required this.avatarImage,
     required this.profileLabel,
+    required this.refreshLabel,
     required this.logoutLabel,
     required this.onProfile,
     required this.onLogout,
@@ -83,6 +85,7 @@ class MainTabHeader extends StatelessWidget {
   final IconData titleIcon;
   final ImageProvider? avatarImage;
   final String profileLabel;
+  final String refreshLabel;
   final String logoutLabel;
   final VoidCallback onProfile;
   final Future<void> Function() onLogout;
@@ -139,11 +142,19 @@ class MainTabHeader extends StatelessWidget {
                   onProfile();
                   return;
                 }
+                // The refresh action is app-wide and identical from every
+                // tab, so it is driven straight from the shared action
+                // instead of being threaded through each screen.
+                if (value == 'refresh') {
+                  await runAppRefreshAndUpdateCheck(context);
+                  return;
+                }
                 if (value == 'logout') await onLogout();
               },
               itemBuilder: (context) => buildAccountMenuItems(
                 context,
                 profileLabel: profileLabel,
+                refreshLabel: refreshLabel,
                 logoutLabel: logoutLabel,
               ),
               child: Container(

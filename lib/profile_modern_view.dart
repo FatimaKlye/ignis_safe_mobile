@@ -93,6 +93,11 @@ Widget _buildModernProfileView(_ProfilePageState state, BuildContext context) {
                               'Profile',
                               'Profile',
                             ),
+                            refreshLabel: state._t(
+                              context,
+                              'Refresh & Check Updates',
+                              'I-refresh at Tingnan ang Updates',
+                            ),
                             logoutLabel: state._t(
                               context,
                               'Log Out',

@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 
-/// Shared visual style + item list for the small "Profile / Log Out"
-/// popup menu that hangs off the avatar in the top header of the
-/// Module, About Us and Profile tabs.
+/// Shared visual style + item list for the small "Profile / Refresh & Check
+/// Updates / Log Out" popup menu that hangs off the avatar in the top header
+/// of the Module, About Us and Profile tabs.
 const Color accountMenuBrandRed = Color(0xFFB11217);
+
+/// Navy used by the two account actions that are not destructive, so Log Out
+/// stays the only red entry in the menu.
+const Color _accountMenuNavy = Color(0xFF142D57);
 
 /// Rounded, elevated shape used by every avatar [PopupMenuButton] so the
 /// menu looks like one consistent component across the app.
@@ -14,11 +18,13 @@ ShapeBorder accountMenuShape() {
   );
 }
 
-/// Builds the "Profile" / "Log Out" entries with the shared premium look:
-/// circular icon badges, generous padding and a subtle divider.
+/// Builds the "Profile" / "Refresh & Check Updates" / "Log Out" entries with
+/// the shared premium look: circular icon badges, generous padding and a
+/// subtle divider.
 List<PopupMenuEntry<String>> buildAccountMenuItems(
   BuildContext context, {
   required String profileLabel,
+  required String refreshLabel,
   required String logoutLabel,
 }) {
   return [
@@ -28,7 +34,18 @@ List<PopupMenuEntry<String>> buildAccountMenuItems(
       child: _AccountMenuTile(
         icon: Icons.manage_accounts_outlined,
         label: profileLabel,
-        color: const Color(0xFF142D57),
+        color: _accountMenuNavy,
+      ),
+    ),
+    const PopupMenuDivider(height: 1),
+    PopupMenuItem<String>(
+      value: 'refresh',
+      padding: EdgeInsets.zero,
+      child: _AccountMenuTile(
+        icon: Icons.sync_rounded,
+        label: refreshLabel,
+        color: _accountMenuNavy,
+        showChevron: false,
       ),
     ),
     const PopupMenuDivider(height: 1),

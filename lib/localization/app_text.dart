@@ -141,6 +141,10 @@ const Map<String, Map<String, String>> _strings = {
     'en': 'About',
     'tl': 'Tungkol',
   },
+  'refresh_and_check_updates': {
+    'en': 'Refresh & Check Updates',
+    'tl': 'I-refresh at Tingnan ang Updates',
+  },
   'log_out': {
     'en': 'Log Out',
     'tl': 'Mag-logout',

@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'login.dart';
+import 'app_content_refresh.dart';
 import 'localization/app_text.dart';
 import 'widgets/app_notification.dart';
 import 'widgets/main_tab_header.dart';
@@ -161,6 +162,7 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
   void initState() {
     super.initState();
     profileRefreshNotifier.addListener(_handleProfileChanged);
+    AppContentRefreshRegistry.register(this, _handleAppContentRefresh);
     _loadProfile();
     _loadModules();
     _loadAllTrackedProgress();
@@ -170,6 +172,7 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
   @override
   void dispose() {
     profileRefreshNotifier.removeListener(_handleProfileChanged);
+    AppContentRefreshRegistry.unregister(this);
     _progressRefreshDebounce?.cancel();
     final c = _channel;
     if (c != null) _client.removeChannel(c);
@@ -177,6 +180,20 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
   }
 
   void _handleProfileChanged() => _loadProfile();
+
+  /// Backs the header menu's "Refresh & Check Updates" action for this tab:
+  /// re-reads the module list, the learner's progress and the header profile
+  /// straight from Supabase and applies them to the live UI.
+  Future<void> _handleAppContentRefresh() async {
+    await Future.wait([
+      _loadProfile(),
+      _loadModules(),
+      _loadAllTrackedProgress(),
+    ]);
+
+    final error = _error;
+    if (error != null) throw Exception(error);
+  }
 
   Future<void> _loadProfile() async {
     try {
@@ -190,6 +207,7 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
           .maybeSingle();
 
       if (!mounted || data == null) return;
+      AppContentRefreshRegistry.reportContent(this, 'profile', data);
       setState(() {
         _firstName = (data['first_name'] ?? '').toString();
         _lastName = (data['last_name'] ?? '').toString();
@@ -217,6 +235,7 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
           .toList();
 
       if (!mounted) return;
+      AppContentRefreshRegistry.reportContent(this, 'modules', rows);
       setState(() {
         _modules = modules;
         _loading = false;
@@ -403,6 +422,18 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
       ).load();
 
       if (!mounted) return;
+      // Reported as keyed maps (never positional lists) because the
+      // fingerprint canonicaliser sorts list items.
+      AppContentRefreshRegistry.reportContent(this, 'module_progress', {
+        for (final entry in overview.entries)
+          '${entry.key}': <String, bool>{
+            'pre_test_completed': entry.value.preTestCompleted,
+            'can_open_learning': entry.value.canOpenLearning,
+            'learning_completed': entry.value.learningCompleted,
+            'can_open_post_test': entry.value.canOpenPostTest,
+            'post_test_completed': entry.value.postTestCompleted,
+          },
+      });
       setState(() {
         for (final moduleNo in _trackedProgressModules) {
           final progress = overview[moduleNo];
@@ -1308,6 +1339,7 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
                         titleIcon: Icons.menu_book_rounded,
                         avatarImage: avatarProvider,
                         profileLabel: context.tr('profile'),
+                        refreshLabel: context.tr('refresh_and_check_updates'),
                         logoutLabel: context.tr('log_out'),
                         onProfile: () =>
                             widget.onRequestTabChange?.call(_profileTabIndex),

@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'app_content_refresh.dart';
 import 'localization/language_controller.dart';
 import 'login.dart';
 import 'widgets/main_tab_header.dart';
@@ -78,6 +79,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
   void initState() {
     super.initState();
     profileRefreshNotifier.addListener(_handleProfileChanged);
+    AppContentRefreshRegistry.register(this, _handleAppContentRefresh);
     _loadProfile();
     _loadAboutUs();
     _listenAboutUsRealtime();
@@ -85,9 +87,20 @@ class _AboutUsPageState extends State<AboutUsPage> {
 
   void _handleProfileChanged() => _loadProfile();
 
+  /// Backs the header menu's "Refresh & Check Updates" action for this tab:
+  /// re-reads every About Us table plus the header profile and applies the
+  /// result to the live UI.
+  Future<void> _handleAppContentRefresh() async {
+    await Future.wait([_loadProfile(), _loadAboutUs(silent: true)]);
+
+    final error = _loadError;
+    if (error != null) throw Exception(error.toString());
+  }
+
   @override
   void dispose() {
     profileRefreshNotifier.removeListener(_handleProfileChanged);
+    AppContentRefreshRegistry.unregister(this);
     _aboutUsRefreshDebounce?.cancel();
     final channel = _aboutUsChannel;
     if (channel != null) {
@@ -133,6 +146,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
           .eq('id', user.id)
           .maybeSingle();
       if (!mounted || data == null) return;
+      AppContentRefreshRegistry.reportContent(this, 'profile', data);
       setState(() {
         _firstName = (data['first_name'] ?? '').toString();
         _lastName = (data['last_name'] ?? '').toString();
@@ -338,9 +352,13 @@ class _AboutUsPageState extends State<AboutUsPage> {
       );
 
       if (!mounted) return;
+      AppContentRefreshRegistry.reportContent(this, 'about_us', responses);
       setState(() {
         _aboutData = data;
         _loading = false;
+        // A successful reload must clear any earlier failure, otherwise the
+        // error screen would stay up even though fresh content arrived.
+        _loadError = null;
       });
     } catch (e, st) {
       debugPrint('Failed to load About Us content: $e\n$st');
@@ -502,6 +520,13 @@ class _AboutUsPageState extends State<AboutUsPage> {
                         titleIcon: Icons.info_rounded,
                         avatarImage: avatarProvider,
                         profileLabel: _ui(context, 'profile_label'),
+                        // App action rather than About Us content, so it is
+                        // localized in-app instead of via about_us_ui_texts.
+                        refreshLabel: t(
+                          context,
+                          'Refresh & Check Updates',
+                          'I-refresh at Tingnan ang Updates',
+                        ),
                         logoutLabel: _ui(context, 'logout_label'),
                         onProfile: _goToProfile,
                         onLogout: _logout,
