@@ -7,6 +7,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'signup.dart';
 import 'home.dart';
 import 'terms.dart';
+import 'consent_service.dart';
 import 'forgotpass.dart';
 import 'localization/app_text.dart';
 import 'localization/language_controller.dart';
@@ -203,13 +204,10 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<bool> _hasAcceptedTerms(String userId) async {
     try {
-      final row = await supabase
-          .from('profiles')
-          .select('terms_accepted')
-          .eq('id', userId)
-          .maybeSingle();
-
-      return (row?['terms_accepted'] ?? false) == true;
+      // Required consents (Terms + Privacy Notice) must both be on file at
+      // their current document version — see ConsentDocuments. A material
+      // version bump therefore re-triggers this flow for existing users.
+      return await ConsentService().hasRequiredConsents(userId);
     } catch (e) {
       debugPrint('Error checking terms acceptance: $e');
       return false;

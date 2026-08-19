@@ -74,8 +74,8 @@ const Map<String, Map<String, String>> _strings = {
     'tl': 'Mag-sign up',
   },
   'terms_privacy': {
-    'en': 'Terms and Conditions and Privacy Policy.',
-    'tl': 'Mga Tuntunin at Kundisyon at Patakaran sa Privacy.',
+    'en': 'Terms and Conditions, Privacy Notice and Consent.',
+    'tl': 'Mga Tuntunin at Kundisyon, Paunawa sa Privacy at Pahintulot.',
   },
   'email_required': {
     'en': 'Email is required',
