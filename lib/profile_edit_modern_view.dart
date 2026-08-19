@@ -137,7 +137,9 @@ Widget _buildModernEditProfileView(
                           child: Column(
                             children: [
                               GestureDetector(
-                                onTap: state._pickAvatar,
+                                onTap: state._isPickingImage
+                                    ? null
+                                    : state._pickAvatar,
                                 child: Stack(
                                   clipBehavior: Clip.none,
                                   children: [

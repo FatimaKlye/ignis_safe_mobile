@@ -25,6 +25,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   bool _isLoading = true;
   bool _isSaving = false;
+  bool _isPickingImage = false;
   bool _showPass = false;
   bool _showConfirm = false;
 
@@ -141,6 +142,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   Future<void> _pickAvatar() async {
+    if (_isPickingImage) return;
+
+    setState(() => _isPickingImage = true);
+
     try {
       final picked = await _picker.pickImage(
         source: ImageSource.gallery,
@@ -170,14 +175,19 @@ class _EditProfilePageState extends State<EditProfilePage> {
       if (!mounted) return;
       await _showInfoDialog(
         title: _txt('Image Error', 'Error sa Larawan'),
-        message: _friendlyError(
-          e,
-          'Could not read selected image.',
-          'Hindi mabasa ang napiling larawan. Pakisubukang muli.',
+        message: _txt(
+          'Could not select an image. Please try again.',
+          'Hindi mapili ang larawan. Pakisubukang muli.',
         ),
         buttonText: _txt('OK', 'Sige'),
         icon: Icons.error_outline_rounded,
       );
+    } finally {
+      if (mounted) {
+        setState(() => _isPickingImage = false);
+      } else {
+        _isPickingImage = false;
+      }
     }
   }
 
@@ -1226,7 +1236,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           ),
                           const SizedBox(height: 35),
                           GestureDetector(
-                            onTap: _pickAvatar,
+                            onTap: _isPickingImage ? null : _pickAvatar,
                             child: Stack(
                               alignment: Alignment.bottomRight,
                               children: [
