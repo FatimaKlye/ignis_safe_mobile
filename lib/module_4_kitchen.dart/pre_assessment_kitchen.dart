@@ -1064,33 +1064,53 @@ class _PreAssessmentKitchenPageState
             .eq('question_id', _questions[i].id);
       }
 
+      final submittedAt = DateTime.now().toUtc().toIso8601String();
       final scorePercent =
           _questions.isEmpty ? 0 : (correctCount / _questions.length) * 100;
 
       await _supabase.from('assessment_attempts').update({
-        'submitted_at': DateTime.now().toUtc().toIso8601String(),
+        'submitted_at': submittedAt,
         'status': 'submitted',
         'correct_count': correctCount,
+        'total_questions': _questions.length,
         'score': scorePercent,
       }).eq('id', _attemptId!);
 
-      final progressRow = await _supabase
+      final progressRows = await _supabase
           .from('module_progress')
-          .select('id')
+          .select('id, updated_at')
           .eq('user_id', _user.id)
           .eq('module_id', _moduleId!)
-          .maybeSingle();
+          .order('updated_at', ascending: false)
+          .limit(1);
+
+      final progressRow = (progressRows as List).isEmpty
+          ? null
+          : Map<String, dynamic>.from(progressRows.first as Map);
+
+      // The Learning Module unlock is validated against the saved attempt id
+      // and score, not just the completion timestamp, so the whole pre-test
+      // result has to be persisted here or Module 4 stays locked.
+      final progressPayload = {
+        'pre_test_completed_at': submittedAt,
+        'pre_test_attempt_id': _attemptId,
+        'pre_test_score': scorePercent,
+        'pre_test_correct_count': correctCount,
+        'pre_test_total_questions': _questions.length,
+        'updated_at': submittedAt,
+      };
 
       if (progressRow == null) {
         await _supabase.from('module_progress').insert({
           'user_id': _user.id,
           'module_id': _moduleId,
-          'pre_test_completed_at': DateTime.now().toUtc().toIso8601String(),
+          ...progressPayload,
         });
       } else {
-        await _supabase.from('module_progress').update({
-          'pre_test_completed_at': DateTime.now().toUtc().toIso8601String(),
-        }).eq('id', progressRow['id']);
+        await _supabase
+            .from('module_progress')
+            .update(progressPayload)
+            .eq('id', progressRow['id']);
       }
 
       await ProfileProgressSync.syncCompletedSimulations();

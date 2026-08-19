@@ -150,6 +150,10 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
   bool _openingModuleFourSimulation = false;
   bool _openingModuleFiveSimulation = false;
 
+  /// Module 4 (Kitchen Fire) only: see [_reconcileModuleFourProgress].
+  static const int _kitchenModuleNo = 4;
+  bool _moduleFourReconcileSettled = false;
+
   final Set<int> _trackedProgressModules = const <int>{1, 2, 3, 4, 5};
   final Map<int, _ModuleProgressSnapshot> _progressByModule = {
     for (final moduleNo in const <int>[1, 2, 3, 4, 5])
@@ -417,9 +421,13 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
     }
 
     try {
-      final overview = await ModuleProgressOverviewService(
+      var overview = await ModuleProgressOverviewService(
         client: _client,
       ).load();
+
+      if (await _reconcileModuleFourProgress(overview)) {
+        overview = await ModuleProgressOverviewService(client: _client).load();
+      }
 
       if (!mounted) return;
       // Reported as keyed maps (never positional lists) because the
@@ -463,6 +471,37 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
         }
       });
     }
+  }
+
+  /// Heals a Module 4 progress row that records a finished Pre-Assessment but
+  /// is missing the attempt id / score the unlock check validates against, so
+  /// the Learning Module opens without a restart or manual refresh.
+  ///
+  /// Everything is rebuilt from the learner's real submitted attempt by
+  /// [ModuleProgressionService]; nothing about the completion is assumed here.
+  /// Returns true when the row was rewritten and the overview must be re-read.
+  Future<bool> _reconcileModuleFourProgress(
+    Map<int, ModuleProgressOverview> overview,
+  ) async {
+    if (_moduleFourReconcileSettled) return false;
+
+    final progress = overview[_kitchenModuleNo];
+    if (progress == null) return false;
+    if (!progress.preTestCompleted || progress.canOpenLearning) return false;
+
+    try {
+      final state = await ModuleProgressionService(
+        client: _client,
+      ).getState(moduleNo: _kitchenModuleNo);
+      if (state.hasValidPreTest) return true;
+    } catch (e) {
+      debugPrint('RECONCILE MODULE $_kitchenModuleNo PROGRESS ERROR: $e');
+    }
+
+    // Nothing left to recover from: a new submission now saves the full
+    // pre-test result, so retrying on every refresh would only add queries.
+    _moduleFourReconcileSettled = true;
+    return false;
   }
 
   bool _isTrackedProgressModule(int moduleNo) {
