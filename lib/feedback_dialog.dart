@@ -28,6 +28,15 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
 
   int _rating = 0;
   bool _isSubmitting = false;
+  bool _isCheckingCooldown = true;
+  bool _isRateLimited = false;
+  DateTime? _nextAllowedAt;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCooldown();
+  }
 
   @override
   void dispose() {
@@ -35,7 +44,35 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
     super.dispose();
   }
 
-  bool get _canSubmit => _rating > 0 && !_isSubmitting;
+  Future<void> _loadCooldown() async {
+    try {
+      final cooldown = await _feedbackService.getFeedbackCooldown();
+      if (!mounted) return;
+      setState(() {
+        _isRateLimited = cooldown.isLimited;
+        _nextAllowedAt = cooldown.nextAllowedAt;
+        _isCheckingCooldown = false;
+      });
+    } catch (e) {
+      // If the cooldown check itself fails (e.g. no network), fail open on
+      // the UI: the user may try to submit, and the database trigger is
+      // still the real enforcement backstop against a bypass.
+      if (!mounted) return;
+      setState(() => _isCheckingCooldown = false);
+    }
+  }
+
+  String _formatDateTime(DateTime dt) {
+    final local = dt.toLocal();
+    final hour24 = local.hour;
+    final hour12 = hour24 % 12 == 0 ? 12 : hour24 % 12;
+    final period = hour24 >= 12 ? 'PM' : 'AM';
+    return '${local.month.toString().padLeft(2, '0')}/${local.day.toString().padLeft(2, '0')}/${local.year} '
+        '${hour12.toString().padLeft(2, '0')}:${local.minute.toString().padLeft(2, '0')} $period';
+  }
+
+  bool get _canSubmit =>
+      _rating > 0 && !_isSubmitting && !_isCheckingCooldown && !_isRateLimited;
 
   Future<void> _onSubmit() async {
     if (!_canSubmit) return;
@@ -76,14 +113,33 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
       );
     } catch (e) {
       if (!mounted) return;
-      setState(() => _isSubmitting = false);
+
+      DateTime? rateLimitedUntil;
+      if (e is PostgrestException && e.hint == FeedbackService.rateLimitHint) {
+        rateLimitedUntil = DateTime.tryParse(e.details?.toString() ?? '');
+      }
+
+      setState(() {
+        _isSubmitting = false;
+        if (rateLimitedUntil != null) {
+          _isRateLimited = true;
+          _nextAllowedAt = rateLimitedUntil;
+        }
+      });
+
       showAppNotification(
         context,
-        message: t(
-          context,
-          'Could not submit your feedback. Please try again.',
-          'Hindi naipadala ang feedback. Pakisubukang muli.',
-        ),
+        message: rateLimitedUntil != null
+            ? t(
+                context,
+                'You can submit feedback again on ${_formatDateTime(rateLimitedUntil)}.',
+                'Maaari kang muling magpadala ng feedback sa ${_formatDateTime(rateLimitedUntil)}.',
+              )
+            : t(
+                context,
+                'Could not submit your feedback. Please try again.',
+                'Hindi naipadala ang feedback. Pakisubukang muli.',
+              ),
         type: AppNotificationType.error,
       );
     }
@@ -136,6 +192,45 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      if (_isRateLimited && _nextAllowedAt != null)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 16),
+                          child: Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFFF4E5),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: const Color(0xFFFFD9A0),
+                              ),
+                            ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Icon(
+                                  Icons.access_time_rounded,
+                                  color: Color(0xFFB15C00),
+                                  size: 18,
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    t(
+                                      context,
+                                      'You can submit feedback again on ${_formatDateTime(_nextAllowedAt!)}.',
+                                      'Maaari kang muling magpadala ng feedback sa ${_formatDateTime(_nextAllowedAt!)}.',
+                                    ),
+                                    style: const TextStyle(
+                                      fontSize: 12.5,
+                                      fontWeight: FontWeight.w600,
+                                      color: Color(0xFF7A4400),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
                       Text(
                         t(
                           context,
