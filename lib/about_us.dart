@@ -49,10 +49,9 @@ class _AboutUsPageState extends State<AboutUsPage> {
   String? _avatarUrl;
   String _searchQuery = '';
   // Only one top-level card is expanded at a time to keep the page short.
-  // `null` + `_allCollapsed == false` means "expand the first visible card"
-  // (the default state); `_allCollapsed` lets the user close every card.
+  // `null` means every card is collapsed, which is also the default state on
+  // first load, refresh, and return-to-screen — no card auto-expands.
   String? _expandedSectionKey;
-  bool _allCollapsed = false;
   _AboutUsData? _aboutData;
   Object? _loadError;
   bool _loading = true;
@@ -528,7 +527,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
                           ],
                         ),
                       ),
-                      const SizedBox(height: 14),
+                      const SizedBox(height: 22),
                       Expanded(
                         child: _buildAboutContent(
                           visible: visible,
@@ -546,29 +545,14 @@ class _AboutUsPageState extends State<AboutUsPage> {
     );
   }
 
-  /// The currently expanded section key: the user's explicit choice, or the
-  /// first visible card by default. `null` once the user has collapsed every
-  /// card on purpose.
-  String? _effectiveExpandedKey(List<_AboutSection> visible) {
-    if (_allCollapsed) return null;
-    return _expandedSectionKey ?? (visible.isEmpty ? null : visible.first.key);
-  }
-
-  void _toggleSection(_AboutSection section, List<_AboutSection> visible) {
+  void _toggleSection(_AboutSection section) {
     setState(() {
-      final current = _effectiveExpandedKey(visible);
-      if (current == section.key) {
-        _expandedSectionKey = null;
-        _allCollapsed = true;
-      } else {
-        _expandedSectionKey = section.key;
-        _allCollapsed = false;
-      }
+      _expandedSectionKey = _expandedSectionKey == section.key ? null : section.key;
     });
   }
 
-  List<Widget> _sectionCards(List<_AboutSection> group, List<_AboutSection> visible) {
-    final expandedKey = _effectiveExpandedKey(visible);
+  List<Widget> _sectionCards(List<_AboutSection> group) {
+    final expandedKey = _expandedSectionKey;
     return [
       for (int index = 0; index < group.length; index++)
         Padding(
@@ -580,7 +564,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
             subtitle: group[index].subtitle,
             emphasized: group[index].key == 'emergency_contacts',
             expanded: expandedKey == group[index].key,
-            onToggle: () => _toggleSection(group[index], visible),
+            onToggle: () => _toggleSection(group[index]),
             child: group[index].builder(context),
           ),
         ),
@@ -624,7 +608,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
                   text: t(context, 'ABOUT IGNIS SAFE', 'TUNGKOL SA IGNIS SAFE'),
                 ),
                 const SizedBox(height: 8),
-                ..._sectionCards(aboutGroup, visible),
+                ..._sectionCards(aboutGroup),
               ],
               if (contactGroup.isNotEmpty) ...[
                 SizedBox(height: aboutGroup.isEmpty ? 0 : 18),
@@ -636,7 +620,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                ..._sectionCards(contactGroup, visible),
+                ..._sectionCards(contactGroup),
               ],
             ],
           ],

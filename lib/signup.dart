@@ -42,12 +42,16 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   void initState() {
     super.initState();
+    fullNameCtrl.addListener(_onFieldChanged);
+    emailCtrl.addListener(_onFieldChanged);
     passCtrl.addListener(_recalculatePasswordRules);
     confirmPassCtrl.addListener(_recalculatePasswordRules);
   }
 
   @override
   void dispose() {
+    fullNameCtrl.removeListener(_onFieldChanged);
+    emailCtrl.removeListener(_onFieldChanged);
     fullNameCtrl.dispose();
     emailCtrl.dispose();
     passCtrl.removeListener(_recalculatePasswordRules);
@@ -55,6 +59,10 @@ class _RegisterPageState extends State<RegisterPage> {
     passCtrl.dispose();
     confirmPassCtrl.dispose();
     super.dispose();
+  }
+
+  void _onFieldChanged() {
+    if (mounted) setState(() {});
   }
 
   void _recalculatePasswordRules() {
@@ -96,36 +104,13 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   bool get _passwordStarted => passCtrl.text.isNotEmpty;
-  bool get _confirmPasswordVisible => _passwordStarted;
   bool get _passwordRulesPassed => _passedRules == 4;
   bool get _allPasswordOk => _passwordRulesPassed && _matches;
 
-  double get _passwordProgress {
-    if (!_passwordStarted) return 0.0;
-    return _passedRules / 4.0;
-  }
-
-  Color get _passwordBarColor {
-    if (!_passwordStarted) return const Color(0xFFD32F2F);
-    if (_passedRules < 3) return const Color(0xFFF9A825);
-    return const Color(0xFF2E7D32);
-  }
-
-  String get _passwordStrengthText {
-    if (!_passwordStarted || _passedRules <= 1) {
-      return t(context, 'Password is weak', 'Mahina ang password');
-    }
-    if (_passedRules <= 3) {
-      return t(context, 'Password is medium', 'Katamtaman ang password');
-    }
-    return t(context, 'Password is strong', 'Malakas ang password');
-  }
-
-  Color get _passwordStrengthColor {
-    if (!_passwordStarted || _passedRules <= 1) return const Color(0xFFD32F2F);
-    if (_passedRules <= 3) return const Color(0xFFF9A825);
-    return const Color(0xFF2E7D32);
-  }
+  bool get _canSubmit =>
+      _validateFullName(fullNameCtrl.text) == null &&
+      _validateEmail(emailCtrl.text) == null &&
+      _allPasswordOk;
 
   String? _validateFullName(String? v) {
     final value = (v ?? '').trim().replaceAll(RegExp(r'\s+'), ' ');
@@ -179,7 +164,6 @@ class _RegisterPageState extends State<RegisterPage> {
 
   String? _validateConfirmPassword(String? v) {
     final value = v ?? '';
-    if (!_confirmPasswordVisible) return null;
     if (value.isEmpty) {
       return t(
         context,
@@ -830,6 +814,8 @@ class _RegisterPageState extends State<RegisterPage> {
     TextCapitalization textCapitalization = TextCapitalization.none,
     bool obscureText = false,
     Widget? suffixIcon,
+    List<String>? autofillHints,
+    bool showFieldError = true,
   }) {
     return FormField<String>(
       validator: (_) => validator(controller.text),
@@ -839,15 +825,15 @@ class _RegisterPageState extends State<RegisterPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              margin: const EdgeInsets.only(top: 8),
+              margin: const EdgeInsets.only(top: 6),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(15),
-                boxShadow: const [
+                boxShadow: [
                   BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 8,
-                    offset: Offset(0, 4),
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
                   ),
                 ],
               ),
@@ -859,6 +845,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 inputFormatters: inputFormatters,
                 textCapitalization: textCapitalization,
                 obscureText: obscureText,
+                autofillHints: autofillHints,
                 style: const TextStyle(fontFamily: 'Poppins'),
                 onChanged: (_) => state.didChange(controller.text),
                 decoration: InputDecoration(
@@ -866,14 +853,14 @@ class _RegisterPageState extends State<RegisterPage> {
                   hintStyle: const TextStyle(fontFamily: 'Poppins'),
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 18,
+                    horizontal: 18,
+                    vertical: 14,
                   ),
                   suffixIcon: suffixIcon,
                 ),
               ),
             ),
-            if (state.errorText != null)
+            if (showFieldError && state.errorText != null)
               Padding(
                 padding: const EdgeInsets.only(top: 6, left: 10),
                 child: Text(
@@ -898,19 +885,17 @@ class _RegisterPageState extends State<RegisterPage> {
     required bool visible,
     required VoidCallback onTap,
   }) {
-    return InkWell(
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.all(15),
-        child: Text(
-          visible ? t(context, 'HIDE', 'ITAGO') : t(context, 'SHOW', 'IPAKITA'),
-          style: const TextStyle(
-            fontFamily: 'Poppins',
-            color: brandRed,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+    return IconButton(
+      onPressed: onTap,
+      splashRadius: 20,
+      icon: Icon(
+        visible ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+        color: brandRed,
+        size: 20,
       ),
+      tooltip: visible
+          ? t(context, 'Hide', 'Itago')
+          : t(context, 'Show', 'Ipakita'),
     );
   }
 
@@ -944,62 +929,73 @@ class _RegisterPageState extends State<RegisterPage> {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 180),
       width: double.infinity,
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
         color: const Color(0xFFF8F8F8),
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(color: const Color(0xFFEAEAEA)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                t(context, 'Password strength', 'Lakas ng password'),
-                style: const TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.black87,
-                ),
-              ),
-              Text(
-                _passwordStrengthText,
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
-                  color: _passwordStrengthColor,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(999),
-            child: LinearProgressIndicator(
-              value: _passwordProgress,
-              minHeight: 7,
-              backgroundColor: const Color(0xFFE6E6E6),
-              valueColor: AlwaysStoppedAnimation<Color>(_passwordBarColor),
+          Text(
+            t(context, 'Password requirements', 'Mga kailangan sa password'),
+            style: const TextStyle(
+              fontFamily: 'Poppins',
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              color: Colors.black54,
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 6),
           Wrap(
-            spacing: 10,
-            runSpacing: 8,
+            spacing: 12,
+            runSpacing: 6,
             children: [
-              _ruleItem(t(context, '8 characters', '8 character'), _min8),
-              _ruleItem(t(context, '1 number', '1 numero'), _hasNumber),
-              _ruleItem(t(context, '1 symbol', '1 simbolo'), _hasSymbol),
+              _ruleItem(t(context, '8+ characters', '8+ na character'), _min8),
               _ruleItem(
                 t(context, '1 uppercase', '1 malaking titik'),
                 _hasUpper,
               ),
-              _ruleItem(t(context, 'Passwords match', 'Magkatugma'), _matches),
+              _ruleItem(t(context, '1 number', '1 numero'), _hasNumber),
+              _ruleItem(t(context, '1 symbol', '1 simbolo'), _hasSymbol),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildConfirmPasswordStatus() {
+    if (confirmPassCtrl.text.isEmpty) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 6, left: 4),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            _matches ? Icons.check_circle : Icons.cancel,
+            size: 14,
+            color: _matches ? const Color(0xFF2E7D32) : const Color(0xFFD32F2F),
+          ),
+          const SizedBox(width: 6),
+          Text(
+            _matches
+                ? t(context, 'Passwords match', 'Magkatugma ang password')
+                : t(
+                    context,
+                    'Passwords do not match',
+                    'Hindi magkatugma ang password',
+                  ),
+            style: TextStyle(
+              fontFamily: 'Poppins',
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: _matches
+                  ? const Color(0xFF2E7D32)
+                  : const Color(0xFFD32F2F),
+            ),
           ),
         ],
       ),
@@ -1015,7 +1011,7 @@ class _RegisterPageState extends State<RegisterPage> {
         disabledBackgroundColor: brandRed.withOpacity(0.55),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
-      onPressed: _isLoading ? null : _continueToVerifyEmail,
+      onPressed: (_isLoading || !_canSubmit) ? null : _continueToVerifyEmail,
       child: _isLoading
           ? const SizedBox(
               width: 20,
@@ -1025,76 +1021,71 @@ class _RegisterPageState extends State<RegisterPage> {
                 color: Colors.white,
               ),
             )
-          : Text(
-              t(context, 'Verify Email Address', 'I-verify ang Email Address'),
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontFamily: 'Poppins',
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
+          : Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Flexible(
+                  child: Text(
+                    t(
+                      context,
+                      'Continue to Email Verification',
+                      'Magpatuloy sa Email Verification',
+                    ),
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontFamily: 'Poppins',
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                const Icon(
+                  Icons.arrow_forward_rounded,
+                  color: Colors.white,
+                  size: 20,
+                ),
+              ],
             ),
     ),
   );
 
-  Widget _buildFooter() => Column(
-    mainAxisSize: MainAxisSize.min,
+  Widget _buildFooter() => Wrap(
+    alignment: WrapAlignment.center,
+    crossAxisAlignment: WrapCrossAlignment.center,
     children: [
-      Row(
-        children: [
-          const Expanded(child: Divider(thickness: 1)),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: Text(
-              t(context, 'OR', 'O'),
-              style: const TextStyle(
-                fontFamily: 'Poppins',
-                color: Colors.grey,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          const Expanded(child: Divider(thickness: 1)),
-        ],
+      Text(
+        "${t(context, 'Already have an account?', 'Mayroon ka nang account?')} ",
+        style: const TextStyle(
+          fontFamily: 'Poppins',
+          fontSize: 13,
+          color: Colors.grey,
+        ),
       ),
-      const SizedBox(height: 10),
-      Wrap(
-        alignment: WrapAlignment.center,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        children: [
-          Text(
-            "${t(context, 'Already have an account?', 'Mayroon ka nang account?')} ",
-            style: const TextStyle(
-              fontFamily: 'Poppins',
-              fontSize: 13,
-              color: Colors.grey,
-            ),
+      TextButton(
+        onPressed: () {
+          LoginPage.skipAutoRoute = false;
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => const LoginPage()),
+          );
+        },
+        style: TextButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          minimumSize: Size.zero,
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        ),
+        child: Text(
+          t(context, 'Log in', 'Mag-login'),
+          style: const TextStyle(
+            fontFamily: 'Poppins',
+            color: brandRed,
+            fontWeight: FontWeight.bold,
+            fontSize: 13,
           ),
-          TextButton(
-            onPressed: () {
-              LoginPage.skipAutoRoute = false;
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (_) => const LoginPage()),
-              );
-            },
-            style: TextButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
-              minimumSize: Size.zero,
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            ),
-            child: Text(
-              t(context, 'Login', 'Mag-login'),
-              style: const TextStyle(
-                fontFamily: 'Poppins',
-                color: brandRed,
-                fontWeight: FontWeight.bold,
-                fontSize: 13,
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
     ],
   );
@@ -1163,172 +1154,159 @@ class _RegisterPageState extends State<RegisterPage> {
           padding: const EdgeInsets.symmetric(horizontal: 35.0),
           child: Form(
             key: _formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 48, bottom: 22),
-                  child: SizedBox(
-                    height: 110,
-                    child: FittedBox(
-                      fit: BoxFit.contain,
-                      child: Image.asset('assets/logo.png'),
+            child: AutofillGroup(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 48, bottom: 22),
+                    child: SizedBox(
+                      height: 110,
+                      child: FittedBox(
+                        fit: BoxFit.contain,
+                        child: Image.asset('assets/logo.png'),
+                      ),
                     ),
                   ),
-                ),
-                Text(
-                  t(context, 'Sign Up', 'Mag-sign up'),
-                  style: const TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: 28,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.black87,
-                    height: 1.0,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Container(
-                  height: 2,
-                  width: 150,
-                  decoration: BoxDecoration(
-                    color: brandRed,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  t(
-                    context,
-                    'Welcome to, IGNIS SAFE',
-                    'Maligayang pagdating sa IGNIS SAFE',
-                  ),
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black38,
-                    height: 1.1,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                _inputLabel(t(context, 'Full Name', 'Buong Pangalan')),
-                _buildValidatedField(
-                  hint: t(
-                    context,
-                    'Enter your full name',
-                    'Ilagay ang iyong buong pangalan',
-                  ),
-                  controller: fullNameCtrl,
-                  validator: _validateFullName,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(
-                      RegExp(r"[A-Za-zÀ-ÖØ-öø-ÿÑñ '\-.]"),
+                  Text(
+                    t(context, 'Sign Up', 'Mag-sign up'),
+                    style: const TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 28,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.black87,
+                      height: 1.0,
                     ),
-                  ],
-                  textCapitalization: TextCapitalization.words,
-                  textInputAction: TextInputAction.next,
-                ),
-                const SizedBox(height: 18),
-                _inputLabel(t(context, 'Email Address', 'Email Address')),
-                _buildValidatedField(
-                  hint: t(
-                    context,
-                    'Enter your email address',
-                    'Ilagay ang iyong email address',
                   ),
-                  controller: emailCtrl,
-                  keyboardType: TextInputType.emailAddress,
-                  validator: _validateEmail,
-                  textInputAction: TextInputAction.next,
-                ),
-                const SizedBox(height: 18),
-                _inputLabel(t(context, 'Password', 'Password')),
-                _buildValidatedField(
-                  hint: t(
-                    context,
-                    'Enter your password',
-                    'Ilagay ang iyong password',
+                  const SizedBox(height: 6),
+                  Container(
+                    height: 2,
+                    width: 150,
+                    decoration: BoxDecoration(
+                      color: brandRed,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
-                  controller: passCtrl,
-                  validator: _validatePassword,
-                  obscureText: !_showPassword,
-                  textInputAction: TextInputAction.next,
-                  suffixIcon: _visibilitySuffix(
-                    visible: _showPassword,
-                    onTap: () {
-                      setState(() => _showPassword = !_showPassword);
+                  const SizedBox(height: 8),
+                  Text(
+                    t(
+                      context,
+                      'Welcome to, IGNIS SAFE',
+                      'Maligayang pagdating sa IGNIS SAFE',
+                    ),
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black38,
+                      height: 1.1,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  _inputLabel(t(context, 'Full Name', 'Buong Pangalan')),
+                  _buildValidatedField(
+                    hint: t(
+                      context,
+                      'Enter your full name',
+                      'Ilagay ang iyong buong pangalan',
+                    ),
+                    controller: fullNameCtrl,
+                    validator: _validateFullName,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(
+                        RegExp(r"[A-Za-zÀ-ÖØ-öø-ÿÑñ '\-.]"),
+                      ),
+                    ],
+                    textCapitalization: TextCapitalization.words,
+                    textInputAction: TextInputAction.next,
+                    autofillHints: const [AutofillHints.name],
+                  ),
+                  const SizedBox(height: 14),
+                  _inputLabel(t(context, 'Email Address', 'Email Address')),
+                  _buildValidatedField(
+                    hint: t(context, 'name@example.com', 'name@example.com'),
+                    controller: emailCtrl,
+                    keyboardType: TextInputType.emailAddress,
+                    validator: _validateEmail,
+                    textInputAction: TextInputAction.next,
+                    autofillHints: const [AutofillHints.email],
+                  ),
+                  const SizedBox(height: 14),
+                  _inputLabel(t(context, 'Password', 'Password')),
+                  _buildValidatedField(
+                    hint: t(
+                      context,
+                      'Enter your password',
+                      'Ilagay ang iyong password',
+                    ),
+                    controller: passCtrl,
+                    validator: _validatePassword,
+                    obscureText: !_showPassword,
+                    textInputAction: TextInputAction.next,
+                    autofillHints: const [AutofillHints.newPassword],
+                    suffixIcon: _visibilitySuffix(
+                      visible: _showPassword,
+                      onTap: () {
+                        setState(() => _showPassword = !_showPassword);
+                      },
+                    ),
+                  ),
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 180),
+                    child: _passwordStarted
+                        ? Padding(
+                            key: const ValueKey('password-rules'),
+                            padding: const EdgeInsets.only(top: 10),
+                            child: _buildPasswordValidationCard(),
+                          )
+                        : const SizedBox.shrink(
+                            key: ValueKey('password-rules-empty'),
+                          ),
+                  ),
+                  const SizedBox(height: 14),
+                  _inputLabel(
+                    t(context, 'Confirm Password', 'Kumpirmahin ang Password'),
+                  ),
+                  _buildValidatedField(
+                    hint: t(
+                      context,
+                      'Re-enter your password',
+                      'Muling ilagay ang iyong password',
+                    ),
+                    controller: confirmPassCtrl,
+                    validator: _validateConfirmPassword,
+                    obscureText: !_showConfirmPassword,
+                    textInputAction: TextInputAction.done,
+                    autofillHints: const [AutofillHints.newPassword],
+                    showFieldError: false,
+                    onSubmitted: (_) {
+                      if (!_isLoading && _canSubmit) {
+                        _continueToVerifyEmail();
+                      }
                     },
+                    suffixIcon: _visibilitySuffix(
+                      visible: _showConfirmPassword,
+                      onTap: () {
+                        setState(
+                          () => _showConfirmPassword = !_showConfirmPassword,
+                        );
+                      },
+                    ),
                   ),
-                ),
-                AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 180),
-                  child: _passwordStarted
-                      ? Padding(
-                          key: const ValueKey('password-rules'),
-                          padding: const EdgeInsets.only(top: 12),
-                          child: _buildPasswordValidationCard(),
-                        )
-                      : const SizedBox.shrink(
-                          key: ValueKey('password-rules-empty'),
-                        ),
-                ),
-                AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 180),
-                  child: _confirmPasswordVisible
-                      ? Column(
-                          key: const ValueKey('confirm-password'),
-                          children: [
-                            const SizedBox(height: 18),
-                            _inputLabel(
-                              t(
-                                context,
-                                'Confirm Password',
-                                'Kumpirmahin ang Password',
-                              ),
-                            ),
-                            _buildValidatedField(
-                              hint: t(
-                                context,
-                                'Confirm your password',
-                                'Kumpirmahin ang iyong password',
-                              ),
-                              controller: confirmPassCtrl,
-                              validator: _validateConfirmPassword,
-                              obscureText: !_showConfirmPassword,
-                              textInputAction: TextInputAction.done,
-                              onSubmitted: (_) {
-                                if (!_isLoading) {
-                                  _continueToVerifyEmail();
-                                }
-                              },
-                              suffixIcon: _visibilitySuffix(
-                                visible: _showConfirmPassword,
-                                onTap: () {
-                                  setState(
-                                    () => _showConfirmPassword =
-                                        !_showConfirmPassword,
-                                  );
-                                },
-                              ),
-                            ),
-                          ],
-                        )
-                      : const SizedBox.shrink(
-                          key: ValueKey('confirm-password-empty'),
-                        ),
-                ),
-                const SizedBox(height: 6),
-                _buildReservedForgotPasswordSlot(),
-                const SizedBox(height: 22),
-                _buildRegisterButton(),
-                const SizedBox(height: 16),
-                _buildReservedTermsSlot(),
-                const SizedBox(height: 18),
-                _buildFooter(),
-                const SizedBox(height: 20),
-              ],
+                  _buildConfirmPasswordStatus(),
+                  const SizedBox(height: 6),
+                  _buildReservedForgotPasswordSlot(),
+                  const SizedBox(height: 22),
+                  _buildRegisterButton(),
+                  const SizedBox(height: 16),
+                  _buildReservedTermsSlot(),
+                  const SizedBox(height: 18),
+                  _buildFooter(),
+                  const SizedBox(height: 20),
+                ],
+              ),
             ),
           ),
         ),
