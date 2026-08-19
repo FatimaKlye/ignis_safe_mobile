@@ -3,19 +3,136 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../localization/language_controller.dart';
 import '../localization/localized_db_text.dart';
+import '../module_1_extinguisher.dart/module_1_learningmaterials.dart' as m1;
+import '../module_2_house.dart/module_2_learningmaterials.dart' as m2;
+import '../module_3_electrical.dart/module_3_learningmaterials.dart' as m3;
+import '../module_4_kitchen.dart/module_4_learningmaterials.dart' as m4;
+import '../module_5_building.dart/module_5_learningmaterials.dart' as m5;
 
-const Color _kRed = Color(0xFFB11217);
-const Color _kRedSoft = Color(0xFFFFE8EA);
-const Color _kBackground = Color(0xFFFFF7F7);
-const Color _kSurface = Color(0xFFFFFFFF);
-const Color _kTextPrimary = Color(0xFF1F1F1F);
-const Color _kTextSecondary = Color(0xFF6B6B6B);
-const Color _kBorder = Color(0xFFE8D8D9);
+// Semantic feedback colors are deliberately module-independent: a wrong answer
+// is always red and a correct answer is always green, whichever module the
+// reviewed attempt belongs to.
 const Color _kSuccess = Color(0xFF198754);
 const Color _kSuccessSoft = Color(0xFFE8F5EC);
 const Color _kError = Color(0xFFD32F2F);
 const Color _kErrorSoft = Color(0xFFFDEBEA);
-const Color _kShadow = Color(0x1A000000);
+
+// Module 1's palette predates the shared border/shadow tokens the other
+// modules define, so those two values stay with its theme entry below.
+const Color _kModule1Border = Color(0xFFE8D8D9);
+const Color _kModule1Shadow = Color(0x1A000000);
+
+/// The visual identity of one module, reused verbatim from the palette that
+/// module already applies to its Learning Material screen.
+class _ModuleTheme {
+  const _ModuleTheme({
+    required this.accent,
+    required this.accentSoft,
+    required this.background,
+    required this.surface,
+    required this.border,
+    required this.shadow,
+    required this.textPrimary,
+    required this.textSecondary,
+    required this.icon,
+  });
+
+  final Color accent;
+  final Color accentSoft;
+  final Color background;
+  final Color surface;
+  final Color border;
+  final Color shadow;
+  final Color textPrimary;
+  final Color textSecondary;
+
+  /// Module-specific accent icon (fire extinguisher, house, ...).
+  final IconData icon;
+
+  /// Used until the module behind the attempt is known, and when it cannot be
+  /// resolved at all. Keeps the neutral review icon rather than claiming a
+  /// module the attempt may not belong to.
+  static const _ModuleTheme fallback = _ModuleTheme(
+    accent: m1.AppColors.brandRed,
+    accentSoft: m1.AppColors.brandRedSoft,
+    background: m1.AppColors.background,
+    surface: m1.AppColors.surface,
+    border: _kModule1Border,
+    shadow: _kModule1Shadow,
+    textPrimary: m1.AppColors.textPrimary,
+    textSecondary: m1.AppColors.textSecondary,
+    icon: Icons.fact_check_outlined,
+  );
+
+  /// Maps a `modules.module_no` to that module's own theme. Anything the app
+  /// does not know about keeps the neutral [fallback].
+  static _ModuleTheme forModuleNo(int? moduleNo) {
+    switch (moduleNo) {
+      case 1:
+        return const _ModuleTheme(
+          accent: m1.AppColors.brandRed,
+          accentSoft: m1.AppColors.brandRedSoft,
+          background: m1.AppColors.background,
+          surface: m1.AppColors.surface,
+          border: _kModule1Border,
+          shadow: _kModule1Shadow,
+          textPrimary: m1.AppColors.textPrimary,
+          textSecondary: m1.AppColors.textSecondary,
+          icon: Icons.fire_extinguisher_rounded,
+        );
+      case 2:
+        return const _ModuleTheme(
+          accent: m2.AppColors.brandRed,
+          accentSoft: m2.AppColors.brandRedSoft,
+          background: m2.AppColors.background,
+          surface: m2.AppColors.surface,
+          border: m2.AppColors.border,
+          shadow: m2.AppColors.shadow,
+          textPrimary: m2.AppColors.textPrimary,
+          textSecondary: m2.AppColors.textSecondary,
+          icon: Icons.home_rounded,
+        );
+      case 3:
+        return const _ModuleTheme(
+          accent: m3.AppColors.brandRed,
+          accentSoft: m3.AppColors.brandRedSoft,
+          background: m3.AppColors.background,
+          surface: m3.AppColors.surface,
+          border: m3.AppColors.border,
+          shadow: m3.AppColors.shadow,
+          textPrimary: m3.AppColors.textPrimary,
+          textSecondary: m3.AppColors.textSecondary,
+          icon: Icons.electrical_services_rounded,
+        );
+      case 4:
+        return const _ModuleTheme(
+          accent: m4.AppColors.brandRed,
+          accentSoft: m4.AppColors.brandRedSoft,
+          background: m4.AppColors.background,
+          surface: m4.AppColors.surface,
+          border: m4.AppColors.border,
+          shadow: m4.AppColors.shadow,
+          textPrimary: m4.AppColors.textPrimary,
+          textSecondary: m4.AppColors.textSecondary,
+          icon: Icons.restaurant_rounded,
+        );
+      case 5:
+        return const _ModuleTheme(
+          accent: m5.AppColors.brandRed,
+          accentSoft: m5.AppColors.brandRedSoft,
+          background: m5.AppColors.background,
+          surface: m5.AppColors.surface,
+          border: m5.AppColors.border,
+          shadow: m5.AppColors.shadow,
+          textPrimary: m5.AppColors.textPrimary,
+          textSecondary: m5.AppColors.textSecondary,
+          icon: Icons.apartment_rounded,
+        );
+      default:
+        return fallback;
+    }
+  }
+}
 
 /// A single question's persisted feedback, reconstructed from Supabase
 /// (assessment_attempt_answers joined with assessment_questions /
@@ -44,6 +161,10 @@ class _FeedbackItem {
 /// option, the user's submitted answer, the correct answer, and the
 /// explanation are fetched fresh from Supabase by [attemptId] — nothing is
 /// hardcoded and nothing on this screen can be edited.
+///
+/// The screen's accents follow the theme of the module the attempt belongs to.
+/// That module is resolved from the attempt's own `module_id`, so a single
+/// screen serves every module.
 class AnswerFeedbackScreen extends StatefulWidget {
   const AnswerFeedbackScreen({
     super.key,
@@ -65,6 +186,9 @@ class _AnswerFeedbackScreenState extends State<AnswerFeedbackScreen> {
   String? _error;
   List<_FeedbackItem> _items = const [];
   int _correctCount = 0;
+  int? _moduleNo;
+
+  _ModuleTheme get _theme => _ModuleTheme.forModuleNo(_moduleNo);
 
   @override
   void initState() {
@@ -72,11 +196,41 @@ class _AnswerFeedbackScreenState extends State<AnswerFeedbackScreen> {
     _load();
   }
 
+  /// Resolves which module this attempt belongs to so the screen can wear that
+  /// module's theme. Failures are non-fatal: the feedback still loads and the
+  /// neutral theme is kept.
+  Future<int?> _resolveModuleNo() async {
+    try {
+      final attemptRow = await _supabase
+          .from('assessment_attempts')
+          .select('module_id')
+          .eq('id', widget.attemptId)
+          .maybeSingle();
+
+      final moduleId = attemptRow?['module_id']?.toString();
+      if (moduleId == null || moduleId.isEmpty) return null;
+
+      final moduleRow = await _supabase
+          .from('modules')
+          .select('module_no')
+          .eq('id', moduleId)
+          .maybeSingle();
+
+      return (moduleRow?['module_no'] as num?)?.toInt();
+    } catch (_) {
+      return null;
+    }
+  }
+
   Future<void> _load() async {
     setState(() {
       _isLoading = true;
       _error = null;
     });
+
+    final moduleNo = await _resolveModuleNo();
+    if (!mounted) return;
+    setState(() => _moduleNo = moduleNo);
 
     try {
       final answerRows = await _supabase
@@ -191,30 +345,31 @@ class _AnswerFeedbackScreenState extends State<AnswerFeedbackScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = _theme;
     return Scaffold(
-      backgroundColor: _kBackground,
+      backgroundColor: theme.background,
       appBar: AppBar(
-        backgroundColor: _kBackground,
+        backgroundColor: theme.background,
         elevation: 0,
-        foregroundColor: _kTextPrimary,
+        foregroundColor: theme.textPrimary,
         title: Text(
           t(context, 'Answer Feedback', 'Paliwanag sa Sagot'),
-          style: const TextStyle(
+          style: TextStyle(
             fontFamily: 'Poppins',
             fontWeight: FontWeight.w800,
             fontSize: 17,
-            color: _kTextPrimary,
+            color: theme.textPrimary,
           ),
         ),
       ),
-      body: SafeArea(child: _buildBody(context)),
+      body: SafeArea(child: _buildBody(context, theme)),
     );
   }
 
-  Widget _buildBody(BuildContext context) {
+  Widget _buildBody(BuildContext context, _ModuleTheme theme) {
     if (_isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(color: _kRed),
+      return Center(
+        child: CircularProgressIndicator(color: theme.accent),
       );
     }
 
@@ -234,16 +389,16 @@ class _AnswerFeedbackScreenState extends State<AnswerFeedbackScreen> {
                   'Hindi mai-load ang paliwanag sa iyong sagot. Pakisubukang muli.',
                 ),
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'Poppins',
                   fontSize: 14,
-                  color: _kTextSecondary,
+                  color: theme.textSecondary,
                 ),
               ),
               const SizedBox(height: 16),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: _kRed,
+                  backgroundColor: theme.accent,
                   foregroundColor: Colors.white,
                 ),
                 onPressed: _load,
@@ -264,10 +419,10 @@ class _AnswerFeedbackScreenState extends State<AnswerFeedbackScreen> {
             'Walang paliwanag sa sagot na available para sa pagsusulit na ito.',
           ),
           textAlign: TextAlign.center,
-          style: const TextStyle(
+          style: TextStyle(
             fontFamily: 'Poppins',
             fontSize: 14,
-            color: _kTextSecondary,
+            color: theme.textSecondary,
           ),
         ),
       );
@@ -280,10 +435,11 @@ class _AnswerFeedbackScreenState extends State<AnswerFeedbackScreen> {
           correctCount: _correctCount,
           totalQuestions: _items.length,
           assessmentTitle: widget.assessmentTitle,
+          theme: theme,
         ),
         const SizedBox(height: 18),
         for (final item in _items) ...[
-          _FeedbackCard(item: item),
+          _FeedbackCard(item: item, theme: theme),
           const SizedBox(height: 14),
         ],
       ],
@@ -296,11 +452,13 @@ class _SummaryHeader extends StatelessWidget {
     required this.correctCount,
     required this.totalQuestions,
     required this.assessmentTitle,
+    required this.theme,
   });
 
   final int correctCount;
   final int totalQuestions;
   final String? assessmentTitle;
+  final _ModuleTheme theme;
 
   @override
   Widget build(BuildContext context) {
@@ -308,11 +466,15 @@ class _SummaryHeader extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: _kSurface,
+        color: theme.surface,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: _kBorder),
-        boxShadow: const [
-          BoxShadow(color: _kShadow, blurRadius: 14, offset: Offset(0, 6)),
+        border: Border.all(color: theme.border),
+        boxShadow: [
+          BoxShadow(
+            color: theme.shadow,
+            blurRadius: 14,
+            offset: const Offset(0, 6),
+          ),
         ],
       ),
       child: Row(
@@ -321,13 +483,13 @@ class _SummaryHeader extends StatelessWidget {
             width: 46,
             height: 46,
             alignment: Alignment.center,
-            decoration: const BoxDecoration(
-              color: _kRedSoft,
+            decoration: BoxDecoration(
+              color: theme.accentSoft,
               shape: BoxShape.circle,
             ),
-            child: const Icon(
-              Icons.fact_check_outlined,
-              color: _kRed,
+            child: Icon(
+              theme.icon,
+              color: theme.accent,
               size: 22,
             ),
           ),
@@ -339,20 +501,20 @@ class _SummaryHeader extends StatelessWidget {
                 if (assessmentTitle != null && assessmentTitle!.trim().isNotEmpty)
                   Text(
                     assessmentTitle!,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: 'Poppins',
                       fontWeight: FontWeight.w700,
                       fontSize: 13,
-                      color: _kTextSecondary,
+                      color: theme.textSecondary,
                     ),
                   ),
                 Text(
                   t(context, 'Review Your Answers', 'Suriin ang Iyong mga Sagot'),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: 'Poppins',
                     fontWeight: FontWeight.w800,
                     fontSize: 15.5,
-                    color: _kTextPrimary,
+                    color: theme.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -362,11 +524,11 @@ class _SummaryHeader extends StatelessWidget {
                     '$correctCount out of $totalQuestions correct',
                     '$correctCount sa $totalQuestions ang tama',
                   ),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: 'Poppins',
                     fontWeight: FontWeight.w600,
                     fontSize: 12.5,
-                    color: _kTextSecondary,
+                    color: theme.textSecondary,
                   ),
                 ),
               ],
@@ -379,9 +541,10 @@ class _SummaryHeader extends StatelessWidget {
 }
 
 class _FeedbackCard extends StatelessWidget {
-  const _FeedbackCard({required this.item});
+  const _FeedbackCard({required this.item, required this.theme});
 
   final _FeedbackItem item;
+  final _ModuleTheme theme;
 
   @override
   Widget build(BuildContext context) {
@@ -422,11 +585,15 @@ class _FeedbackCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: _kSurface,
+        color: theme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: _kBorder),
-        boxShadow: const [
-          BoxShadow(color: _kShadow, blurRadius: 10, offset: Offset(0, 4)),
+        border: Border.all(color: theme.border),
+        boxShadow: [
+          BoxShadow(
+            color: theme.shadow,
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
         ],
       ),
       child: Column(
@@ -440,7 +607,7 @@ class _FeedbackCard extends StatelessWidget {
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: _kRedSoft,
+                  color: theme.accentSoft,
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
@@ -449,11 +616,11 @@ class _FeedbackCard extends StatelessWidget {
                     'Question ${item.questionNo}',
                     'Tanong ${item.questionNo}',
                   ),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: 'Poppins',
                     fontWeight: FontWeight.w800,
                     fontSize: 11.5,
-                    color: _kRed,
+                    color: theme.accent,
                   ),
                 ),
               ),
@@ -497,12 +664,12 @@ class _FeedbackCard extends StatelessWidget {
           const SizedBox(height: 10),
           Text(
             prompt,
-            style: const TextStyle(
+            style: TextStyle(
               fontFamily: 'Poppins',
               fontWeight: FontWeight.w700,
               fontSize: 14.5,
               height: 1.4,
-              color: _kTextPrimary,
+              color: theme.textPrimary,
             ),
           ),
           const SizedBox(height: 12),
@@ -511,6 +678,7 @@ class _FeedbackCard extends StatelessWidget {
             text: selectedText,
             color: statusColor,
             background: statusBg,
+            theme: theme,
           ),
           if (!item.isCorrect && correctText.isNotEmpty) ...[
             const SizedBox(height: 8),
@@ -519,6 +687,7 @@ class _FeedbackCard extends StatelessWidget {
               text: correctText,
               color: _kSuccess,
               background: _kSuccessSoft,
+              theme: theme,
             ),
           ],
           if (explanation.trim().isNotEmpty) ...[
@@ -527,16 +696,16 @@ class _FeedbackCard extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: _kBackground,
+                color: theme.background,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: _kBorder),
+                border: Border.all(color: theme.border),
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.lightbulb_outline_rounded,
-                    color: _kRed,
+                    color: theme.accent,
                     size: 17,
                   ),
                   const SizedBox(width: 8),
@@ -546,22 +715,22 @@ class _FeedbackCard extends StatelessWidget {
                       children: [
                         Text(
                           t(context, 'Explanation', 'Paliwanag'),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontFamily: 'Poppins',
                             fontWeight: FontWeight.w800,
                             fontSize: 12,
-                            color: _kTextPrimary,
+                            color: theme.textPrimary,
                           ),
                         ),
                         const SizedBox(height: 3),
                         Text(
                           explanation,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontFamily: 'Poppins',
                             fontWeight: FontWeight.w500,
                             fontSize: 12.5,
                             height: 1.45,
-                            color: _kTextSecondary,
+                            color: theme.textSecondary,
                           ),
                         ),
                       ],
@@ -583,12 +752,14 @@ class _AnswerBlock extends StatelessWidget {
     required this.text,
     required this.color,
     required this.background,
+    required this.theme,
   });
 
   final String label;
   final String text;
   final Color color;
   final Color background;
+  final _ModuleTheme theme;
 
   @override
   Widget build(BuildContext context) {
@@ -615,12 +786,12 @@ class _AnswerBlock extends StatelessWidget {
           const SizedBox(height: 2),
           Text(
             text,
-            style: const TextStyle(
+            style: TextStyle(
               fontFamily: 'Poppins',
               fontWeight: FontWeight.w600,
               fontSize: 13,
               height: 1.35,
-              color: _kTextPrimary,
+              color: theme.textPrimary,
             ),
           ),
         ],
