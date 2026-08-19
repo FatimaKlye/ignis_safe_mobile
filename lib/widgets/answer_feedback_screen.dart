@@ -201,6 +201,27 @@ class _FeedbackItem {
 /// Purely a display filter — it never touches the loaded data or the score.
 enum _ReviewFilter { all, correct, wrong }
 
+/// The learning-materials screen of the module a reviewed attempt belongs to,
+/// keyed by `modules.module_no` — the same mapping the Learning tab uses when
+/// a module card is opened. Returns null for a module the app has no built-in
+/// screen for, or when the module could not be resolved at all.
+Widget? _moduleLearningPage(int? moduleNo) {
+  switch (moduleNo) {
+    case 1:
+      return const m1.LearningMaterialExtinguisherPage();
+    case 2:
+      return const m2.LearningMaterialHousePage();
+    case 3:
+      return const m3.LearningMaterialElectricalPage();
+    case 4:
+      return const m4.LearningMaterialKitchenPage();
+    case 5:
+      return const m5.LearningMaterialTenementPage();
+    default:
+      return null;
+  }
+}
+
 /// Read-only Answer Feedback screen for a submitted Pre-Assessment attempt.
 ///
 /// Shown from the Pre-Assessment Score Result screen. Every question,
@@ -224,8 +245,8 @@ class AnswerFeedbackScreen extends StatefulWidget {
 
   /// Optional override for the "Back to Module" action at the end of the
   /// review. Left null by every current caller, in which case the button
-  /// leaves this screen exactly the way its back arrow already does — no
-  /// existing navigation flow is altered.
+  /// opens the learning-materials screen of the module the reviewed attempt
+  /// belongs to, bypassing the Score Result screen it was opened from.
   final VoidCallback? onBackToModule;
 
   @override
@@ -343,7 +364,24 @@ class _AnswerFeedbackScreenState extends State<AnswerFeedbackScreen> {
       override();
       return;
     }
-    Navigator.pop(context);
+
+    // Go straight to the module this attempt belongs to, resolved from the
+    // attempt's own `module_id` (see [_resolveAttemptContext]). Everything
+    // stacked on top of the app shell for this assessment run — the Score
+    // Result screen included — is dropped, so the module's learning-materials
+    // page sits directly on the shell exactly as it does when opened from the
+    // Learning tab. If the module cannot be resolved, the button falls back to
+    // its previous behaviour and simply leaves this screen.
+    final modulePage = _moduleLearningPage(_moduleNo);
+    if (modulePage == null) {
+      Navigator.pop(context);
+      return;
+    }
+
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => modulePage),
+      (route) => route.isFirst,
+    );
   }
 
   /// Resolves which module this attempt belongs to (so the screen can wear
