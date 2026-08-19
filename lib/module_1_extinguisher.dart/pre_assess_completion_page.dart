@@ -161,6 +161,7 @@ class PreAssessmentCompletionPage extends StatelessWidget {
                           builder: (_) => AnswerFeedbackScreen(
                             attemptId: attemptId,
                             assessmentTitle: assessmentTitle,
+                            moduleNo: 1,
                           ),
                         ),
                       ),

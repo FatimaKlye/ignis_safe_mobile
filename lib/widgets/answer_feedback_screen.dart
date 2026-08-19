@@ -230,18 +230,28 @@ Widget? _moduleLearningPage(int? moduleNo) {
 /// hardcoded and nothing on this screen can be edited.
 ///
 /// The screen's accents follow the theme of the module the attempt belongs to.
-/// That module is resolved from the attempt's own `module_id`, so a single
-/// screen serves every module.
+/// Callers that already know which module the review was opened from pass it
+/// as [moduleNo]; otherwise it is resolved from the attempt's own `module_id`.
+/// Either way, a single screen serves every module.
 class AnswerFeedbackScreen extends StatefulWidget {
   const AnswerFeedbackScreen({
     super.key,
     required this.attemptId,
     this.assessmentTitle,
+    this.moduleNo,
     this.onBackToModule,
   });
 
   final String attemptId;
   final String? assessmentTitle;
+
+  /// `modules.module_no` of the attempt being reviewed, when the caller
+  /// already knows it. Supplying it lets the header wear that module's own
+  /// theme — gradient, decorative circles, module chip, subtitle and icon —
+  /// from the very first frame, instead of falling back to the neutral theme
+  /// until the module lookup returns (or for good, if that lookup fails).
+  /// Left null, the module is resolved from Supabase exactly as before.
+  final int? moduleNo;
 
   /// Optional override for the "Back to Module" action at the end of the
   /// review. Left null by every current caller, in which case the button
@@ -260,6 +270,10 @@ class _AnswerFeedbackScreenState extends State<AnswerFeedbackScreen> {
   String? _error;
   List<_FeedbackItem> _items = const [];
   int _correctCount = 0;
+
+  /// Seeded from [AnswerFeedbackScreen.moduleNo] so the themed header is
+  /// already right on the first frame; the Supabase lookup only fills this in
+  /// when the caller did not supply a module.
   int? _moduleNo;
 
   /// `pre` / `post` from `assessments.type`, or null while unknown.
@@ -292,6 +306,7 @@ class _AnswerFeedbackScreenState extends State<AnswerFeedbackScreen> {
   @override
   void initState() {
     super.initState();
+    _moduleNo = widget.moduleNo;
     _scrollController.addListener(_handleScroll);
     _load();
   }
@@ -434,7 +449,9 @@ class _AnswerFeedbackScreenState extends State<AnswerFeedbackScreen> {
     final attemptContext = await _resolveAttemptContext();
     if (!mounted) return;
     setState(() {
-      _moduleNo = attemptContext['module_no'] as int?;
+      // A module supplied by the caller is never downgraded by a lookup that
+      // came back empty or failed, so the header keeps its module theme.
+      _moduleNo = (attemptContext['module_no'] as int?) ?? widget.moduleNo;
       _assessmentType = attemptContext['assessment_type'] as String?;
     });
 
