@@ -496,22 +496,23 @@ class _AboutUsPageState extends State<AboutUsPage> {
                       ),
                       const SizedBox(height: 14),
                       Container(
-                        height: 46,
-                        padding: const EdgeInsets.symmetric(horizontal: 14),
+                        height: 48,
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.circular(23),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: const Color(0xFFF0F0F0)),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.12),
-                              blurRadius: 12,
-                              offset: const Offset(0, 5),
+                              color: Colors.black.withOpacity(0.10),
+                              blurRadius: 14,
+                              offset: const Offset(0, 6),
                             ),
                           ],
                         ),
                         child: Row(
                           children: [
-                            const Icon(Icons.search, color: Colors.grey),
+                            const Icon(Icons.search_rounded, color: Colors.grey),
                             const SizedBox(width: 10),
                             Expanded(
                               child: TextField(
@@ -527,7 +528,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
                           ],
                         ),
                       ),
-                      const SizedBox(height: 22),
+                      const SizedBox(height: 16),
                       Expanded(
                         child: _buildAboutContent(
                           visible: visible,
@@ -604,23 +605,23 @@ class _AboutUsPageState extends State<AboutUsPage> {
               )
             else ...[
               if (aboutGroup.isNotEmpty) ...[
-                _SectionGroupHeader(
-                  text: t(context, 'ABOUT IGNIS SAFE', 'TUNGKOL SA IGNIS SAFE'),
+                _SectionGroup(
+                  icon: Icons.info_rounded,
+                  title: t(context, 'ABOUT IGNIS SAFE', 'TUNGKOL SA IGNIS SAFE'),
+                  children: _sectionCards(aboutGroup),
                 ),
-                const SizedBox(height: 8),
-                ..._sectionCards(aboutGroup),
               ],
               if (contactGroup.isNotEmpty) ...[
-                SizedBox(height: aboutGroup.isEmpty ? 0 : 18),
-                _SectionGroupHeader(
-                  text: t(
+                SizedBox(height: aboutGroup.isEmpty ? 0 : 16),
+                _SectionGroup(
+                  icon: Icons.shield_rounded,
+                  title: t(
                     context,
                     'SAFETY & CONTACT INFORMATION',
                     'KALIGTASAN AT IMPORMASYONG PANG-KONTAK',
                   ),
+                  children: _sectionCards(contactGroup),
                 ),
-                const SizedBox(height: 8),
-                ..._sectionCards(contactGroup),
               ],
             ],
           ],
@@ -721,25 +722,75 @@ class _IgnisSafeSectionContent extends StatelessWidget {
   }
 }
 
-/// Small uppercase label that groups the top-level About Us cards, replacing
-/// the old filter chips now that there are only two groups to distinguish.
-class _SectionGroupHeader extends StatelessWidget {
-  const _SectionGroupHeader({required this.text});
+/// Groups the top-level About Us cards inside a single soft container with an
+/// integrated header row, so each category reads as one cohesive section
+/// instead of a plain label floating above separate cards.
+class _SectionGroup extends StatelessWidget {
+  static const Color brandRed = Color(0xFFB11217);
 
-  final String text;
+  const _SectionGroup({
+    required this.icon,
+    required this.title,
+    required this.children,
+  });
+
+  final IconData icon;
+  final String title;
+  final List<Widget> children;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 2),
-      child: Text(
-        text,
-        style: const TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w800,
-          color: Color(0xFF8A8A8A),
-          letterSpacing: 1.0,
-        ),
+    return Container(
+      padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.55),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.white.withOpacity(0.7)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(11),
+                  gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [brandRed, Color(0xFFE65A5F)],
+                  ),
+                ),
+                child: Icon(icon, color: Colors.white, size: 17),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w800,
+                    color: Color(0xFF1E1E1E),
+                    letterSpacing: 0.6,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          ...children,
+        ],
       ),
     );
   }
