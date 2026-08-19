@@ -12,8 +12,6 @@ import 'login.dart';
 import 'widgets/main_tab_header.dart';
 import 'profile_refresh_notifier.dart';
 
-enum AboutFilter { all, about, bfpDasmarinas, contacts }
-
 const int _profileTabIndex = 2;
 
 class _NoOverscrollScrollBehavior extends ScrollBehavior {
@@ -50,7 +48,11 @@ class _AboutUsPageState extends State<AboutUsPage> {
   String _lastName = '';
   String? _avatarUrl;
   String _searchQuery = '';
-  AboutFilter _filter = AboutFilter.all;
+  // Only one top-level card is expanded at a time to keep the page short.
+  // `null` + `_allCollapsed == false` means "expand the first visible card"
+  // (the default state); `_allCollapsed` lets the user close every card.
+  String? _expandedSectionKey;
+  bool _allCollapsed = false;
   _AboutUsData? _aboutData;
   Object? _loadError;
   bool _loading = true;
@@ -398,42 +400,6 @@ class _AboutUsPageState extends State<AboutUsPage> {
 
   void _onSearchChanged(String v) => setState(() => _searchQuery = v);
 
-  Future<void> _openFilterMenu(BuildContext context) async {
-    final selected = await showMenu<AboutFilter>(
-      context: context,
-      position: const RelativeRect.fromLTRB(9999, 120, 16, 0),
-      items: [
-        PopupMenuItem(value: AboutFilter.all, child: Text(_ui(context, 'filter_all'))),
-        PopupMenuItem(value: AboutFilter.about, child: Text(_ui(context, 'filter_about'))),
-        PopupMenuItem(
-          value: AboutFilter.bfpDasmarinas,
-          child: Text(_ui(context, 'filter_partner')),
-        ),
-        PopupMenuItem(
-          value: AboutFilter.contacts,
-          child: Text(_ui(context, 'filter_contacts')),
-        ),
-      ],
-    );
-
-    if (selected != null && mounted) {
-      setState(() => _filter = selected);
-    }
-  }
-
-  bool _matchesFilter(_AboutSection s) {
-    switch (_filter) {
-      case AboutFilter.all:
-        return true;
-      case AboutFilter.about:
-        return s.type == _AboutSectionType.about;
-      case AboutFilter.bfpDasmarinas:
-        return s.type == _AboutSectionType.partner;
-      case AboutFilter.contacts:
-        return s.type == _AboutSectionType.contact;
-    }
-  }
-
   bool _matchesSearch(_AboutSection s, String q) {
     if (q.isEmpty) return true;
     return s.searchText.toLowerCase().contains(q);
@@ -482,9 +448,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
 
     final q = _searchQuery.trim().toLowerCase();
     final sections = _buildSections();
-    final visible = sections
-        .where((s) => _matchesFilter(s) && _matchesSearch(s, q))
-        .toList();
+    final visible = sections.where((s) => _matchesSearch(s, q)).toList();
     final fullName = '$_firstName $_lastName'.trim();
     final greeting = fullName.isEmpty
         ? _ui(context, 'greeting_guest')
@@ -531,13 +495,13 @@ class _AboutUsPageState extends State<AboutUsPage> {
                         onProfile: _goToProfile,
                         onLogout: _logout,
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 14),
                       Container(
-                        height: 50,
+                        height: 46,
                         padding: const EdgeInsets.symmetric(horizontal: 14),
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.circular(26),
+                          borderRadius: BorderRadius.circular(23),
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black.withOpacity(0.12),
@@ -561,25 +525,14 @@ class _AboutUsPageState extends State<AboutUsPage> {
                                 ),
                               ),
                             ),
-                            IconButton(
-                              tooltip: _ui(context, 'filter_label'),
-                              onPressed: () => _openFilterMenu(context),
-                              icon: Icon(
-                                Icons.filter_list_rounded,
-                                color: _filter == AboutFilter.all
-                                    ? const Color(0xFF9E9E9E)
-                                    : brandRed,
-                              ),
-                            ),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 14),
                       Expanded(
                         child: _buildAboutContent(
                           visible: visible,
                           horizontalPadding: 0,
-                          searchActive: q.isNotEmpty,
                         ),
                       ),
                     ],
@@ -593,11 +546,56 @@ class _AboutUsPageState extends State<AboutUsPage> {
     );
   }
 
+  /// The currently expanded section key: the user's explicit choice, or the
+  /// first visible card by default. `null` once the user has collapsed every
+  /// card on purpose.
+  String? _effectiveExpandedKey(List<_AboutSection> visible) {
+    if (_allCollapsed) return null;
+    return _expandedSectionKey ?? (visible.isEmpty ? null : visible.first.key);
+  }
+
+  void _toggleSection(_AboutSection section, List<_AboutSection> visible) {
+    setState(() {
+      final current = _effectiveExpandedKey(visible);
+      if (current == section.key) {
+        _expandedSectionKey = null;
+        _allCollapsed = true;
+      } else {
+        _expandedSectionKey = section.key;
+        _allCollapsed = false;
+      }
+    });
+  }
+
+  List<Widget> _sectionCards(List<_AboutSection> group, List<_AboutSection> visible) {
+    final expandedKey = _effectiveExpandedKey(visible);
+    return [
+      for (int index = 0; index < group.length; index++)
+        Padding(
+          padding: EdgeInsets.only(bottom: index == group.length - 1 ? 0 : 12),
+          child: _ExpandableSectionCard(
+            key: ValueKey(group[index].key),
+            icon: group[index].icon,
+            title: group[index].title,
+            subtitle: group[index].subtitle,
+            emphasized: group[index].key == 'emergency_contacts',
+            expanded: expandedKey == group[index].key,
+            onToggle: () => _toggleSection(group[index], visible),
+            child: group[index].builder(context),
+          ),
+        ),
+    ];
+  }
+
   Widget _buildAboutContent({
     required List<_AboutSection> visible,
     required double horizontalPadding,
-    required bool searchActive,
   }) {
+    final aboutGroup =
+        visible.where((s) => s.type != _AboutSectionType.contact).toList();
+    final contactGroup =
+        visible.where((s) => s.type == _AboutSectionType.contact).toList();
+
     return ScrollConfiguration(
       behavior: const _NoOverscrollScrollBehavior(),
       child: SingleChildScrollView(
@@ -618,26 +616,29 @@ class _AboutUsPageState extends State<AboutUsPage> {
                 title: _ui(context, 'empty_title'),
                 body: _ui(context, 'empty_body'),
                 resetLabel: _ui(context, 'reset'),
-                onClear: () => setState(() {
-                  _searchQuery = '';
-                  _filter = AboutFilter.all;
-                }),
+                onClear: () => setState(() => _searchQuery = ''),
               )
-            else
-              for (int index = 0; index < visible.length; index++)
-                Padding(
-                  padding: EdgeInsets.only(
-                    bottom: index == visible.length - 1 ? 0 : 14,
-                  ),
-                  child: _ExpandableSectionCard(
-                    key: ValueKey(visible[index].key),
-                    icon: visible[index].icon,
-                    title: visible[index].title,
-                    subtitle: visible[index].subtitle,
-                    initiallyExpanded: searchActive || index == 0,
-                    child: visible[index].builder(context),
+            else ...[
+              if (aboutGroup.isNotEmpty) ...[
+                _SectionGroupHeader(
+                  text: t(context, 'ABOUT IGNIS SAFE', 'TUNGKOL SA IGNIS SAFE'),
+                ),
+                const SizedBox(height: 8),
+                ..._sectionCards(aboutGroup, visible),
+              ],
+              if (contactGroup.isNotEmpty) ...[
+                SizedBox(height: aboutGroup.isEmpty ? 0 : 18),
+                _SectionGroupHeader(
+                  text: t(
+                    context,
+                    'SAFETY & CONTACT INFORMATION',
+                    'KALIGTASAN AT IMPORMASYONG PANG-KONTAK',
                   ),
                 ),
+                const SizedBox(height: 8),
+                ..._sectionCards(contactGroup, visible),
+              ],
+            ],
           ],
         ),
       ),
@@ -736,14 +737,42 @@ class _IgnisSafeSectionContent extends StatelessWidget {
   }
 }
 
-class _ExpandableSectionCard extends StatefulWidget {
+/// Small uppercase label that groups the top-level About Us cards, replacing
+/// the old filter chips now that there are only two groups to distinguish.
+class _SectionGroupHeader extends StatelessWidget {
+  const _SectionGroupHeader({required this.text});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 2),
+      child: Text(
+        text,
+        style: const TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w800,
+          color: Color(0xFF8A8A8A),
+          letterSpacing: 1.0,
+        ),
+      ),
+    );
+  }
+}
+
+/// Expand state is owned by the parent so only one of these cards is open at
+/// a time; the whole header (not just the chevron) is the tap target.
+class _ExpandableSectionCard extends StatelessWidget {
   static const Color brandRed = Color(0xFFB11217);
 
   final IconData icon;
   final String title;
   final String subtitle;
   final Widget child;
-  final bool initiallyExpanded;
+  final bool expanded;
+  final VoidCallback onToggle;
+  final bool emphasized;
 
   const _ExpandableSectionCard({
     super.key,
@@ -751,39 +780,38 @@ class _ExpandableSectionCard extends StatefulWidget {
     required this.title,
     required this.subtitle,
     required this.child,
-    this.initiallyExpanded = false,
+    required this.expanded,
+    required this.onToggle,
+    this.emphasized = false,
   });
 
   @override
-  State<_ExpandableSectionCard> createState() => _ExpandableSectionCardState();
-}
-
-class _ExpandableSectionCardState extends State<_ExpandableSectionCard> {
-  late bool _expanded = widget.initiallyExpanded;
-
-  void _toggle() => setState(() => _expanded = !_expanded);
-
-  @override
   Widget build(BuildContext context) {
+    final highlighted = expanded || emphasized;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         InkWell(
           borderRadius: BorderRadius.circular(18),
-          onTap: _toggle,
+          onTap: onToggle,
           child: Container(
-            padding: const EdgeInsets.all(14),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(18),
               border: Border.all(
-                color: _expanded
-                    ? _ExpandableSectionCard.brandRed.withOpacity(0.35)
-                    : const Color(0xFFF0F0F0),
+                color: expanded
+                    ? brandRed.withOpacity(0.35)
+                    : emphasized
+                        ? brandRed.withOpacity(0.22)
+                        : const Color(0xFFF0F0F0),
+                width: emphasized && !expanded ? 1.3 : 1,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.08),
+                  color: (emphasized ? brandRed : Colors.black)
+                      .withOpacity(emphasized ? 0.10 : 0.08),
                   blurRadius: 14,
                   offset: const Offset(0, 6),
                 ),
@@ -793,36 +821,31 @@ class _ExpandableSectionCardState extends State<_ExpandableSectionCard> {
               children: [
                 AnimatedContainer(
                   duration: const Duration(milliseconds: 220),
-                  width: 42,
-                  height: 42,
+                  width: 38,
+                  height: 38,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(13),
+                    borderRadius: BorderRadius.circular(12),
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
-                      colors: _expanded
-                          ? const [
-                              _ExpandableSectionCard.brandRed,
-                              Color(0xFFE65A5F),
-                            ]
+                      colors: highlighted
+                          ? const [brandRed, Color(0xFFE65A5F)]
                           : const [Color(0xFFF3F3F3), Color(0xFFECECEC)],
                     ),
                   ),
                   child: Icon(
-                    widget.icon,
-                    color: _expanded
-                        ? Colors.white
-                        : _ExpandableSectionCard.brandRed,
-                    size: 21,
+                    icon,
+                    color: highlighted ? Colors.white : brandRed,
+                    size: 20,
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 11),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        widget.title,
+                        title,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
@@ -833,7 +856,7 @@ class _ExpandableSectionCardState extends State<_ExpandableSectionCard> {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        widget.subtitle,
+                        subtitle,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
@@ -847,13 +870,11 @@ class _ExpandableSectionCardState extends State<_ExpandableSectionCard> {
                 ),
                 const SizedBox(width: 8),
                 AnimatedRotation(
-                  turns: _expanded ? 0.5 : 0,
+                  turns: expanded ? 0.5 : 0,
                   duration: const Duration(milliseconds: 220),
                   child: Icon(
                     Icons.keyboard_arrow_down_rounded,
-                    color: _expanded
-                        ? _ExpandableSectionCard.brandRed
-                        : const Color(0xFF9E9E9E),
+                    color: highlighted ? brandRed : const Color(0xFF9E9E9E),
                   ),
                 ),
               ],
@@ -864,10 +885,10 @@ class _ExpandableSectionCardState extends State<_ExpandableSectionCard> {
           duration: const Duration(milliseconds: 220),
           curve: Curves.easeInOut,
           alignment: Alignment.topCenter,
-          child: _expanded
+          child: expanded
               ? Padding(
-                  padding: const EdgeInsets.only(top: 12),
-                  child: widget.child,
+                  padding: const EdgeInsets.only(top: 10),
+                  child: child,
                 )
               : const SizedBox.shrink(),
         ),
