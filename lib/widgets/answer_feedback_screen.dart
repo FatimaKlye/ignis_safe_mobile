@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../localization/app_text.dart';
 import '../localization/language_controller.dart';
 import '../localization/localized_db_text.dart';
 import '../module_1_extinguisher.dart/module_1_learningmaterials.dart' as m1;
@@ -34,6 +35,10 @@ class _ModuleTheme {
     required this.shadow,
     required this.textPrimary,
     required this.textSecondary,
+    required this.gradientDeep,
+    required this.gradientDark,
+    required this.gradientBase,
+    required this.onGradient,
     required this.icon,
   });
 
@@ -45,6 +50,15 @@ class _ModuleTheme {
   final Color shadow;
   final Color textPrimary;
   final Color textSecondary;
+
+  /// The three stops of the module's header gradient, in the same order the
+  /// Pre-Assessment Introduction screen paints them (deep -> dark -> base).
+  final Color gradientDeep;
+  final Color gradientDark;
+  final Color gradientBase;
+
+  /// Foreground color that reads on top of the gradient header.
+  final Color onGradient;
 
   /// Module-specific accent icon (fire extinguisher, house, ...).
   final IconData icon;
@@ -61,6 +75,10 @@ class _ModuleTheme {
     shadow: _kModule1Shadow,
     textPrimary: m1.AppColors.textPrimary,
     textSecondary: m1.AppColors.textSecondary,
+    gradientDeep: m1.AppColors.brandRedDeep,
+    gradientDark: m1.AppColors.brandRedDark,
+    gradientBase: m1.AppColors.brandRed,
+    onGradient: m1.AppColors.textOnRed,
     icon: Icons.fact_check_outlined,
   );
 
@@ -78,6 +96,10 @@ class _ModuleTheme {
           shadow: _kModule1Shadow,
           textPrimary: m1.AppColors.textPrimary,
           textSecondary: m1.AppColors.textSecondary,
+          gradientDeep: m1.AppColors.brandRedDeep,
+          gradientDark: m1.AppColors.brandRedDark,
+          gradientBase: m1.AppColors.brandRed,
+          onGradient: m1.AppColors.textOnRed,
           icon: Icons.fire_extinguisher_rounded,
         );
       case 2:
@@ -90,6 +112,10 @@ class _ModuleTheme {
           shadow: m2.AppColors.shadow,
           textPrimary: m2.AppColors.textPrimary,
           textSecondary: m2.AppColors.textSecondary,
+          gradientDeep: m2.AppColors.brandRedDeep,
+          gradientDark: m2.AppColors.brandRedDark,
+          gradientBase: m2.AppColors.brandRed,
+          onGradient: m2.AppColors.textOnRed,
           icon: Icons.home_rounded,
         );
       case 3:
@@ -102,6 +128,10 @@ class _ModuleTheme {
           shadow: m3.AppColors.shadow,
           textPrimary: m3.AppColors.textPrimary,
           textSecondary: m3.AppColors.textSecondary,
+          gradientDeep: m3.AppColors.brandRedDeep,
+          gradientDark: m3.AppColors.brandRedDark,
+          gradientBase: m3.AppColors.brandRed,
+          onGradient: m3.AppColors.textOnRed,
           icon: Icons.electrical_services_rounded,
         );
       case 4:
@@ -114,6 +144,10 @@ class _ModuleTheme {
           shadow: m4.AppColors.shadow,
           textPrimary: m4.AppColors.textPrimary,
           textSecondary: m4.AppColors.textSecondary,
+          gradientDeep: m4.AppColors.brandRedDeep,
+          gradientDark: m4.AppColors.brandRedDark,
+          gradientBase: m4.AppColors.brandRed,
+          onGradient: m4.AppColors.textOnRed,
           icon: Icons.restaurant_rounded,
         );
       case 5:
@@ -126,6 +160,10 @@ class _ModuleTheme {
           shadow: m5.AppColors.shadow,
           textPrimary: m5.AppColors.textPrimary,
           textSecondary: m5.AppColors.textSecondary,
+          gradientDeep: m5.AppColors.brandRedDeep,
+          gradientDark: m5.AppColors.brandRedDark,
+          gradientBase: m5.AppColors.brandRed,
+          onGradient: m5.AppColors.textOnRed,
           icon: Icons.apartment_rounded,
         );
       default:
@@ -346,23 +384,35 @@ class _AnswerFeedbackScreenState extends State<AnswerFeedbackScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = _theme;
+
+    // The summary card only rides on the header once there is a real,
+    // Supabase-backed score to put in it.
+    final hasFeedback = !_isLoading && _error == null && _items.isNotEmpty;
+
     return Scaffold(
       backgroundColor: theme.background,
-      appBar: AppBar(
-        backgroundColor: theme.background,
-        elevation: 0,
-        foregroundColor: theme.textPrimary,
-        title: Text(
-          t(context, 'Answer Feedback', 'Paliwanag sa Sagot'),
-          style: TextStyle(
-            fontFamily: 'Poppins',
-            fontWeight: FontWeight.w800,
-            fontSize: 17,
-            color: theme.textPrimary,
+      body: Column(
+        children: [
+          _FeedbackGradientHeader(
+            theme: theme,
+            moduleNo: _moduleNo,
+            summaryCard: hasFeedback
+                ? _SummaryHeader(
+                    correctCount: _correctCount,
+                    totalQuestions: _items.length,
+                    assessmentTitle: widget.assessmentTitle,
+                    theme: theme,
+                  )
+                : null,
           ),
-        ),
+          Expanded(
+            child: SafeArea(
+              top: false,
+              child: _buildBody(context, theme),
+            ),
+          ),
+        ],
       ),
-      body: SafeArea(child: _buildBody(context, theme)),
     );
   }
 
@@ -429,15 +479,8 @@ class _AnswerFeedbackScreenState extends State<AnswerFeedbackScreen> {
     }
 
     return ListView(
-      padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
+      padding: const EdgeInsets.fromLTRB(20, 18, 20, 28),
       children: [
-        _SummaryHeader(
-          correctCount: _correctCount,
-          totalQuestions: _items.length,
-          assessmentTitle: widget.assessmentTitle,
-          theme: theme,
-        ),
-        const SizedBox(height: 18),
         for (final item in _items) ...[
           _FeedbackCard(item: item, theme: theme),
           const SizedBox(height: 14),
@@ -447,6 +490,253 @@ class _AnswerFeedbackScreenState extends State<AnswerFeedbackScreen> {
   }
 }
 
+/// Full-width themed header for the Answer Feedback screen.
+///
+/// The visual structure is lifted from the Pre-Assessment Introduction screen
+/// (`_IntroGradientHeader` in `module_*/pre_assess_instruction.dart`): the same
+/// three-stop diagonal gradient, the same 34px bottom radius, the same
+/// translucent decorative circles, the same circular icon button and module
+/// chip row, and the same strong centered title over a lighter subtitle.
+/// Only the wording is this screen's own.
+///
+/// Every color comes from [theme], so the header follows the module the
+/// reviewed attempt belongs to.
+class _FeedbackGradientHeader extends StatelessWidget {
+  const _FeedbackGradientHeader({
+    required this.theme,
+    required this.moduleNo,
+    required this.summaryCard,
+  });
+
+  final _ModuleTheme theme;
+
+  /// Null while the attempt's module is still unknown; the badge and the
+  /// module subtitle are then left out rather than guessed.
+  final int? moduleNo;
+
+  /// The white summary card that overlaps the bottom of the header, or null
+  /// while there is no score to show (loading, error, empty).
+  final Widget? summaryCard;
+
+  /// How far the summary card hangs below the gradient.
+  static const double _cardOverhang = 62;
+
+  @override
+  Widget build(BuildContext context) {
+    final hasCard = summaryCard != null;
+
+    final gradient = Container(
+      width: double.infinity,
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            theme.gradientDeep,
+            theme.gradientDark,
+            theme.gradientBase,
+          ],
+        ),
+        borderRadius: const BorderRadius.only(
+          bottomLeft: Radius.circular(34),
+          bottomRight: Radius.circular(34),
+        ),
+      ),
+      child: Stack(
+        children: [
+          Positioned(
+            right: -34,
+            top: 18,
+            child: _GlowCircle(
+              size: 140,
+              opacity: 0.18,
+              color: theme.onGradient,
+            ),
+          ),
+          Positioned(
+            left: -42,
+            top: 112,
+            child: _GlowCircle(
+              size: 120,
+              opacity: 0.14,
+              color: theme.onGradient,
+            ),
+          ),
+          SafeArea(
+            bottom: false,
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(18, 6, 18, hasCard ? 74 : 28),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    children: [
+                      _CircleIconButton(
+                        icon: Icons.arrow_back_rounded,
+                        color: theme.onGradient,
+                        onTap: () => Navigator.pop(context),
+                      ),
+                      const Spacer(),
+                      if (moduleNo != null)
+                        _ModuleBadge(theme: theme, moduleNo: moduleNo!),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    t(context, 'Answer Feedback', 'Paliwanag sa Sagot'),
+                    textAlign: TextAlign.center,
+                    softWrap: true,
+                    style: TextStyle(
+                      color: theme.onGradient,
+                      fontFamily: 'Poppins',
+                      fontSize: 29,
+                      height: 1.08,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: -0.4,
+                    ),
+                  ),
+                  if (moduleNo != null) ...[
+                    const SizedBox(height: 7),
+                    Text(
+                      context.tr('module_${moduleNo}_full_header'),
+                      textAlign: TextAlign.center,
+                      softWrap: true,
+                      style: TextStyle(
+                        color: theme.onGradient.withValues(alpha: 0.88),
+                        fontFamily: 'Poppins',
+                        fontSize: 13.5,
+                        height: 1.32,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (!hasCard) return gradient;
+
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [gradient, const SizedBox(height: _cardOverhang)],
+        ),
+        Positioned(
+          left: 20,
+          right: 20,
+          bottom: 0,
+          child: summaryCard!,
+        ),
+      ],
+    );
+  }
+}
+
+/// Translucent decorative circle, matching the intro screen's `_GlowCircle`.
+class _GlowCircle extends StatelessWidget {
+  const _GlowCircle({
+    required this.size,
+    required this.opacity,
+    required this.color,
+  });
+
+  final double size;
+  final double opacity;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: opacity),
+        shape: BoxShape.circle,
+      ),
+    );
+  }
+}
+
+/// Circular translucent action button, matching the intro screen's
+/// `_CircleIconButton`. Navigation behaviour is unchanged — it simply pops.
+class _CircleIconButton extends StatelessWidget {
+  const _CircleIconButton({
+    required this.icon,
+    required this.color,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final Color color;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(999),
+      child: Container(
+        width: 42,
+        height: 42,
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.18),
+          shape: BoxShape.circle,
+          border: Border.all(color: color.withValues(alpha: 0.24)),
+        ),
+        child: Icon(icon, color: color, size: 22),
+      ),
+    );
+  }
+}
+
+/// "MODULE n" chip sitting in the header, matching the intro screen's badge.
+class _ModuleBadge extends StatelessWidget {
+  const _ModuleBadge({required this.theme, required this.moduleNo});
+
+  final _ModuleTheme theme;
+  final int moduleNo;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: theme.onGradient.withValues(alpha: 0.18),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: theme.onGradient.withValues(alpha: 0.22)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(theme.icon, color: theme.onGradient, size: 16),
+          const SizedBox(width: 6),
+          Text(
+            context.tr('module_$moduleNo'),
+            softWrap: false,
+            style: TextStyle(
+              color: theme.onGradient,
+              fontFamily: 'Poppins',
+              fontSize: 12.5,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Rounded white summary card that overlaps the gradient header, styled after
+/// the Pre-Assessment Introduction screen's `_AssessmentIntroCard`: generous
+/// corner radius, soft deep shadow, and a gradient rounded-square icon tile.
+/// The wording stays this screen's own.
 class _SummaryHeader extends StatelessWidget {
   const _SummaryHeader({
     required this.correctCount,
@@ -462,73 +752,97 @@ class _SummaryHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final title = assessmentTitle?.trim() ?? '';
+
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: theme.surface,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: theme.border),
+        borderRadius: BorderRadius.circular(26),
         boxShadow: [
           BoxShadow(
             color: theme.shadow,
-            blurRadius: 14,
-            offset: const Offset(0, 6),
+            blurRadius: 30,
+            offset: const Offset(0, 16),
           ),
         ],
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 46,
-            height: 46,
+            width: 52,
+            height: 52,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: theme.accentSoft,
-              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [theme.gradientBase, theme.gradientDark],
+              ),
+              borderRadius: BorderRadius.circular(18),
+              boxShadow: [
+                BoxShadow(
+                  color: theme.accent.withValues(alpha: 0.25),
+                  blurRadius: 16,
+                  offset: const Offset(0, 8),
+                ),
+              ],
             ),
-            child: Icon(
-              theme.icon,
-              color: theme.accent,
-              size: 22,
-            ),
+            child: Icon(theme.icon, color: theme.onGradient, size: 26),
           ),
-          const SizedBox(width: 14),
+          const SizedBox(width: 13),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (assessmentTitle != null && assessmentTitle!.trim().isNotEmpty)
+                if (title.isNotEmpty) ...[
                   Text(
-                    assessmentTitle!,
+                    title,
                     style: TextStyle(
                       fontFamily: 'Poppins',
                       fontWeight: FontWeight.w700,
-                      fontSize: 13,
-                      color: theme.textSecondary,
+                      fontSize: 12,
+                      height: 1.25,
+                      letterSpacing: 0.2,
+                      color: theme.accent,
                     ),
                   ),
+                  const SizedBox(height: 3),
+                ],
                 Text(
                   t(context, 'Review Your Answers', 'Suriin ang Iyong mga Sagot'),
                   style: TextStyle(
                     fontFamily: 'Poppins',
-                    fontWeight: FontWeight.w800,
-                    fontSize: 15.5,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 16.5,
+                    height: 1.15,
                     color: theme.textPrimary,
                   ),
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  t(
-                    context,
-                    '$correctCount out of $totalQuestions correct',
-                    '$correctCount sa $totalQuestions ang tama',
+                const SizedBox(height: 7),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
                   ),
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.w600,
-                    fontSize: 12.5,
-                    color: theme.textSecondary,
+                  decoration: BoxDecoration(
+                    color: theme.accentSoft,
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Text(
+                    t(
+                      context,
+                      '$correctCount out of $totalQuestions correct',
+                      '$correctCount sa $totalQuestions ang tama',
+                    ),
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.w800,
+                      fontSize: 12,
+                      color: theme.accent,
+                    ),
                   ),
                 ),
               ],
