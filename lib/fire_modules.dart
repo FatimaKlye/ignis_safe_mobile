@@ -6,6 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'login.dart';
 import 'localization/app_text.dart';
+import 'module_progress_refresh_notifier.dart';
 import 'profile_refresh_notifier.dart';
 
 import 'module_1_extinguisher.dart/pre_assess_instruction.dart' as pre1;
@@ -107,10 +108,19 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
   void initState() {
     super.initState();
     profileRefreshNotifier.addListener(_handleProfileChanged);
+    moduleProgressRefreshNotifier.addListener(_handleModuleProgressChanged);
     _initializePage();
   }
 
   void _handleProfileChanged() => _loadProfile();
+
+  /// Re-reads saved module progress after another screen wrote it — notably
+  /// when a finished Pre-Assessment is confirmed saved on the Score Result
+  /// screen — so this tab does not keep showing the pre-write state.
+  void _handleModuleProgressChanged() {
+    if (!mounted) return;
+    _loadModuleProgressFromDatabase();
+  }
 
   Future<void> _initializePage() async {
     await _loadProfile();
@@ -146,6 +156,7 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
   @override
   void dispose() {
     profileRefreshNotifier.removeListener(_handleProfileChanged);
+    moduleProgressRefreshNotifier.removeListener(_handleModuleProgressChanged);
     _moduleProgressChannel?.unsubscribe();
     super.dispose();
   }

@@ -4,6 +4,7 @@ import '../localization/language_controller.dart';
 import '../learning_materials.dart';
 import '../widgets/answer_feedback_screen.dart';
 import '../widgets/score_result_action_buttons.dart';
+import '../widgets/score_result_close_button.dart';
 import 'module_3_learningmaterials.dart' as electrical_lm;
 
 const Color kElectricalBlue = Color(0xFF2563EB);
@@ -193,8 +194,13 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
               child: Align(
                 alignment: Alignment.topLeft,
-                child: _CloseIconButton(
-                  onTap: () => _closeToLearningMaterials(context),
+                child: ScoreResultCloseButton(
+                  moduleNo: 3,
+                  attemptId: attemptId,
+                  iconColor: AppColors.brandRed,
+                  backgroundColor: AppColors.surface,
+                  borderColor: AppColors.border,
+                  shadowColor: AppColors.shadow,
                 ),
               ),
             ),
@@ -202,10 +208,6 @@ class PreAssessmentCompletionPage1 extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  void _closeToLearningMaterials(BuildContext context) {
-    Navigator.of(context).popUntil((route) => route.isFirst);
   }
 }
 
@@ -399,42 +401,6 @@ class _InfoChip extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _CloseIconButton extends StatelessWidget {
-  const _CloseIconButton({required this.onTap});
-
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(999),
-      child: Container(
-        width: 40,
-        height: 40,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          shape: BoxShape.circle,
-          border: Border.all(color: AppColors.border),
-          boxShadow: const [
-            BoxShadow(
-              color: AppColors.shadow,
-              blurRadius: 10,
-              offset: Offset(0, 4),
-            ),
-          ],
-        ),
-        child: const Icon(
-          Icons.close_rounded,
-          color: AppColors.brandRed,
-          size: 22,
-        ),
       ),
     );
   }

@@ -11,6 +11,7 @@ import 'app_content_refresh.dart';
 import 'localization/app_text.dart';
 import 'widgets/app_notification.dart';
 import 'widgets/main_tab_header.dart';
+import 'module_progress_refresh_notifier.dart';
 import 'profile_refresh_notifier.dart';
 import 'module_progress_overview_service.dart';
 
@@ -166,6 +167,7 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
   void initState() {
     super.initState();
     profileRefreshNotifier.addListener(_handleProfileChanged);
+    moduleProgressRefreshNotifier.addListener(_handleModuleProgressChanged);
     AppContentRefreshRegistry.register(this, _handleAppContentRefresh);
     _loadProfile();
     _loadModules();
@@ -176,6 +178,7 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
   @override
   void dispose() {
     profileRefreshNotifier.removeListener(_handleProfileChanged);
+    moduleProgressRefreshNotifier.removeListener(_handleModuleProgressChanged);
     AppContentRefreshRegistry.unregister(this);
     _progressRefreshDebounce?.cancel();
     final c = _channel;
@@ -184,6 +187,33 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
   }
 
   void _handleProfileChanged() => _loadProfile();
+
+  /// Re-reads the learner's saved module progress after another screen wrote
+  /// it — notably when a finished Pre-Assessment is confirmed saved on the
+  /// Score Result screen — so the pre-test shows as completed and the
+  /// Learning Materials unlock without waiting for a manual refresh.
+  void _handleModuleProgressChanged() {
+    _refreshProgressAfterExternalWrite();
+  }
+
+  /// Always ends with a read that *started* after the write that triggered it,
+  /// so a refresh already in flight when the write landed cannot leave the tab
+  /// showing the pre-write state.
+  Future<void> _refreshProgressAfterExternalWrite() async {
+    if (!mounted) return;
+
+    final inFlight = _progressRefreshInFlight;
+    if (inFlight != null) {
+      try {
+        await inFlight;
+      } catch (_) {
+        // Surfaced by the refresh itself; a fresh read follows either way.
+      }
+      if (!mounted) return;
+    }
+
+    await _loadAllTrackedProgress();
+  }
 
   /// Backs the header menu's "Refresh & Check Updates" action for this tab:
   /// re-reads the module list, the learner's progress and the header profile

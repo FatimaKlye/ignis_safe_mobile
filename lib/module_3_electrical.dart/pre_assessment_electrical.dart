@@ -8,6 +8,7 @@ import '../localization/language_controller.dart';
 import 'pre_assess_completion_page.dart';
 import 'pre_assess_instruction.dart';
 import 'module_progression_service.dart';
+import '../module_progress_refresh_notifier.dart';
 import '../profile_progress_sync.dart';
 import '../widgets/assessment_nav_buttons.dart';
 
@@ -932,6 +933,72 @@ class _PreAssessmentElectricalPageState
     );
   }
 
+  /// Persists a finished Pre-Assessment and proves it landed, before the
+  /// Score Result screen is shown.
+  ///
+  /// Both writes read their row back: a PostgREST write that matches no row
+  /// still succeeds, so without the read-back a rejected write would look
+  /// exactly like a saved completion. The module progress write is a single
+  /// upsert on the (user_id, module_id) unique key, so repeated submits can
+  /// never leave a duplicate progress record behind.
+  Future<void> _saveSubmittedPreTest({
+    required String submittedAt,
+    required num scorePercent,
+    required int correctCount,
+  }) async {
+    final submittedAttempt = await _supabase
+        .from('assessment_attempts')
+        .update({
+          'submitted_at': submittedAt,
+          'status': 'submitted',
+          'correct_count': correctCount,
+          'total_questions': _questions.length,
+          'score': scorePercent,
+        })
+        .eq('id', _attemptId!)
+        .select('id')
+        .maybeSingle();
+
+    if (submittedAttempt == null) {
+      throw Exception(
+        'Your attempt could not be marked as submitted, so nothing was saved. '
+        'Please check your connection and try again.',
+      );
+    }
+
+    final savedProgress = await _supabase
+        .from('module_progress')
+        .upsert({
+          'user_id': _user.id,
+          'module_id': _moduleId,
+          'pre_test_completed_at': submittedAt,
+          'pre_test_attempt_id': _attemptId,
+          'pre_test_score': scorePercent,
+          'pre_test_correct_count': correctCount,
+          'pre_test_total_questions': _questions.length,
+          'updated_at': submittedAt,
+        }, onConflict: 'user_id,module_id')
+        .select(
+          'id, pre_test_completed_at, pre_test_attempt_id, pre_test_score',
+        )
+        .maybeSingle();
+
+    if (savedProgress == null ||
+        savedProgress['pre_test_completed_at'] == null ||
+        savedProgress['pre_test_score'] == null ||
+        savedProgress['pre_test_attempt_id']?.toString() != _attemptId) {
+      throw Exception(
+        'Your Pre-Assessment result was not saved to your module progress. '
+        'Please check your connection and try again.',
+      );
+    }
+
+    // The completion is stored and verified before the Score Result screen is
+    // shown, so leaving that screen by X, Continue, Answer Feedback or back
+    // can no longer lose it.
+    notifyModuleProgressChanged();
+  }
+
   Future<void> _submitAssessment({
     bool forceSubmit = false,
     bool dueToTimeUp = false,
@@ -1005,42 +1072,11 @@ class _PreAssessmentElectricalPageState
 
       final submittedAt = DateTime.now().toUtc().toIso8601String();
 
-      await _supabase.from('assessment_attempts').update({
-        'submitted_at': submittedAt,
-        'status': 'submitted',
-        'total_questions': _questions.length,
-        'correct_count': correctCount,
-        'score': scorePercent,
-      }).eq('id', _attemptId!);
-
-      final progressRow = await _supabase
-          .from('module_progress')
-          .select('id')
-          .eq('user_id', _user.id)
-          .eq('module_id', _moduleId!)
-          .maybeSingle();
-
-      final progressPayload = {
-        'pre_test_completed_at': submittedAt,
-        'pre_test_attempt_id': _attemptId,
-        'pre_test_score': scorePercent,
-        'pre_test_correct_count': correctCount,
-        'pre_test_total_questions': _questions.length,
-        'updated_at': submittedAt,
-      };
-
-      if (progressRow == null) {
-        await _supabase.from('module_progress').insert({
-          'user_id': _user.id,
-          'module_id': _moduleId,
-          ...progressPayload,
-        });
-      } else {
-        await _supabase
-            .from('module_progress')
-            .update(progressPayload)
-            .eq('id', progressRow['id']);
-      }
+      await _saveSubmittedPreTest(
+        submittedAt: submittedAt,
+        scorePercent: scorePercent,
+        correctCount: correctCount,
+      );
 
       await ProfileProgressSync.syncCompletedSimulations();
 
