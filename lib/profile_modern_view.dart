@@ -3,12 +3,21 @@ part of 'profile.dart';
 Widget _buildModernProfileView(_ProfilePageState state, BuildContext context) {
   const brandRed = Color(0xFFB11217);
   final avatarImage = state._getAvatarImage();
-  final completedCount =
+  final trainingCompletedCount =
+      int.tryParse(state._completedTrainingModules.split('/').first.trim()) ??
+      0;
+  final simulationCompletedCount =
       int.tryParse(state._completedSimulations.split('/').first.trim()) ?? 0;
-  final progress = (completedCount / _ProfilePageState._totalSimulations).clamp(
-    0.0,
-    1.0,
-  );
+  final trainingProgress =
+      (trainingCompletedCount / _ProfilePageState._totalSimulations).clamp(
+        0.0,
+        1.0,
+      );
+  final simulationProgress =
+      (simulationCompletedCount / _ProfilePageState._totalSimulations).clamp(
+        0.0,
+        1.0,
+      );
 
   Future<void> openEditProfile() => state._openModernEditProfile(context);
 
@@ -113,8 +122,11 @@ Widget _buildModernProfileView(_ProfilePageState state, BuildContext context) {
                             isLoading: state._isLoadingProfile,
                             displayName: state._displayName,
                             email: state._email,
-                            completedText: state._completedSimulations,
-                            progress: progress,
+                            completedText: state._completedTrainingModules,
+                            progress: trainingProgress,
+                            simulationCompletedText:
+                                state._completedSimulations,
+                            simulationProgress: simulationProgress,
                             lastSimulation: state._lastSimulation,
                             onEdit: openEditProfile,
                             accountLabel: state._t(
@@ -129,8 +141,13 @@ Widget _buildModernProfileView(_ProfilePageState state, BuildContext context) {
                             ),
                             completedLabel: state._t(
                               context,
-                              'simulations completed',
-                              'simulation ang natapos',
+                              'modules completed',
+                              'modyul ang natapos',
+                            ),
+                            simulationLabel: state._t(
+                              context,
+                              'Simulations completed',
+                              'Mga simulation na natapos',
                             ),
                             recentLabel: state._t(
                               context,
@@ -194,6 +211,23 @@ Widget _buildModernProfileView(_ProfilePageState state, BuildContext context) {
                               const _ModernProfileActionDivider(),
                               _ModernProfileActionTile(
                                 compact: compactHeight,
+                                icon: Icons.star_rate_rounded,
+                                title: state._t(
+                                  context,
+                                  'Feedback',
+                                  'Feedback',
+                                ),
+                                subtitle: state._t(
+                                  context,
+                                  'Rate your experience and share suggestions',
+                                  'I-rate ang iyong karanasan at magbahagi ng mungkahi',
+                                ),
+                                color: const Color(0xFF142D57),
+                                onTap: () => showFeedbackDialog(context),
+                              ),
+                              const _ModernProfileActionDivider(),
+                              _ModernProfileActionTile(
+                                compact: compactHeight,
                                 icon: Icons.logout_rounded,
                                 title: state._isLoggingOut
                                     ? state._t(
@@ -216,23 +250,6 @@ Widget _buildModernProfileView(_ProfilePageState state, BuildContext context) {
                                     ? null
                                     : state._logout,
                                 showChevron: false,
-                              ),
-                              const _ModernProfileActionDivider(),
-                              _ModernProfileActionTile(
-                                compact: compactHeight,
-                                icon: Icons.star_rate_rounded,
-                                title: state._t(
-                                  context,
-                                  'Feedback',
-                                  'Feedback',
-                                ),
-                                subtitle: state._t(
-                                  context,
-                                  'Rate your experience and share suggestions',
-                                  'I-rate ang iyong karanasan at magbahagi ng mungkahi',
-                                ),
-                                color: const Color(0xFF142D57),
-                                onTap: () => showFeedbackDialog(context),
                               ),
                             ],
                           ),
@@ -280,11 +297,14 @@ class _ModernProfileOverviewCard extends StatelessWidget {
     required this.email,
     required this.completedText,
     required this.progress,
+    required this.simulationCompletedText,
+    required this.simulationProgress,
     required this.lastSimulation,
     required this.onEdit,
     required this.accountLabel,
     required this.progressLabel,
     required this.completedLabel,
+    required this.simulationLabel,
     required this.recentLabel,
     required this.noActivityLabel,
     this.compact = false,
@@ -296,11 +316,14 @@ class _ModernProfileOverviewCard extends StatelessWidget {
   final String email;
   final String completedText;
   final double progress;
+  final String simulationCompletedText;
+  final double simulationProgress;
   final String lastSimulation;
   final VoidCallback onEdit;
   final String accountLabel;
   final String progressLabel;
   final String completedLabel;
+  final String simulationLabel;
   final String recentLabel;
   final String noActivityLabel;
   final bool compact;
@@ -503,7 +526,74 @@ class _ModernProfileOverviewCard extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: compact ? 10 : 15),
+          SizedBox(height: compact ? 10 : 14),
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(compact ? 10 : 12),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFFF7F4),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: const Color(0xFFF5E5E1)),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: compact ? 30 : 34,
+                  height: compact ? 30 : 34,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFFCE8E5),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.sports_esports_rounded,
+                    color: red,
+                    size: 18,
+                  ),
+                ),
+                const SizedBox(width: 11),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              simulationLabel,
+                              style: const TextStyle(
+                                color: navy,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                          Text(
+                            simulationCompletedText,
+                            style: const TextStyle(
+                              color: red,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 7),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(999),
+                        child: LinearProgressIndicator(
+                          value: simulationProgress,
+                          minHeight: 5,
+                          backgroundColor: const Color(0xFFF3E7E5),
+                          valueColor: const AlwaysStoppedAnimation<Color>(red),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: compact ? 10 : 12),
           Container(
             width: double.infinity,
             padding: EdgeInsets.all(compact ? 10 : 12),

@@ -1,11 +1,10 @@
 // simulation_scene.dart
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../module_progress_db.dart';
+import '../module_progress_refresh_notifier.dart';
 import '../profile_progress_sync.dart';
+import '../profile_refresh_notifier.dart';
 import '../simulation_history_service.dart';
 import '../unity_launcher.dart';
 import '../widgets/app_notification.dart';
@@ -52,7 +51,7 @@ class _SimulationScene5State extends State<SimulationScene5> {
       moduleNo: _moduleNo,
     );
 
-    if (!mounted || session == null) return;
+    if (!mounted) return;
 
     _moduleId = session.moduleId;
     _simulationAttemptId = session.attemptId;
@@ -61,14 +60,12 @@ class _SimulationScene5State extends State<SimulationScene5> {
 
   Future<void> _completeSimulationTracking() async {
     if (_simulationMarkedComplete) return;
-    _simulationMarkedComplete = true;
 
     final moduleId = _moduleId;
     final attemptId = _simulationAttemptId;
 
     if (moduleId == null || attemptId == null) {
-      await ModuleProgressDb.markSimulationCompleted(_moduleNo);
-      return;
+      throw StateError('Simulation tracking was not started.');
     }
 
     await _simulationHistoryService.completeAttempt(
@@ -76,22 +73,17 @@ class _SimulationScene5State extends State<SimulationScene5> {
       attemptId: attemptId,
       score: null,
     );
+    _simulationMarkedComplete = true;
   }
 
-  Future<void> _persistUnityResult(
-    UnityLaunchResult unityResult,
-    Future<void> trackingFuture,
-  ) async {
-    try {
-      await trackingFuture;
-      await ProfileProgressSync.updateLastSimulation(_sceneLabel);
+  Future<void> _persistUnityResult(UnityLaunchResult unityResult) async {
+    await ProfileProgressSync.updateLastSimulation(_sceneLabel);
 
-      if (unityResult.completed) {
-        await _completeSimulationTracking();
-        await ProfileProgressSync.syncCompletedSimulations();
-      }
-    } catch (e) {
-      debugPrint('SIMULATION RESULT SAVE ERROR: $e');
+    if (unityResult.completed) {
+      await _completeSimulationTracking();
+      await ProfileProgressSync.syncCompletedSimulations();
+      notifyModuleProgressChanged();
+      notifyProfileChanged();
     }
   }
 
@@ -104,13 +96,12 @@ class _SimulationScene5State extends State<SimulationScene5> {
         _launchError = null;
       });
 
-      final trackingFuture =
-          _moduleId == null || _simulationAttemptId == null
-              ? _startSimulationTracking()
-              : Future<void>.value();
+      if (_moduleId == null || _simulationAttemptId == null) {
+        await _startSimulationTracking();
+      }
 
       final unityResult = await UnityLauncher.openScene(_unitySceneName);
-      unawaited(_persistUnityResult(unityResult, trackingFuture));
+      await _persistUnityResult(unityResult);
 
       if (!mounted) return;
       setState(() => _isUnityLaunching = false);
@@ -314,9 +305,7 @@ class _SimulationScene5State extends State<SimulationScene5> {
                               ),
                               const SizedBox(height: 20),
                               if (_isUnityLaunching) ...[
-                                const CircularProgressIndicator(
-                                  color: accent,
-                                ),
+                                const CircularProgressIndicator(color: accent),
                               ] else if (_launchError != null) ...[
                                 SizedBox(
                                   width: double.infinity,
@@ -338,8 +327,9 @@ class _SimulationScene5State extends State<SimulationScene5> {
                                           horizontal: 12,
                                         ),
                                         shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(16),
+                                          borderRadius: BorderRadius.circular(
+                                            16,
+                                          ),
                                         ),
                                       ),
                                       onPressed: _openSceneFlow,

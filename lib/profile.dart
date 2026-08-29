@@ -12,6 +12,7 @@ import 'faq_page.dart';
 import 'feedback_dialog.dart';
 import 'widgets/account_menu.dart';
 import 'widgets/main_tab_header.dart';
+import 'module_progress_refresh_notifier.dart';
 import 'profile_refresh_notifier.dart';
 import 'profile_progress_sync.dart';
 
@@ -49,22 +50,34 @@ class _ProfilePageState extends State<ProfilePage> {
   String _email = '';
   String? _avatarUrl;
 
+  late String _completedTrainingModules;
   late String _completedSimulations;
   late String _lastSimulation;
 
   @override
   void initState() {
     super.initState();
+    _completedTrainingModules = '0 / $_totalSimulations';
     _completedSimulations = widget.completedSimulations;
     _lastSimulation = widget.lastSimulation;
+    profileRefreshNotifier.addListener(_handleProgressChanged);
+    moduleProgressRefreshNotifier.addListener(_handleProgressChanged);
     AppContentRefreshRegistry.register(this, _handleAppContentRefresh);
     _initializePage();
   }
 
   @override
   void dispose() {
+    profileRefreshNotifier.removeListener(_handleProgressChanged);
+    moduleProgressRefreshNotifier.removeListener(_handleProgressChanged);
     AppContentRefreshRegistry.unregister(this);
     super.dispose();
+  }
+
+  void _handleProgressChanged() {
+    if (mounted) {
+      _loadProfile();
+    }
   }
 
   Future<void> _initializePage() async {
@@ -96,6 +109,7 @@ class _ProfilePageState extends State<ProfilePage> {
           _displayName = widget.name?.trim() ?? '';
           _email = '';
           _avatarUrl = null;
+          _completedTrainingModules = '0 / $_totalSimulations';
           _completedSimulations = widget.completedSimulations;
           _lastSimulation = widget.lastSimulation;
           _isLoadingProfile = false;
@@ -121,6 +135,7 @@ class _ProfilePageState extends State<ProfilePage> {
       String displayName = widget.name?.trim() ?? '';
       String email = user.email ?? '';
       String? avatarUrl;
+      String completedTrainingModules = '0 / $_totalSimulations';
       String completedSimulations = widget.completedSimulations;
       String lastSimulation = widget.lastSimulation;
 
@@ -143,12 +158,6 @@ class _ProfilePageState extends State<ProfilePage> {
           avatarUrl = dbAvatarUrl;
         }
 
-        final liveCompletedSimulations =
-            await ProfileProgressSync.fetchCompletedSimulationCount(
-              totalSimulations: _totalSimulations,
-            );
-        completedSimulations = '$liveCompletedSimulations / $_totalSimulations';
-
         final dbLastSimulation = (profileData['last_simulation'] ?? '')
             .toString()
             .trim();
@@ -157,9 +166,23 @@ class _ProfilePageState extends State<ProfilePage> {
         }
       }
 
+      final liveProgress = await Future.wait<int>([
+        ProfileProgressSync.fetchCompletedTrainingModuleCount(
+          totalModules: _totalSimulations,
+        ),
+        ProfileProgressSync.fetchCompletedSimulationCount(
+          totalSimulations: _totalSimulations,
+        ),
+      ]);
+      completedTrainingModules = '${liveProgress[0]} / $_totalSimulations';
+      completedSimulations = '${liveProgress[1]} / $_totalSimulations';
+
+      if (!mounted) return;
+
       _profileLoadFailed = false;
       AppContentRefreshRegistry.reportContent(this, 'profile', {
         'profile': profileData,
+        'completed_training_modules': completedTrainingModules,
         'completed_simulations': completedSimulations,
         'last_simulation': lastSimulation,
       });
@@ -168,6 +191,7 @@ class _ProfilePageState extends State<ProfilePage> {
         _displayName = displayName;
         _email = email;
         _avatarUrl = avatarUrl;
+        _completedTrainingModules = completedTrainingModules;
         _completedSimulations = completedSimulations;
         _lastSimulation = lastSimulation;
         _isLoadingProfile = false;
@@ -182,6 +206,7 @@ class _ProfilePageState extends State<ProfilePage> {
         _displayName = widget.name?.trim() ?? '';
         _email = user?.email ?? '';
         _avatarUrl = null;
+        _completedTrainingModules = '0 / $_totalSimulations';
         _completedSimulations = widget.completedSimulations;
         _lastSimulation = widget.lastSimulation;
         _isLoadingProfile = false;

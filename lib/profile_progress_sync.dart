@@ -1,5 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'module_progress_overview_service.dart';
+
 class ProfileProgressSync {
   static final SupabaseClient _supabase = Supabase.instance.client;
   static const int defaultTrainingSimulationTotal = 5;
@@ -51,6 +53,37 @@ class ProfileProgressSync {
         .not('simulation_completed_at', 'is', null);
 
     return completedSimulationCountFromRows(rows);
+  }
+
+  static Future<int> fetchCompletedTrainingModuleCount({
+    int totalModules = defaultTrainingSimulationTotal,
+  }) async {
+    if (_supabase.auth.currentUser == null) return 0;
+
+    final overview = await ModuleProgressOverviewService(
+      client: _supabase,
+    ).load();
+
+    return completedTrainingModuleCountFromOverview(
+      overview.values,
+      totalModules: totalModules,
+    );
+  }
+
+  static int completedTrainingModuleCountFromOverview(
+    Iterable<ModuleProgressOverview> overview, {
+    int totalModules = defaultTrainingSimulationTotal,
+  }) {
+    return overview
+        .where(
+          (progress) =>
+              progress.moduleNo >= 1 &&
+              progress.moduleNo <= totalModules &&
+              progress.isCompleted,
+        )
+        .map((progress) => progress.moduleNo)
+        .toSet()
+        .length;
   }
 
   static int completedSimulationCountFromRows(Iterable<dynamic> rows) {

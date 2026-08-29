@@ -97,6 +97,9 @@ class _ModuleProgressSnapshot {
   final bool postTestCompleted;
   final String? error;
 
+  bool get isCompleted =>
+      preTestCompleted && learningCompleted && postTestCompleted;
+
   _ModuleProgressSnapshot copyWith({
     bool? loading,
     bool? loaded,
@@ -567,6 +570,11 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
   bool _postTestCompletedFor(int moduleNo) {
     if (!_isTrackedProgressModule(moduleNo)) return false;
     return _progressFor(moduleNo).postTestCompleted;
+  }
+
+  bool _moduleCompletedFor(int moduleNo) {
+    if (!_isTrackedProgressModule(moduleNo)) return false;
+    return _progressFor(moduleNo).isCompleted;
   }
 
   bool _isModuleActionLocked(int moduleNo, String actionKey) {
@@ -1201,9 +1209,7 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
 
   Widget _buildModuleProgressCard() {
     final moduleNumbers = _trackedProgressModules.toList()..sort();
-    final completedCount = moduleNumbers
-        .where((moduleNo) => _postTestCompletedFor(moduleNo))
-        .length;
+    final completedCount = moduleNumbers.where(_moduleCompletedFor).length;
     final isLoading = moduleNumbers.any(_progressLoadingFor);
     final hasError = moduleNumbers.any(
       (moduleNo) => _progressErrorFor(moduleNo) != null,
@@ -1357,7 +1363,8 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
                 const navBarBottomGap = 14.0;
                 final breathingRoom = (MediaQuery.sizeOf(context).height * 0.02)
                     .clamp(14.0, 24.0);
-                final bottomInset = MediaQuery.paddingOf(context).bottom +
+                final bottomInset =
+                    MediaQuery.paddingOf(context).bottom +
                     navBarHeight +
                     navBarBottomGap +
                     breathingRoom;
@@ -1503,7 +1510,7 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
               description: m.subtitle(_isTl),
               image: m.heroImage,
               isTl: _isTl,
-              isCompleted: _postTestCompletedFor(m.moduleNo),
+              isCompleted: _moduleCompletedFor(m.moduleNo),
               isExpanded: _expandedModuleNo == m.moduleNo,
               selectedActionKey: _selectedModuleActionKey,
               isActionLocked: (actionKey) =>

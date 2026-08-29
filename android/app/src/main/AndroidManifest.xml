@@ -78,19 +78,37 @@
         -->
         <activity
             android:name="com.unity3d.player.UnityPlayerGameActivity"
-            android:exported="true"
+            tools:node="remove" />
+
+        <activity
+            android:name=".IgnisUnityPlayerActivity"
+            tools:ignore="Instantiatable"
+            android:exported="false"
             android:launchMode="standard"
             android:process=":unity"
             android:theme="@style/BaseUnityGameActivityTheme"
             android:screenOrientation="landscape"
             android:hardwareAccelerated="true"
             android:resizeableActivity="false"
-            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|uiMode|screenSize|smallestScreenSize|fontScale|layoutDirection|density"
-            tools:replace="android:hardwareAccelerated,android:launchMode,android:resizeableActivity,android:screenOrientation">
-            <intent-filter tools:node="remove">
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|uiMode|screenSize|smallestScreenSize|fontScale|layoutDirection|density">
+            <meta-data
+                android:name="unityplayer.UnityActivity"
+                android:value="true" />
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="game" />
+            <meta-data
+                android:name="WindowManagerPreference:FreeformWindowSize"
+                android:value="@string/FreeformWindowSize_maximize" />
+            <meta-data
+                android:name="WindowManagerPreference:FreeformWindowOrientation"
+                android:value="@string/FreeformWindowOrientation_landscape" />
+            <meta-data
+                android:name="notch_support"
+                android:value="true" />
+            <layout
+                android:minWidth="400px"
+                android:minHeight="300px" />
         </activity>
 
         <meta-data

@@ -5,7 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../localization/app_text.dart';
 import '../localization/language_controller.dart';
 import '../localization/localized_db_text.dart';
-import '../profile_progress_sync.dart';
+import '../module_progress_refresh_notifier.dart';
 import 'post_assess_completion.dart';
 import 'module_progression_service.dart';
 import '../widgets/assessment_nav_buttons.dart';
@@ -1070,33 +1070,59 @@ class _PostAssessmentKitchenPageState extends State<PostAssessmentKitchenPage> {
       final scorePercent =
           _scoredTotal == 0 ? 0 : (correctCount / _scoredTotal) * 100;
 
+      final submittedAt = DateTime.now().toUtc().toIso8601String();
+
       await _supabase.from('assessment_attempts').update({
-        'submitted_at': DateTime.now().toUtc().toIso8601String(),
+        'submitted_at': submittedAt,
         'status': 'submitted',
+        'total_questions': _scoredTotal,
         'correct_count': correctCount,
         'score': scorePercent,
       }).eq('id', _attemptId!);
 
       final progressRow = await _supabase
           .from('module_progress')
-          .select('id')
+          .select('id, pre_test_score')
           .eq('user_id', _user.id)
           .eq('module_id', _moduleId!)
           .maybeSingle();
 
       if (progressRow == null) {
-        await _supabase.from('module_progress').insert({
-          'user_id': _user.id,
-          'module_id': _moduleId,
-          'post_test_completed_at': DateTime.now().toUtc().toIso8601String(),
-        });
-      } else {
-        await _supabase.from('module_progress').update({
-          'post_test_completed_at': DateTime.now().toUtc().toIso8601String(),
-        }).eq('id', progressRow['id']);
+        throw StateError(
+          'The required module progress record could not be found.',
+        );
       }
 
-      await ProfileProgressSync.syncCompletedSimulations();
+      final preScoreRaw = progressRow['pre_test_score'];
+      final preScore = preScoreRaw is num
+          ? preScoreRaw.toDouble()
+          : double.tryParse((preScoreRaw ?? '').toString()) ?? 0;
+      final improvementScore = scorePercent - preScore;
+
+      final savedProgress = await _supabase
+          .from('module_progress')
+          .update({
+            'post_test_completed_at': submittedAt,
+            'post_test_attempt_id': _attemptId,
+            'post_test_score': scorePercent,
+            'post_test_correct_count': correctCount,
+            'post_test_total_questions': _scoredTotal,
+            'improvement_score': improvementScore,
+            'has_improved': improvementScore > 0,
+            'updated_at': submittedAt,
+          })
+          .eq('id', progressRow['id'])
+          .select(
+            'post_test_completed_at, post_test_attempt_id, post_test_score',
+          )
+          .single();
+      if (savedProgress['post_test_completed_at'] == null ||
+          savedProgress['post_test_attempt_id']?.toString() != _attemptId ||
+          savedProgress['post_test_score'] == null) {
+        throw StateError('Post-assessment completion could not be verified.');
+      }
+
+      notifyModuleProgressChanged();
 
       if (!mounted) return;
 

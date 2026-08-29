@@ -42,7 +42,7 @@ class MainActivity : FlutterActivity() {
                             val intent = Intent().apply {
                                 setClassName(
                                     this@MainActivity,
-                                    "com.unity3d.player.UnityPlayerGameActivity"
+                                    "com.example.ignis_safe.IgnisUnityPlayerActivity"
                                 )
                                 putExtra("sceneName", sceneName)
                                 // FIX: Add a unique launchToken on every startActivityForResult call

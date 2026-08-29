@@ -9,6 +9,7 @@ import 'home.dart';
 import 'onboarding1.dart';
 import 'splash_page.dart';
 import 'localization/language_controller.dart';
+import 'widgets/keyboard_dismiss_scope.dart';
 
 Future<void> main() async {
   final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -34,20 +35,17 @@ class MyApp extends StatelessWidget {
           return MaterialApp(
             title: 'Ignis Safe',
             debugShowCheckedModeBanner: false,
-            theme: ThemeData(
-              fontFamily: 'Poppins',
-              useMaterial3: true,
-            ),
+            theme: ThemeData(fontFamily: 'Poppins', useMaterial3: true),
             locale: languageController.locale,
-            supportedLocales: const [
-              Locale('en'),
-              Locale('tl'),
-            ],
+            supportedLocales: const [Locale('en'), Locale('tl')],
             localizationsDelegates: const [
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
+            navigatorObservers: [KeyboardDismissNavigatorObserver()],
+            builder: (context, child) =>
+                KeyboardDismissScope(child: child ?? const SizedBox.shrink()),
             home: const SplashPage(),
             routes: {
               '/login': (_) => const LoginPage(),

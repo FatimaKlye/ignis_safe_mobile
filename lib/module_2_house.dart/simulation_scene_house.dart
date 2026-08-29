@@ -1,11 +1,10 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../unity_launcher.dart';
 import '../profile_progress_sync.dart';
+import '../profile_refresh_notifier.dart';
 import '../simulation_history_service.dart';
-import '../module_progress_db.dart';
+import '../module_progress_refresh_notifier.dart';
 import '../widgets/app_notification.dart';
 
 const Color kHouseOrange = Color(0xFFF97316);
@@ -48,7 +47,7 @@ class _SimulationScene2State extends State<SimulationScene2> {
     final session = await _simulationHistoryService.startAttempt(
       moduleNo: _moduleNo,
     );
-    if (!mounted || session == null) return;
+    if (!mounted) return;
     _moduleId = session.moduleId;
     _simulationAttemptId = session.attemptId;
     _simulationMarkedComplete = false;
@@ -56,34 +55,27 @@ class _SimulationScene2State extends State<SimulationScene2> {
 
   Future<void> _completeSimulationTracking() async {
     if (_simulationMarkedComplete) return;
-    _simulationMarkedComplete = true;
     final moduleId = _moduleId;
     final attemptId = _simulationAttemptId;
     if (moduleId == null || attemptId == null) {
-      await ModuleProgressDb.markSimulationCompleted(_moduleNo);
-      return;
+      throw StateError('Simulation tracking was not started.');
     }
     await _simulationHistoryService.completeAttempt(
       moduleId: moduleId,
       attemptId: attemptId,
       score: null,
     );
+    _simulationMarkedComplete = true;
   }
 
-  Future<void> _persistUnityResult(
-    UnityLaunchResult unityResult,
-    Future<void> trackingFuture,
-  ) async {
-    try {
-      await trackingFuture;
-      await ProfileProgressSync.updateLastSimulation(_sceneLabel);
+  Future<void> _persistUnityResult(UnityLaunchResult unityResult) async {
+    await ProfileProgressSync.updateLastSimulation(_sceneLabel);
 
-      if (unityResult.completed) {
-        await _completeSimulationTracking();
-        await ProfileProgressSync.syncCompletedSimulations();
-      }
-    } catch (e) {
-      debugPrint('SIMULATION RESULT SAVE ERROR: $e');
+    if (unityResult.completed) {
+      await _completeSimulationTracking();
+      await ProfileProgressSync.syncCompletedSimulations();
+      notifyModuleProgressChanged();
+      notifyProfileChanged();
     }
   }
 
@@ -96,13 +88,12 @@ class _SimulationScene2State extends State<SimulationScene2> {
         _launchError = null;
       });
 
-      final trackingFuture =
-          _moduleId == null || _simulationAttemptId == null
-              ? _startSimulationTracking()
-              : Future<void>.value();
+      if (_moduleId == null || _simulationAttemptId == null) {
+        await _startSimulationTracking();
+      }
 
       final unityResult = await UnityLauncher.openScene(_unitySceneName);
-      unawaited(_persistUnityResult(unityResult, trackingFuture));
+      await _persistUnityResult(unityResult);
 
       if (!mounted) return;
       setState(() => _isUnityLaunching = false);
@@ -327,8 +318,9 @@ class _SimulationScene2State extends State<SimulationScene2> {
                                           horizontal: 12,
                                         ),
                                         shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(16),
+                                          borderRadius: BorderRadius.circular(
+                                            16,
+                                          ),
                                         ),
                                       ),
                                       onPressed: _openSceneFlow,

@@ -5,7 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../localization/app_text.dart';
 import '../localization/language_controller.dart';
 import '../localization/localized_db_text.dart';
-import '../profile_progress_sync.dart';
+import '../module_progress_refresh_notifier.dart';
 import 'post_assess_completion.dart';
 import 'module_progression_service.dart';
 import '../widgets/assessment_nav_buttons.dart';
@@ -1253,12 +1253,21 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage> {
         'updated_at': submittedAt,
       };
 
-      await _supabase
+      final savedProgress = await _supabase
           .from('module_progress')
           .update(progressPayload)
-          .eq('id', progressRow['id']);
+          .eq('id', progressRow['id'])
+          .select(
+            'post_test_completed_at, post_test_attempt_id, post_test_score',
+          )
+          .single();
+      if (savedProgress['post_test_completed_at'] == null ||
+          savedProgress['post_test_attempt_id']?.toString() != _attemptId ||
+          savedProgress['post_test_score'] == null) {
+        throw StateError('Post-assessment completion could not be verified.');
+      }
 
-      await ProfileProgressSync.syncCompletedSimulations();
+      notifyModuleProgressChanged();
 
       if (!mounted) return;
 

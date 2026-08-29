@@ -9,7 +9,6 @@ import 'pre_assess_completion_page.dart';
 import 'pre_assess_instruction.dart';
 import 'module_progression_service.dart';
 import '../module_progress_refresh_notifier.dart';
-import '../profile_progress_sync.dart';
 import '../widgets/assessment_nav_buttons.dart';
 
 class AppColors {
@@ -1081,8 +1080,6 @@ class _PreAssessmentElectricalPageState
         scorePercent: scorePercent,
         correctCount: correctCount,
       );
-
-      await ProfileProgressSync.syncCompletedSimulations();
 
       if (!mounted) return;
 

@@ -1,5 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../module_progress_refresh_notifier.dart';
+
 class ProgressionAccessDenied implements Exception {
   const ProgressionAccessDenied(this.message);
 
@@ -96,13 +98,14 @@ class ModuleProgressionState {
 
   bool get hasValidPostTest {
     if (!hasProgressPostTestCompletion || !hasSubmittedPostTest) return false;
-    return progressRow!['post_test_attempt_id'].toString() == postTestAttempt!.id;
+    return progressRow!['post_test_attempt_id'].toString() ==
+        postTestAttempt!.id;
   }
 }
 
 class ModuleProgressionService {
   ModuleProgressionService({SupabaseClient? client})
-      : _client = client ?? Supabase.instance.client;
+    : _client = client ?? Supabase.instance.client;
 
   final SupabaseClient _client;
 
@@ -236,18 +239,36 @@ class ModuleProgressionService {
     };
 
     if (state.progressRow == null) {
-      await _client.from('module_progress').insert({
-        'user_id': state.userId,
-        'module_id': state.moduleId,
-        ...payload,
-      });
+      final saved = await _client
+          .from('module_progress')
+          .insert({
+            'user_id': state.userId,
+            'module_id': state.moduleId,
+            ...payload,
+          })
+          .select(
+            'learning_material_completed_at, learning_material_read_status',
+          )
+          .single();
+      if (saved['learning_material_completed_at'] == null ||
+          saved['learning_material_read_status'] != true) {
+        throw StateError('Learning material completion could not be verified.');
+      }
+      notifyModuleProgressChanged();
       return;
     }
 
-    await _client
+    final saved = await _client
         .from('module_progress')
         .update(payload)
-        .eq('id', state.progressRow!['id']);
+        .eq('id', state.progressRow!['id'])
+        .select('learning_material_completed_at, learning_material_read_status')
+        .single();
+    if (saved['learning_material_completed_at'] == null ||
+        saved['learning_material_read_status'] != true) {
+      throw StateError('Learning material completion could not be verified.');
+    }
+    notifyModuleProgressChanged();
   }
 
   Future<String?> _maybeAssessmentId({
@@ -338,16 +359,18 @@ class ModuleProgressionService {
     // An in-progress attempt must NOT count as a completed/taken post-test.
     // If older code or bad data wrote post-test completion fields without a
     // submitted attempt, clear those fields so the post-test unlocks again.
-    final hasAnyPostProgress = progressRow != null &&
+    final hasAnyPostProgress =
+        progressRow != null &&
         (progressRow['post_test_completed_at'] != null ||
             _notBlank(progressRow['post_test_attempt_id']) ||
             progressRow['post_test_score'] != null ||
             progressRow['post_test_correct_count'] != null ||
             progressRow['post_test_total_questions'] != null);
 
-    final progressPostAttemptId =
-        progressRow?['post_test_attempt_id']?.toString();
-    final progressPostMatchesSubmittedAttempt = postAttempt != null &&
+    final progressPostAttemptId = progressRow?['post_test_attempt_id']
+        ?.toString();
+    final progressPostMatchesSubmittedAttempt =
+        postAttempt != null &&
         postAttempt.isSubmitted &&
         _notBlank(progressPostAttemptId) &&
         progressPostAttemptId == postAttempt.id;
@@ -365,7 +388,8 @@ class ModuleProgressionService {
     }
 
     if (preAttempt != null && preAttempt.isSubmitted) {
-      final missingPre = progressRow == null ||
+      final missingPre =
+          progressRow == null ||
           progressRow['pre_test_completed_at'] == null ||
           progressRow['pre_test_attempt_id']?.toString() != preAttempt.id ||
           progressRow['pre_test_score'] == null;
@@ -389,7 +413,8 @@ class ModuleProgressionService {
           ? null
           : postAttempt.score! - preScore;
 
-      final missingPost = progressRow == null ||
+      final missingPost =
+          progressRow == null ||
           progressRow['post_test_completed_at'] == null ||
           progressRow['post_test_attempt_id']?.toString() != postAttempt.id ||
           progressRow['post_test_score'] == null;
@@ -414,11 +439,7 @@ class ModuleProgressionService {
     if (progressRow == null) {
       final inserted = await _client
           .from('module_progress')
-          .insert({
-            'user_id': userId,
-            'module_id': moduleId,
-            ...payload,
-          })
+          .insert({'user_id': userId, 'module_id': moduleId, ...payload})
           .select()
           .single();
       return Map<String, dynamic>.from(inserted as Map);
@@ -434,7 +455,8 @@ class ModuleProgressionService {
   }
 }
 
-bool _notBlank(dynamic value) => value != null && value.toString().trim().isNotEmpty;
+bool _notBlank(dynamic value) =>
+    value != null && value.toString().trim().isNotEmpty;
 
 int _toInt(dynamic value) {
   if (value is int) return value;

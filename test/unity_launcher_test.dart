@@ -47,6 +47,46 @@ void main() {
     expect(overview.learningCompleted, isTrue);
     expect(overview.canOpenPostTest, isFalse);
     expect(overview.postTestCompleted, isTrue);
+    expect(overview.isCompleted, isTrue);
+  });
+
+  test('training completes only after the full required flow', () {
+    const completed = ModuleProgressOverview(
+      moduleNo: 1,
+      preTestCompleted: true,
+      canOpenLearning: true,
+      learningCompleted: true,
+      canOpenPostTest: false,
+      postTestCompleted: true,
+    );
+    const preOnly = ModuleProgressOverview(
+      moduleNo: 2,
+      preTestCompleted: true,
+      canOpenLearning: true,
+      learningCompleted: false,
+      canOpenPostTest: false,
+      postTestCompleted: false,
+    );
+    const missingLearning = ModuleProgressOverview(
+      moduleNo: 3,
+      preTestCompleted: true,
+      canOpenLearning: true,
+      learningCompleted: false,
+      canOpenPostTest: false,
+      postTestCompleted: true,
+    );
+
+    expect(completed.isCompleted, isTrue);
+    expect(preOnly.isCompleted, isFalse);
+    expect(missingLearning.isCompleted, isFalse);
+    expect(
+      ProfileProgressSync.completedTrainingModuleCountFromOverview([
+        completed,
+        preOnly,
+        missingLearning,
+      ]),
+      1,
+    );
   });
 
   test('profile progress counts each completed simulation module once', () {

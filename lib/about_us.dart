@@ -1300,6 +1300,7 @@ class _TeamCard extends StatelessWidget {
                       closeLabel: _ui(context, 'close'),
                       emailLabel: _uiOr(context, 'member_email_action', 'Email'),
                       linkedInLabel: _uiOr(context, 'member_linkedin_action', 'LinkedIn'),
+                      portfolioLabel: _uiOr(context, 'member_portfolio_action', 'Portfolio'),
                       pendingLabel: _ui(context, 'email_pending'),
                       noAppLabel: _ui(context, 'no_compatible_app'),
                     ),
@@ -1324,6 +1325,7 @@ class _TeamCard extends StatelessWidget {
                         closeLabel: _ui(context, 'close'),
                         emailLabel: _uiOr(context, 'member_email_action', 'Email'),
                         linkedInLabel: _uiOr(context, 'member_linkedin_action', 'LinkedIn'),
+                        portfolioLabel: _uiOr(context, 'member_portfolio_action', 'Portfolio'),
                         pendingLabel: _ui(context, 'email_pending'),
                         noAppLabel: _ui(context, 'no_compatible_app'),
                       ),
@@ -1662,6 +1664,7 @@ Future<void> _showMemberBio(
   required String closeLabel,
   required String emailLabel,
   required String linkedInLabel,
+  required String portfolioLabel,
   required String pendingLabel,
   required String noAppLabel,
 }) {
@@ -1673,6 +1676,7 @@ Future<void> _showMemberBio(
       closeLabel: closeLabel,
       emailLabel: emailLabel,
       linkedInLabel: linkedInLabel,
+      portfolioLabel: portfolioLabel,
       pendingLabel: pendingLabel,
       noAppLabel: noAppLabel,
     ),
@@ -1692,6 +1696,7 @@ class _MemberProfileDialog extends StatelessWidget {
     required this.closeLabel,
     required this.emailLabel,
     required this.linkedInLabel,
+    required this.portfolioLabel,
     required this.pendingLabel,
     required this.noAppLabel,
   });
@@ -1700,6 +1705,7 @@ class _MemberProfileDialog extends StatelessWidget {
   final String closeLabel;
   final String emailLabel;
   final String linkedInLabel;
+  final String portfolioLabel;
   final String pendingLabel;
   final String noAppLabel;
 
@@ -1746,6 +1752,7 @@ class _MemberProfileDialog extends StatelessWidget {
 
             final email = member.email;
             final linkedIn = member.linkedInUrl;
+            final portfolio = member.portfolioUrl;
 
             final emailButton = _ProfileActionButton(
               label: email == null ? pendingLabel : emailLabel,
@@ -1771,6 +1778,21 @@ class _MemberProfileDialog extends StatelessWidget {
               onTap: linkedIn == null
                   ? null
                   : () => _open(context, Uri.parse(linkedIn)),
+            );
+
+            final portfolioButton = _ProfileActionButton(
+              label: portfolioLabel,
+              accent: const Color(0xFF142D57),
+              filled: false,
+              compact: compact,
+              leadingBuilder: (color) => Icon(
+                Icons.open_in_new_rounded,
+                size: 17,
+                color: color,
+              ),
+              onTap: portfolio == null
+                  ? null
+                  : () => _open(context, Uri.parse(portfolio)),
             );
 
             return Container(
@@ -1950,6 +1972,10 @@ class _MemberProfileDialog extends StatelessWidget {
                                 Expanded(child: linkedInButton),
                               ],
                             ),
+                          if (portfolio != null) ...[
+                            const SizedBox(height: 10),
+                            portfolioButton,
+                          ],
                         ],
                       ),
                     ),
@@ -2892,6 +2918,7 @@ class _TeamMember {
     required this.role,
     required this.email,
     required this.linkedInUrl,
+    required this.portfolioUrl,
     required this.bio,
     required this.assetPath,
   });
@@ -2902,6 +2929,7 @@ class _TeamMember {
   final _LocalizedText role;
   final String? email;
   final String? linkedInUrl;
+  final String? portfolioUrl;
   final _LocalizedText bio;
   final String assetPath;
 
@@ -2937,6 +2965,7 @@ class _TeamMember {
         role: _LocalizedText.fromRow(row, enKey: 'role_en', tlKey: 'role_tl'),
         email: _trimmed(row['email']),
         linkedInUrl: _link(row['linkedin_url']),
+        portfolioUrl: _link(row['portfolio_url']),
         bio: _LocalizedText.fromRow(row, enKey: 'bio_en', tlKey: 'bio_tl'),
         assetPath: row['asset_path'].toString(),
       );

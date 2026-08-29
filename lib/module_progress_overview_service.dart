@@ -17,6 +17,11 @@ class ModuleProgressOverview {
   final bool canOpenPostTest;
   final bool postTestCompleted;
 
+  /// A training module is complete only after the learner has finished the
+  /// required Pre-Assessment -> Learning Materials -> Post-Assessment flow.
+  bool get isCompleted =>
+      preTestCompleted && learningCompleted && postTestCompleted;
+
   factory ModuleProgressOverview.fromMap(Map<String, dynamic> row) {
     return ModuleProgressOverview(
       moduleNo: _toInt(row['module_no']),
@@ -31,7 +36,7 @@ class ModuleProgressOverview {
 
 class ModuleProgressOverviewService {
   ModuleProgressOverviewService({SupabaseClient? client})
-      : _client = client ?? Supabase.instance.client;
+    : _client = client ?? Supabase.instance.client;
 
   final SupabaseClient _client;
 

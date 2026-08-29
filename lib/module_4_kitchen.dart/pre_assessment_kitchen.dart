@@ -8,7 +8,6 @@ import '../localization/language_controller.dart';
 import 'pre_assess_completion_page.dart';
 import 'pre_assess_instruction.dart';
 import '../module_progress_refresh_notifier.dart';
-import '../profile_progress_sync.dart';
 import 'module_progression_service.dart';
 import '../widgets/assessment_nav_buttons.dart';
 
@@ -1147,8 +1146,6 @@ class _PreAssessmentKitchenPageState
         scorePercent: scorePercent,
         correctCount: correctCount,
       );
-
-      await ProfileProgressSync.syncCompletedSimulations();
 
       if (!mounted) return;
 
