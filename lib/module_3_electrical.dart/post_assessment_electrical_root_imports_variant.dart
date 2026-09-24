@@ -9,6 +9,7 @@ import '../profile_progress_sync.dart';
 import 'post_assess_completion.dart';
 import 'module_progression_service.dart';
 import '../widgets/assessment_nav_buttons.dart';
+import '../assessment_confirm_actions.dart';
 
 class AppColors {
   // Module 3 Electrical Fire blue palette
@@ -859,7 +860,7 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
           'Siguraduhin na final na ang iyong mga sagot bago ipasa. Pagkatapos ipasa, mapupunta ka sa completion page at makikita mo ang iyong huling marka.',
         ),
         confirmText: _txt('Submit', 'Ipasa'),
-        cancelText: _txt('Review Again', 'Suriin Muli'),
+        cancelText: _txt('Review', 'Suriin'),
         icon: Icons.help_outline_rounded,
       );
 
@@ -1128,55 +1129,13 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
                   ),
                 ),
                 const SizedBox(height: 24),
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed: () => Navigator.pop(dialogContext, true),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primaryButton,
-                      elevation: 4,
-                      shadowColor: AppColors.primaryButton.withOpacity(0.35),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                    ),
-                    child: Text(
-                      confirmText,
-                      style: const TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.textOnRed,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: OutlinedButton(
-                    onPressed: () => Navigator.pop(dialogContext, false),
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(
-                        color: AppColors.primaryButton,
-                        width: 1.3,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                    ),
-                    child: Text(
-                      cancelText,
-                      style: const TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.primaryButton,
-                      ),
-                    ),
-                  ),
+                AssessmentConfirmActions(
+                  reviewText: cancelText,
+                  submitText: confirmText,
+                  onReview: () => Navigator.pop(dialogContext, false),
+                  onSubmit: () => Navigator.pop(dialogContext, true),
+                  primaryColor: AppColors.primaryButton,
+                  onPrimaryColor: AppColors.textOnRed,
                 ),
               ],
             ),
@@ -1408,6 +1367,38 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
   }
 
   Widget _buildQuizView() {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxHeight < 610;
+        final sidePadding = compact ? 18.0 : 20.0;
+        final verticalGap = compact ? 8.0 : 12.0;
+
+        // The status panel lives outside the PageView so it stays fixed
+        // while only the question and choices change between pages.
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: EdgeInsets.fromLTRB(sidePadding, 0, sidePadding, 0),
+              child: _QuizProgressHeader(
+                questionNumber: _currentIndex + 1,
+                totalQuestions: _questions.length,
+                answered: _answeredCount,
+                flagged: _flaggedIndexes.length,
+                timeLabel: _timeLabel,
+                timeWarning: _remainingSeconds <= 30,
+                compact: compact,
+              ),
+            ),
+            SizedBox(height: verticalGap),
+            Expanded(child: _buildQuestionPager(compact)),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildQuestionPager(bool compact) {
     return PageView.builder(
       controller: _pageCtrl,
       physics: _timeExpired || _isSubmitting
@@ -1426,109 +1417,94 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
         final isFlagged = _flaggedIndexes.contains(index);
         final locked = _timeExpired || _isSubmitting;
 
-        return LayoutBuilder(
-          builder: (context, constraints) {
-            final compact = constraints.maxHeight < 610;
-            final sidePadding = compact ? 18.0 : 20.0;
-            final verticalGap = compact ? 8.0 : 12.0;
-            final optionGap = compact ? 7.0 : 9.0;
+        final sidePadding = compact ? 18.0 : 20.0;
+        final verticalGap = compact ? 8.0 : 12.0;
+        final optionGap = compact ? 7.0 : 9.0;
 
-            return Padding(
-              padding: EdgeInsets.fromLTRB(sidePadding, 0, sidePadding, 8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _QuizProgressHeader(
-                    questionNumber: index + 1,
-                    totalQuestions: _questions.length,
-                    answered: _answeredCount,
-                    flagged: _flaggedIndexes.length,
-                    timeLabel: _timeLabel,
-                    timeWarning: _remainingSeconds <= 30,
-                    compact: compact,
-                  ),
-                  SizedBox(height: verticalGap),
-                  Expanded(
-                    child: SingleChildScrollView(
-                      physics: const BouncingScrollPhysics(),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _QuestionHeaderCard(
-                            questionNumber: index + 1,
-                            totalQuestions: _questions.length,
-                            question: question.prompt,
-                            isFlagged: isFlagged,
-                            onFlagTap: locked ? null : () => _toggleFlag(index),
-                            compact: compact,
-                          ),
-                          SizedBox(height: verticalGap),
-                          Text(
-                            _isEssay(question)
-                                ? _txt('Write your reflection', 'Isulat ang iyong repleksyon')
-                                : _txt('Choose one answer', 'Pumili ng isang sagot'),
-                            style: TextStyle(
-                              fontFamily: 'Poppins',
-                              fontSize: compact ? 12.5 : 13,
-                              fontWeight: FontWeight.w800,
-                              color: AppColors.textSecondary,
-                            ),
-                          ),
-                          SizedBox(height: compact ? 6 : 8),
-                          if (_isMcq(question))
-                            Column(
-                              children: question.options.asMap().entries.map((entry) {
-                                final option = entry.value;
-                                final selected = selectedId == option.id;
-                                final label = String.fromCharCode(65 + entry.key);
-                                final isLastOption = entry.key == question.options.length - 1;
-
-                                return Padding(
-                                  padding: EdgeInsets.only(
-                                    bottom: isLastOption ? 0 : optionGap,
-                                  ),
-                                  child: _OptionCard(
-                                    label: label,
-                                    text: option.text,
-                                    selected: selected,
-                                    enabled: !locked,
-                                    onTap: locked
-                                        ? null
-                                        : () => _selectAnswer(index, option.id),
-                                    compact: compact,
-                                    maxTextLines: compact ? 2 : 3,
-                                  ),
-                                );
-                              }).toList(),
-                            )
-                          else
-                            _EssayAnswerCard(
-                              controller: _essayControllers[index]!,
-                              enabled: !locked,
-                              compact: compact,
-                              onChanged: (value) => _saveEssayAnswer(index, value),
-                            ),
-                          SizedBox(height: verticalGap),
-                          _HintCard(
-                            icon: Icons.info_outline_rounded,
-                            text: _isEssay(question)
-                                ? _txt(
-                                    'Write 1 to 2 sentences about what you learned from electrical fire safety.',
-                                    'Sumulat ng 1 hanggang 2 pangungusap tungkol sa iyong natutunan sa kaligtasan sa electrical fire.',
-                                  )
-                                : _txt(
-                                    'Use the summary to jump back to any question before submitting.',
-                                    'Gamitin ang buod upang bumalik sa anumang tanong bago ipasa.',
-                                  ),
-                          ),
-                        ],
+        return Padding(
+          padding: EdgeInsets.fromLTRB(sidePadding, 0, sidePadding, 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _QuestionHeaderCard(
+                        questionNumber: index + 1,
+                        totalQuestions: _questions.length,
+                        question: question.prompt,
+                        isFlagged: isFlagged,
+                        onFlagTap: locked ? null : () => _toggleFlag(index),
+                        compact: compact,
                       ),
-                    ),
+                      SizedBox(height: verticalGap),
+                      Text(
+                        _isEssay(question)
+                            ? _txt('Write your reflection', 'Isulat ang iyong repleksyon')
+                            : _txt('Choose one answer', 'Pumili ng isang sagot'),
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: compact ? 12.5 : 13,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                      SizedBox(height: compact ? 6 : 8),
+                      if (_isMcq(question))
+                        Column(
+                          children: question.options.asMap().entries.map((entry) {
+                            final option = entry.value;
+                            final selected = selectedId == option.id;
+                            final label = String.fromCharCode(65 + entry.key);
+                            final isLastOption = entry.key == question.options.length - 1;
+
+                            return Padding(
+                              padding: EdgeInsets.only(
+                                bottom: isLastOption ? 0 : optionGap,
+                              ),
+                              child: _OptionCard(
+                                label: label,
+                                text: option.text,
+                                selected: selected,
+                                enabled: !locked,
+                                onTap: locked
+                                    ? null
+                                    : () => _selectAnswer(index, option.id),
+                                compact: compact,
+                                maxTextLines: compact ? 2 : 3,
+                              ),
+                            );
+                          }).toList(),
+                        )
+                      else
+                        _EssayAnswerCard(
+                          controller: _essayControllers[index]!,
+                          enabled: !locked,
+                          compact: compact,
+                          onChanged: (value) => _saveEssayAnswer(index, value),
+                        ),
+                      SizedBox(height: verticalGap),
+                      _HintCard(
+                        icon: Icons.info_outline_rounded,
+                        text: _isEssay(question)
+                            ? _txt(
+                                'Write 1 to 2 sentences about what you learned from electrical fire safety.',
+                                'Sumulat ng 1 hanggang 2 pangungusap tungkol sa iyong natutunan sa kaligtasan sa electrical fire.',
+                              )
+                            : _txt(
+                                'Use the summary to jump back to any question before submitting.',
+                                'Gamitin ang buod upang bumalik sa anumang tanong bago ipasa.',
+                              ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
-            );
-          },
+            ],
+          ),
         );
       },
     );
@@ -1650,7 +1626,6 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
             Expanded(
               child: AssessmentSecondaryButton(
                 label: _txt('Back', 'Bumalik'),
-                icon: Icons.arrow_back_rounded,
                 backgroundColor: AppColors.secondaryButton,
                 accentColor: AppColors.primaryButton,
                 onPressed: () => Navigator.pop(context),
@@ -1684,7 +1659,6 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
             Expanded(
               child: AssessmentSecondaryButton(
                 label: _txt('Questions', 'Mga Tanong'),
-                icon: Icons.arrow_back_rounded,
                 backgroundColor: AppColors.secondaryButton,
                 accentColor: AppColors.primaryButton,
                 onPressed: _timeExpired || _isSubmitting
@@ -1705,7 +1679,7 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
                     : locked
                         ? _txt('Complete All', 'Kumpletuhin')
                         : _txt('Submit', 'Ipasa'),
-                icon: locked ? Icons.lock_outline_rounded : Icons.check_rounded,
+                icon: locked ? Icons.lock_outline_rounded : null,
                 onPressed: _isSubmitting || _timeExpired ? null : () => _submitAssessment(),
                 backgroundColor: locked ? AppColors.textMuted : AppColors.primaryButton,
                 disabledBackgroundColor: AppColors.textMuted,
@@ -1737,7 +1711,7 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
                       : _txt('Back', 'Bumalik')),
               icon: _currentIndex == 0 && !_editingFromSummary
                   ? Icons.close_rounded
-                  : Icons.arrow_back_rounded,
+                  : null,
               backgroundColor: AppColors.secondaryButton,
               accentColor: AppColors.primaryButton,
               onPressed: _isSubmitting ? null : _goBack,
@@ -1749,7 +1723,6 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
               label: _isSubmitting
                   ? _txt('Submitting...', 'Ipinapasa...')
                   : nextLabel,
-              icon: Icons.arrow_forward_rounded,
               backgroundColor: AppColors.primaryButton,
               disabledBackgroundColor: AppColors.textMuted,
               onPressed: _timeExpired || _isSubmitting ? null : _goNext,

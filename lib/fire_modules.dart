@@ -8,6 +8,7 @@ import 'login.dart';
 import 'localization/app_text.dart';
 import 'module_progress_refresh_notifier.dart';
 import 'profile_refresh_notifier.dart';
+import 'widgets/logout_confirm_dialog.dart';
 
 import 'module_1_extinguisher.dart/pre_assess_instruction.dart' as pre1;
 import 'module_1_extinguisher.dart/post_assessment_extinguisher.dart';
@@ -261,6 +262,9 @@ class _FireMaterialsTabState extends State<FireMaterialsTab> {
   }
 
   Future<void> _logout() async {
+    final confirmed = await showLogoutConfirmDialog(context);
+    if (!confirmed || !mounted) return;
+
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('last_tab_index');
     try {

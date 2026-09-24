@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'login.dart';
 import 'widgets/app_notification.dart';
+import 'widgets/password_changed_dialog.dart';
 
 String _t(BuildContext context, String en, String tl) {
   return Localizations.localeOf(context).languageCode == 'tl' ? tl : en;
@@ -117,30 +118,14 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
 
     setState(() => _isSaving = true);
 
+    final navigator = Navigator.of(context, rootNavigator: true);
+
+    var passwordUpdated = false;
     try {
       await supabase.auth.updateUser(
         UserAttributes(password: _passwordCtrl.text.trim()),
       );
-
-      await supabase.auth.signOut();
-
-      if (!mounted) return;
-
-      _notify(
-        context,
-        message: _t(
-          context,
-          'Password updated successfully. Please log in again.',
-          'Matagumpay na na-update ang password. Mag-login muli.',
-        ),
-        type: AppNotificationType.success,
-      );
-
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (_) => const LoginPage()),
-        (route) => false,
-      );
+      passwordUpdated = true;
     } on AuthException catch (e) {
       if (!mounted) return;
       _notify(
@@ -160,8 +145,21 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
         type: AppNotificationType.error,
       );
     } finally {
-      if (mounted) setState(() => _isSaving = false);
+      if (mounted && !passwordUpdated) setState(() => _isSaving = false);
     }
+
+    if (!passwordUpdated) return;
+
+    await showPasswordChangedAndLogout(
+      navigator,
+      signOut: () async {
+        try {
+          await supabase.auth.signOut();
+        } catch (e) {
+          debugPrint('Error signing out: $e');
+        }
+      },
+    );
   }
 
   String? _validatePassword(String? value) {
@@ -279,8 +277,8 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                               suffixIcon: IconButton(
                                 icon: Icon(
                                   _showPassword
-                                      ? Icons.visibility_off
-                                      : Icons.visibility,
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
                                 ),
                                 onPressed: () {
                                   setState(
@@ -308,8 +306,8 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                               suffixIcon: IconButton(
                                 icon: Icon(
                                   _showConfirmPassword
-                                      ? Icons.visibility_off
-                                      : Icons.visibility,
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
                                 ),
                                 onPressed: () {
                                   setState(() {

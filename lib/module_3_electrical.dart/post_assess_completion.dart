@@ -155,28 +155,33 @@ class PostAssessmentCompletionPage extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 24),
-                          Wrap(
-                            alignment: WrapAlignment.center,
-                            spacing: 12,
-                            runSpacing: 12,
-                            children: [
-                              _InfoChip(
-                                icon: Icons.check_circle_rounded,
-                                label: t(
-                                  context,
-                                  'Score Recorded',
-                                  'Naitala ang Marka',
+                          IntrinsicHeight(
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Expanded(
+                                  child: _InfoChip(
+                                    icon: Icons.check_circle_rounded,
+                                    label: t(
+                                      context,
+                                      'Score Recorded',
+                                      'Naitala ang Marka',
+                                    ),
+                                  ),
                                 ),
-                              ),
-                              _InfoChip(
-                                icon: Icons.flag_rounded,
-                                label: t(
-                                  context,
-                                  'Module 3 Completed',
-                                  'Nakumpleto ang Modyul 3',
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: _InfoChip(
+                                    icon: Icons.flag_rounded,
+                                    label: t(
+                                      context,
+                                      'Module 3 Completed',
+                                      'Nakumpleto ang Modyul 3',
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                           const SizedBox(height: 24),
                           Container(
@@ -266,12 +271,6 @@ class PostAssessmentCompletionPage extends StatelessWidget {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const Icon(
-                                    Icons.done_all_rounded,
-                                    color: AppColors.textOnRed,
-                                    size: 21,
-                                  ),
-                                  const SizedBox(width: 8),
                                   Flexible(
                                     child: Text(
                                       t(
@@ -498,21 +497,25 @@ class _InfoChip extends StatelessWidget {
           ),
         ],
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 16, color: AppColors.brandRed),
-          const SizedBox(width: 6),
-          Text(
-            label,
-            style: const TextStyle(
-              fontFamily: 'Poppins',
-              fontSize: 12.5,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 16, color: AppColors.brandRed),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              maxLines: 1,
+              style: const TextStyle(
+                fontFamily: 'Poppins',
+                fontSize: 12.5,
+                fontWeight: FontWeight.w700,
+                color: AppColors.textPrimary,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

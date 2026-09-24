@@ -2,28 +2,12 @@ import 'package:flutter/widgets.dart';
 
 const Map<String, Map<String, String>> _strings = {
   'app_title': {
-    'en': 'Ignis Safe',
-    'tl': 'Ignis Safe',
+    'en': 'IGNIS SAFE',
+    'tl': 'IGNIS SAFE',
   },
   'language': {
     'en': 'Language',
     'tl': 'Wika',
-  },
-  'english': {
-    'en': 'English',
-    'tl': 'Ingles',
-  },
-  'tagalog': {
-    'en': 'Tagalog',
-    'tl': 'Tagalog',
-  },
-  'language_change_note_title': {
-    'en': 'Note',
-    'tl': 'Paalala',
-  },
-  'language_change_note_message': {
-    'en': 'You can only change the app language before logging in. To change language again, please log out, select another language, then log in again.',
-    'tl': 'Maaari mo lang palitan ang wika ng app bago mag-login. Para palitan muli ang wika, mag-log out muna, pumili ng ibang wika, pagkatapos ay mag-login ulit.',
   },
   'login': {
     'en': 'Login',
@@ -150,8 +134,8 @@ const Map<String, Map<String, String>> _strings = {
     'tl': 'Mag-logout',
   },
   'welcome_to_ignis_safe_short': {
-    'en': 'Welcome to Ignis Safe',
-    'tl': 'Mabuhay, Ignis Safe',
+    'en': 'Welcome to IGNIS SAFE',
+    'tl': 'Mabuhay, IGNIS SAFE',
   },
   'learning_materials': {
     'en': 'Learning Materials',

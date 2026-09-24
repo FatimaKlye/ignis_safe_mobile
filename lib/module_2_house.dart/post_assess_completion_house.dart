@@ -284,12 +284,6 @@ class PostAssessmentCompletionPage extends StatelessWidget {
                                       ),
                                     ),
                                   ),
-                                  const SizedBox(width: 8),
-                                  const Icon(
-                                    Icons.done_all_rounded,
-                                    color: AppColors.textOnRed,
-                                    size: 21,
-                                  ),
                                 ],
                               ),
                             ),

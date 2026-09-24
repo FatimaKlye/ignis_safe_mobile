@@ -1570,9 +1570,6 @@ class _BottomNavBar extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.arrow_back_ios_rounded,
-                        size: 14, color: AppColors.brandRed),
-                    const SizedBox(width: 6),
                     Flexible(
                       child: Text(
                         _dbText(context, 'nav.back'),
@@ -1609,16 +1606,6 @@ class _BottomNavBar extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      isLast
-                          ? Icons.play_arrow_rounded
-                          : Icons.arrow_forward_ios_rounded,
-                      size: 16,
-                      color: nextEnabled
-                          ? Colors.white
-                          : AppColors.brandRed.withOpacity(0.4),
-                    ),
-                    const SizedBox(width: 7),
                     Flexible(
                       child: Text(
                         nextLabel,

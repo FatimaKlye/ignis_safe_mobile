@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
       child: Consumer<LanguageController>(
         builder: (context, languageController, _) {
           return MaterialApp(
-            title: 'Ignis Safe',
+            title: 'IGNIS SAFE',
             debugShowCheckedModeBanner: false,
             theme: ThemeData(fontFamily: 'Poppins', useMaterial3: true),
             locale: languageController.locale,

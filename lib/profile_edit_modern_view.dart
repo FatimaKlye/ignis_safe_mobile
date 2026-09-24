@@ -265,85 +265,36 @@ Widget _buildModernEditProfileView(
                           iconColor: navy,
                           title: state._txt('Security', 'Seguridad'),
                           subtitle: state._txt(
-                            'Change your password only when needed',
-                            'Palitan lamang ang password kung kailangan',
+                            'Manage your password and email address',
+                            'Pamahalaan ang iyong password at email address',
                           ),
                           children: [
-                            _ModernEditField(
-                              label: state._txt(
-                                'New Password',
-                                'Bagong Password',
-                              ),
-                              controller: state._passwordCtrl,
+                            _ModernActionRow(
                               icon: Icons.lock_outline_rounded,
-                              obscureText: !state._showPass,
-                              trailing: IconButton(
-                                tooltip: '',
-                                onPressed:
-                                    state._toggleModernPasswordVisibility,
-                                icon: Icon(
-                                  state._showPass
-                                      ? Icons.visibility_off_outlined
-                                      : Icons.visibility_outlined,
-                                  color: const Color(0xFF777B86),
-                                  size: 20,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 15),
-                            _ModernEditField(
+                              iconColor: navy,
                               label: state._txt(
-                                'Confirm Password',
-                                'Kumpirmahin ang Password',
+                                'Change Password',
+                                'Palitan ang Password',
                               ),
-                              controller: state._confirmCtrl,
-                              icon: Icons.lock_reset_rounded,
-                              obscureText: !state._showConfirm,
-                              trailing: IconButton(
-                                tooltip: '',
-                                onPressed: state._toggleModernConfirmVisibility,
-                                icon: Icon(
-                                  state._showConfirm
-                                      ? Icons.visibility_off_outlined
-                                      : Icons.visibility_outlined,
-                                  color: const Color(0xFF777B86),
-                                  size: 20,
-                                ),
+                              subtitle: state._txt(
+                                'Reset via email verification',
+                                'I-reset gamit ang email verification',
                               ),
+                              onTap: state._openChangePassword,
                             ),
-                            const SizedBox(height: 13),
-                            Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.all(11),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFF3F6FB),
-                                borderRadius: BorderRadius.circular(12),
+                            const SizedBox(height: 12),
+                            _ModernActionRow(
+                              icon: Icons.alternate_email_rounded,
+                              iconColor: navy,
+                              label: state._txt(
+                                'Change Email Address',
+                                'Palitan ang Email Address',
                               ),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Icon(
-                                    Icons.info_outline_rounded,
-                                    color: navy,
-                                    size: 17,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: Text(
-                                      state._txt(
-                                        'Leave both password fields blank to keep your current password.',
-                                        'Iwanang blangko ang dalawang password field upang panatilihin ang kasalukuyang password.',
-                                      ),
-                                      style: const TextStyle(
-                                        color: Color(0xFF647087),
-                                        fontSize: 10.5,
-                                        height: 1.35,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                              subtitle: state._txt(
+                                'Verify a new email before it takes effect',
+                                'I-verify ang bagong email bago ito ilapat',
                               ),
+                              onTap: state._openChangeEmail,
                             ),
                           ],
                         ),
@@ -610,16 +561,12 @@ class _ModernEditField extends StatelessWidget {
     required this.controller,
     required this.icon,
     this.enabled = true,
-    this.obscureText = false,
-    this.trailing,
   });
 
   final String label;
   final TextEditingController controller;
   final IconData icon;
   final bool enabled;
-  final bool obscureText;
-  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
@@ -628,7 +575,6 @@ class _ModernEditField extends StatelessWidget {
     return TextField(
       controller: controller,
       enabled: enabled,
-      obscureText: obscureText,
       maxLines: 1,
       style: TextStyle(
         color: enabled ? const Color(0xFF24262C) : const Color(0xFF777B86),
@@ -648,7 +594,6 @@ class _ModernEditField extends StatelessWidget {
           fontWeight: FontWeight.w700,
         ),
         prefixIcon: Icon(icon, color: enabled ? red : const Color(0xFF9A9DA5)),
-        suffixIcon: trailing,
         filled: true,
         fillColor: enabled ? const Color(0xFFFAF8F7) : const Color(0xFFF1F1F3),
         contentPadding: const EdgeInsets.symmetric(
@@ -670,6 +615,87 @@ class _ModernEditField extends StatelessWidget {
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
           borderSide: const BorderSide(color: red, width: 1.5),
+        ),
+      ),
+    );
+  }
+}
+
+class _ModernActionRow extends StatelessWidget {
+  const _ModernActionRow({
+    required this.icon,
+    required this.iconColor,
+    required this.label,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final Color iconColor;
+  final String label;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: const Color(0xFFFAF8F7),
+      borderRadius: BorderRadius.circular(14),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(14),
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: const Color(0xFFE5E1DF)),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: iconColor.withValues(alpha: 0.09),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, color: iconColor, size: 18),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: Color(0xFF24262C),
+                        fontSize: 13.5,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitle,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: Color(0xFF858994),
+                        fontSize: 10.5,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(
+                Icons.chevron_right_rounded,
+                color: Color(0xFF9A9DA5),
+              ),
+            ],
+          ),
         ),
       ),
     );

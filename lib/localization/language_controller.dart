@@ -7,11 +7,21 @@ class LanguageController extends ChangeNotifier {
 
   Locale _locale = const Locale('en');
   bool _ready = false;
+  bool _selectedByUser = false;
 
   Locale get locale => _locale;
   bool get isReady => _ready;
   bool get isEnglish => _locale.languageCode == 'en';
   bool get isTagalog => _locale.languageCode == 'tl';
+
+  /// Display name of the current language, e.g. "English" or "Filipino".
+  String get currentLanguageName => languageName(_locale.languageCode);
+
+  /// Language names are shown in their own language so users can always
+  /// recognize them, whichever language the app is currently in.
+  static String languageName(String code) {
+    return code == 'tl' ? 'Filipino' : 'English';
+  }
 
   LanguageController() {
     _load();
@@ -22,33 +32,40 @@ class LanguageController extends ChangeNotifier {
   }
 
   Future<void> _load() async {
+    String code = 'en';
     try {
       final prefs = await SharedPreferences.getInstance();
-      String code = prefs.getString(_languageCodeKey) ?? 'en';
+      final savedCode = prefs.getString(_languageCodeKey);
 
-      final user = Supabase.instance.client.auth.currentUser;
+      if (_isValidCode(savedCode)) {
+        // The choice saved on this device (from Login or Profile) wins, so it
+        // survives restarts even if the last profile sync failed offline.
+        code = savedCode!;
+      } else {
+        final user = Supabase.instance.client.auth.currentUser;
 
-      if (user != null) {
-        final row = await Supabase.instance.client
-            .from('profiles')
-            .select('app_language_code')
-            .eq('id', user.id)
-            .maybeSingle();
+        if (user != null) {
+          final row = await Supabase.instance.client
+              .from('profiles')
+              .select('app_language_code')
+              .eq('id', user.id)
+              .maybeSingle();
 
-        final dbCode = row?['app_language_code']?.toString();
+          final dbCode = row?['app_language_code']?.toString();
 
-        if (_isValidCode(dbCode)) {
-          code = dbCode!;
-          await prefs.setString(_languageCodeKey, code);
+          if (_isValidCode(dbCode)) {
+            code = dbCode!;
+            await prefs.setString(_languageCodeKey, code);
+          }
         }
       }
-
-      if (_isValidCode(code)) {
+    } catch (_) {
+      // Fall back to the code resolved so far.
+    } finally {
+      // Never override a language the user picked while this was loading.
+      if (!_selectedByUser) {
         _locale = Locale(code);
       }
-    } catch (_) {
-      _locale = const Locale('en');
-    } finally {
       _ready = true;
       notifyListeners();
     }
@@ -57,18 +74,24 @@ class LanguageController extends ChangeNotifier {
   Future<void> setLanguage(String code) async {
     if (!_isValidCode(code)) return;
 
+    _selectedByUser = true;
     final changed = _locale.languageCode != code;
 
     _locale = Locale(code);
 
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_languageCodeKey, code);
-
-    await _saveLanguageToProfile(code);
-
+    // Apply immediately; persistence below must not delay the UI update.
     if (changed) {
       notifyListeners();
     }
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_languageCodeKey, code);
+    } catch (_) {
+      // Keep the in-memory choice even if local storage is unavailable.
+    }
+
+    await _saveLanguageToProfile(code);
   }
 
   Future<void> _saveLanguageToProfile(String code) async {

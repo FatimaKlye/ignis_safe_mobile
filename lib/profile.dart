@@ -3,6 +3,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'app_content_refresh.dart';
 import 'app_refresh_action.dart';
@@ -11,10 +12,14 @@ import 'login.dart';
 import 'faq_page.dart';
 import 'feedback_dialog.dart';
 import 'widgets/account_menu.dart';
+import 'widgets/language_picker.dart';
+import 'widgets/logout_confirm_dialog.dart';
 import 'widgets/main_tab_header.dart';
 import 'module_progress_refresh_notifier.dart';
 import 'profile_refresh_notifier.dart';
 import 'profile_progress_sync.dart';
+import 'forgotpass.dart';
+import 'change_email_page.dart';
 
 part 'edit_profile_page.dart';
 part 'profile_modern_view.dart';
@@ -216,6 +221,9 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Future<void> _logout() async {
     if (_isLoggingOut) return;
+
+    final confirmed = await showLogoutConfirmDialog(context);
+    if (!confirmed || !mounted || _isLoggingOut) return;
 
     setState(() {
       _isLoggingOut = true;
@@ -463,8 +471,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                 Text(
                                   _t(
                                     context,
-                                    'Welcome to Ignis Safe',
-                                    'Mabuhay, Ignis Safe',
+                                    'Welcome to IGNIS SAFE',
+                                    'Mabuhay, IGNIS SAFE',
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 1,

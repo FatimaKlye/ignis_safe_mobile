@@ -5,9 +5,22 @@ import 'login.dart';
 import 'localization/language_controller.dart';
 import 'network_error_helper.dart';
 import 'widgets/app_notification.dart';
+import 'widgets/password_changed_dialog.dart';
+import 'widgets/password_requirements.dart';
+import 'widgets/top_close_button.dart';
+
+/// Where [ForgotPassPage] was opened from. Controls the exit action: from
+/// Login a bottom "Back to Login" link; from Profile a top-left X that closes
+/// back to the previous screen without touching the authenticated session.
+enum ForgotPassEntrySource { login, profile }
 
 class ForgotPassPage extends StatefulWidget {
-  const ForgotPassPage({super.key});
+  const ForgotPassPage({
+    super.key,
+    this.entrySource = ForgotPassEntrySource.login,
+  });
+
+  final ForgotPassEntrySource entrySource;
 
   @override
   State<ForgotPassPage> createState() => _ForgotPassPageState();
@@ -32,10 +45,27 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
   bool _showNewPassword = false;
   bool _showConfirmPassword = false;
 
+  bool get _isProfileMode =>
+      widget.entrySource == ForgotPassEntrySource.profile;
+
+  /// In Profile mode the reset is locked to the signed-in account so the
+  /// recovery OTP can never switch the session to a different user.
+  String? get _sessionEmail => supabase.auth.currentUser?.email;
+
+  @override
+  void initState() {
+    super.initState();
+    if (_isProfileMode) {
+      _emailCtrl.text = _sessionEmail ?? '';
+    }
+    _newPasswordCtrl.addListener(_onNewPasswordChanged);
+  }
+
   @override
   void dispose() {
     _emailCtrl.dispose();
     _otpCtrl.dispose();
+    _newPasswordCtrl.removeListener(_onNewPasswordChanged);
     _newPasswordCtrl.dispose();
     _confirmPasswordCtrl.dispose();
     super.dispose();
@@ -75,7 +105,6 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
     }
     return 'May problema sa authentication. Pakisubukang muli.';
   }
-
 
   Future<bool> _accountExistsForPasswordReset(String email) async {
     final normalizedEmail = email.trim().toLowerCase();
@@ -145,10 +174,7 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
               'Hindi rehistrado ang email na ito sa aming app. Pakisuri ang email o gumawa muna ng account.',
             ),
             textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontFamily: 'Poppins',
-              height: 1.4,
-            ),
+            style: const TextStyle(fontFamily: 'Poppins', height: 1.4),
           ),
           actionsAlignment: MainAxisAlignment.center,
           actions: [
@@ -202,6 +228,15 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
     return null;
   }
 
+  /// Rebuilds the password requirements checklist while the user types.
+  void _onNewPasswordChanged() {
+    if (mounted) setState(() {});
+  }
+
+  /// Checked against the trimmed value because that is what gets saved.
+  PasswordRules get _newPasswordRules =>
+      PasswordRules.check(_newPasswordCtrl.text.trim());
+
   String? _validatePassword(String? value) {
     final password = value?.trim() ?? '';
     if (password.isEmpty) {
@@ -211,38 +246,24 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
         'Mangyaring maglagay ng bagong password.',
       );
     }
-    if (password.length < 8) {
+    if (!PasswordRules.check(password).allPassed) {
       return t(
         context,
-        'Password must be at least 8 characters.',
-        'Ang password ay dapat may hindi bababa sa 8 character.',
-      );
-    }
-    if (!RegExp(r'\d').hasMatch(password)) {
-      return t(
-        context,
-        'Password must contain a number.',
-        'Ang password ay dapat may numero.',
-      );
-    }
-    if (!RegExp(r'[!@#$%^&*(),.?":{}|<>_\-\\/\[\]=+]').hasMatch(password)) {
-      return t(
-        context,
-        'Password must contain a symbol.',
-        'Ang password ay dapat may simbolo.',
+        'Password does not meet all requirements',
+        'Hindi natutugunan ng password ang lahat ng kinakailangan',
       );
     }
     return null;
   }
 
   Future<void> _sendOtp() async {
+    if (_isProfileMode) {
+      _emailCtrl.text = _sessionEmail ?? '';
+    }
+
     final emailError = _validateEmail(_emailCtrl.text);
     if (emailError != null) {
-      _notify(
-        context,
-        message: emailError,
-        type: AppNotificationType.error,
-      );
+      _notify(context, message: emailError, type: AppNotificationType.error);
       return;
     }
 
@@ -305,11 +326,7 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
   Future<void> _verifyOtp() async {
     final otpError = _validateOtp(_otpCtrl.text);
     if (otpError != null) {
-      _notify(
-        context,
-        message: otpError,
-        type: AppNotificationType.error,
-      );
+      _notify(context, message: otpError, type: AppNotificationType.error);
       return;
     }
 
@@ -375,14 +392,21 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
     }
   }
 
+  /// Signs out after a successful password update. Never throws: gotrue clears
+  /// the local session before calling the server, so a failed server-side
+  /// revoke must not be reported as a failed password update.
+  Future<void> _signOutAfterPasswordChange() async {
+    try {
+      await supabase.auth.signOut();
+    } catch (e) {
+      debugPrint('Sign out after password change failed: $e');
+    }
+  }
+
   Future<void> _updatePassword() async {
     final passwordError = _validatePassword(_newPasswordCtrl.text);
     if (passwordError != null) {
-      _notify(
-        context,
-        message: passwordError,
-        type: AppNotificationType.error,
-      );
+      _notify(context, message: passwordError, type: AppNotificationType.error);
       return;
     }
 
@@ -414,30 +438,16 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
 
     setState(() => _isLoading = true);
 
+    // Captured before the async gap so the post-update modal and redirect
+    // still run even if this route is dismissed while the request is in flight.
+    final navigator = Navigator.of(context, rootNavigator: true);
+
+    var passwordUpdated = false;
     try {
       await supabase.auth.updateUser(
         UserAttributes(password: _newPasswordCtrl.text.trim()),
       );
-
-      await supabase.auth.signOut();
-
-      if (!mounted) return;
-
-      _notify(
-        context,
-        message: t(
-          context,
-          'Password updated successfully.',
-          'Matagumpay na na-update ang password.',
-        ),
-        type: AppNotificationType.success,
-      );
-
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (_) => const LoginPage()),
-        (route) => false,
-      );
+      passwordUpdated = true;
     } on AuthException catch (e) {
       if (!mounted) return;
       _notify(
@@ -461,8 +471,19 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
         );
       }
     } finally {
-      if (mounted) setState(() => _isLoading = false);
+      // On success the page stays locked until the stack is replaced below.
+      if (mounted && !passwordUpdated) setState(() => _isLoading = false);
     }
+
+    if (!passwordUpdated) return;
+
+    // Password changed: show the modal, then end the session for both Login
+    // and Profile entry points and clear the stack so Back cannot return to
+    // Profile/Home.
+    await showPasswordChangedAndLogout(
+      navigator,
+      signOut: _signOutAfterPasswordChange,
+    );
   }
 
   Widget _buildEmailStep() {
@@ -485,6 +506,7 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
         const SizedBox(height: 32),
         TextFormField(
           controller: _emailCtrl,
+          readOnly: _isProfileMode,
           keyboardType: TextInputType.emailAddress,
           validator: _validateEmail,
           decoration: InputDecoration(
@@ -661,7 +683,7 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
             prefixIcon: const Icon(Icons.lock_outline),
             suffixIcon: IconButton(
               icon: Icon(
-                _showNewPassword ? Icons.visibility_off : Icons.visibility,
+                _showNewPassword ? Icons.visibility : Icons.visibility_off,
               ),
               onPressed: () {
                 setState(() => _showNewPassword = !_showNewPassword);
@@ -678,6 +700,10 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
             ),
           ),
         ),
+        PasswordRequirementsCard(
+          rules: _newPasswordRules,
+          visible: _newPasswordCtrl.text.isNotEmpty,
+        ),
         const SizedBox(height: 16),
         TextFormField(
           controller: _confirmPasswordCtrl,
@@ -691,7 +717,7 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
             prefixIcon: const Icon(Icons.lock_outline),
             suffixIcon: IconButton(
               icon: Icon(
-                _showConfirmPassword ? Icons.visibility_off : Icons.visibility,
+                _showConfirmPassword ? Icons.visibility : Icons.visibility_off,
               ),
               onPressed: () {
                 setState(() => _showConfirmPassword = !_showConfirmPassword);
@@ -758,113 +784,112 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 35.0),
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              return SingleChildScrollView(
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                  child: Align(
-                    alignment: Alignment.topCenter,
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(top: 70, bottom: 30),
-                            child: SizedBox(
-                              height: 120,
-                              child: FittedBox(
-                                fit: BoxFit.contain,
-                                child: Image.asset('assets/logo.png'),
-                              ),
-                            ),
-                          ),
-                          Text(
-                            title,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontFamily: 'Poppins',
-                              fontSize: 28,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.black87,
-                              height: 1.0,
-                            ),
-                          ),
-                          const SizedBox(height: 6),
-                          Container(
-                            height: 2,
-                            width: 150,
-                            decoration: BoxDecoration(
-                              color: brandRed,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-
-                          if (_stage == _ForgotStage.email) _buildEmailStep(),
-                          if (_stage == _ForgotStage.otp) _buildOtpStep(),
-                          if (_stage == _ForgotStage.password)
-                            _buildPasswordStep(),
-
-                          const SizedBox(height: 18),
-
-                          if (_stage != _ForgotStage.email)
-                            TextButton(
-                              onPressed: _isLoading
-                                  ? null
-                                  : () {
-                                      setState(() {
-                                        if (_stage == _ForgotStage.password) {
-                                          _stage = _ForgotStage.otp;
-                                        } else {
-                                          _stage = _ForgotStage.email;
-                                        }
-                                      });
-                                    },
-                              child: Text(
-                                t(context, 'Back', 'Bumalik'),
-                                style: TextStyle(
-                                  fontFamily: 'Poppins',
-                                  fontWeight: FontWeight.w600,
-                                  color: brandRed,
+        child: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 35.0),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return SingleChildScrollView(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minHeight: constraints.maxHeight,
+                      ),
+                      child: Align(
+                        alignment: Alignment.topCenter,
+                        child: Form(
+                          key: _formKey,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                  top: 70,
+                                  bottom: 30,
+                                ),
+                                child: SizedBox(
+                                  height: 120,
+                                  child: FittedBox(
+                                    fit: BoxFit.contain,
+                                    child: Image.asset('assets/logo.png'),
+                                  ),
                                 ),
                               ),
-                            ),
-
-                          TextButton(
-                            onPressed: _isLoading
-                                ? null
-                                : () {
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => const LoginPage(),
-                                      ),
-                                    );
-                                  },
-                            child: Text(
-                              t(context, 'Back to Login', 'Bumalik sa Login'),
-                              style: TextStyle(
-                                fontFamily: 'Poppins',
-                                fontWeight: FontWeight.w600,
-                                color: brandRed,
+                              Text(
+                                title,
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.black87,
+                                  height: 1.0,
+                                ),
                               ),
-                            ),
-                          ),
+                              const SizedBox(height: 6),
+                              Container(
+                                height: 2,
+                                width: 150,
+                                decoration: BoxDecoration(
+                                  color: brandRed,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              const SizedBox(height: 12),
 
-                          const SizedBox(height: 30),
-                        ],
+                              if (_stage == _ForgotStage.email)
+                                _buildEmailStep(),
+                              if (_stage == _ForgotStage.otp) _buildOtpStep(),
+                              if (_stage == _ForgotStage.password)
+                                _buildPasswordStep(),
+
+                              const SizedBox(height: 18),
+
+                              if (!_isProfileMode)
+                                TextButton(
+                                  onPressed: _isLoading
+                                      ? null
+                                      : () {
+                                          Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (_) => const LoginPage(),
+                                            ),
+                                          );
+                                        },
+                                  child: Text(
+                                    t(
+                                      context,
+                                      'Back to Login',
+                                      'Bumalik sa Login',
+                                    ),
+                                    style: TextStyle(
+                                      fontFamily: 'Poppins',
+                                      fontWeight: FontWeight.w600,
+                                      color: brandRed,
+                                    ),
+                                  ),
+                                ),
+
+                              const SizedBox(height: 30),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ),
-              );
-            },
-          ),
+                  );
+                },
+              ),
+            ),
+            // Profile mode: close back to Profile/Edit Profile. Only pops this
+            // route, so the signed-in session stays untouched.
+            if (_isProfileMode)
+              TopCloseButtonOverlay(
+                color: brandRed,
+                onTap: _isLoading ? null : () => Navigator.pop(context),
+              ),
+          ],
         ),
       ),
     );

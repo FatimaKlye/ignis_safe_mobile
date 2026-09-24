@@ -43,8 +43,22 @@ List<Color> _resolveGradient(AppNotificationType type, Color? accentColor) {
   return [accentColor, darker];
 }
 
+/// Implemented by the overlay states of [showAppNotification] and
+/// [showAppToast] so both share one "active" slot and never stack.
+abstract class _TransientOverlay {
+  void dismissImmediately();
+}
+
 OverlayEntry? _activeNotificationEntry;
-GlobalKey<_AppNotificationCardState>? _activeNotificationKey;
+GlobalKey? _activeNotificationKey;
+
+void _clearActiveNotification() {
+  final Object? active = _activeNotificationKey?.currentState;
+  if (active is _TransientOverlay) active.dismissImmediately();
+  _activeNotificationEntry?.remove();
+  _activeNotificationEntry = null;
+  _activeNotificationKey = null;
+}
 
 /// Shows a floating, theme-matched notification card near the top of the
 /// screen. Replaces the default gray [SnackBar] for transient
@@ -62,10 +76,7 @@ void showAppNotification(
   final overlay = Overlay.maybeOf(context, rootOverlay: true);
   if (overlay == null) return;
 
-  _activeNotificationKey?.currentState?.dismissImmediately();
-  _activeNotificationEntry?.remove();
-  _activeNotificationEntry = null;
-  _activeNotificationKey = null;
+  _clearActiveNotification();
 
   final cardKey = GlobalKey<_AppNotificationCardState>();
   late final OverlayEntry entry;
@@ -92,6 +103,50 @@ void showAppNotification(
 
   _activeNotificationEntry = entry;
   _activeNotificationKey = cardKey;
+  overlay.insert(entry);
+}
+
+/// Shows a small, non-blocking pill toast (icon + one short message) near the
+/// top of the screen that fades out on its own. Has no close button and
+/// ignores touches, so the screen underneath stays fully usable. Inserted into
+/// the root overlay, so it stays visible across a route change (e.g. the
+/// navigation that follows a successful login).
+void showAppToast(
+  BuildContext context, {
+  required String message,
+  AppNotificationType type = AppNotificationType.success,
+  Color? accentColor,
+  Duration duration = const Duration(milliseconds: 1800),
+}) {
+  final overlay = Overlay.maybeOf(context, rootOverlay: true);
+  if (overlay == null) return;
+
+  _clearActiveNotification();
+
+  final toastKey = GlobalKey<_AppToastState>();
+  late final OverlayEntry entry;
+
+  void remove() {
+    if (_activeNotificationEntry == entry) {
+      entry.remove();
+      _activeNotificationEntry = null;
+      _activeNotificationKey = null;
+    }
+  }
+
+  entry = OverlayEntry(
+    builder: (_) => _AppToast(
+      key: toastKey,
+      message: message,
+      type: type,
+      accentColor: accentColor,
+      duration: duration,
+      onDismissed: remove,
+    ),
+  );
+
+  _activeNotificationEntry = entry;
+  _activeNotificationKey = toastKey;
   overlay.insert(entry);
 }
 
@@ -265,7 +320,8 @@ class _AppNotificationCard extends StatefulWidget {
 }
 
 class _AppNotificationCardState extends State<_AppNotificationCard>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin
+    implements _TransientOverlay {
   late final AnimationController _controller;
   late final Animation<Offset> _slide;
   late final Animation<double> _fade;
@@ -299,6 +355,7 @@ class _AppNotificationCardState extends State<_AppNotificationCard>
     widget.onDismissed();
   }
 
+  @override
   void dismissImmediately() {
     _timer?.cancel();
     _closing = true;
@@ -424,6 +481,146 @@ class _AppNotificationCardState extends State<_AppNotificationCard>
                       ),
                     ),
                   ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _AppToast extends StatefulWidget {
+  final String message;
+  final AppNotificationType type;
+  final Color? accentColor;
+  final Duration duration;
+  final VoidCallback onDismissed;
+
+  const _AppToast({
+    super.key,
+    required this.message,
+    required this.type,
+    this.accentColor,
+    required this.duration,
+    required this.onDismissed,
+  });
+
+  @override
+  State<_AppToast> createState() => _AppToastState();
+}
+
+class _AppToastState extends State<_AppToast>
+    with SingleTickerProviderStateMixin
+    implements _TransientOverlay {
+  late final AnimationController _controller;
+  late final Animation<double> _fade;
+  late final Animation<double> _scale;
+  Timer? _timer;
+  bool _closing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 220),
+      reverseDuration: const Duration(milliseconds: 180),
+    );
+    _fade = CurvedAnimation(parent: _controller, curve: Curves.easeOut);
+    _scale = Tween<double>(begin: 0.92, end: 1).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOutBack),
+    );
+    _controller.forward();
+    _timer = Timer(widget.duration, _dismiss);
+  }
+
+  Future<void> _dismiss() async {
+    if (_closing || !mounted) return;
+    _closing = true;
+    _timer?.cancel();
+    await _controller.reverse();
+    widget.onDismissed();
+  }
+
+  @override
+  void dismissImmediately() {
+    _timer?.cancel();
+    _closing = true;
+    widget.onDismissed();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final gradient = _resolveGradient(widget.type, widget.accentColor);
+    final icon = _notifStyles[widget.type]!.icon;
+    final topInset = MediaQuery.of(context).padding.top;
+
+    return Positioned(
+      left: 24,
+      right: 24,
+      top: topInset + 16,
+      // Purely informational: touches pass straight through to the screen.
+      child: IgnorePointer(
+        child: Semantics(
+          liveRegion: true,
+          child: Center(
+            child: FadeTransition(
+              opacity: _fade,
+              child: ScaleTransition(
+                scale: _scale,
+                child: Material(
+                  color: Colors.transparent,
+                  child: Container(
+                    padding: const EdgeInsets.fromLTRB(8, 8, 16, 8),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(30),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.14),
+                          blurRadius: 16,
+                          offset: const Offset(0, 6),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 26,
+                          height: 26,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(colors: gradient),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(icon, color: Colors.white, size: 16),
+                        ),
+                        const SizedBox(width: 10),
+                        Flexible(
+                          child: Text(
+                            widget.message,
+                            softWrap: true,
+                            style: const TextStyle(
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.w600,
+                              fontSize: 13,
+                              color: Color(0xFF111827),
+                              height: 1.3,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ),

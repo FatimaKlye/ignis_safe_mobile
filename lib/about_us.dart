@@ -9,6 +9,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'app_content_refresh.dart';
 import 'localization/language_controller.dart';
 import 'login.dart';
+import 'widgets/logout_confirm_dialog.dart';
 import 'widgets/main_tab_header.dart';
 import 'profile_refresh_notifier.dart';
 
@@ -263,9 +264,11 @@ class _AboutUsPageState extends State<AboutUsPage> {
         chips: (responses[3] as List)
             .map((e) => _IgnisChip.fromRow(Map<String, dynamic>.from(e as Map)))
             .toList(),
-        meanings: (responses[4] as List)
-            .map((e) => _NameMeaning.fromRow(Map<String, dynamic>.from(e as Map)))
-            .toList(),
+        meanings: _sortNameMeanings(
+          (responses[4] as List)
+              .map((e) => _NameMeaning.fromRow(Map<String, dynamic>.from(e as Map)))
+              .toList(),
+        ),
         team: (responses[5] as List)
             .map((e) => _TeamMember.fromRow(Map<String, dynamic>.from(e as Map)))
             .toList(),
@@ -377,6 +380,9 @@ class _AboutUsPageState extends State<AboutUsPage> {
   }
 
   Future<void> _logout() async {
+    final confirmed = await showLogoutConfirmDialog(context);
+    if (!confirmed || !mounted) return;
+
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('last_tab_index');
     try {
@@ -1218,6 +1224,30 @@ List<_TeamMember> _sortDevelopers(List<_TeamMember> members) {
 
   final entries = <MapEntry<int, _TeamMember>>[
     for (int i = 0; i < members.length; i++) MapEntry(i, members[i]),
+  ];
+  entries.sort((a, b) {
+    final byRank = rankOf(a.value).compareTo(rankOf(b.value));
+    return byRank != 0 ? byRank : a.key.compareTo(b.key);
+  });
+  return [for (final entry in entries) entry.value];
+}
+
+/// Display order of the name-meaning cards, matching the brand name
+/// "IGNIS SAFE". Applied here so the cards never depend on database order.
+const List<String> _nameMeaningDisplayOrder = <String>['IGNIS', 'SAFE'];
+
+/// Sorts name meanings by [_nameMeaningDisplayOrder] (matched on the English
+/// term, so English and Filipino share the same order). Unlisted terms keep
+/// their original database order and are appended after the listed ones.
+List<_NameMeaning> _sortNameMeanings(List<_NameMeaning> meanings) {
+  int rankOf(_NameMeaning meaning) {
+    final term = meaning.term.en.toUpperCase().trim();
+    final index = _nameMeaningDisplayOrder.indexOf(term);
+    return index == -1 ? _nameMeaningDisplayOrder.length : index;
+  }
+
+  final entries = <MapEntry<int, _NameMeaning>>[
+    for (int i = 0; i < meanings.length; i++) MapEntry(i, meanings[i]),
   ];
   entries.sort((a, b) {
     final byRank = rankOf(a.value).compareTo(rankOf(b.value));

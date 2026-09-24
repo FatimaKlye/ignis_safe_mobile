@@ -10,6 +10,7 @@ import 'login.dart';
 import 'app_content_refresh.dart';
 import 'localization/app_text.dart';
 import 'widgets/app_notification.dart';
+import 'widgets/logout_confirm_dialog.dart';
 import 'widgets/main_tab_header.dart';
 import 'module_progress_refresh_notifier.dart';
 import 'profile_refresh_notifier.dart';
@@ -45,8 +46,9 @@ import 'module_5_building.dart/post_assess_instruction.dart' as post5;
 /// Index of the Profile tab within [IgnisHomePage]'s tab list
 /// (Module = 0, About Us = 1, Profile = 2).
 const int _profileTabIndex = 2;
-const double _learningHeaderExtent = 290;
-const double _compactLearningHeaderExtent = 310;
+// Red header space kept below the progress card; the header's total height
+// comes from its content so localized text can wrap without overlap.
+const double _learningHeaderBottomPadding = 18;
 
 class _NoOverscrollScrollBehavior extends ScrollBehavior {
   const _NoOverscrollScrollBehavior();
@@ -336,6 +338,9 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
   }
 
   Future<void> _logout() async {
+    final confirmed = await showLogoutConfirmDialog(context);
+    if (!confirmed || !mounted) return;
+
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('last_tab_index');
     try {
@@ -1336,9 +1341,6 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
   @override
   Widget build(BuildContext context) {
     final avatarProvider = _buildAvatarProvider();
-    final headerExtent = MediaQuery.sizeOf(context).width < 370
-        ? _compactLearningHeaderExtent
-        : _learningHeaderExtent;
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -1348,86 +1350,111 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
           Positioned.fill(
             child: Image.asset('assets/bg.png', fit: BoxFit.cover),
           ),
-          Positioned.fill(
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                final compactWidth = constraints.maxWidth < 370;
-                final horizontalPadding = compactWidth ? 16.0 : 22.0;
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // The red surface is sized by the header content itself, so it
+              // grows with longer localized text (e.g. a wrapped Filipino
+              // title) instead of relying on one fixed height per language.
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  const Positioned.fill(child: MainTabHeaderSurface()),
+                  SafeArea(
+                    bottom: false,
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        final compactWidth = constraints.maxWidth < 370;
+                        final horizontalPadding = compactWidth ? 16.0 : 22.0;
 
-                // Mirrors FloatingNavBar's own responsive height (navbar.dart)
-                // so the list clears the glass nav bar without leaving a
-                // fixed, oversized gap below the last card on taller screens.
-                final navBarHeight = (constraints.maxWidth * 0.18)
-                    .clamp(54.0, 64.0)
-                    .clamp(0.0, 62.0);
-                const navBarBottomGap = 14.0;
-                final breathingRoom = (MediaQuery.sizeOf(context).height * 0.02)
-                    .clamp(14.0, 24.0);
-                final bottomInset =
-                    MediaQuery.paddingOf(context).bottom +
-                    navBarHeight +
-                    navBarBottomGap +
-                    breathingRoom;
-                return Padding(
-                  padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
-                  child: _buildList(
-                    _modules,
-                    topInset: headerExtent + 12,
-                    bottomInset: bottomInset,
-                  ),
-                );
-              },
-            ),
-          ),
-          MainTabHeaderBackdrop(height: headerExtent),
-          SafeArea(
-            bottom: false,
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                final compactWidth = constraints.maxWidth < 370;
-                final horizontalPadding = compactWidth ? 16.0 : 22.0;
-
-                return Padding(
-                  padding: EdgeInsets.fromLTRB(
-                    horizontalPadding,
-                    12,
-                    horizontalPadding,
-                    0,
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      MainTabHeader(
-                        greeting: _firstName.isEmpty && _lastName.isEmpty
-                            ? context.tr('hi')
-                            : context.tr(
-                                'hi_name',
-                                params: {
-                                  'name': '$_firstName $_lastName'.trim(),
-                                },
+                        return Padding(
+                          padding: EdgeInsets.fromLTRB(
+                            horizontalPadding,
+                            12,
+                            horizontalPadding,
+                            _learningHeaderBottomPadding,
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              MainTabHeader(
+                                greeting:
+                                    _firstName.isEmpty && _lastName.isEmpty
+                                    ? context.tr('hi')
+                                    : context.tr(
+                                        'hi_name',
+                                        params: {
+                                          'name': '$_firstName $_lastName'
+                                              .trim(),
+                                        },
+                                      ),
+                                accountLabel: context.tr(
+                                  'welcome_to_ignis_safe_short',
+                                ),
+                                title: context.tr('learning_materials'),
+                                subtitle: _isTl
+                                    ? 'Matuto, magsanay nang ligtas, at laging maging handa.'
+                                    : 'Build knowledge, practice safely, and stay prepared.',
+                                titleIcon: Icons.menu_book_rounded,
+                                avatarImage: avatarProvider,
+                                profileLabel: context.tr('profile'),
+                                refreshLabel: context.tr(
+                                  'refresh_and_check_updates',
+                                ),
+                                logoutLabel: context.tr('log_out'),
+                                onProfile: () => widget.onRequestTabChange
+                                    ?.call(_profileTabIndex),
+                                onLogout: _logout,
                               ),
-                        accountLabel: context.tr('welcome_to_ignis_safe_short'),
-                        title: context.tr('learning_materials'),
-                        subtitle: _isTl
-                            ? 'Matuto, magsanay nang ligtas, at laging maging handa.'
-                            : 'Build knowledge, practice safely, and stay prepared.',
-                        titleIcon: Icons.menu_book_rounded,
-                        avatarImage: avatarProvider,
-                        profileLabel: context.tr('profile'),
-                        refreshLabel: context.tr('refresh_and_check_updates'),
-                        logoutLabel: context.tr('log_out'),
-                        onProfile: () =>
-                            widget.onRequestTabChange?.call(_profileTabIndex),
-                        onLogout: _logout,
-                      ),
-                      const SizedBox(height: 16),
-                      _buildModuleProgressCard(),
-                    ],
+                              const SizedBox(height: 16),
+                              _buildModuleProgressCard(),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
                   ),
-                );
-              },
-            ),
+                ],
+              ),
+              Expanded(
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final compactWidth = constraints.maxWidth < 370;
+                    final horizontalPadding = compactWidth ? 16.0 : 22.0;
+
+                    // Mirrors FloatingNavBar's own responsive height
+                    // (navbar.dart) so the list clears the glass nav bar
+                    // without leaving a fixed, oversized gap below the last
+                    // card on taller screens.
+                    final navBarHeight = (constraints.maxWidth * 0.18)
+                        .clamp(54.0, 64.0)
+                        .clamp(0.0, 62.0);
+                    const navBarBottomGap = 14.0;
+                    final breathingRoom =
+                        (MediaQuery.sizeOf(context).height * 0.02).clamp(
+                          14.0,
+                          24.0,
+                        );
+                    final bottomInset =
+                        MediaQuery.paddingOf(context).bottom +
+                        navBarHeight +
+                        navBarBottomGap +
+                        breathingRoom;
+                    return Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: horizontalPadding,
+                      ),
+                      child: _buildList(
+                        _modules,
+                        topInset: 12,
+                        bottomInset: bottomInset,
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -5287,7 +5314,7 @@ class _BottomActionBar extends StatelessWidget {
         );
 
         Widget backButton() {
-          return OutlinedButton.icon(
+          return OutlinedButton(
             style: OutlinedButton.styleFrom(
               foregroundColor: accent,
               side: BorderSide(color: accent),
@@ -5299,8 +5326,7 @@ class _BottomActionBar extends StatelessWidget {
               ),
             ),
             onPressed: onBack,
-            icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 16),
-            label: Text(
+            child: Text(
               backText,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -5349,13 +5375,6 @@ class _BottomActionBar extends StatelessWidget {
                         height: 1.15,
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  Icon(
-                    last
-                        ? Icons.play_arrow_rounded
-                        : Icons.arrow_forward_rounded,
-                    size: 18,
                   ),
                 ],
               ),

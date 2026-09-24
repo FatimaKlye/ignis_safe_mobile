@@ -146,12 +146,6 @@ class ScoreResultActionButtons extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 6),
-                  const Icon(
-                    Icons.arrow_forward_rounded,
-                    color: Colors.white,
-                    size: 19,
-                  ),
                 ],
               ),
             ),

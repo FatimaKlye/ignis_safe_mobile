@@ -6,6 +6,7 @@ import 'forgotpass.dart';
 import 'login.dart';
 import 'verifyemail.dart';
 import 'network_error_helper.dart';
+import 'widgets/password_requirements.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -33,10 +34,7 @@ class _RegisterPageState extends State<RegisterPage> {
   bool _showPassword = false;
   bool _showConfirmPassword = false;
 
-  bool _min8 = false;
-  bool _hasNumber = false;
-  bool _hasSymbol = false;
-  bool _hasUpper = false;
+  PasswordRules _passwordRules = PasswordRules.check('');
   bool _matches = false;
 
   @override
@@ -69,24 +67,12 @@ class _RegisterPageState extends State<RegisterPage> {
     final password = passCtrl.text;
     final confirm = confirmPassCtrl.text;
 
-    final min8 = password.length >= 8;
-    final hasNumber = RegExp(r'\d').hasMatch(password);
-    final hasSymbol = RegExp(
-      r'[!@#$%^&*(),.?":{}|<>_\-\[\]\\/~`+=;]',
-    ).hasMatch(password);
-    final hasUpper = RegExp(r'[A-Z]').hasMatch(password);
+    final rules = PasswordRules.check(password);
     final matches = confirm.isNotEmpty && password == confirm;
 
-    if (_min8 != min8 ||
-        _hasNumber != hasNumber ||
-        _hasSymbol != hasSymbol ||
-        _hasUpper != hasUpper ||
-        _matches != matches) {
+    if (_passwordRules != rules || _matches != matches) {
       setState(() {
-        _min8 = min8;
-        _hasNumber = hasNumber;
-        _hasSymbol = hasSymbol;
-        _hasUpper = hasUpper;
+        _passwordRules = rules;
         _matches = matches;
       });
     } else if (mounted) {
@@ -94,17 +80,8 @@ class _RegisterPageState extends State<RegisterPage> {
     }
   }
 
-  int get _passedRules {
-    int count = 0;
-    if (_min8) count++;
-    if (_hasNumber) count++;
-    if (_hasSymbol) count++;
-    if (_hasUpper) count++;
-    return count;
-  }
-
   bool get _passwordStarted => passCtrl.text.isNotEmpty;
-  bool get _passwordRulesPassed => _passedRules == 4;
+  bool get _passwordRulesPassed => _passwordRules.allPassed;
   bool get _allPasswordOk => _passwordRulesPassed && _matches;
 
   bool get _canSubmit =>
@@ -889,80 +866,13 @@ class _RegisterPageState extends State<RegisterPage> {
       onPressed: onTap,
       splashRadius: 20,
       icon: Icon(
-        visible ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+        visible ? Icons.visibility_outlined : Icons.visibility_off_outlined,
         color: brandRed,
         size: 20,
       ),
       tooltip: visible
           ? t(context, 'Hide', 'Itago')
           : t(context, 'Show', 'Ipakita'),
-    );
-  }
-
-  Widget _ruleItem(String text, bool passed) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Icon(
-          passed ? Icons.check_circle : Icons.radio_button_unchecked,
-          size: 16,
-          color: passed ? const Color(0xFF2E7D32) : Colors.black38,
-        ),
-        const SizedBox(width: 6),
-        Text(
-          text,
-          style: TextStyle(
-            fontFamily: 'Poppins',
-            fontSize: 11,
-            color: passed ? const Color(0xFF2E7D32) : Colors.black54,
-            fontWeight: passed ? FontWeight.w600 : FontWeight.w500,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPasswordValidationCard() {
-    if (!_passwordStarted) return const SizedBox.shrink();
-
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 180),
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF8F8F8),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFEAEAEA)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            t(context, 'Password requirements', 'Mga kailangan sa password'),
-            style: const TextStyle(
-              fontFamily: 'Poppins',
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-              color: Colors.black54,
-            ),
-          ),
-          const SizedBox(height: 6),
-          Wrap(
-            spacing: 12,
-            runSpacing: 6,
-            children: [
-              _ruleItem(t(context, '8+ characters', '8+ na character'), _min8),
-              _ruleItem(
-                t(context, '1 uppercase', '1 malaking titik'),
-                _hasUpper,
-              ),
-              _ruleItem(t(context, '1 number', '1 numero'), _hasNumber),
-              _ruleItem(t(context, '1 symbol', '1 simbolo'), _hasSymbol),
-            ],
-          ),
-        ],
-      ),
     );
   }
 
@@ -1253,17 +1163,9 @@ class _RegisterPageState extends State<RegisterPage> {
                       },
                     ),
                   ),
-                  AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 180),
-                    child: _passwordStarted
-                        ? Padding(
-                            key: const ValueKey('password-rules'),
-                            padding: const EdgeInsets.only(top: 10),
-                            child: _buildPasswordValidationCard(),
-                          )
-                        : const SizedBox.shrink(
-                            key: ValueKey('password-rules-empty'),
-                          ),
+                  PasswordRequirementsCard(
+                    rules: _passwordRules,
+                    visible: _passwordStarted,
                   ),
                   const SizedBox(height: 14),
                   _inputLabel(

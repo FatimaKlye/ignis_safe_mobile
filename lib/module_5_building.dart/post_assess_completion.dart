@@ -177,77 +177,6 @@ class PostAssessmentCompletionPage extends StatelessWidget {
                             width: double.infinity,
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
-                              color: AppColors.surfaceSoft,
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(color: AppColors.border),
-                            ),
-                            child: Text(
-                              t(
-                                context,
-                                'Congratulations! Your score shows how well you understood the Module 5 Learning Materials.',
-                                'Binabati ka namin! Ipinapakita ng iyong score kung gaano mo naunawaan ang Modyul 5 sa Pag-aaral.',
-                              ),
-                              textAlign: TextAlign.center,
-                              softWrap: true,
-                              style: const TextStyle(
-                                fontFamily: 'Poppins',
-                                fontSize: 14,
-                                height: 1.45,
-                                fontWeight: FontWeight.w700,
-                                color: AppColors.textPrimary,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 14),
-                          Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: AppColors.brandRedSoft,
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(color: AppColors.border),
-                            ),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(9),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.surface,
-                                    borderRadius: BorderRadius.circular(14),
-                                  ),
-                                  child: const Icon(
-                                    Icons.info_outline_rounded,
-                                    color: AppColors.brandRed,
-                                    size: 20,
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Text(
-                                    t(
-                                      context,
-                                      'Your post-assessment result has been recorded. This score helps identify what you learned from the building fire basics, alarms, evacuation routes, and proper emergency response lesson.',
-                                      'Naitala na ang iyong resulta sa panghuling pagsusulit. Ang score na ito ay tumutulong matukoy kung ano ang natutunan mo tungkol sa sunog sa gusali, alarma, ruta ng paglikas, at tamang pagtugon sa emerhensiya.',
-                                    ),
-                                    softWrap: true,
-                                    style: const TextStyle(
-                                      fontFamily: 'Poppins',
-                                      fontSize: 13.5,
-                                      height: 1.45,
-                                      fontWeight: FontWeight.w600,
-                                      color: AppColors.textPrimary,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 14),
-                          Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
                               color: AppColors.brandRedSoft,
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(color: AppColors.border),
@@ -331,12 +260,6 @@ class PostAssessmentCompletionPage extends StatelessWidget {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const Icon(
-                                    Icons.done_all_rounded,
-                                    color: AppColors.textOnRed,
-                                    size: 21,
-                                  ),
-                                  const SizedBox(width: 8),
                                   Flexible(
                                     child: Text(
                                       t(

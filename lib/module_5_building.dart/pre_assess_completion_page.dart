@@ -164,24 +164,33 @@ class PreAssessmentCompletionPage3 extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    Wrap(
-                      alignment: WrapAlignment.center,
-                      spacing: 12,
-                      runSpacing: 12,
-                      children: [
-                        _InfoChip(
-                          icon: Icons.check_circle_rounded,
-                          label: t(context, 'Score Saved', 'Naitala ang Marka'),
-                        ),
-                        _InfoChip(
-                          icon: Icons.menu_book_rounded,
-                          label: t(
-                            context,
-                            'Module 5 Unlocked',
-                            'Bukas na ang Modyul 5',
+                    IntrinsicHeight(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Expanded(
+                            child: _InfoChip(
+                              icon: Icons.check_circle_rounded,
+                              label: t(
+                                context,
+                                'Score Saved',
+                                'Naitala ang Marka',
+                              ),
+                            ),
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: _InfoChip(
+                              icon: Icons.menu_book_rounded,
+                              label: t(
+                                context,
+                                'Module 5 Unlocked',
+                                'Bukas na ang Modyul 5',
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                     const SizedBox(height: 40),
                     ScoreResultActionButtons(
@@ -391,6 +400,7 @@ class _InfoChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      alignment: Alignment.center,
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
         color: AppColors.surface,
@@ -405,17 +415,20 @@ class _InfoChip extends StatelessWidget {
         ],
       ),
       child: Row(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(icon, size: 16, color: AppColors.brandRed),
           const SizedBox(width: 6),
-          Text(
-            label,
-            style: const TextStyle(
-              fontFamily: 'Poppins',
-              fontSize: 12.5,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
+          Flexible(
+            child: Text(
+              label,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontFamily: 'Poppins',
+                fontSize: 12.5,
+                fontWeight: FontWeight.w700,
+                color: AppColors.textPrimary,
+              ),
             ),
           ),
         ],
