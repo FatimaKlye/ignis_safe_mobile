@@ -277,8 +277,8 @@ Widget _buildModernEditProfileView(
                                 'Palitan ang Password',
                               ),
                               subtitle: state._txt(
-                                'Reset via email verification',
-                                'I-reset gamit ang email verification',
+                                'Confirm with an email verification code',
+                                'Kumpirmahin gamit ang code sa email',
                               ),
                               onTap: state._openChangePassword,
                             ),
@@ -301,7 +301,7 @@ Widget _buildModernEditProfileView(
                         const SizedBox(height: 20),
                         SizedBox(
                           width: double.infinity,
-                          height: 56,
+                          height: 50,
                           child: ElevatedButton.icon(
                             style: ElevatedButton.styleFrom(
                               backgroundColor: red,

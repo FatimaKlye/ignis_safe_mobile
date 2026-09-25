@@ -7,7 +7,6 @@ import '../localization/language_controller.dart';
 /// the shared "Leave assessment?" modal so both warnings look the same.
 class _LogoutDialogColors {
   static const Color brandRed = Color(0xFFB11217);
-  static const Color brandRedSoft = Color(0xFFFFE8EA);
   static const Color surface = Color(0xFFFFFFFF);
   static const Color textPrimary = Color(0xFF1F1F1F);
   static const Color textSecondary = Color(0xFF6B6B6B);
@@ -37,7 +36,7 @@ Future<bool> showLogoutConfirmDialog(BuildContext context) async {
           insetPadding: const EdgeInsets.symmetric(horizontal: 28),
           child: Container(
             width: double.infinity,
-            padding: const EdgeInsets.fromLTRB(22, 26, 22, 20),
+            padding: const EdgeInsets.fromLTRB(22, 22, 22, 20),
             decoration: BoxDecoration(
               color: _LogoutDialogColors.surface,
               borderRadius: BorderRadius.circular(24),
@@ -52,20 +51,6 @@ Future<bool> showLogoutConfirmDialog(BuildContext context) async {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Container(
-                  height: 68,
-                  width: 68,
-                  decoration: const BoxDecoration(
-                    color: _LogoutDialogColors.brandRedSoft,
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.logout_rounded,
-                    color: _LogoutDialogColors.brandRed,
-                    size: 34,
-                  ),
-                ),
-                const SizedBox(height: 18),
                 Text(
                   t(dialogContext, 'Log out?', 'Mag-logout?'),
                   textAlign: TextAlign.center,

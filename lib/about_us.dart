@@ -1105,19 +1105,43 @@ class _LogoMeaningCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                for (int i = 0; i < data.meanings.length; i++) ...[
-                  Expanded(
-                    child: _MeaningMiniBlock(
-                      title: data.meanings[i].term.resolve(context),
-                      body: data.meanings[i].body.resolve(context),
-                    ),
-                  ),
-                  if (i != data.meanings.length - 1) const SizedBox(width: 12),
-                ],
-              ],
+            LayoutBuilder(
+              builder: (context, constraints) {
+                // On narrow phones, two text-heavy blocks side by side can
+                // collide with the card edge or each other.
+                if (constraints.maxWidth < 300) {
+                  return Column(
+                    children: [
+                      for (int i = 0; i < data.meanings.length; i++) ...[
+                        SizedBox(
+                          width: double.infinity,
+                          child: _MeaningMiniBlock(
+                            title: data.meanings[i].term.resolve(context),
+                            body: data.meanings[i].body.resolve(context),
+                          ),
+                        ),
+                        if (i != data.meanings.length - 1)
+                          const SizedBox(height: 10),
+                      ],
+                    ],
+                  );
+                }
+                return Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    for (int i = 0; i < data.meanings.length; i++) ...[
+                      Expanded(
+                        child: _MeaningMiniBlock(
+                          title: data.meanings[i].term.resolve(context),
+                          body: data.meanings[i].body.resolve(context),
+                        ),
+                      ),
+                      if (i != data.meanings.length - 1)
+                        const SizedBox(width: 12),
+                    ],
+                  ],
+                );
+              },
             ),
             const SizedBox(height: 12),
             _bodyText(data.together.resolve(context)),
@@ -1781,8 +1805,14 @@ class _MemberProfileDialog extends StatelessWidget {
             final bodyPadding = compact ? 16.0 : 22.0;
 
             final email = member.email;
-            final linkedIn = member.linkedInUrl;
-            final portfolio = member.portfolioUrl;
+            final isAndrei = member.fullName.trim().toUpperCase() ==
+                'ANDREI C. QUIAS';
+            // His portfolio replaces the LinkedIn action in the same slot.
+            // Keep other team members' links unchanged.
+            final linkedIn = isAndrei
+                ? 'https://andreiquias.vercel.app/'
+                : member.linkedInUrl;
+            final portfolio = isAndrei ? null : member.portfolioUrl;
 
             final emailButton = _ProfileActionButton(
               label: email == null ? pendingLabel : emailLabel,
@@ -1800,11 +1830,15 @@ class _MemberProfileDialog extends StatelessWidget {
             );
 
             final linkedInButton = _ProfileActionButton(
-              label: linkedIn == null ? pendingLabel : linkedInLabel,
-              accent: linkedInBlue,
+              label: linkedIn == null
+                  ? pendingLabel
+                  : (isAndrei ? portfolioLabel : linkedInLabel),
+              accent: isAndrei ? const Color(0xFF142D57) : linkedInBlue,
               filled: false,
               compact: compact,
-              leadingBuilder: (color) => _LinkedInGlyph(size: 18, background: color),
+              leadingBuilder: (color) => isAndrei
+                  ? Icon(Icons.open_in_new_rounded, size: 17, color: color)
+                  : _LinkedInGlyph(size: 18, background: color),
               onTap: linkedIn == null
                   ? null
                   : () => _open(context, Uri.parse(linkedIn)),

@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'login.dart';
 import 'localization/language_controller.dart';
 import 'network_error_helper.dart';
 import 'widgets/app_notification.dart';
 import 'widgets/password_changed_dialog.dart';
 import 'widgets/password_requirements.dart';
-import 'widgets/top_close_button.dart';
 
-/// Where [ForgotPassPage] was opened from. Controls the exit action: from
-/// Login a bottom "Back to Login" link; from Profile a top-left X that closes
-/// back to the previous screen without touching the authenticated session.
+/// Where [ForgotPassPage] was opened from. Profile keeps the signed-in email
+/// fixed and both entry points use a top-left back action.
 enum ForgotPassEntrySource { login, profile }
 
 class ForgotPassPage extends StatefulWidget {
@@ -490,11 +487,13 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
     return Column(
       children: [
         Text(
-          t(
-            context,
-            'Enter your registered email address and we will send you a password reset OTP.',
-            'Ilagay ang iyong rehistradong email address at padadalhan ka namin ng OTP para sa pag-reset ng password.',
-          ),
+          _isProfileMode
+              ? t(context,
+                  'For your security, we will send a verification code to your account email before changing your password.',
+                  'Para sa iyong seguridad, magpapadala kami ng verification code sa email ng iyong account bago palitan ang password.')
+              : t(context,
+                  'Enter your registered email address and we will send you a password reset OTP.',
+                  'Ilagay ang iyong rehistradong email address at padadalhan ka namin ng OTP para sa pag-reset ng password.'),
           textAlign: TextAlign.center,
           style: TextStyle(
             fontFamily: 'Poppins',
@@ -527,7 +526,7 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
         const SizedBox(height: 22),
         SizedBox(
           width: double.infinity,
-          height: 54,
+          height: 50,
           child: ElevatedButton(
             onPressed: _isLoading ? null : _sendOtp,
             style: ElevatedButton.styleFrom(
@@ -610,7 +609,7 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
         const SizedBox(height: 22),
         SizedBox(
           width: double.infinity,
-          height: 54,
+          height: 50,
           child: ElevatedButton(
             onPressed: _isLoading ? null : _verifyOtp,
             style: ElevatedButton.styleFrom(
@@ -737,7 +736,7 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
         const SizedBox(height: 22),
         SizedBox(
           width: double.infinity,
-          height: 54,
+          height: 50,
           child: ElevatedButton(
             onPressed: _isLoading ? null : _updatePassword,
             style: ElevatedButton.styleFrom(
@@ -773,12 +772,18 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
 
   @override
   Widget build(BuildContext context) {
-    String title = t(context, 'Forgot Password', 'Nakalimutan ang Password');
+    String title = _isProfileMode
+        ? t(context, 'Change Password', 'Palitan ang Password')
+        : t(context, 'Forgot Password', 'Nakalimutan ang Password');
     if (_stage == _ForgotStage.otp) {
-      title = t(context, 'Verify OTP', 'I-verify ang OTP');
+      title = _isProfileMode
+          ? t(context, 'Verify Your Email', 'I-verify ang Iyong Email')
+          : t(context, 'Verify OTP', 'I-verify ang OTP');
     }
     if (_stage == _ForgotStage.password) {
-      title = t(context, 'Reset Password', 'I-reset ang Password');
+      title = _isProfileMode
+          ? t(context, 'Change Password', 'Palitan ang Password')
+          : t(context, 'Reset Password', 'I-reset ang Password');
     }
 
     return Scaffold(
@@ -846,32 +851,6 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
 
                               const SizedBox(height: 18),
 
-                              if (!_isProfileMode)
-                                TextButton(
-                                  onPressed: _isLoading
-                                      ? null
-                                      : () {
-                                          Navigator.pushReplacement(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (_) => const LoginPage(),
-                                            ),
-                                          );
-                                        },
-                                  child: Text(
-                                    t(
-                                      context,
-                                      'Back to Login',
-                                      'Bumalik sa Login',
-                                    ),
-                                    style: TextStyle(
-                                      fontFamily: 'Poppins',
-                                      fontWeight: FontWeight.w600,
-                                      color: brandRed,
-                                    ),
-                                  ),
-                                ),
-
                               const SizedBox(height: 30),
                             ],
                           ),
@@ -882,13 +861,15 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
                 },
               ),
             ),
-            // Profile mode: close back to Profile/Edit Profile. Only pops this
-            // route, so the signed-in session stays untouched.
-            if (_isProfileMode)
-              TopCloseButtonOverlay(
-                color: brandRed,
-                onTap: _isLoading ? null : () => Navigator.pop(context),
+            Positioned(
+              left: 18,
+              top: 8,
+              child: IconButton(
+                tooltip: t(context, 'Back', 'Bumalik'),
+                onPressed: _isLoading ? null : () => Navigator.pop(context),
+                icon: const Icon(Icons.arrow_back_rounded, color: brandRed),
               ),
+            ),
           ],
         ),
       ),
