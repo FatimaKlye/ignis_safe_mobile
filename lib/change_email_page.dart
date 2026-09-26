@@ -500,7 +500,7 @@ class _ChangeEmailPageState extends State<ChangeEmailPage> {
         const SizedBox(height: 22),
         SizedBox(
           width: double.infinity,
-          height: 54,
+          height: 50,
           child: ElevatedButton(
             onPressed: _isLoading ? null : _sendOtp,
             style: ElevatedButton.styleFrom(
@@ -602,7 +602,7 @@ class _ChangeEmailPageState extends State<ChangeEmailPage> {
         const SizedBox(height: 22),
         SizedBox(
           width: double.infinity,
-          height: 54,
+          height: 50,
           child: ElevatedButton(
             onPressed: _isLoading ? null : _verifyOtp,
             style: ElevatedButton.styleFrom(

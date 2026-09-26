@@ -35,8 +35,9 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
   bool _acceptPrivacy = false;
   bool _acceptResearch = false;
 
+  bool _checkingConsent = false;
+  bool _alreadyAccepted = false;
   bool _saving = false;
-  bool _returningToLogin = false;
 
   static const Color brandRed = Color(0xFFB71C1C);
   static const Color background = Colors.white;
@@ -54,36 +55,24 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
     super.initState();
     _scrollController.addListener(_handleScroll);
     WidgetsBinding.instance.addPostFrameCallback((_) => _handleScroll());
-    _loadExistingConsentStatus();
+    if (widget.userId != null) _loadCurrentConsent();
   }
 
-  Future<void> _loadExistingConsentStatus() async {
-    final userId = widget.userId;
-    if (widget.readOnly || userId == null) return;
-
-    setState(() => _loadingConsentStatus = true);
-
+  Future<void> _loadCurrentConsent() async {
+    setState(() => _checkingConsent = true);
     try {
-      final active = await _consentService.activeConsentTypes(userId);
-      final requiredComplete = ConsentDocuments.required.every(active.contains);
-
+      final accepted = await _consentService.hasRequiredConsents(widget.userId!);
       if (!mounted) return;
       setState(() {
-        _acceptTerms = active.contains(ConsentDocuments.terms);
-        _acceptPrivacy = active.contains(ConsentDocuments.privacy);
-        _acceptResearch = active.contains(ConsentDocuments.research);
-
-        if (requiredComplete) {
-          _alreadyCompleted = true;
-          _scrolledToBottom = true;
-          _progress = 1.0;
-        }
+        _alreadyAccepted = accepted;
+        // Returning users can read the document from any point; the reading
+        // gate applies only when a current-version decision is still needed.
+        if (accepted) _scrolledToBottom = true;
       });
     } catch (e) {
-      // A failed status check must not bypass the normal read-and-accept flow.
-      debugPrint('Could not restore existing consent status: $e');
+      debugPrint('Could not load existing consent: $e');
     } finally {
-      if (mounted) setState(() => _loadingConsentStatus = false);
+      if (mounted) setState(() => _checkingConsent = false);
     }
   }
 
@@ -125,24 +114,10 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
       setState(() => _scrolledToBottom = true);
     }
 
-    // Guest (read-only) viewers reach the bottom with nothing left to do
-    // here, since there's no "I Agree" action in this mode — so once they
-    // finish reading, send them back to Login automatically. Guarded by
-    // _returningToLogin so this can only fire once per page instance.
-    if (widget.readOnly && !_returningToLogin && value >= 0.99) {
-      setState(() => _returningToLogin = true);
-      _scheduleReturnToLogin();
-    }
-  }
-
-  Future<void> _scheduleReturnToLogin() async {
-    await Future.delayed(const Duration(milliseconds: 1200));
-    if (!mounted) return;
-    Navigator.pop(context);
   }
 
   Future<void> _onAgree() async {
-    if (widget.readOnly || widget.userId == null) {
+    if (widget.readOnly || _alreadyAccepted || widget.userId == null) {
       Navigator.pop(context, false);
       return;
     }
@@ -320,7 +295,6 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
               ),
             ],
           ),
-          if (_returningToLogin) _buildReturningOverlay(),
         ],
       ),
     );
@@ -880,19 +854,35 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  if (_loadingConsentStatus)
+                  if (_checkingConsent)
                     const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 12),
-                      child: SizedBox(
-                        width: 22,
-                        height: 22,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2.4,
-                          color: brandRed,
+                      padding: EdgeInsets.all(8),
+                      child: CircularProgressIndicator(color: brandRed),
+                    )
+                  else if (_alreadyAccepted || widget.readOnly) ...[
+                    if (_alreadyAccepted) ...[
+                      Text(
+                        t(context,
+                            'You already accepted the current Terms and Privacy Notice. You may review them without accepting again.',
+                            'Tinanggap mo na ang kasalukuyang Mga Tuntunin at Paunawa sa Privacy. Maaari mong basahin muli nang hindi na kailangang tumanggap ulit.'),
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 12.5,
+                          color: Color(0xFF2D2D2D),
                         ),
                       ),
+                      const SizedBox(height: 10),
+                    ],
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: OutlinedButton(
+                        onPressed: () => Navigator.pop(context, false),
+                        child: Text(t(context, 'Done', 'Tapos')),
+                      ),
                     ),
-                  if (!_loadingConsentStatus && !_scrolledToBottom)
+                  ] else if (!_scrolledToBottom)
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(
@@ -931,76 +921,8 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
                         ],
                       ),
                     ),
-                  if (!_loadingConsentStatus &&
-                      _alreadyCompleted &&
-                      !widget.readOnly) ...[
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 12,
-                        horizontal: 14,
-                      ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE8F5E9),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: const Color(0xFFC8E6C9)),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.verified_rounded,
-                            color: Color(0xFF2E7D32),
-                            size: 22,
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Text(
-                              t(
-                                context,
-                                'Terms and Privacy are already completed for the current version.',
-                                'Kumpleto na ang pagtanggap sa Tuntunin at Privacy para sa kasalukuyang bersyon.',
-                              ),
-                              style: const TextStyle(
-                                fontFamily: 'Poppins',
-                                color: Color(0xFF1B5E20),
-                                fontWeight: FontWeight.w600,
-                                fontSize: 12.5,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 48,
-                      child: ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: brandRed,
-                          foregroundColor: Colors.white,
-                          elevation: 2,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                        ),
-                        onPressed: () => Navigator.pop(context, true),
-                        icon: const Icon(Icons.check_circle_rounded, size: 18),
-                        label: Text(
-                          t(context, 'Completed', 'Kumpleto'),
-                          style: const TextStyle(
-                            fontFamily: 'Poppins',
-                            fontWeight: FontWeight.w600,
-                            fontSize: 15,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                  if (!_loadingConsentStatus &&
-                      _scrolledToBottom &&
-                      !_alreadyCompleted &&
-                      !widget.readOnly) ...[
+                  if (!_checkingConsent && !_alreadyAccepted &&
+                      _scrolledToBottom && !widget.readOnly) ...[
                     _ConsentCheckbox(
                       value: _acceptTerms,
                       enabled: !_saving,
@@ -1039,7 +961,7 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
                     const SizedBox(height: 12),
                     SizedBox(
                       width: double.infinity,
-                      height: 48,
+                      height: 50,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: (_requiredConsentsGiven && !_saving)
@@ -1064,32 +986,16 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
                                   color: Colors.white,
                                 ),
                               )
-                            : Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Icon(
-                                    Icons.check_circle_rounded,
-                                    color: Colors.white,
-                                    size: 18,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Flexible(
-                                    child: Text(
-                                      t(
-                                        context,
-                                        'I Agree and Continue',
-                                        'Sumasang-ayon Ako at Magpatuloy',
-                                      ),
-                                      textAlign: TextAlign.center,
-                                      style: const TextStyle(
-                                        fontFamily: 'Poppins',
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 15,
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                            : Text(
+                                t(context, 'I Agree and Continue',
+                                    'Sumasang-ayon Ako at Magpatuloy'),
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  fontFamily: 'Poppins',
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 15,
+                                ),
                               ),
                       ),
                     ),
@@ -1119,58 +1025,6 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
     );
   }
 
-  Widget _buildReturningOverlay() {
-    return Positioned.fill(
-      child: Container(
-        color: Colors.black.withOpacity(0.45),
-        child: Center(
-          child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 32),
-            padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 26),
-            decoration: BoxDecoration(
-              color: cardBackground,
-              borderRadius: BorderRadius.circular(18),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.18),
-                  blurRadius: 18,
-                  offset: const Offset(0, 8),
-                ),
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const SizedBox(
-                  width: 32,
-                  height: 32,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 3,
-                    valueColor: AlwaysStoppedAnimation<Color>(brandRed),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  t(
-                    context,
-                    'Returning to login page...',
-                    'Bumabalik sa login page...',
-                  ),
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontFamily: 'Poppins',
-                    color: Colors.black87,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 13.5,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 }
 
 class _Title extends StatelessWidget {
