@@ -13,6 +13,7 @@ import 'localization/app_text.dart';
 import 'localization/language_controller.dart';
 import 'network_error_helper.dart';
 import 'widgets/app_notification.dart';
+import 'widgets/language_picker.dart';
 import 'dasmarinas_location.dart';
 
 class LoginPage extends StatefulWidget {
@@ -332,10 +333,11 @@ class _LoginPageState extends State<LoginPage> {
         return;
       }
 
-      _notify(
+      showAppToast(
         context,
         message: context.tr('login_success'),
         type: AppNotificationType.success,
+        accentColor: brandRed,
       );
 
       await _handlePostLogin(user);
@@ -404,8 +406,15 @@ class _LoginPageState extends State<LoginPage> {
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
+                          const Padding(
+                            padding: EdgeInsets.only(top: 8),
+                            child: Align(
+                              alignment: Alignment.centerRight,
+                              child: CompactLanguageToggle(color: brandRed),
+                            ),
+                          ),
                           Padding(
-                            padding: const EdgeInsets.only(top: 70, bottom: 30),
+                            padding: const EdgeInsets.only(top: 26, bottom: 30),
                             child: SizedBox(
                               height: 120,
                               child: FittedBox(
@@ -444,9 +453,7 @@ class _LoginPageState extends State<LoginPage> {
                               height: 1.1,
                             ),
                           ),
-                          const SizedBox(height: 24),
-                          _languageSelector(),
-                          const SizedBox(height: 22),
+                          const SizedBox(height: 50),
                           _inputLabel(context.tr('email_address')),
                           _buildValidatedField(
                             hint: context.tr('enter_email'),
@@ -559,8 +566,8 @@ class _LoginPageState extends State<LoginPage> {
                           onPressed: onSuffixTap,
                           icon: Icon(
                             showPassword
-                                ? Icons.visibility_off_rounded
-                                : Icons.visibility_rounded,
+                                ? Icons.visibility_rounded
+                                : Icons.visibility_off_rounded,
                             color: brandRed,
                           ),
                           tooltip: showPassword
@@ -740,225 +747,4 @@ class _LoginPageState extends State<LoginPage> {
     ],
   );
 
-  Widget _languageSelector() {
-    final languageController = context.watch<LanguageController>();
-    final selectedCode = languageController.locale.languageCode == 'tl'
-        ? 'tl'
-        : 'en';
-    DropdownMenuItem<String> buildLanguageItem({
-      required String code,
-      required String labelKey,
-    }) {
-      final selected = selectedCode == code;
-
-      return DropdownMenuItem<String>(
-        value: code,
-        child: Row(
-          children: [
-            Icon(
-              selected ? Icons.check_circle : Icons.radio_button_unchecked,
-              size: 18,
-              color: selected ? brandRed : Colors.black45,
-            ),
-            const SizedBox(width: 10),
-            Flexible(
-              child: Text(
-                context.tr(labelKey),
-                softWrap: true,
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  color: selected ? brandRed : Colors.black87,
-                  fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
-                  fontSize: 14,
-                  height: 1.2,
-                ),
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _inputLabel('${context.tr('language')}:'),
-            const SizedBox(height: 8),
-            Container(
-              width: double.infinity,
-              constraints: const BoxConstraints(minHeight: 50),
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(15),
-                border: Border.all(color: Colors.black12),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 8,
-                    offset: Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: DropdownButtonHideUnderline(
-                child: DropdownButton<String>(
-                  value: selectedCode,
-                  isExpanded: true,
-                  borderRadius: BorderRadius.circular(15),
-                  icon: const Icon(
-                    Icons.keyboard_arrow_down_rounded,
-                    color: brandRed,
-                  ),
-                  selectedItemBuilder: (context) {
-                    return [
-                      _selectedLanguageLabel(context.tr('tagalog')),
-                      _selectedLanguageLabel(context.tr('english')),
-                    ];
-                  },
-                  items: [
-                    buildLanguageItem(code: 'tl', labelKey: 'tagalog'),
-                    buildLanguageItem(code: 'en', labelKey: 'english'),
-                  ],
-                  onChanged: (code) {
-                    if (code == null) return;
-                    _changeLanguageAndShowReminder(languageController, code);
-                  },
-                ),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Future<void> _changeLanguageAndShowReminder(
-    LanguageController languageController,
-    String code,
-  ) async {
-    await languageController.setLanguage(code);
-
-    if (!mounted) return;
-    await _showLanguageReminderDialog(code);
-  }
-
-  Future<void> _showLanguageReminderDialog(String languageCode) async {
-    final isTagalog = languageCode == 'tl';
-    final title = isTagalog ? 'Paalala' : 'Note';
-    final message = isTagalog
-        ? 'Maaari mo lang palitan ang wika ng app bago mag-login. Para palitan muli ang wika, mag-log out muna, pumili ng ibang wika, pagkatapos ay mag-login ulit.'
-        : 'You can only change the app language before logging in. To change language again, please log out, select another language, then log in again.';
-    final buttonText = isTagalog ? 'Sige' : 'OK';
-
-    await showDialog<void>(
-      context: context,
-      barrierDismissible: true,
-      builder: (dialogContext) {
-        return Dialog(
-          insetPadding: const EdgeInsets.symmetric(horizontal: 28),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(22),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 22, 20, 18),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: brandRed.withOpacity(0.08),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.info_outline_rounded,
-                    color: brandRed,
-                    size: 28,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  title,
-                  textAlign: TextAlign.center,
-                  softWrap: true,
-                  style: const TextStyle(
-                    fontFamily: 'Poppins',
-                    color: brandRed,
-                    fontWeight: FontWeight.w800,
-                    fontSize: 18,
-                    height: 1.2,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  message,
-                  textAlign: TextAlign.center,
-                  softWrap: true,
-                  style: const TextStyle(
-                    fontFamily: 'Poppins',
-                    color: Colors.black87,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 13,
-                    height: 1.35,
-                  ),
-                ),
-                const SizedBox(height: 18),
-                SizedBox(
-                  width: double.infinity,
-                  height: 44,
-                  child: ElevatedButton(
-                    onPressed: () => Navigator.of(dialogContext).pop(),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: brandRed,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                    ),
-                    child: Text(
-                      buttonText,
-                      style: const TextStyle(
-                        fontFamily: 'Poppins',
-                        fontWeight: FontWeight.w700,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _selectedLanguageLabel(String label) {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: Row(
-        children: [
-          const Icon(Icons.language_rounded, color: brandRed, size: 19),
-          const SizedBox(width: 10),
-          Flexible(
-            child: Text(
-              label,
-              softWrap: true,
-              style: const TextStyle(
-                fontFamily: 'Poppins',
-                color: Colors.black87,
-                fontWeight: FontWeight.w600,
-                fontSize: 14,
-                height: 1.2,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
