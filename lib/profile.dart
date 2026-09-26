@@ -3,7 +3,6 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'app_content_refresh.dart';
 import 'app_refresh_action.dart';
@@ -12,12 +11,14 @@ import 'login.dart';
 import 'faq_page.dart';
 import 'feedback_dialog.dart';
 import 'widgets/account_menu.dart';
-import 'widgets/language_picker.dart';
+import 'widgets/app_notification.dart';
 import 'widgets/logout_confirm_dialog.dart';
 import 'widgets/main_tab_header.dart';
 import 'module_progress_refresh_notifier.dart';
 import 'profile_refresh_notifier.dart';
 import 'profile_progress_sync.dart';
+import 'dasmarinas_location.dart';
+import 'virtual_medal.dart';
 import 'forgotpass.dart';
 import 'change_email_page.dart';
 
@@ -54,6 +55,10 @@ class _ProfilePageState extends State<ProfilePage> {
   String _displayName = '';
   String _email = '';
   String? _avatarUrl;
+  String _city = '';
+  String _province = '';
+  String _barangay = '';
+  List<VirtualMedal> _virtualMedals = VirtualMedal.catalog;
 
   late String _completedTrainingModules;
   late String _completedSimulations;
@@ -114,6 +119,10 @@ class _ProfilePageState extends State<ProfilePage> {
           _displayName = widget.name?.trim() ?? '';
           _email = '';
           _avatarUrl = null;
+          _city = '';
+          _province = '';
+          _barangay = '';
+          _virtualMedals = VirtualMedal.catalog;
           _completedTrainingModules = '0 / $_totalSimulations';
           _completedSimulations = widget.completedSimulations;
           _lastSimulation = widget.lastSimulation;
@@ -129,6 +138,9 @@ class _ProfilePageState extends State<ProfilePage> {
             last_name,
             email,
             avatar_url,
+            city,
+            province,
+            barangay,
             completed_simulations,
             last_simulation
           ''')
@@ -140,6 +152,10 @@ class _ProfilePageState extends State<ProfilePage> {
       String displayName = widget.name?.trim() ?? '';
       String email = user.email ?? '';
       String? avatarUrl;
+      String city = '';
+      String province = '';
+      String barangay = '';
+      List<VirtualMedal> virtualMedals = VirtualMedal.catalog;
       String completedTrainingModules = '0 / $_totalSimulations';
       String completedSimulations = widget.completedSimulations;
       String lastSimulation = widget.lastSimulation;
@@ -163,6 +179,10 @@ class _ProfilePageState extends State<ProfilePage> {
           avatarUrl = dbAvatarUrl;
         }
 
+        city = (profileData['city'] ?? '').toString().trim();
+        province = (profileData['province'] ?? '').toString().trim();
+        barangay = (profileData['barangay'] ?? '').toString().trim();
+
         final dbLastSimulation = (profileData['last_simulation'] ?? '')
             .toString()
             .trim();
@@ -181,6 +201,9 @@ class _ProfilePageState extends State<ProfilePage> {
       ]);
       completedTrainingModules = '${liveProgress[0]} / $_totalSimulations';
       completedSimulations = '${liveProgress[1]} / $_totalSimulations';
+      virtualMedals = await VirtualMedalService(
+        client: _supabase,
+      ).loadAndSync();
 
       if (!mounted) return;
 
@@ -190,12 +213,20 @@ class _ProfilePageState extends State<ProfilePage> {
         'completed_training_modules': completedTrainingModules,
         'completed_simulations': completedSimulations,
         'last_simulation': lastSimulation,
+        'virtual_medals': virtualMedals
+            .where((medal) => medal.earned)
+            .map((medal) => medal.code)
+            .toList(growable: false),
       });
 
       setState(() {
         _displayName = displayName;
         _email = email;
         _avatarUrl = avatarUrl;
+        _city = city;
+        _province = province;
+        _barangay = barangay;
+        _virtualMedals = virtualMedals;
         _completedTrainingModules = completedTrainingModules;
         _completedSimulations = completedSimulations;
         _lastSimulation = lastSimulation;
@@ -211,12 +242,25 @@ class _ProfilePageState extends State<ProfilePage> {
         _displayName = widget.name?.trim() ?? '';
         _email = user?.email ?? '';
         _avatarUrl = null;
+        _city = '';
+        _province = '';
+        _barangay = '';
+        _virtualMedals = VirtualMedal.catalog;
         _completedTrainingModules = '0 / $_totalSimulations';
         _completedSimulations = widget.completedSimulations;
         _lastSimulation = widget.lastSimulation;
         _isLoadingProfile = false;
       });
     }
+  }
+
+  String get _locationLabel {
+    if (_city == dasmarinasCity &&
+        _province == dasmarinasProvince &&
+        isValidDasmarinasBarangay(_barangay)) {
+      return 'Barangay $_barangay • $dasmarinasLocationLabel';
+    }
+    return '';
   }
 
   Future<void> _logout() async {
@@ -471,8 +515,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                 Text(
                                   _t(
                                     context,
-                                    'Welcome to IGNIS SAFE',
-                                    'Mabuhay, IGNIS SAFE',
+                                    'Welcome to Ignis Safe',
+                                    'Mabuhay, Ignis Safe',
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 1,

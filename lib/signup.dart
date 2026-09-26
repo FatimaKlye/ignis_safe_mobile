@@ -6,7 +6,7 @@ import 'forgotpass.dart';
 import 'login.dart';
 import 'verifyemail.dart';
 import 'network_error_helper.dart';
-import 'widgets/password_requirements.dart';
+import 'dasmarinas_location.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -33,8 +33,12 @@ class _RegisterPageState extends State<RegisterPage> {
   bool _isLoading = false;
   bool _showPassword = false;
   bool _showConfirmPassword = false;
+  String? _selectedBarangay;
 
-  PasswordRules _passwordRules = PasswordRules.check('');
+  bool _min8 = false;
+  bool _hasNumber = false;
+  bool _hasSymbol = false;
+  bool _hasUpper = false;
   bool _matches = false;
 
   @override
@@ -67,12 +71,24 @@ class _RegisterPageState extends State<RegisterPage> {
     final password = passCtrl.text;
     final confirm = confirmPassCtrl.text;
 
-    final rules = PasswordRules.check(password);
+    final min8 = password.length >= 8;
+    final hasNumber = RegExp(r'\d').hasMatch(password);
+    final hasSymbol = RegExp(
+      r'[!@#$%^&*(),.?":{}|<>_\-\[\]\\/~`+=;]',
+    ).hasMatch(password);
+    final hasUpper = RegExp(r'[A-Z]').hasMatch(password);
     final matches = confirm.isNotEmpty && password == confirm;
 
-    if (_passwordRules != rules || _matches != matches) {
+    if (_min8 != min8 ||
+        _hasNumber != hasNumber ||
+        _hasSymbol != hasSymbol ||
+        _hasUpper != hasUpper ||
+        _matches != matches) {
       setState(() {
-        _passwordRules = rules;
+        _min8 = min8;
+        _hasNumber = hasNumber;
+        _hasSymbol = hasSymbol;
+        _hasUpper = hasUpper;
         _matches = matches;
       });
     } else if (mounted) {
@@ -80,13 +96,23 @@ class _RegisterPageState extends State<RegisterPage> {
     }
   }
 
+  int get _passedRules {
+    int count = 0;
+    if (_min8) count++;
+    if (_hasNumber) count++;
+    if (_hasSymbol) count++;
+    if (_hasUpper) count++;
+    return count;
+  }
+
   bool get _passwordStarted => passCtrl.text.isNotEmpty;
-  bool get _passwordRulesPassed => _passwordRules.allPassed;
+  bool get _passwordRulesPassed => _passedRules == 4;
   bool get _allPasswordOk => _passwordRulesPassed && _matches;
 
   bool get _canSubmit =>
       _validateFullName(fullNameCtrl.text) == null &&
       _validateEmail(emailCtrl.text) == null &&
+      _selectedBarangay != null &&
       _allPasswordOk;
 
   String? _validateFullName(String? v) {
@@ -134,6 +160,17 @@ class _RegisterPageState extends State<RegisterPage> {
         context,
         'Password does not meet all requirements',
         'Hindi natutugunan ng password ang lahat ng kinakailangan',
+      );
+    }
+    return null;
+  }
+
+  String? _validateBarangay(String? value) {
+    if (!isValidDasmarinasBarangay(value)) {
+      return t(
+        context,
+        'Select your barangay in Dasmariñas City',
+        'Piliin ang inyong barangay sa Lungsod ng Dasmariñas',
       );
     }
     return null;
@@ -696,8 +733,8 @@ class _RegisterPageState extends State<RegisterPage> {
         title: t(context, 'Check Your Details', 'Suriin ang Iyong Detalye'),
         message: t(
           context,
-          'Complete the full name, Gmail address, password requirements, and confirm password before verifying your email.',
-          'Kumpletuhin ang buong pangalan, Gmail address, mga kailangan sa password, at kumpirmasyon ng password bago i-verify ang email.',
+          'Complete your name, Gmail address, Dasmariñas barangay, password requirements, and confirm password before verifying your email.',
+          'Kumpletuhin ang pangalan, Gmail address, barangay sa Dasmariñas, mga kailangan sa password, at kumpirmasyon ng password bago i-verify ang email.',
         ),
       );
       return;
@@ -745,6 +782,9 @@ class _RegisterPageState extends State<RegisterPage> {
             firstName: splitName.firstName,
             lastName: splitName.lastName,
             password: password,
+            city: dasmarinasCity,
+            province: dasmarinasProvince,
+            barangay: _selectedBarangay!,
           ),
         ),
       );
@@ -866,13 +906,199 @@ class _RegisterPageState extends State<RegisterPage> {
       onPressed: onTap,
       splashRadius: 20,
       icon: Icon(
-        visible ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+        visible ? Icons.visibility_off_outlined : Icons.visibility_outlined,
         color: brandRed,
         size: 20,
       ),
       tooltip: visible
           ? t(context, 'Hide', 'Itago')
           : t(context, 'Show', 'Ipakita'),
+    );
+  }
+
+  Widget _buildFixedLocationField() {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(top: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8F4F3),
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: brandRed.withOpacity(0.12)),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.location_city_rounded, color: brandRed, size: 20),
+          const SizedBox(width: 10),
+          const Expanded(
+            child: Text(
+              dasmarinasLocationLabel,
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF3D3D3D),
+              ),
+            ),
+          ),
+          Icon(Icons.lock_rounded, color: brandRed.withOpacity(0.55), size: 17),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBarangayDropdown() {
+    return FormField<String>(
+      initialValue: _selectedBarangay,
+      validator: _validateBarangay,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      builder: (state) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              margin: const EdgeInsets.only(top: 6),
+              padding: const EdgeInsets.symmetric(horizontal: 18),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(15),
+                border: state.hasError
+                    ? Border.all(color: Colors.red.withOpacity(0.55))
+                    : null,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  value: _selectedBarangay,
+                  isExpanded: true,
+                  menuMaxHeight: 360,
+                  borderRadius: BorderRadius.circular(16),
+                  icon: const Icon(
+                    Icons.keyboard_arrow_down_rounded,
+                    color: brandRed,
+                  ),
+                  hint: Text(
+                    t(
+                      context,
+                      'Select your barangay',
+                      'Piliin ang inyong barangay',
+                    ),
+                    style: const TextStyle(
+                      fontFamily: 'Poppins',
+                      color: Colors.black45,
+                    ),
+                  ),
+                  items: dasmarinasBarangays
+                      .map(
+                        (barangay) => DropdownMenuItem<String>(
+                          value: barangay,
+                          child: Text(
+                            barangay,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontFamily: 'Poppins',
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                      )
+                      .toList(growable: false),
+                  onChanged: (value) {
+                    setState(() => _selectedBarangay = value);
+                    state.didChange(value);
+                  },
+                ),
+              ),
+            ),
+            if (state.errorText != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 6, left: 10),
+                child: Text(
+                  state.errorText!,
+                  style: const TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 12,
+                    color: Colors.red,
+                    height: 1.2,
+                  ),
+                ),
+              ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _ruleItem(String text, bool passed) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Icon(
+          passed ? Icons.check_circle : Icons.radio_button_unchecked,
+          size: 16,
+          color: passed ? const Color(0xFF2E7D32) : Colors.black38,
+        ),
+        const SizedBox(width: 6),
+        Text(
+          text,
+          style: TextStyle(
+            fontFamily: 'Poppins',
+            fontSize: 11,
+            color: passed ? const Color(0xFF2E7D32) : Colors.black54,
+            fontWeight: passed ? FontWeight.w600 : FontWeight.w500,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPasswordValidationCard() {
+    if (!_passwordStarted) return const SizedBox.shrink();
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 180),
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8F8F8),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFEAEAEA)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            t(context, 'Password requirements', 'Mga kailangan sa password'),
+            style: const TextStyle(
+              fontFamily: 'Poppins',
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              color: Colors.black54,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Wrap(
+            spacing: 12,
+            runSpacing: 6,
+            children: [
+              _ruleItem(t(context, '8+ characters', '8+ na character'), _min8),
+              _ruleItem(
+                t(context, '1 uppercase', '1 malaking titik'),
+                _hasUpper,
+              ),
+              _ruleItem(t(context, '1 number', '1 numero'), _hasNumber),
+              _ruleItem(t(context, '1 symbol', '1 simbolo'), _hasSymbol),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -1144,6 +1370,12 @@ class _RegisterPageState extends State<RegisterPage> {
                     autofillHints: const [AutofillHints.email],
                   ),
                   const SizedBox(height: 14),
+                  _inputLabel(t(context, 'Location', 'Lokasyon')),
+                  _buildFixedLocationField(),
+                  const SizedBox(height: 14),
+                  _inputLabel(t(context, 'Barangay', 'Barangay')),
+                  _buildBarangayDropdown(),
+                  const SizedBox(height: 14),
                   _inputLabel(t(context, 'Password', 'Password')),
                   _buildValidatedField(
                     hint: t(
@@ -1163,9 +1395,17 @@ class _RegisterPageState extends State<RegisterPage> {
                       },
                     ),
                   ),
-                  PasswordRequirementsCard(
-                    rules: _passwordRules,
-                    visible: _passwordStarted,
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 180),
+                    child: _passwordStarted
+                        ? Padding(
+                            key: const ValueKey('password-rules'),
+                            padding: const EdgeInsets.only(top: 10),
+                            child: _buildPasswordValidationCard(),
+                          )
+                        : const SizedBox.shrink(
+                            key: ValueKey('password-rules-empty'),
+                          ),
                   ),
                   const SizedBox(height: 14),
                   _inputLabel(

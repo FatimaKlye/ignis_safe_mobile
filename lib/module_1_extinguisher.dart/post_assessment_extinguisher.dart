@@ -1367,7 +1367,7 @@ class _PostAssessmentPassPageState extends State<PostAssessmentPassPage>
                         borderRadius: BorderRadius.circular(99),
                       ),
                       child: const Icon(
-                        Icons.fire_extinguisher_rounded,
+                        Icons.close_rounded,
                         size: 20,
                         color: AppColors.textSecondary,
                       ),

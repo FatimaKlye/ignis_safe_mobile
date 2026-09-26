@@ -14,12 +14,12 @@ class ConsentDocuments {
   static const String research = 'research';
 
   static const String termsVersion = '2.0';
-  static const String privacyVersion = '2.0';
+  static const String privacyVersion = '2.1';
   static const String researchVersion = '1.0';
 
   /// Effective date of the current Terms and Privacy Notice.
-  static const String effectiveDateEn = '20 August 2026';
-  static const String effectiveDateTl = '20 Agosto 2026';
+  static const String effectiveDateEn = '1 September 2026';
+  static const String effectiveDateTl = '1 Setyembre 2026';
 
   /// Consents a learner must give before the app may be used.
   /// Research participation is deliberately excluded — it stays optional.
@@ -49,7 +49,7 @@ class ConsentDocuments {
 /// admin dashboard keeps working, but this table is the authoritative record.
 class ConsentService {
   ConsentService({SupabaseClient? client})
-      : _supabase = client ?? Supabase.instance.client;
+    : _supabase = client ?? Supabase.instance.client;
 
   final SupabaseClient _supabase;
 
@@ -141,11 +141,14 @@ class ConsentService {
     );
 
     if (acceptedRequired) {
-      await _supabase.from('profiles').update({
-        'terms_accepted': true,
-        'terms_accepted_at': nowUtc,
-        'updated_at': nowUtc,
-      }).eq('id', userId);
+      await _supabase
+          .from('profiles')
+          .update({
+            'terms_accepted': true,
+            'terms_accepted_at': nowUtc,
+            'updated_at': nowUtc,
+          })
+          .eq('id', userId);
     }
   }
 

@@ -1225,7 +1225,7 @@ class _PostAssessmentBuildingPageState extends State<PostAssessmentBuildingPage>
                         borderRadius: BorderRadius.circular(99),
                       ),
                       child: const Icon(
-                        Icons.apartment_rounded,
+                        Icons.close_rounded,
                         size: 20,
                         color: AppColors.textSecondary,
                       ),

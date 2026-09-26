@@ -1245,7 +1245,7 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
                         borderRadius: BorderRadius.circular(99),
                       ),
                       child: const Icon(
-                        Icons.electrical_services_rounded,
+                        Icons.close_rounded,
                         size: 20,
                         color: AppColors.textSecondary,
                       ),

@@ -13,6 +13,9 @@ class VerifyEmailPage extends StatefulWidget {
   final String firstName;
   final String lastName;
   final String password;
+  final String city;
+  final String province;
+  final String barangay;
 
   const VerifyEmailPage({
     super.key,
@@ -20,6 +23,9 @@ class VerifyEmailPage extends StatefulWidget {
     required this.firstName,
     required this.lastName,
     required this.password,
+    required this.city,
+    required this.province,
+    required this.barangay,
   });
 
   @override
@@ -397,6 +403,9 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
           'registration_completed': false,
           'app_language_code': languageCode,
           'signup_source': 'mobile',
+          'city': widget.city.trim(),
+          'province': widget.province.trim(),
+          'barangay': widget.barangay.trim(),
         },
       ),
     );
@@ -471,6 +480,9 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
         'email': _email,
         'registration_status': 'completed',
         'app_language_code': languageCode,
+        'city': widget.city.trim(),
+        'province': widget.province.trim(),
+        'barangay': widget.barangay.trim(),
         'updated_at': DateTime.now().toUtc().toIso8601String(),
       });
 
@@ -481,6 +493,9 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
             'last_name': widget.lastName.trim(),
             'registration_completed': true,
             'app_language_code': languageCode,
+            'city': widget.city.trim(),
+            'province': widget.province.trim(),
+            'barangay': widget.barangay.trim(),
           },
         ),
       );

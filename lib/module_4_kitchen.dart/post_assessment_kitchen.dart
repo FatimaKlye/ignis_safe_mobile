@@ -1217,7 +1217,7 @@ class _PostAssessmentKitchenPageState extends State<PostAssessmentKitchenPage>
                         borderRadius: BorderRadius.circular(99),
                       ),
                       child: const Icon(
-                        Icons.restaurant_rounded,
+                        Icons.close_rounded,
                         size: 20,
                         color: AppColors.textSecondary,
                       ),

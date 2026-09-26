@@ -1252,7 +1252,7 @@ class _PostAssessmentHousePageState extends State<PostAssessmentHousePage>
                         borderRadius: BorderRadius.circular(99),
                       ),
                       child: const Icon(
-                        Icons.home_rounded,
+                        Icons.close_rounded,
                         size: 20,
                         color: AppColors.textSecondary,
                       ),
