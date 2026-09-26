@@ -3,6 +3,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'app_content_refresh.dart';
 import 'app_refresh_action.dart';
@@ -12,6 +13,7 @@ import 'faq_page.dart';
 import 'feedback_dialog.dart';
 import 'widgets/account_menu.dart';
 import 'widgets/app_notification.dart';
+import 'widgets/language_picker.dart';
 import 'widgets/logout_confirm_dialog.dart';
 import 'widgets/main_tab_header.dart';
 import 'module_progress_refresh_notifier.dart';
@@ -61,14 +63,12 @@ class _ProfilePageState extends State<ProfilePage> {
   List<VirtualMedal> _virtualMedals = VirtualMedal.catalog;
 
   late String _completedTrainingModules;
-  late String _completedSimulations;
   late String _lastSimulation;
 
   @override
   void initState() {
     super.initState();
     _completedTrainingModules = '0 / $_totalSimulations';
-    _completedSimulations = widget.completedSimulations;
     _lastSimulation = widget.lastSimulation;
     profileRefreshNotifier.addListener(_handleProgressChanged);
     moduleProgressRefreshNotifier.addListener(_handleProgressChanged);
@@ -124,7 +124,6 @@ class _ProfilePageState extends State<ProfilePage> {
           _barangay = '';
           _virtualMedals = VirtualMedal.catalog;
           _completedTrainingModules = '0 / $_totalSimulations';
-          _completedSimulations = widget.completedSimulations;
           _lastSimulation = widget.lastSimulation;
           _isLoadingProfile = false;
         });
@@ -228,7 +227,6 @@ class _ProfilePageState extends State<ProfilePage> {
         _barangay = barangay;
         _virtualMedals = virtualMedals;
         _completedTrainingModules = completedTrainingModules;
-        _completedSimulations = completedSimulations;
         _lastSimulation = lastSimulation;
         _isLoadingProfile = false;
       });
@@ -247,7 +245,6 @@ class _ProfilePageState extends State<ProfilePage> {
         _barangay = '';
         _virtualMedals = VirtualMedal.catalog;
         _completedTrainingModules = '0 / $_totalSimulations';
-        _completedSimulations = widget.completedSimulations;
         _lastSimulation = widget.lastSimulation;
         _isLoadingProfile = false;
       });

@@ -1,7 +1,7 @@
 name: ignis_safe
 description: "A new Flutter project."
 publish_to: 'none'
-version: 1.0.1+2
+version: 1.0.3+4
 
 environment:
   sdk: ^3.8.1
