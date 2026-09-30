@@ -1,6 +1,7 @@
 const String dasmarinasCity = 'Dasmariñas City';
 const String dasmarinasProvince = 'Cavite';
 const String dasmarinasLocationLabel = '$dasmarinasCity, $dasmarinasProvince';
+const String outsideDasmarinasLocationLabel = 'Outside Dasmariñas City';
 
 /// Canonical registration choices for IGNIS SAFE mobile learners.
 ///

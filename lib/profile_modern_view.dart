@@ -1150,10 +1150,17 @@ Future<void> _showRegisteredLocationInfo(
   String location,
 ) async {
   final hasLocation = location.trim().isNotEmpty;
+  final isOutsideDasmarinas = location == outsideDasmarinasLocationLabel;
   await showAppDialog(
     context,
     title: t(context, 'Registered location', 'Nakarehistrong lokasyon'),
-    message: hasLocation
+    message: isOutsideDasmarinas
+        ? t(
+            context,
+            '$location\n\nThis registered location is read-only. Contact an authorized administrator if it needs to be corrected.',
+            '$location\n\nHindi direktang nababago ang nakarehistrong lokasyong ito. Makipag-ugnayan sa awtorisadong administrator kung kailangan itong itama.',
+          )
+        : hasLocation
         ? t(
             context,
             '$location\n\nThis is kept read-only to preserve accurate learner and barangay records. Contact an authorized administrator if your registered barangay needs to be corrected.',

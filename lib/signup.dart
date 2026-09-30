@@ -34,6 +34,7 @@ class _RegisterPageState extends State<RegisterPage> {
   bool _isLoading = false;
   bool _showPassword = false;
   bool _showConfirmPassword = false;
+  String? _selectedLocation;
   String? _selectedBarangay;
 
   PasswordRules _passwordRules = PasswordRules.check('');
@@ -89,7 +90,9 @@ class _RegisterPageState extends State<RegisterPage> {
   bool get _canSubmit =>
       _validateFullName(fullNameCtrl.text) == null &&
       _validateEmail(emailCtrl.text) == null &&
-      _selectedBarangay != null &&
+      _validateLocation(_selectedLocation) == null &&
+      (_selectedLocation != dasmarinasLocationLabel ||
+          _validateBarangay(_selectedBarangay) == null) &&
       _allPasswordOk;
 
   String? _validateFullName(String? v) {
@@ -142,7 +145,16 @@ class _RegisterPageState extends State<RegisterPage> {
     return null;
   }
 
+  String? _validateLocation(String? value) {
+    if (value != dasmarinasLocationLabel &&
+        value != outsideDasmarinasLocationLabel) {
+      return t(context, 'Select your location', 'Piliin ang inyong lokasyon');
+    }
+    return null;
+  }
+
   String? _validateBarangay(String? value) {
+    if (_selectedLocation != dasmarinasLocationLabel) return null;
     if (!isValidDasmarinasBarangay(value)) {
       return t(
         context,
@@ -710,8 +722,8 @@ class _RegisterPageState extends State<RegisterPage> {
         title: t(context, 'Check Your Details', 'Suriin ang Iyong Detalye'),
         message: t(
           context,
-          'Complete your name, Gmail address, Dasmariñas barangay, password requirements, and confirm password before verifying your email.',
-          'Kumpletuhin ang pangalan, Gmail address, barangay sa Dasmariñas, mga kailangan sa password, at kumpirmasyon ng password bago i-verify ang email.',
+          'Complete your name, Gmail address, location, required barangay, password requirements, and confirm password before verifying your email.',
+          'Kumpletuhin ang pangalan, Gmail address, lokasyon, kinakailangang barangay, mga kailangan sa password, at kumpirmasyon ng password bago i-verify ang email.',
         ),
       );
       return;
@@ -759,9 +771,16 @@ class _RegisterPageState extends State<RegisterPage> {
             firstName: splitName.firstName,
             lastName: splitName.lastName,
             password: password,
-            city: dasmarinasCity,
-            province: dasmarinasProvince,
-            barangay: _selectedBarangay!,
+            location: _selectedLocation!,
+            city: _selectedLocation == dasmarinasLocationLabel
+                ? dasmarinasCity
+                : null,
+            province: _selectedLocation == dasmarinasLocationLabel
+                ? dasmarinasProvince
+                : null,
+            barangay: _selectedLocation == dasmarinasLocationLabel
+                ? _selectedBarangay
+                : null,
           ),
         ),
       );
@@ -893,32 +912,95 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  Widget _buildFixedLocationField() {
-    return Container(
-      width: double.infinity,
-      margin: const EdgeInsets.only(top: 6),
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF8F4F3),
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: brandRed.withOpacity(0.12)),
-      ),
-      child: Row(
+  Widget _buildLocationDropdown() {
+    return FormField<String>(
+      initialValue: _selectedLocation,
+      validator: _validateLocation,
+      autovalidateMode: AutovalidateMode.always,
+      builder: (state) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.location_city_rounded, color: brandRed, size: 20),
-          const SizedBox(width: 10),
-          const Expanded(
-            child: Text(
-              dasmarinasLocationLabel,
-              style: TextStyle(
-                fontFamily: 'Poppins',
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF3D3D3D),
+          Container(
+            margin: const EdgeInsets.only(top: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 18),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(15),
+              border: state.hasError
+                  ? Border.all(color: Colors.red.withValues(alpha: 0.55))
+                  : null,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                value: _selectedLocation,
+                isExpanded: true,
+                borderRadius: BorderRadius.circular(16),
+                icon: const Icon(
+                  Icons.keyboard_arrow_down_rounded,
+                  color: brandRed,
+                ),
+                hint: Text(
+                  t(
+                    context,
+                    'Select your location',
+                    'Piliin ang inyong lokasyon',
+                  ),
+                  style: const TextStyle(
+                    fontFamily: 'Poppins',
+                    color: Colors.black45,
+                  ),
+                ),
+                items: const [
+                  DropdownMenuItem(
+                    value: dasmarinasLocationLabel,
+                    child: Text(
+                      dasmarinasLocationLabel,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  DropdownMenuItem(
+                    value: outsideDasmarinasLocationLabel,
+                    child: Text(
+                      outsideDasmarinasLocationLabel,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+                style: const TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 14,
+                  color: Color(0xFF3D3D3D),
+                ),
+                onChanged: (value) {
+                  setState(() {
+                    _selectedLocation = value;
+                    _selectedBarangay = null;
+                  });
+                  state.didChange(value);
+                },
               ),
             ),
           ),
-          Icon(Icons.lock_rounded, color: brandRed.withOpacity(0.55), size: 17),
+          if (state.errorText != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 6, left: 10),
+              child: Text(
+                state.errorText!,
+                style: const TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 12,
+                  color: Colors.red,
+                  height: 1.2,
+                ),
+              ),
+            ),
         ],
       ),
     );
@@ -928,7 +1010,7 @@ class _RegisterPageState extends State<RegisterPage> {
     return FormField<String>(
       initialValue: _selectedBarangay,
       validator: _validateBarangay,
-      autovalidateMode: AutovalidateMode.onUserInteraction,
+      autovalidateMode: AutovalidateMode.always,
       builder: (state) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -1281,10 +1363,23 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   const SizedBox(height: 14),
                   _inputLabel(t(context, 'Location', 'Lokasyon')),
-                  _buildFixedLocationField(),
-                  const SizedBox(height: 14),
-                  _inputLabel(t(context, 'Barangay', 'Barangay')),
-                  _buildBarangayDropdown(),
+                  _buildLocationDropdown(),
+                  AnimatedSize(
+                    duration: MediaQuery.disableAnimationsOf(context)
+                        ? Duration.zero
+                        : const Duration(milliseconds: 220),
+                    curve: Curves.easeInOut,
+                    alignment: Alignment.topCenter,
+                    child: _selectedLocation == dasmarinasLocationLabel
+                        ? Column(
+                            children: [
+                              const SizedBox(height: 14),
+                              _inputLabel(t(context, 'Barangay', 'Barangay')),
+                              _buildBarangayDropdown(),
+                            ],
+                          )
+                        : const SizedBox(width: double.infinity),
+                  ),
                   const SizedBox(height: 14),
                   _inputLabel(t(context, 'Password', 'Password')),
                   _buildValidatedField(

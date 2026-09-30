@@ -258,6 +258,13 @@ class _ProfilePageState extends State<ProfilePage> {
         isValidDasmarinasBarangay(_barangay)) {
       return 'Barangay $_barangay • $dasmarinasLocationLabel';
     }
+    if (_city.isEmpty &&
+        _province.isEmpty &&
+        _barangay.isEmpty &&
+        _supabase.auth.currentUser?.userMetadata?['location'] ==
+            outsideDasmarinasLocationLabel) {
+      return outsideDasmarinasLocationLabel;
+    }
     return '';
   }
 
