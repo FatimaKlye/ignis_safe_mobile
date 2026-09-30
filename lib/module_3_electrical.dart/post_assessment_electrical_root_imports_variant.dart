@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../localization/app_text.dart';
 import '../localization/language_controller.dart';
 import '../localization/localized_db_text.dart';
+import '../network_error_helper.dart';
 import '../profile_progress_sync.dart';
 import 'post_assess_completion.dart';
 import 'module_progression_service.dart';
@@ -435,6 +436,7 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
       );
       if (mounted) Navigator.pop(context);
     } catch (e) {
+      debugPrint('LOAD POST-ASSESSMENT ERROR: $e');
       if (!mounted) return;
       setState(() => _isLoading = false);
       await _showInfoDialog(
@@ -442,7 +444,7 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
           'Failed to load post-assessment',
           'Hindi na-load ang panghuling pagsusulit',
         ),
-        message: '$e',
+        message: friendlyErrorMessage(e, isTagalog: _isTl),
         buttonText: _txt('OK', 'Sige'),
       );
     }
@@ -1020,7 +1022,7 @@ class _PostAssessmentElectricalPageState extends State<PostAssessmentElectricalP
       if (!mounted) return;
       await _showInfoDialog(
         title: _txt('Submission failed', 'Nabigo ang pagpapasa'),
-        message: '$e',
+        message: friendlyErrorMessage(e, isTagalog: _isTl),
         buttonText: _txt('OK', 'Sige'),
       );
     } finally {

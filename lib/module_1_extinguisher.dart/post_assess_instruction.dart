@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../localization/app_text.dart';
+import '../network_error_helper.dart';
 import 'post_assessment_extinguisher.dart';
 import 'module_progression_service.dart';
 import '../learning_materials.dart' show LearningMaterialsTab;
@@ -200,9 +201,14 @@ Future<void> _openPostAssessmentIfAllowed(BuildContext context) async {
   } on ProgressionAccessDenied catch (e) {
     await _showPostAssessmentAccessDialog(context, e.message);
   } catch (e) {
+    debugPrint('OPEN POST-ASSESSMENT ERROR: $e');
+    if (!context.mounted) return;
     await _showPostAssessmentAccessDialog(
       context,
-      e.toString().replaceFirst('Exception: ', ''),
+      friendlyErrorMessage(
+        e,
+        isTagalog: Localizations.localeOf(context).languageCode == 'tl',
+      ),
     );
   }
 }

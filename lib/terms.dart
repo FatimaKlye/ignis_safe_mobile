@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'consent_service.dart';
 import 'localization/language_controller.dart';
+import 'network_error_helper.dart';
 import 'widgets/app_notification.dart';
 
 /// Combined Terms and Conditions, Privacy Notice (RA 10173) and Consent
@@ -142,14 +143,11 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
       if (!mounted) return;
       Navigator.pop(context, true);
     } catch (e) {
+      debugPrint('Could not save consent: $e');
       if (!mounted) return;
       _notify(
         context,
-        message: t(
-          context,
-          'Could not save your consent: $e',
-          'Hindi na-save ang iyong pahintulot: $e',
-        ),
+        message: friendlyErrorMessage(e, isTagalog: languageCode == 'tl'),
         type: AppNotificationType.error,
       );
     } finally {

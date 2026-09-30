@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../localization/language_controller.dart';
+import '../network_error_helper.dart';
 import '../pre_assessment_completion_guard.dart';
 import 'app_notification.dart';
 
@@ -71,6 +72,7 @@ class _ScoreResultCloseButtonState extends State<ScoreResultCloseButton> {
       // has already signalled the tabs to re-fetch.
       Navigator.of(context).popUntil((route) => route.isFirst);
     } catch (e) {
+      debugPrint('Could not confirm score result: $e');
       if (!mounted) return;
 
       setState(() => _closing = false);
@@ -82,7 +84,9 @@ class _ScoreResultCloseButtonState extends State<ScoreResultCloseButton> {
           'Could not confirm your result',
           'Hindi makumpirma ang iyong resulta',
         ),
-        message: e is PreAssessmentNotSavedException ? e.message : '$e',
+        message: e is PreAssessmentNotSavedException
+            ? e.message
+            : friendlyErrorMessage(e, isTagalog: Localizations.localeOf(context).languageCode == 'tl'),
         type: AppNotificationType.error,
         accentColor: widget.iconColor,
         okText: t(context, 'OK', 'Sige'),

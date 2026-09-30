@@ -6,6 +6,7 @@ import '../localization/app_text.dart';
 import '../localization/language_controller.dart';
 import '../localization/localized_db_text.dart';
 import '../module_progress_refresh_notifier.dart';
+import '../network_error_helper.dart';
 import 'post_assess_completion.dart';
 import 'module_progression_service.dart';
 import '../widgets/assessment_nav_buttons.dart';
@@ -614,6 +615,7 @@ class _PostAssessmentKitchenPageState extends State<PostAssessmentKitchenPage>
     } on ProgressionAccessDenied catch (e) {
       await _blockPostTestAccessAndClose(e.message);
     } catch (e) {
+      debugPrint('LOAD POST-ASSESSMENT ERROR: $e');
       if (!mounted) return;
       setState(() => _isLoading = false);
       await _showInfoDialog(
@@ -621,7 +623,7 @@ class _PostAssessmentKitchenPageState extends State<PostAssessmentKitchenPage>
           'Failed to load post-assessment',
           'Hindi na-load ang panghuling pagsusulit',
         ),
-        message: '$e',
+        message: friendlyErrorMessage(e, isTagalog: _isTl),
         buttonText: _txt('OK', 'Sige'),
       );
     }
@@ -1163,7 +1165,7 @@ class _PostAssessmentKitchenPageState extends State<PostAssessmentKitchenPage>
       if (!mounted) return;
       await _showInfoDialog(
         title: _txt('Submission failed', 'Nabigo ang pagpapasa'),
-        message: '$e',
+        message: friendlyErrorMessage(e, isTagalog: _isTl),
         buttonText: _txt('OK', 'Sige'),
       );
     } finally {

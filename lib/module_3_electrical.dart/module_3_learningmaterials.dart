@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:video_player/video_player.dart';
+import '../network_error_helper.dart';
 import '../widgets/reliable_video_player.dart';
 import 'post_assess_instruction.dart';
 import 'module_progression_service.dart';
@@ -374,11 +375,15 @@ class _LearningMaterialElectricalPageState
       });
       await _showAccessDeniedAndPop(e.message);
     } catch (e) {
+      debugPrint('MODULE 3 ACCESS CHECK ERROR: $e');
       if (!mounted) return;
       setState(() {
         _checkingProgression = false;
         _isContentLoading = false;
-        _contentError = e.toString().replaceFirst('Exception: ', '');
+        _contentError = friendlyErrorMessage(
+          e,
+          isTagalog: Localizations.localeOf(context).languageCode == 'tl',
+        );
       });
     }
   }
@@ -413,9 +418,13 @@ class _LearningMaterialElectricalPageState
         });
       }
     } catch (error) {
+      debugPrint('LOAD MODULE 3 LEARNING MATERIALS ERROR: $error');
       if (!mounted) return;
       setState(() {
-        _contentError = error.toString();
+        _contentError = friendlyErrorMessage(
+          error,
+          isTagalog: Localizations.localeOf(context).languageCode == 'tl',
+        );
         _isContentLoading = false;
       });
     }
@@ -635,6 +644,7 @@ class _LearningMaterialElectricalPageState
       }
       _showPostTestLockedPopup(message: e.message);
     } catch (e) {
+      debugPrint('OPEN POST-ASSESSMENT ERROR: $e');
       if (!mounted) return;
       _showInfoPopup(
         title: _localizedText(
@@ -642,7 +652,10 @@ class _LearningMaterialElectricalPageState
           'Unable to open Post-Assessment',
           'Hindi mabuksan ang Panghuling Pagsusulit',
         ),
-        message: e.toString().replaceFirst('Exception: ', ''),
+        message: friendlyErrorMessage(
+          e,
+          isTagalog: Localizations.localeOf(context).languageCode == 'tl',
+        ),
         icon: Icons.error_outline_rounded,
         color: AppColors.brandRed,
       );

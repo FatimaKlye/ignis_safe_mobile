@@ -9,6 +9,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'login.dart';
 import 'app_content_refresh.dart';
 import 'localization/app_text.dart';
+import 'network_error_helper.dart';
 import 'widgets/app_notification.dart';
 import 'widgets/logout_confirm_dialog.dart';
 import 'widgets/main_tab_header.dart';
@@ -281,10 +282,11 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
         _error = null;
       });
     } catch (e) {
+      debugPrint('LOAD MODULES ERROR: $e');
       if (!mounted) return;
       setState(() {
         _loading = false;
-        _error = e.toString();
+        _error = friendlyErrorMessage(e, isTagalog: _isTl);
       });
     }
   }
@@ -504,7 +506,7 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
           _progressByModule[moduleNo] = current.copyWith(
             loading: false,
             loaded: true,
-            error: e.toString().replaceFirst('Exception: ', ''),
+            error: friendlyErrorMessage(e, isTagalog: _isTl),
           );
         }
       });
@@ -1654,10 +1656,11 @@ class _DatabaseLearningMaterialPageState
       _scheduleIntroDialog(material);
       _resetScroll();
     } catch (e) {
+      debugPrint('LOAD MODULE MATERIAL ERROR: $e');
       if (!mounted) return;
       setState(() {
         _loading = false;
-        _error = e.toString();
+        _error = friendlyErrorMessage(e, isTagalog: _isTl);
       });
     }
   }
@@ -1917,11 +1920,12 @@ class _DatabaseLearningMaterialPageState
         buttonText: _t('OK', 'Sige'),
       );
     } catch (e) {
+      debugPrint('COMPLETE LEARNING MATERIAL ERROR: $e');
       if (!mounted) return;
       await _showLearningDialog(
         icon: Icons.error_outline_rounded,
         title: _t('Completion not saved', 'Hindi na-save ang completion'),
-        message: e.toString().replaceFirst('Exception: ', ''),
+        message: friendlyErrorMessage(e, isTagalog: _isTl),
         buttonText: _t('OK', 'Sige'),
       );
     }

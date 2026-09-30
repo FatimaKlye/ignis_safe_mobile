@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../localization/app_text.dart';
+import '../network_error_helper.dart';
 import 'post_assessment_house.dart';
 import 'module_progression_service.dart';
 import '../learning_materials.dart' show LearningMaterialsTab;
@@ -71,8 +72,12 @@ class _PostAssessmentIntroPageState extends State<PostAssessmentIntroPage> {
       if (!mounted) return;
       await _showPostAssessmentAccessDialog(error.message);
     } catch (error) {
+      debugPrint('OPEN POST-ASSESSMENT ERROR: $error');
       if (!mounted) return;
-      await _showPostAssessmentAccessDialog(error.toString().replaceFirst('Exception: ', ''));
+      final isTl = Localizations.localeOf(context).languageCode == 'tl';
+      await _showPostAssessmentAccessDialog(
+        friendlyErrorMessage(error, isTagalog: isTl),
+      );
     } finally {
       if (mounted) {
         setState(() => _checkingAccess = false);

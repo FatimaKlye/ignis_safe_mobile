@@ -32,8 +32,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   String _txt(String en, String tl) => _isTl ? tl : en;
 
-  String _friendlyError(Object error, String enFallback, String tlFallback) {
-    return _isTl ? tlFallback : '$enFallback\n$error';
+  String _friendlyError(Object error) {
+    return friendlyErrorMessage(error, isTagalog: _isTl);
   }
 
   String _authErrorMessage(String message) {
@@ -118,17 +118,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
         _isLoading = false;
       });
     } catch (e) {
+      debugPrint('Failed to load profile: $e');
       if (!mounted) return;
 
       setState(() => _isLoading = false);
 
       await _showInfoDialog(
         title: _txt('Failed to load profile', 'Hindi na-load ang profile'),
-        message: _friendlyError(
-          e,
-          'Failed to load profile.',
-          'Hindi na-load ang profile. Pakisubukang muli.',
-        ),
+        message: _friendlyError(e),
         buttonText: _txt('OK', 'Sige'),
         icon: Icons.error_outline_rounded,
       );
@@ -301,14 +298,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
         icon: Icons.error_outline_rounded,
       );
     } catch (e) {
+      debugPrint('Failed to update profile: $e');
       if (!mounted) return;
       await _showInfoDialog(
         title: _txt('Update Failed', 'Hindi Na-update'),
-        message: _friendlyError(
-          e,
-          'Update failed.',
-          'Hindi na-update ang profile. Pakisubukang muli.',
-        ),
+        message: _friendlyError(e),
         buttonText: _txt('OK', 'Sige'),
         icon: Icons.error_outline_rounded,
       );

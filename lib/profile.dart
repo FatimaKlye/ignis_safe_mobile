@@ -23,6 +23,7 @@ import 'dasmarinas_location.dart';
 import 'virtual_medal.dart';
 import 'forgotpass.dart';
 import 'change_email_page.dart';
+import 'network_error_helper.dart';
 
 part 'edit_profile_page.dart';
 part 'profile_modern_view.dart';

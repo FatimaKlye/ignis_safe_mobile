@@ -4,6 +4,7 @@ import 'package:video_player/video_player.dart';
 import '../widgets/reliable_video_player.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../network_error_helper.dart';
 import 'post_assess_instruction.dart';
 import 'module_progression_service.dart';
 
@@ -192,10 +193,11 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
         );
       });
     } catch (error) {
+      debugPrint('LOAD MODULE 4 LEARNING MATERIALS ERROR: $error');
       if (!mounted) return;
       setState(() {
         _isLoading = false;
-        _loadError = error.toString();
+        _loadError = friendlyErrorMessage(error, isTagalog: _isTl);
       });
     }
   }

@@ -3,6 +3,7 @@ import 'package:model_viewer_plus/model_viewer_plus.dart';
 import 'package:video_player/video_player.dart';
 import '../widgets/reliable_video_player.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../network_error_helper.dart';
 import 'module_progression_service.dart';
 import 'post_assess_instruction.dart';
 
@@ -412,10 +413,11 @@ class _LearningMaterialTenementPageState
         _showIntroAfterContentLoad();
       });
     } catch (error) {
+      debugPrint('LOAD MODULE 5 LEARNING MATERIALS ERROR: $error');
       if (!mounted) return;
       setState(() {
         _isLoadingContent = false;
-        _contentError = error.toString();
+        _contentError = friendlyErrorMessage(error, isTagalog: _isTl);
       });
     }
   }

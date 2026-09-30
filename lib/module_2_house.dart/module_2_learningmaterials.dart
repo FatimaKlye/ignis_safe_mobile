@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:video_player/video_player.dart';
+import '../network_error_helper.dart';
 import '../widgets/reliable_video_player.dart';
 import 'module_progression_service.dart';
 import 'post_assess_instruction_house.dart';
@@ -568,10 +569,11 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
         }
       });
     } catch (error) {
+      debugPrint('LOAD MODULE 2 LEARNING MATERIALS ERROR: $error');
       if (!mounted) return;
       setState(() {
         _isLoading = false;
-        _loadError = error.toString();
+        _loadError = friendlyErrorMessage(error, isTagalog: _isTl);
       });
     }
   }

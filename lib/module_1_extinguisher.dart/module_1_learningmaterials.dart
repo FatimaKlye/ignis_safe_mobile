@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import '../widgets/reliable_video_player.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../network_error_helper.dart';
 import 'post_assess_instruction.dart';
 import 'module_progression_service.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
@@ -503,10 +504,11 @@ class _LearningMaterialExtinguisherPageState extends State<LearningMaterialExtin
         WidgetsBinding.instance.addPostFrameCallback((_) => _showDialogFromDb('intro', Icons.auto_stories_rounded, AppColors.brandRed, barrierDismissible: false, showCloseButton: true));
       }
     } catch (e) {
+      debugPrint('LOAD MODULE 1 LEARNING MATERIALS ERROR: $e');
       if (!mounted) return;
       setState(() {
         _loading = false;
-        _error = e.toString();
+        _error = friendlyErrorMessage(e, isTagalog: _isTagalog);
       });
     }
   }

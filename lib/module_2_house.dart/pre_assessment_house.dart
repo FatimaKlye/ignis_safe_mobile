@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../localization/localized_db_text.dart';
 import '../localization/language_controller.dart';
+import '../network_error_helper.dart';
 import 'pre_assess_completion_page_house.dart';
 import '../module_progress_refresh_notifier.dart';
 import 'module_progression_service.dart';
@@ -592,6 +593,7 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage>
 
       if (mounted) Navigator.pop(context);
     } catch (e) {
+      debugPrint('LOAD PRE-ASSESSMENT ERROR: $e');
       if (!mounted) return;
 
       setState(() {
@@ -603,7 +605,7 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage>
           'Failed to load pre-assessment',
           'Hindi na-load ang paunang pagsusulit',
         ),
-        message: '$e',
+        message: friendlyErrorMessage(e, isTagalog: _isTl),
         buttonText: _txt('OK', 'Sige'),
       );
     }
@@ -1181,7 +1183,7 @@ class _PreAssessmentHousePageState extends State<PreAssessmentHousePage>
 
       await _showInfoDialog(
         title: _txt('Submission failed', 'Nabigo ang pagpapasa'),
-        message: '$e',
+        message: friendlyErrorMessage(e, isTagalog: _isTl),
         buttonText: _txt('OK', 'Sige'),
       );
     } finally {

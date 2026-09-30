@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../module_progress_refresh_notifier.dart';
+import '../network_error_helper.dart';
 import '../profile_progress_sync.dart';
 import '../profile_refresh_notifier.dart';
 import '../simulation_history_service.dart';
@@ -106,11 +107,10 @@ class _SimulationSceneState extends State<SimulationScene> {
       setState(() => _isUnityLaunching = false);
       Navigator.of(context).pop(unityResult.completed);
     } on PlatformException catch (e) {
+      debugPrint('Failed to open Unity: ${e.code} ${e.message}');
       if (!mounted) return;
 
-      final message = _isTl
-          ? 'Hindi mabuksan ang Unity: ${e.message ?? e.code}'
-          : 'Failed to open Unity: ${e.message ?? e.code}';
+      final message = friendlyErrorMessage(e, isTagalog: _isTl);
 
       setState(() => _launchError = message);
       setState(() => _isUnityLaunching = false);
@@ -122,11 +122,10 @@ class _SimulationSceneState extends State<SimulationScene> {
         accentColor: accent,
       );
     } catch (e) {
+      debugPrint('Failed to save simulation progress: $e');
       if (!mounted) return;
 
-      final message = _isTl
-          ? 'Hindi ma-save ang progreso ng simulasyon: $e'
-          : 'Failed to save simulation progress: $e';
+      final message = friendlyErrorMessage(e, isTagalog: _isTl);
 
       setState(() => _launchError = message);
       setState(() => _isUnityLaunching = false);

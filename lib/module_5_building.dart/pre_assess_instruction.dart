@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../localization/app_text.dart';
+import '../network_error_helper.dart';
 import 'pre_assessment_building.dart';
 import 'module_progression_service.dart';
 
@@ -202,9 +203,14 @@ Future<void> _openPreAssessmentIfAllowed(BuildContext context) async {
   } on ProgressionAccessDenied catch (e) {
     await _showPreAssessmentAccessDialog(context, e.message);
   } catch (e) {
+    debugPrint('OPEN PRE-ASSESSMENT ERROR: $e');
+    if (!context.mounted) return;
     await _showPreAssessmentAccessDialog(
       context,
-      e.toString().replaceFirst('Exception: ', ''),
+      friendlyErrorMessage(
+        e,
+        isTagalog: Localizations.localeOf(context).languageCode == 'tl',
+      ),
     );
   }
 }
