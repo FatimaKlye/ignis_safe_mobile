@@ -331,6 +331,7 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
   String? _heroAssetPath;
   bool _isLoading = true;
   String? _loadError;
+  bool? _loadErrorIsNetwork;
 
   int _pageIndex = 0;
   double _progress = 0.0;
@@ -405,6 +406,7 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
       setState(() {
         _isLoading = true;
         _loadError = null;
+        _loadErrorIsNetwork = null;
       });
 
       final progression = ModuleProgressionService();
@@ -569,11 +571,13 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
         }
       });
     } catch (error) {
-      debugPrint('LOAD MODULE 2 LEARNING MATERIALS ERROR: $error');
+      logErrorInDebug('LOAD MODULE 2 LEARNING MATERIALS ERROR', error);
       if (!mounted) return;
       setState(() {
         _isLoading = false;
-        _loadError = friendlyErrorMessage(error, isTagalog: _isTl);
+        final copy = learningMaterialsErrorCopy(error, isTagalog: _isTl);
+        _loadErrorIsNetwork = isNetworkError(error);
+        _loadError = copy.message;
       });
     }
   }
@@ -1029,8 +1033,12 @@ class _LearningMaterialHousePageState extends State<LearningMaterialHousePage> {
             SafeArea(
               child: Center(
                 child: _ErrorCard(
-                  title: _txt('error_learning_materials_title'),
-                  message: _loadError!,
+                  title: _loadErrorIsNetwork != null
+                      ? learningMaterialsErrorCopyForNetwork(_loadErrorIsNetwork!, isTagalog: _isTl).title
+                      : _txt('error_learning_materials_title'),
+                  message: _loadErrorIsNetwork != null
+                      ? learningMaterialsErrorCopyForNetwork(_loadErrorIsNetwork!, isTagalog: _isTl).message
+                      : _loadError!,
                   retryLabel: _txt('error_retry_button'),
                   onRetry: () {
                     setState(() {

@@ -83,25 +83,10 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
     );
   }
 
-  String _authErrorMessage(String message) {
-    final isTl = Localizations.localeOf(context).languageCode == 'tl';
-    if (!isTl) return message;
-
-    final lower = message.toLowerCase();
-    if (lower.contains('expired') || lower.contains('invalid')) {
-      return 'Hindi wasto o paso na ang OTP. Pakisubukang muli.';
-    }
-    if (lower.contains('rate') || lower.contains('too many')) {
-      return 'Masyadong maraming pagsubok. Maghintay sandali bago subukang muli.';
-    }
-    if (lower.contains('email')) {
-      return 'Pakisuri ang email address at subukang muli.';
-    }
-    if (lower.contains('password')) {
-      return 'Hindi ma-update ang password. Pakisuri ang bagong password at subukang muli.';
-    }
-    return 'May problema sa authentication. Pakisubukang muli.';
-  }
+  String _authErrorMessage(AuthException error) => friendlyAuthErrorMessage(
+    error,
+    isTagalog: Localizations.localeOf(context).languageCode == 'tl',
+  );
 
   Future<bool> _accountExistsForPasswordReset(String email) async {
     final normalizedEmail = email.trim().toLowerCase();
@@ -297,7 +282,7 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
       if (!mounted) return;
       _notify(
         context,
-        message: _authErrorMessage(e.message),
+        message: _authErrorMessage(e),
         type: AppNotificationType.error,
       );
     } catch (e) {
@@ -366,7 +351,7 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
       if (!mounted) return;
       _notify(
         context,
-        message: _authErrorMessage(e.message),
+        message: _authErrorMessage(e),
         type: AppNotificationType.error,
       );
     } catch (e) {
@@ -449,7 +434,7 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
       if (!mounted) return;
       _notify(
         context,
-        message: _authErrorMessage(e.message),
+        message: _authErrorMessage(e),
         type: AppNotificationType.error,
       );
     } catch (e) {

@@ -330,7 +330,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       } else {
         await _showNoticeDialog(
           title: t(context, 'Could Not Send Code', 'Hindi Maipadala ang Code'),
-          message: e.message,
+          message: friendlyAuthErrorMessage(e, isTagalog: Localizations.localeOf(context).languageCode == 'tl'),
         );
       }
     } on TimeoutException {
@@ -512,7 +512,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       } else {
         await _showNoticeDialog(
           title: t(context, 'Invalid Code', 'Maling Code'),
-          message: e.message,
+          message: friendlyAuthErrorMessage(e, isTagalog: Localizations.localeOf(context).languageCode == 'tl'),
         );
       }
     } on TimeoutException {

@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'login.dart';
 import 'widgets/app_notification.dart';
 import 'widgets/password_changed_dialog.dart';
+import 'network_error_helper.dart';
 
 String _t(BuildContext context, String en, String tl) {
   return Localizations.localeOf(context).languageCode == 'tl' ? tl : en;
@@ -28,22 +29,10 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
 
   final SupabaseClient supabase = Supabase.instance.client;
 
-  String _authErrorMessage(String message) {
-    final isTl = Localizations.localeOf(context).languageCode == 'tl';
-    if (!isTl) return message;
-
-    final lower = message.toLowerCase();
-    if (lower.contains('expired') || lower.contains('invalid')) {
-      return 'Hindi wasto o paso na ang recovery link o OTP. Pakisubukang muli.';
-    }
-    if (lower.contains('rate') || lower.contains('too many')) {
-      return 'Masyadong maraming pagsubok. Maghintay sandali bago subukang muli.';
-    }
-    if (lower.contains('password')) {
-      return 'Hindi ma-update ang password. Pakisuri ang bagong password at subukang muli.';
-    }
-    return 'Hindi ma-update ang password. Pakisubukang muli.';
-  }
+  String _authErrorMessage(AuthException error) => friendlyAuthErrorMessage(
+    error,
+    isTagalog: Localizations.localeOf(context).languageCode == 'tl',
+  );
 
   @override
   void dispose() {
@@ -130,7 +119,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
       if (!mounted) return;
       _notify(
         context,
-        message: _authErrorMessage(e.message),
+        message: _authErrorMessage(e),
         type: AppNotificationType.error,
       );
     } catch (_) {

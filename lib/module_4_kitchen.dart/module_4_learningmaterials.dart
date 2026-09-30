@@ -64,6 +64,7 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
   bool _postTestAlreadyCompleted = false;
   bool _savingCompletion = false;
   String? _loadError;
+  bool? _loadErrorIsNetwork;
 
   final List<Set<int>> _readSections = [<int>{}, <int>{}, <int>{}];
   _LearningMaterialData? _data;
@@ -89,6 +90,7 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
     setState(() {
       _isLoading = true;
       _loadError = null;
+      _loadErrorIsNetwork = null;
     });
 
     try {
@@ -193,11 +195,13 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
         );
       });
     } catch (error) {
-      debugPrint('LOAD MODULE 4 LEARNING MATERIALS ERROR: $error');
+      logErrorInDebug('LOAD MODULE 4 LEARNING MATERIALS ERROR', error);
       if (!mounted) return;
       setState(() {
         _isLoading = false;
-        _loadError = friendlyErrorMessage(error, isTagalog: _isTl);
+        final copy = learningMaterialsErrorCopy(error, isTagalog: _isTl);
+        _loadErrorIsNetwork = isNetworkError(error);
+        _loadError = copy.message;
       });
     }
   }
@@ -613,8 +617,12 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
                     children: [
                       const Icon(Icons.error_outline_rounded, color: AppColors.error, size: 34),
                       const SizedBox(height: 10),
-                      const Text(
-                        'Error loading learning materials',
+                      Text(
+                        _loadErrorIsNetwork != null
+                            ? learningMaterialsErrorCopyForNetwork(_loadErrorIsNetwork!, isTagalog: _isTl).title
+                            : (_isTl
+                            ? 'Hindi Ma-load ang Learning Materials'
+                            : 'Unable to Load Learning Materials'),
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: AppColors.textPrimary,
@@ -624,7 +632,11 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        _loadError ?? 'No content found.',
+                        _loadErrorIsNetwork != null
+                            ? learningMaterialsErrorCopyForNetwork(_loadErrorIsNetwork!, isTagalog: _isTl).message
+                            : _loadError ?? (_isTl
+                            ? 'May nangyaring problema. Pakisubukang muli.'
+                            : 'Something went wrong. Please try again.'),
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                           color: AppColors.textSecondary,
@@ -641,9 +653,9 @@ class _LearningMaterialKitchenPageState extends State<LearningMaterialKitchenPag
                             borderRadius: BorderRadius.circular(16),
                           ),
                         ),
-                        child: const Text(
-                          'Retry',
-                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900),
+                        child: Text(
+                          _isTl ? 'Subukan muli' : 'Retry',
+                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900),
                         ),
                       ),
                     ],

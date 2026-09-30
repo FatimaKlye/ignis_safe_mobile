@@ -301,6 +301,7 @@ class _LearningMaterialElectricalPageState
   bool _isContentLoading = true;
   bool _savingCompletion = false;
   String? _contentError;
+  bool? _contentErrorIsNetwork;
   _LearningMaterialContent? _content;
 
   @override
@@ -351,6 +352,7 @@ class _LearningMaterialElectricalPageState
         _checkingProgression = true;
         _isContentLoading = true;
         _contentError = null;
+        _contentErrorIsNetwork = null;
       });
     }
 
@@ -375,15 +377,14 @@ class _LearningMaterialElectricalPageState
       });
       await _showAccessDeniedAndPop(e.message);
     } catch (e) {
-      debugPrint('MODULE 3 ACCESS CHECK ERROR: $e');
+      logErrorInDebug('MODULE 3 ACCESS CHECK ERROR', e);
       if (!mounted) return;
       setState(() {
         _checkingProgression = false;
         _isContentLoading = false;
-        _contentError = friendlyErrorMessage(
-          e,
-          isTagalog: Localizations.localeOf(context).languageCode == 'tl',
-        );
+        final copy = learningMaterialsErrorCopy(e, isTagalog: Localizations.localeOf(context).languageCode == 'tl');
+        _contentErrorIsNetwork = isNetworkError(e);
+        _contentError = copy.message;
       });
     }
   }
@@ -407,6 +408,7 @@ class _LearningMaterialElectricalPageState
       setState(() {
         _content = content;
         _contentError = null;
+        _contentErrorIsNetwork = null;
         _isContentLoading = false;
       });
       if (!_introShown) {
@@ -418,13 +420,12 @@ class _LearningMaterialElectricalPageState
         });
       }
     } catch (error) {
-      debugPrint('LOAD MODULE 3 LEARNING MATERIALS ERROR: $error');
+      logErrorInDebug('LOAD MODULE 3 LEARNING MATERIALS ERROR', error);
       if (!mounted) return;
       setState(() {
-        _contentError = friendlyErrorMessage(
-          error,
-          isTagalog: Localizations.localeOf(context).languageCode == 'tl',
-        );
+        final copy = learningMaterialsErrorCopy(error, isTagalog: Localizations.localeOf(context).languageCode == 'tl');
+        _contentErrorIsNetwork = isNetworkError(error);
+        _contentError = copy.message;
         _isContentLoading = false;
       });
     }
@@ -759,8 +760,16 @@ class _LearningMaterialElectricalPageState
 
     if (_contentError != null || _content == null) {
       return _ContentStateScaffold(
-        message: 'Unable to load learning materials.',
-        detail: _contentError,
+        message: _contentErrorIsNetwork != null
+            ? learningMaterialsErrorCopyForNetwork(_contentErrorIsNetwork!, isTagalog: Localizations.localeOf(context).languageCode == 'tl').title
+            : (Localizations.localeOf(context).languageCode == 'tl'
+            ? 'Hindi Ma-load ang Learning Materials'
+            : 'Unable to Load Learning Materials'),
+        detail: _contentErrorIsNetwork != null
+            ? learningMaterialsErrorCopyForNetwork(_contentErrorIsNetwork!, isTagalog: Localizations.localeOf(context).languageCode == 'tl').message
+            : _contentError ?? (Localizations.localeOf(context).languageCode == 'tl'
+            ? 'May nangyaring problema. Pakisubukang muli.'
+            : 'Something went wrong. Please try again.'),
         showRetry: true,
         onRetry: () {
           setState(() {
@@ -1389,7 +1398,9 @@ class _ContentStateScaffold extends StatelessWidget {
                           foregroundColor: Colors.white,
                         ),
                         onPressed: onRetry,
-                        child: const Text('Retry'),
+                        child: Text(Localizations.localeOf(context).languageCode == 'tl'
+                            ? 'Subukan muli'
+                            : 'Retry'),
                       ),
                     ],
                   ],

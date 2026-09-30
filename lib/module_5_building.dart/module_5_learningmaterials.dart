@@ -241,6 +241,7 @@ class _LearningMaterialTenementPageState
   bool   _unreadPromptVisible = false;
   bool   _isLoadingContent = true;
   String? _contentError;
+  bool? _contentErrorIsNetwork;
 
   final SupabaseClient _supabase = Supabase.instance.client;
 
@@ -255,6 +256,7 @@ class _LearningMaterialTenementPageState
     setState(() {
       _isLoadingContent = true;
       _contentError = null;
+      _contentErrorIsNetwork = null;
     });
 
     try {
@@ -413,11 +415,13 @@ class _LearningMaterialTenementPageState
         _showIntroAfterContentLoad();
       });
     } catch (error) {
-      debugPrint('LOAD MODULE 5 LEARNING MATERIALS ERROR: $error');
+      logErrorInDebug('LOAD MODULE 5 LEARNING MATERIALS ERROR', error);
       if (!mounted) return;
       setState(() {
         _isLoadingContent = false;
-        _contentError = friendlyErrorMessage(error, isTagalog: _isTl);
+        final copy = learningMaterialsErrorCopy(error, isTagalog: _isTl);
+        _contentErrorIsNetwork = isNetworkError(error);
+        _contentError = copy.message;
       });
     }
   }
@@ -729,12 +733,11 @@ class _LearningMaterialTenementPageState
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        _dbTextOr(
-                          context,
-                          'state.error_loading_title',
-                          enFallback: 'Error loading content',
-                          tlFallback: 'Error loading content',
-                        ),
+                        _contentErrorIsNetwork != null
+                            ? learningMaterialsErrorCopyForNetwork(_contentErrorIsNetwork!, isTagalog: _isTl).title
+                            : (_isTl
+                            ? 'Hindi Ma-load ang Learning Materials'
+                            : 'Unable to Load Learning Materials'),
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: AppColors.textPrimary,
@@ -744,7 +747,9 @@ class _LearningMaterialTenementPageState
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        _contentError!,
+                        _contentErrorIsNetwork != null
+                            ? learningMaterialsErrorCopyForNetwork(_contentErrorIsNetwork!, isTagalog: _isTl).message
+                            : _contentError!,
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                           color: AppColors.textSecondary,
@@ -762,12 +767,7 @@ class _LearningMaterialTenementPageState
                           ),
                         ),
                         child: Text(
-                          _dbTextOr(
-                            context,
-                            'state.retry_button',
-                            enFallback: 'Retry',
-                            tlFallback: 'Retry',
-                          ),
+                          _isTl ? 'Subukan muli' : 'Retry',
                           style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.w900,

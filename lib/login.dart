@@ -343,7 +343,7 @@ class _LoginPageState extends State<LoginPage> {
       await _handlePostLogin(user);
     } on AuthException catch (e) {
       if (!mounted) return;
-      _notify(context, message: e.message, type: AppNotificationType.error);
+      _notify(context, message: friendlyAuthErrorMessage(e, isTagalog: Localizations.localeOf(context).languageCode == 'tl'), type: AppNotificationType.error);
     } catch (e) {
       if (!mounted) return;
       if (isNetworkError(e)) {
@@ -370,7 +370,7 @@ class _LoginPageState extends State<LoginPage> {
       );
     } on AuthException catch (e) {
       if (!mounted) return;
-      _notify(context, message: e.message, type: AppNotificationType.error);
+      _notify(context, message: friendlyAuthErrorMessage(e, isTagalog: Localizations.localeOf(context).languageCode == 'tl'), type: AppNotificationType.error);
     } catch (e) {
       if (!mounted) return;
       if (isNetworkError(e)) {

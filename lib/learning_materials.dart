@@ -144,6 +144,7 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
   String? _avatarUrl;
   bool _loading = true;
   String? _error;
+  bool? _errorIsNetwork;
   List<LearningMaterial> _modules = [];
   RealtimeChannel? _channel;
   Timer? _progressRefreshDebounce;
@@ -262,6 +263,7 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
         setState(() {
           _loading = true;
           _error = null;
+          _errorIsNetwork = null;
         });
       }
 
@@ -280,13 +282,16 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
         _modules = modules;
         _loading = false;
         _error = null;
+        _errorIsNetwork = null;
       });
     } catch (e) {
-      debugPrint('LOAD MODULES ERROR: $e');
+      logErrorInDebug('LOAD MODULES ERROR', e);
       if (!mounted) return;
       setState(() {
         _loading = false;
-        _error = friendlyErrorMessage(e, isTagalog: _isTl);
+        final copy = learningMaterialsErrorCopy(e, isTagalog: _isTl);
+        _error = copy.message;
+        _errorIsNetwork = isNetworkError(e);
       });
     }
   }
@@ -1490,10 +1495,8 @@ class _LearningMaterialsTabState extends State<LearningMaterialsTab> {
         children: [
           _MessageCard(
             icon: Icons.error_outline_rounded,
-            title: _isTl
-                ? 'Hindi ma-load ang learning materials'
-                : 'Cannot load learning materials',
-            message: _error!,
+            title: learningMaterialsErrorCopyForNetwork(_errorIsNetwork!, isTagalog: _isTl).title,
+            message: learningMaterialsErrorCopyForNetwork(_errorIsNetwork!, isTagalog: _isTl).message,
             buttonText: _isTl ? 'Subukan muli' : 'Retry',
             color: const Color(0xFFB11217),
             onPressed: _loadModules,
@@ -1577,6 +1580,7 @@ class _DatabaseLearningMaterialPageState
   List<FireClassGuide> _fireGuides = [];
   bool _loading = true;
   String? _error;
+  bool? _errorIsNetwork;
   int _pageIndex = 0;
   double _progress = 0;
   bool _canNext = false;
@@ -1612,6 +1616,7 @@ class _DatabaseLearningMaterialPageState
         setState(() {
           _loading = true;
           _error = null;
+          _errorIsNetwork = null;
         });
       }
 
@@ -1649,6 +1654,7 @@ class _DatabaseLearningMaterialPageState
         _fireGuides = guides;
         _loading = false;
         _error = null;
+        _errorIsNetwork = null;
         if (_pageIndex >= material.pages.length) {
           _pageIndex = material.pages.isEmpty ? 0 : material.pages.length - 1;
         }
@@ -1656,11 +1662,13 @@ class _DatabaseLearningMaterialPageState
       _scheduleIntroDialog(material);
       _resetScroll();
     } catch (e) {
-      debugPrint('LOAD MODULE MATERIAL ERROR: $e');
+      logErrorInDebug('LOAD MODULE MATERIAL ERROR', e);
       if (!mounted) return;
       setState(() {
         _loading = false;
-        _error = friendlyErrorMessage(e, isTagalog: _isTl);
+        final copy = learningMaterialsErrorCopy(e, isTagalog: _isTl);
+        _error = copy.message;
+        _errorIsNetwork = isNetworkError(e);
       });
     }
   }
@@ -1984,11 +1992,8 @@ class _DatabaseLearningMaterialPageState
                     child: Center(
                       child: _MessageCard(
                         icon: Icons.error_outline_rounded,
-                        title: _t(
-                          'Cannot load learning material',
-                          'Hindi ma-load ang learning material',
-                        ),
-                        message: _error!,
+                        title: learningMaterialsErrorCopyForNetwork(_errorIsNetwork!, isTagalog: _isTl).title,
+                        message: learningMaterialsErrorCopyForNetwork(_errorIsNetwork!, isTagalog: _isTl).message,
                         buttonText: _t('Retry', 'Subukan muli'),
                         color: _accent,
                         onPressed: _loadMaterial,

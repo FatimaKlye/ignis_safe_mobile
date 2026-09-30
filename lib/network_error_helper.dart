@@ -3,6 +3,13 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+void logErrorInDebug(String context, Object error) {
+  assert(() {
+    debugPrint('$context: $error');
+    return true;
+  }());
+}
+
 bool isTimeoutError(dynamic error) {
   if (error is TimeoutException) return true;
   final msg = error.toString().toLowerCase();
@@ -49,7 +56,7 @@ bool isServerError(dynamic error) {
 /// Classifies any caught error/exception and returns a short, non-technical
 /// message safe to show to end users. Never surfaces exception types, stack
 /// traces, URLs, or backend/provider details — callers should still log the
-/// original [error] to the console (e.g. via `debugPrint`) for diagnostics.
+/// original [error] with [logErrorInDebug] for development diagnostics.
 String friendlyErrorMessage(dynamic error, {bool isTagalog = false}) {
   if (isSessionError(error)) {
     return isTagalog
@@ -83,17 +90,71 @@ String friendlyErrorMessageFor(BuildContext context, dynamic error) {
   return friendlyErrorMessage(error, isTagalog: isTagalog);
 }
 
+/// Only recognized authentication outcomes receive specific copy. Provider
+/// messages are never returned directly, even when they look readable.
+String friendlyAuthErrorMessage(
+  AuthException error, {
+  required bool isTagalog,
+}) {
+  if (isNetworkError(error)) {
+    return isTagalog
+        ? 'Pakisuri ang iyong internet connection at subukan muli.'
+        : 'Please check your internet connection and try again.';
+  }
+  if (isSessionError(error)) {
+    return isTagalog
+        ? 'Nag-expire na ang iyong session. Mangyaring mag-sign in muli.'
+        : 'Your session has expired. Please sign in again.';
+  }
+  final message = error.message.toLowerCase();
+  final code = error.code?.toLowerCase() ?? '';
+  if (code == 'invalid_credentials' ||
+      message.contains('invalid login credentials')) {
+    return isTagalog
+        ? 'Hindi tama ang email o password. Pakisubukang muli.'
+        : 'Incorrect email or password. Please try again.';
+  }
+  if (code == 'otp_expired' ||
+      message.contains('invalid otp') ||
+      message.contains('token has expired') ||
+      message.contains('token is invalid')) {
+    return isTagalog
+        ? 'Hindi wasto o paso na ang code. Pakisubukang muli.'
+        : 'The code is invalid or has expired. Please try again.';
+  }
+  if (code == 'over_request_rate_limit' ||
+      code == 'over_email_send_rate_limit' ||
+      message.contains('too many requests') ||
+      message.contains('rate limit')) {
+    return isTagalog
+        ? 'Masyadong maraming pagsubok. Maghintay sandali bago subukang muli.'
+        : 'Too many attempts. Please wait a moment and try again.';
+  }
+  if (code == 'user_already_exists' || message.contains('already registered')) {
+    return isTagalog
+        ? 'Ginagamit na ang email na ito ng ibang account.'
+        : 'This email is already registered.';
+  }
+  return isTagalog
+      ? 'May nangyaring problema. Pakisubukang muli.'
+      : 'Something went wrong. Please try again.';
+}
+
 bool isNetworkError(dynamic error) {
   if (error is SocketException) return true;
   if (error is TimeoutException) return true;
   final msg = error.toString().toLowerCase();
   return msg.contains('socketexception') ||
-      msg.contains('authretryablefetchexception') ||
+      (msg.contains('authretryablefetchexception') &&
+          (msg.contains('fetch') ||
+              msg.contains('connection') ||
+              msg.contains('network'))) ||
       msg.contains('failed host lookup') ||
       msg.contains('connection refused') ||
       msg.contains('connection reset') ||
       msg.contains('network is unreachable') ||
-      msg.contains('clientexception') ||
+      msg.contains('failed to fetch') ||
+      msg.contains('network request failed') ||
       msg.contains('operation timed out') ||
       msg.contains('request_timeout') ||
       msg.contains('connection timed out') ||
@@ -103,6 +164,40 @@ bool isNetworkError(dynamic error) {
       msg.contains('errno = 7') ||
       msg.contains('errno = 101') ||
       msg.contains('errno = 111');
+}
+
+/// Fixed, localized copy for loading Learning Materials. The original error is
+/// used only to classify the failure; no backend text can enter these strings.
+({String title, String message}) learningMaterialsErrorCopy(
+  Object error, {
+  required bool isTagalog,
+}) => learningMaterialsErrorCopyForNetwork(
+  isNetworkError(error),
+  isTagalog: isTagalog,
+);
+
+({String title, String message}) learningMaterialsErrorCopyForNetwork(
+  bool isNetwork, {
+  required bool isTagalog,
+}) {
+  if (isNetwork) {
+    return (
+      title: isTagalog
+          ? 'Walang Internet Connection'
+          : 'No Internet Connection',
+      message: isTagalog
+          ? 'Pakisuri ang iyong internet connection at subukan muli.'
+          : 'Please check your internet connection and try again.',
+    );
+  }
+  return (
+    title: isTagalog
+        ? 'Hindi Ma-load ang Learning Materials'
+        : 'Unable to Load Learning Materials',
+    message: isTagalog
+        ? 'May nangyaring problema. Pakisubukang muli.'
+        : 'Something went wrong. Please try again.',
+  );
 }
 
 Future<void> showNoInternetDialog(BuildContext context) async {

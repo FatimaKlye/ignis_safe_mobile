@@ -36,21 +36,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
     return friendlyErrorMessage(error, isTagalog: _isTl);
   }
 
-  String _authErrorMessage(String message) {
-    if (!_isTl) return message;
-
-    final lower = message.toLowerCase();
-    if (lower.contains('password')) {
-      return 'Hindi ma-update ang password. Pakisuri ang bagong password at subukang muli.';
-    }
-    if (lower.contains('email')) {
-      return 'Hindi ma-update ang email. Pakisubukang muli.';
-    }
-    if (lower.contains('rate') || lower.contains('too many')) {
-      return 'Masyadong maraming pagsubok. Maghintay sandali bago subukang muli.';
-    }
-    return 'Hindi na-update ang profile. Pakisubukang muli.';
-  }
+  String _authErrorMessage(AuthException error) => friendlyAuthErrorMessage(
+    error,
+    isTagalog: _isTl,
+  );
 
   @override
   void initState() {
@@ -293,7 +282,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       if (!mounted) return;
       await _showInfoDialog(
         title: _txt('Update Failed', 'Hindi Na-update'),
-        message: _authErrorMessage(e.message),
+        message: _authErrorMessage(e),
         buttonText: _txt('OK', 'Sige'),
         icon: Icons.error_outline_rounded,
       );

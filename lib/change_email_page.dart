@@ -77,25 +77,10 @@ class _ChangeEmailPageState extends State<ChangeEmailPage> {
     );
   }
 
-  String _authErrorMessage(String message) {
-    final isTl = Localizations.localeOf(context).languageCode == 'tl';
-    if (!isTl) return message;
-
-    final lower = message.toLowerCase();
-    if (lower.contains('expired') || lower.contains('invalid')) {
-      return 'Hindi wasto o paso na ang OTP. Pakisubukang muli.';
-    }
-    if (lower.contains('rate') || lower.contains('too many')) {
-      return 'Masyadong maraming pagsubok. Maghintay sandali bago subukang muli.';
-    }
-    if (lower.contains('registered') || lower.contains('already')) {
-      return 'Ginagamit na ang email na ito ng ibang account.';
-    }
-    if (lower.contains('email')) {
-      return 'Pakisuri ang email address at subukang muli.';
-    }
-    return 'May problema sa authentication. Pakisubukang muli.';
-  }
+  String _authErrorMessage(AuthException error) => friendlyAuthErrorMessage(
+    error,
+    isTagalog: Localizations.localeOf(context).languageCode == 'tl',
+  );
 
   String? _validateEmail(String? value) {
     final email = (value ?? '').trim().toLowerCase();
@@ -209,7 +194,7 @@ class _ChangeEmailPageState extends State<ChangeEmailPage> {
       if (!mounted) return;
       _notify(
         context,
-        message: _authErrorMessage(e.message),
+        message: _authErrorMessage(e),
         type: AppNotificationType.error,
       );
     } catch (e) {
@@ -274,7 +259,7 @@ class _ChangeEmailPageState extends State<ChangeEmailPage> {
       if (!mounted) return;
       _notify(
         context,
-        message: _authErrorMessage(e.message),
+        message: _authErrorMessage(e),
         type: AppNotificationType.error,
       );
     } catch (e) {
@@ -393,7 +378,7 @@ class _ChangeEmailPageState extends State<ChangeEmailPage> {
                 'Invalid or expired OTP. Please check the latest code in your email or tap Resend OTP.',
                 'Hindi wasto o paso na ang OTP. Pakitingnan ang pinakabagong code sa iyong email o pindutin ang Ipadala muli ang OTP.',
               )
-            : _authErrorMessage(e.message),
+            : _authErrorMessage(e),
         type: AppNotificationType.error,
       );
     } catch (e) {

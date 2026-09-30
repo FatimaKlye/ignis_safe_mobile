@@ -438,6 +438,7 @@ class _LearningMaterialExtinguisherPageState extends State<LearningMaterialExtin
   Map<String, _LocalizedText> _bootstrapTexts = <String, _LocalizedText>{};
   bool _loading = true;
   String? _error;
+  bool? _errorIsNetwork;
   int _pageIndex = 0;
   double _scrollProgress = 0.0;
   bool _introShown = false;
@@ -462,6 +463,7 @@ class _LearningMaterialExtinguisherPageState extends State<LearningMaterialExtin
     setState(() {
       _loading = true;
       _error = null;
+      _errorIsNetwork = null;
     });
 
     try {
@@ -504,11 +506,13 @@ class _LearningMaterialExtinguisherPageState extends State<LearningMaterialExtin
         WidgetsBinding.instance.addPostFrameCallback((_) => _showDialogFromDb('intro', Icons.auto_stories_rounded, AppColors.brandRed, barrierDismissible: false, showCloseButton: true));
       }
     } catch (e) {
-      debugPrint('LOAD MODULE 1 LEARNING MATERIALS ERROR: $e');
+      logErrorInDebug('LOAD MODULE 1 LEARNING MATERIALS ERROR', e);
       if (!mounted) return;
       setState(() {
         _loading = false;
-        _error = friendlyErrorMessage(e, isTagalog: _isTagalog);
+        final copy = learningMaterialsErrorCopy(e, isTagalog: _isTagalog);
+        _errorIsNetwork = isNetworkError(e);
+        _error = copy.message;
       });
     }
   }
@@ -947,8 +951,16 @@ class _LearningMaterialExtinguisherPageState extends State<LearningMaterialExtin
       return _ScreenShell(
         child: Center(
           child: _ErrorCard(
-            title: _bootstrapCopy('error_load_title', fallback: 'Learning materials could not load'),
-            message: _error ?? _bootstrapCopy('error_no_data', fallback: 'No learning material data.'),
+            title: _errorIsNetwork != null
+                ? learningMaterialsErrorCopyForNetwork(_errorIsNetwork!, isTagalog: _isTagalog).title
+                : (_isTagalog
+                ? 'Hindi Ma-load ang Learning Materials'
+                : 'Unable to Load Learning Materials'),
+            message: _errorIsNetwork != null
+                ? learningMaterialsErrorCopyForNetwork(_errorIsNetwork!, isTagalog: _isTagalog).message
+                : _error ?? (_isTagalog
+                ? 'May nangyaring problema. Pakisubukang muli.'
+                : 'Something went wrong. Please try again.'),
             closeLabel: _bootstrapCopy('error_close', fallback: 'Close'),
             retryLabel: _bootstrapCopy('error_retry', fallback: 'Retry'),
             onRetry: _load,

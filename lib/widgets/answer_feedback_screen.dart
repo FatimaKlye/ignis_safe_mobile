@@ -557,10 +557,10 @@ class _AnswerFeedbackScreenState extends State<AnswerFeedbackScreen> {
         _correctCount = correct;
         _isLoading = false;
       });
-    } catch (e) {
+    } catch (_) {
       if (!mounted) return;
       setState(() {
-        _error = e.toString();
+        _error = 'load_failed';
         _isLoading = false;
       });
     }
