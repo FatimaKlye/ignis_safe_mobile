@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'home.dart';
+import 'consent_service.dart';
 import 'login.dart';
 import 'onboarding1.dart';
 
@@ -91,7 +92,16 @@ class _SplashPageState extends State<SplashPage>
     final session = Supabase.instance.client.auth.currentSession;
 
     if (!onboardingDone) return const OnboardingOnePage();
-    if (session != null) return const IgnisHomePage();
+    if (session != null) {
+      try {
+        if (await ConsentService().hasRequiredConsents(session.user.id)) {
+          return const IgnisHomePage();
+        }
+      } catch (_) {
+        // A restored session must not bypass the consent gate when its
+        // acceptance cannot be checked. Login offers the normal retry flow.
+      }
+    }
     return const LoginPage();
   }
 
