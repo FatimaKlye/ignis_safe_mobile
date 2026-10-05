@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'consent_service.dart';
 import 'localization/language_controller.dart';
@@ -15,8 +14,14 @@ import 'widgets/app_notification.dart';
 class TermsAndConditionsPage extends StatefulWidget {
   final String? userId;
   final bool readOnly;
+  final ConsentService? consentService;
 
-  const TermsAndConditionsPage({super.key, this.userId, this.readOnly = false});
+  const TermsAndConditionsPage({
+    super.key,
+    this.userId,
+    this.readOnly = false,
+    this.consentService,
+  });
 
   @override
   State<TermsAndConditionsPage> createState() => _TermsAndConditionsPageState();
@@ -27,11 +32,9 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
 
   double _progress = 0.0;
   bool _scrolledToBottom = false;
-  bool _loadingConsentStatus = false;
-  bool _alreadyCompleted = false;
 
   // Consent boxes start unchecked for a new or materially updated document.
-  // Current-version acceptances are restored by _loadExistingConsentStatus.
+  // Current-version acceptances are restored by _loadCurrentConsent.
   bool _acceptTerms = false;
   bool _acceptPrivacy = false;
   bool _acceptResearch = false;
@@ -39,6 +42,8 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
   bool _checkingConsent = false;
   bool _alreadyAccepted = false;
   bool _saving = false;
+  bool _consentLoadFailed = false;
+  Set<String> _recordedConsents = <String>{};
 
   static const Color brandRed = Color(0xFFB71C1C);
   static const Color background = Colors.white;
@@ -46,32 +51,42 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
   static const Color cardBackground = Colors.white;
   static const Color subtleBorder = Color(0xFFEDE7E8);
 
-  final supabase = Supabase.instance.client;
-  final ConsentService _consentService = ConsentService();
+  late final ConsentService _consentService;
 
   bool get _requiredConsentsGiven => _acceptTerms && _acceptPrivacy;
+  bool get _reviewOnly => widget.readOnly || widget.userId == null;
 
   @override
   void initState() {
     super.initState();
+    _consentService = widget.consentService ?? ConsentService();
     _scrollController.addListener(_handleScroll);
     WidgetsBinding.instance.addPostFrameCallback((_) => _handleScroll());
     if (widget.userId != null) _loadCurrentConsent();
   }
 
   Future<void> _loadCurrentConsent() async {
-    setState(() => _checkingConsent = true);
+    setState(() {
+      _checkingConsent = true;
+      _consentLoadFailed = false;
+    });
     try {
-      final accepted = await _consentService.hasRequiredConsents(widget.userId!);
+      final active = await _consentService.activeConsentTypes(widget.userId!);
+      final accepted = ConsentDocuments.required.every(active.contains);
       if (!mounted) return;
       setState(() {
         _alreadyAccepted = accepted;
+        _recordedConsents = active;
+        _acceptTerms = active.contains(ConsentDocuments.terms);
+        _acceptPrivacy = active.contains(ConsentDocuments.privacy);
+        _acceptResearch = active.contains(ConsentDocuments.research);
         // Returning users can read the document from any point; the reading
         // gate applies only when a current-version decision is still needed.
         if (accepted) _scrolledToBottom = true;
       });
     } catch (e) {
       debugPrint('Could not load existing consent: $e');
+      if (mounted) setState(() => _consentLoadFailed = true);
     } finally {
       if (mounted) setState(() => _checkingConsent = false);
     }
@@ -100,7 +115,7 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
   }
 
   void _handleScroll() {
-    if (_alreadyCompleted) return;
+    if (_alreadyAccepted || _reviewOnly) return;
     if (!_scrollController.hasClients) return;
 
     final max = _scrollController.position.maxScrollExtent;
@@ -114,16 +129,21 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
     if (!_scrolledToBottom && value >= 0.99) {
       setState(() => _scrolledToBottom = true);
     }
-
   }
 
   Future<void> _onAgree() async {
-    if (widget.readOnly || _alreadyAccepted || widget.userId == null) {
-      Navigator.pop(context, false);
+    if (_reviewOnly || _alreadyAccepted) {
+      Navigator.pop(context, _alreadyAccepted);
       return;
     }
 
-    if (!_requiredConsentsGiven) return;
+    if (_checkingConsent ||
+        _consentLoadFailed ||
+        _saving ||
+        !_scrolledToBottom ||
+        !_requiredConsentsGiven) {
+      return;
+    }
 
     final languageCode = Localizations.localeOf(context).languageCode;
 
@@ -219,37 +239,69 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
                     ),
                   ],
                 ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: LinearProgressIndicator(
-                          value: _progress,
-                          minHeight: 8,
-                          backgroundColor: brandRed.withOpacity(0.12),
-                          valueColor: const AlwaysStoppedAnimation<Color>(
-                            brandRed,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    SizedBox(
-                      width: 44,
-                      child: Text(
-                        _scrolledToBottom ? '100%' : '$percent%',
-                        textAlign: TextAlign.end,
+                child:
+                    _alreadyAccepted ||
+                        _reviewOnly ||
+                        _checkingConsent ||
+                        _consentLoadFailed
+                    ? Text(
+                        _checkingConsent
+                            ? t(
+                                context,
+                                'Checking acceptance…',
+                                'Sinusuri ang pagtanggap…',
+                              )
+                            : _consentLoadFailed
+                            ? t(
+                                context,
+                                'Acceptance status unavailable',
+                                'Hindi makuha ang katayuan ng pagtanggap',
+                              )
+                            : _alreadyAccepted
+                            ? t(context, 'Already accepted', 'Tinanggap na')
+                            : t(
+                                context,
+                                'Review the documents',
+                                'Basahin ang mga dokumento',
+                              ),
+                        textAlign: TextAlign.center,
                         style: const TextStyle(
                           fontFamily: 'Poppins',
                           color: brandRed,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
                         ),
+                      )
+                    : Row(
+                        children: [
+                          Expanded(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: LinearProgressIndicator(
+                                value: _scrolledToBottom ? 1.0 : _progress,
+                                minHeight: 8,
+                                backgroundColor: brandRed.withOpacity(0.12),
+                                valueColor: const AlwaysStoppedAnimation<Color>(
+                                  brandRed,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          SizedBox(
+                            width: 44,
+                            child: Text(
+                              _scrolledToBottom ? '100%' : '$percent%',
+                              textAlign: TextAlign.end,
+                              style: const TextStyle(
+                                fontFamily: 'Poppins',
+                                color: brandRed,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
-                ),
               ),
 
               // Document card
@@ -804,8 +856,12 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
       _EndMarker(
         t(
           context,
-          'End of document. Please review the consent options below.',
-          'Katapusan ng dokumento. Pakisuri ang mga pagpipilian sa pahintulot sa ibaba.',
+          _alreadyAccepted || _reviewOnly
+              ? 'End of document. You may close this review at any time.'
+              : 'End of document. Please review the consent options below.',
+          _alreadyAccepted || _reviewOnly
+              ? 'Katapusan ng dokumento. Maaari mong isara ang pagsusuri anumang oras.'
+              : 'Katapusan ng dokumento. Pakisuri ang mga pagpipilian sa pahintulot sa ibaba.',
         ),
       ),
       const SizedBox(height: 8),
@@ -857,12 +913,28 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
                       padding: EdgeInsets.all(8),
                       child: CircularProgressIndicator(color: brandRed),
                     )
-                  else if (_alreadyAccepted || widget.readOnly) ...[
+                  else if (_consentLoadFailed) ...[
+                    Text(
+                      t(
+                        context,
+                        'We could not load your saved acceptance. Check your connection and retry. You do not need to accept again just because this check failed.',
+                        'Hindi namin makuha ang naitalang pagtanggap. Suriin ang koneksyon at subukang muli. Hindi kailangang tumanggap ulit dahil lamang nabigo ang pagsusuri.',
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 10),
+                    OutlinedButton(
+                      onPressed: _loadCurrentConsent,
+                      child: Text(t(context, 'Retry', 'Subukang muli')),
+                    ),
+                  ] else if (_alreadyAccepted || _reviewOnly) ...[
                     if (_alreadyAccepted) ...[
                       Text(
-                        t(context,
-                            'You already accepted the current Terms and Privacy Notice. You may review them without accepting again.',
-                            'Tinanggap mo na ang kasalukuyang Mga Tuntunin at Paunawa sa Privacy. Maaari mong basahin muli nang hindi na kailangang tumanggap ulit.'),
+                        t(
+                          context,
+                          'You already accepted the current Terms and Privacy Notice. You may review them without accepting again.',
+                          'Tinanggap mo na ang kasalukuyang Mga Tuntunin at Paunawa sa Privacy. Maaari mong basahin muli nang hindi na kailangang tumanggap ulit.',
+                        ),
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                           fontFamily: 'Poppins',
@@ -871,12 +943,29 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
                         ),
                       ),
                       const SizedBox(height: 10),
+                      Text(
+                        _acceptResearch
+                            ? t(
+                                context,
+                                'Optional research consent: Accepted',
+                                'Opsyonal na pahintulot sa pananaliksik: Tinanggap',
+                              )
+                            : t(
+                                context,
+                                'Optional research consent: Not given',
+                                'Opsyonal na pahintulot sa pananaliksik: Hindi ibinigay',
+                              ),
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                      const SizedBox(height: 10),
                     ],
                     SizedBox(
                       width: double.infinity,
                       height: 50,
                       child: OutlinedButton(
-                        onPressed: () => Navigator.pop(context, false),
+                        onPressed: () =>
+                            Navigator.pop(context, _alreadyAccepted),
                         child: Text(t(context, 'Done', 'Tapos')),
                       ),
                     ),
@@ -919,11 +1008,16 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
                         ],
                       ),
                     ),
-                  if (!_checkingConsent && !_alreadyAccepted &&
-                      _scrolledToBottom && !widget.readOnly) ...[
+                  if (!_checkingConsent &&
+                      !_consentLoadFailed &&
+                      !_alreadyAccepted &&
+                      _scrolledToBottom &&
+                      !_reviewOnly) ...[
                     _ConsentCheckbox(
                       value: _acceptTerms,
-                      enabled: !_saving,
+                      enabled:
+                          !_saving &&
+                          !_recordedConsents.contains(ConsentDocuments.terms),
                       required: true,
                       label: t(
                         context,
@@ -935,7 +1029,9 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
                     const SizedBox(height: 8),
                     _ConsentCheckbox(
                       value: _acceptPrivacy,
-                      enabled: !_saving,
+                      enabled:
+                          !_saving &&
+                          !_recordedConsents.contains(ConsentDocuments.privacy),
                       required: true,
                       label: t(
                         context,
@@ -947,7 +1043,11 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
                     const SizedBox(height: 8),
                     _ConsentCheckbox(
                       value: _acceptResearch,
-                      enabled: !_saving,
+                      enabled:
+                          !_saving &&
+                          !_recordedConsents.contains(
+                            ConsentDocuments.research,
+                          ),
                       required: false,
                       label: t(
                         context,
@@ -985,8 +1085,11 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
                                 ),
                               )
                             : Text(
-                                t(context, 'I Agree and Continue',
-                                    'Sumasang-ayon Ako at Magpatuloy'),
+                                t(
+                                  context,
+                                  'I Agree and Continue',
+                                  'Sumasang-ayon Ako at Magpatuloy',
+                                ),
                                 textAlign: TextAlign.center,
                                 style: const TextStyle(
                                   fontFamily: 'Poppins',
@@ -1022,7 +1125,6 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
       ),
     );
   }
-
 }
 
 class _Title extends StatelessWidget {

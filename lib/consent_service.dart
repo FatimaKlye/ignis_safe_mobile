@@ -113,8 +113,9 @@ class ConsentService {
     final alreadyActive = await activeConsentTypes(userId);
     final nowUtc = DateTime.now().toUtc().toIso8601String();
 
+    final requested = documentTypes.toSet();
     final payload = <Map<String, dynamic>>[
-      for (final type in documentTypes)
+      for (final type in requested)
         if (!alreadyActive.contains(type))
           {
             'user_id': userId,
@@ -126,29 +127,53 @@ class ConsentService {
           },
     ];
 
-    if (payload.isNotEmpty) {
+    // An ordinary revisit is read-only: keep the original acceptance dates.
+    if (payload.isEmpty) return;
+
+    // Insert individually so a concurrent duplicate cannot roll back the
+    // other document decisions in a bulk insert.
+    for (final row in payload) {
       try {
-        await _supabase.from(_table).insert(payload);
+        await _supabase.from(_table).insert(row);
       } on PostgrestException catch (e) {
-        // 23505 = the unique index caught a consent that was recorded
-        // concurrently (e.g. a double tap). Nothing left to do.
+        // Verify the existing row below rather than assuming a duplicate
+        // means all requested decisions have been recorded.
         if (e.code != '23505') rethrow;
       }
     }
 
-    final acceptedRequired = ConsentDocuments.required.every(
-      (type) => alreadyActive.contains(type) || documentTypes.contains(type),
-    );
+    final persisted = await activeConsentTypes(userId);
+    if (!requested.every(persisted.contains)) {
+      throw StateError(
+        'Consent decisions could not be verified. Please retry.',
+      );
+    }
 
-    if (acceptedRequired) {
-      await _supabase
-          .from('profiles')
-          .update({
-            'terms_accepted': true,
-            'terms_accepted_at': nowUtc,
-            'updated_at': nowUtc,
-          })
-          .eq('id', userId);
+    if (ConsentDocuments.required.every(persisted.contains)) {
+      // This legacy dashboard flag is not the consent record. Personnel may
+      // have permission to save their own consents but not update profiles.
+      // Never report verified acceptance as failed due to this mirror.
+      try {
+        final profile = await _supabase
+            .from('profiles')
+            .select('terms_accepted, terms_accepted_at')
+            .eq('id', userId)
+            .maybeSingle();
+        if (profile != null && profile['terms_accepted'] != true) {
+          await _supabase
+              .from('profiles')
+              .update({
+                'terms_accepted': true,
+                if (profile['terms_accepted_at'] == null)
+                  'terms_accepted_at': nowUtc,
+              })
+              .eq('id', userId);
+        }
+      } catch (_) {
+        debugPrint(
+          'Consent saved; legacy profile acceptance mirror unavailable.',
+        );
+      }
     }
   }
 

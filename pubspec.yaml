@@ -1,7 +1,7 @@
 name: ignis_safe
 description: "A new Flutter project."
 publish_to: 'none'
-version: 1.0.3+4
+version: 1.0.5+6
 
 environment:
   sdk: ^3.8.1
@@ -28,6 +28,7 @@ dependencies:
   package_info_plus: 8.0.2
 
 dev_dependencies:
+  http: 1.6.0 # Mock the consent API in offline regression tests.
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0

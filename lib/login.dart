@@ -217,15 +217,9 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<bool> _hasAcceptedTerms(String userId) async {
-    try {
-      // Required consents (Terms + Privacy Notice) must both be on file at
-      // their current document version — see ConsentDocuments. A material
-      // version bump therefore re-triggers this flow for existing users.
-      return await ConsentService().hasRequiredConsents(userId);
-    } catch (e) {
-      debugPrint('Error checking terms acceptance: $e');
-      return false;
-    }
+    // A failed lookup is not a missing acceptance. Let the caller open the
+    // consent screen's explicit retry state rather than mark the user new.
+    return ConsentService().hasRequiredConsents(userId);
   }
 
   Future<void> _handlePostLogin(User user) async {
@@ -250,7 +244,14 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    final accepted = await _hasAcceptedTerms(user.id);
+    bool accepted;
+    try {
+      accepted = await _hasAcceptedTerms(user.id);
+    } catch (_) {
+      // This screen checks again and blocks approval until the stored state
+      // can be loaded. It also handles acceptance saved on another device.
+      accepted = false;
+    }
 
     if (!mounted) return;
 
